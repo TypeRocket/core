@@ -11,20 +11,6 @@ use TypeRocket\Http\Cookie,
 class Core
 {
     /**
-     * Core
-     *
-     * Only initialize core once
-     *
-     * @param bool|true $init initialize core
-     */
-    public function __construct($init = false) {
-        if($init) {
-            new Config();
-            $this->initCore();
-        }
-    }
-
-    /**
      * Core Init
      */
     public function initCore()
