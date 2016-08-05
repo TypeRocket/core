@@ -201,7 +201,9 @@ function tr_posts_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $model = new \TypeRocket\Models\PostTypesModel();
+    $resource   = \TypeRocket\Registry::getPostTypeResource( get_post_type( $item_id ) );
+    $Resource   = ucfirst( $resource );
+    $model = tr_get_model($Resource);
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
@@ -223,7 +225,9 @@ function tr_posts_components_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $model = new \TypeRocket\Models\PostTypesModel();
+    $resource   = \TypeRocket\Registry::getPostTypeResource( get_post_type( $item_id ) );
+    $Resource   = ucfirst( $resource );
+    $model = tr_get_model($Resource);
     $model->findById($item_id);
 
     $builder_data = $model->getFieldValue($name);
@@ -265,7 +269,7 @@ function tr_users_field($name, $item_id = null)
         $item_id = get_current_user_id();
     }
 
-    $model = new \TypeRocket\Models\UsersModel();
+    $model = tr_get_model('Users');
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
@@ -282,7 +286,7 @@ if( ! function_exists('tr_options_field') ) {
  */
 function tr_options_field($name)
 {
-    $model = new \TypeRocket\Models\OptionsModel();
+    $model = tr_get_model('Options');
 
     return $model->getFieldValue($name);
 }
@@ -305,7 +309,7 @@ function tr_comments_field($name, $item_id = null)
         $item_id = $comment->comment_ID;
     }
 
-    $model = new \TypeRocket\Models\CommentsModel();
+    $model = tr_get_model('Comments');
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
