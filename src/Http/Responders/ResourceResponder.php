@@ -35,6 +35,7 @@ class ResourceResponder extends Responder
 
             if( is_string($returned) ) {
                 echo $returned;
+                die();
             }
 
             if( is_array($returned) ) {

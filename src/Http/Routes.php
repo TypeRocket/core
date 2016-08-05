@@ -58,6 +58,12 @@ class Routes
     private function runRoute($path = null, $handle = null, $wilds = null)
     {
         $args = [$path, self::$request, $wilds];
+        self::$vars = $wilds;
+
+        if( ! str_ends('/', self::$request->getPath() ) ) {
+            wp_redirect( self::$request->getPath() . '/' );
+            die();
+        }
 
         if (is_callable($handle)) {
             call_user_func_array($handle, $args);
@@ -70,7 +76,6 @@ class Routes
             $respond->respond( isset($wilds['id']) ? $wilds['id'] : null );
             $this->getTemplate();
         }
-
         die();
     }
 
