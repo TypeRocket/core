@@ -16,6 +16,17 @@ class Routes
 {
     public static $routes = [];
     public static $vars = [];
+    public static $request;
+
+    public function __construct()
+    {
+        self::$request = new Request();
+
+        add_filter('do_parse_request', \Closure::bind(function( $bool ) {
+            $this->route();
+            return $bool;
+        }, $this) );
+    }
 
     /**
      * Add Route
@@ -30,99 +41,106 @@ class Routes
     }
 
     /**
-     * Register the new routes
-     */
-    public function register() {
-        $request = new Request();
-        $request_method = $request->getFormMethod();
-        foreach( self::$routes as $resource => $routes ) {
-
-            foreach ($routes as $route) {
-                $vars = [];
-                list($method, $page, $action) = explode(':', $route);
-                $method = strtoupper($method);
-
-                // Resource
-                $regex    = $resource . '/?$';
-                $vars[]   = $var = 'typerocket_' . $resource;
-                $location = 'index.php?' . $var . '=/';
-                add_rewrite_rule($regex, $location, 'top');
-
-                // Action
-                $regex    = $resource . '/([^/]*)/?$';
-                $vars[]   = $var = 'typerocket_' . $resource . '_page';
-                $location = 'index.php?' . $var . '=$matches[1]';
-                add_rewrite_rule($regex, $location, 'top');
-
-                // Item
-                $regex    = $resource . '/([^/]*)/([^/]*)/?$';
-                $vars[]   = $var = 'typerocket_' . $resource . '_item';
-                $location = $location . '&' . $var . '=$matches[2]';
-                add_rewrite_rule($regex, $location, 'top');
-
-                self::$vars = array_merge(self::$vars, $vars);
-
-                add_filter('template_include', function ($template) use ($resource, $route, $routes, $request_method, $page, $action, $method, $vars) {
-                    global $wp_query;
-                    $is_root = array_key_exists($vars[0], $wp_query->query_vars);
-                    $is_page = array_key_exists($vars[1], $wp_query->query_vars);
-
-                    if ( $is_root || $is_page ) {
-                        $var_page   = get_query_var($vars[1], null );
-                        $item_id  = get_query_var($vars[2], null);
-                        $end = end($routes) == $route;
-
-                        if( $request_method != $method || $var_page != $page && $is_page ) {
-
-                            if($end) {
-                                (new Response())->exitNotFound();
-                            }
-
-                            return $template;
-                        }
-
-                        $respond = new ResourceResponder();
-                        $respond->setResource( ucfirst($resource) );
-                        $respond->setAction( $action );
-                        $respond->setActionMethod( strtoupper( $method ) );
-
-                        if ($resource && $is_page ) {
-                            $respond->respond($item_id);
-                            $returned = $respond->kernel->router->returned;
-                            if( $returned instanceof View ) {
-                                $template = $returned->template();
-                            } else {
-                                $template = get_template_directory() . '/resource-' . $resource . '-' . $page . '.php';
-                            }
-                            $this->getTemplate();
-                        } elseif ($resource && $is_root ) {
-                            $respond->setAction( 'index' );
-                            $respond->respond($item_id);
-                            $returned = $respond->kernel->router->returned;
-                            if( $returned instanceof View ) {
-                                $template = $returned->template();
-                            } else {
-                                $template = get_template_directory() . '/resource-' . $resource . '.php';
-                            }
-                            $this->getTemplate();
-                        } else {
-                            (new Response())->exitNotFound();
-                        }
-                    }
-
-                    return $template;
-                }, 99);
-            }
-        }
-    }
-
-    /**
      *  Load the template for the front-end without globals
      */
     private function getTemplate() {
         extract(View::$data);
         include ( View::$template );
+    }
+
+    /**
+     * Run route if there is a callback
+     *
+     * @param null $path
+     * @param null $handle
+     * @param null $wilds
+     */
+    private function runRoute($path = null, $handle = null, $wilds = null)
+    {
+        $args = [$path, self::$request, $wilds];
+
+        if (is_callable($handle)) {
+            call_user_func_array($handle, $args);
+        } else {
+            list($action, $resource) = explode('@', $handle);
+            $respond = new ResourceResponder();
+            $respond->setResource( ucfirst($resource) );
+            $respond->setAction( $action );
+            $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
+            $respond->respond( isset($wilds['id']) ? $wilds['id'] : null );
+            $this->getTemplate();
+        }
+
         die();
+    }
+
+    /**
+     * Route request through registered routes if these is a match
+     */
+    public function route()
+    {
+        $requestPath = trim(self::$request->getPath(), '/');
+        $routesRegistered = $this->getRegisteredRoutesByMethod( self::$request->getFormMethod() );
+        $segmentsFromRequest = $this->getPathSegments( $requestPath );
+        $args = null;
+        $handle = null;
+
+        foreach ($routesRegistered as $registeredPath => $handle) {
+
+            $segmentsRegistered = $this->getPathSegments( trim($registeredPath, '/') );
+            $pathsMatch = (count($segmentsRegistered) == count($segmentsFromRequest));
+
+            if ($pathsMatch && ! empty($segmentsRegistered) ) {
+
+                foreach ($segmentsFromRequest as $key => $segment) {
+                    $pathsMatch = ($segmentsFromRequest[$key] == $segmentsRegistered[$key]);
+                    $areWilds = preg_match_all("/^\\{(.*)\\}$/U", $segmentsRegistered[$key], $wildMatches);
+
+                    if ( ! empty($areWilds)) {
+                        $wildKey = preg_replace("/\\W/", '', $wildMatches[1][0]);
+                        $args[$wildKey] = $segmentsFromRequest[$key];
+                    }
+
+                    if ( ! $pathsMatch && empty($areWilds)) {
+                        break;
+                    }
+
+                }
+
+                if ($pathsMatch || ! empty($areWilds)) {
+                    $this->runRoute($requestPath, $handle, $args);
+                    break;
+                }
+
+            }
+        }
+    }
+
+    /**
+     * @param $method
+     *
+     * @return array
+     */
+    public function getRegisteredRoutesByMethod($method)
+    {
+        $method = strtoupper($method);
+        $routesRegistered = [];
+
+        if (isset(self::$routes[$method])) {
+            $routesRegistered = self::$routes[$method];
+        }
+
+        return $routesRegistered;
+    }
+
+    /**
+     * @param $path
+     *
+     * @return mixed
+     */
+    private function getPathSegments($path)
+    {
+        return explode('/', $path);
     }
 
 }

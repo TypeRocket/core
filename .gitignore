@@ -2,6 +2,7 @@
 #########################
 .htaccess
 node_modules
+vendor
 
 # Compiled source #
 ###################

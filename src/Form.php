@@ -118,7 +118,7 @@ class Form
     public function useRest()
     {
         $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url('/', $scheme ) . 'typerocket_rest_api/v1/' . $this->resource . '/' . $this->itemId;
+        $this->formUrl = home_url('/', $scheme ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
 
         return $this;
     }
