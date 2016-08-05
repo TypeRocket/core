@@ -201,9 +201,7 @@ function tr_posts_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $resource   = \TypeRocket\Registry::getPostTypeResource( get_post_type( $item_id ) );
-    $Resource   = ucfirst( $resource );
-    $model = tr_get_model($Resource);
+    $model = new \TypeRocket\Models\PostTypesModel();
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
@@ -225,9 +223,7 @@ function tr_posts_components_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $resource   = \TypeRocket\Registry::getPostTypeResource( get_post_type( $item_id ) );
-    $Resource   = ucfirst( $resource );
-    $model = tr_get_model($Resource);
+    $model = new \TypeRocket\Models\PostTypesModel();
     $model->findById($item_id);
 
     $builder_data = $model->getFieldValue($name);

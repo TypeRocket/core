@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class PostTypesModel extends Model
+class PostTypesModel extends Model
 {
 
     protected $builtin = [
