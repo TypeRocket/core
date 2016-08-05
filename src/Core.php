@@ -43,11 +43,8 @@ class Core
         |
         */
         $paths = Config::getPaths();
-        $tr_routes_file = realpath( $paths['app'] . '/Http/routes.php' );
-        if( file_exists($tr_routes_file) ) {
-            $tr_routes_vars = require( $tr_routes_file );
-            new Http\Routes( $tr_routes_vars );
-        }
+        require( $paths['base'] . '/routes.php' );
+        new Http\Routes();
 
         $this->initEndpoints();
     }

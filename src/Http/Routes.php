@@ -18,15 +18,15 @@ class Routes
     public static $vars = [];
 
     /**
-     * Routes constructor.
+     * Add Route
      *
-     * @param array $routes
+     * @param $method
+     * @param $path
+     * @param $handler
      */
-    public function __construct( array $routes = [] )
+    public static function addRoute( $method, $path, $handler )
     {
-        if( !empty($routes) ) {
-            self::$routes = $routes;
-        }
+        self::$routes[$method][$path] = $handler;
     }
 
     /**

@@ -83,6 +83,7 @@ class Config
     private function defaultPaths()
     {
         return [
+            'base'  => TR_PATH,
             'assets'  => TR_PATH . '/assets',
             'views'  => TR_PATH . '/views',
             'pages'  => TR_PATH . '/pages',
