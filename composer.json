@@ -1,0 +1,19 @@
+{
+    "name": "typerocket/core",
+    "description": "The TypeRocket WordPress Framework.",
+    "keywords": ["framework", "typerocket"],
+    "license": "GPL",
+    "homepage": "http://typerocket.com",
+    "authors": [
+        {
+            "name": "Kevin Dees",
+            "email": "kevin.dees2@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "TypeRocket\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
