@@ -24,12 +24,7 @@ abstract class Responder
      */
     public function runKernel(Request $request, Response $response, $type = 'hookGlobal', $action_method = null )
     {
-        $XKernel = "\\" . TR_APP_NAMESPACE . "\\Http\\XKernel";
-
-        if ( class_exists( $XKernel ) ) {
-            $this->kernel = new $XKernel( $request, $response, $type, $action_method);
-        } else {
-            $this->kernel =  new Kernel($request, $response, $type, $action_method);
-        }
+        $Kernel = "\\" . TR_APP_NAMESPACE . "\\Http\\Kernel";
+        $this->kernel = new $Kernel( $request, $response, $type, $action_method);
     }
 }

@@ -23,13 +23,8 @@ class TaxonomiesResponder extends Responder
         $taxonomy   = $this->taxonomy;
         $resource   = Registry::getTaxonomyResource( $taxonomy );
         $prefix     = ucfirst( $resource );
-        $controller = "\\TypeRocket\\Controllers\\{$prefix}Controller";
-        $model      = "\\TypeRocket\\Models\\{$prefix}Model";
-
-        if( ! class_exists( $controller ) || ! class_exists( $model ) ) {
-            $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
-            $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}Model";
-        }
+        $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
+        $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}";
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
             $resource = 'categories';

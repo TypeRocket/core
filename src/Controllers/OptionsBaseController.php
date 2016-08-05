@@ -3,7 +3,7 @@ namespace TypeRocket\Controllers;
 
 use TypeRocket\Models\OptionsModel;
 
-class OptionsController extends Controller
+class OptionsBaseController extends Controller
 {
 
     /**

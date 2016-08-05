@@ -9,6 +9,7 @@ class Request
     private $method = null;
     private $id = null;
     private $uri = null;
+    private $path = null;
     private $host = null;
     private $fields = null;
     private $post = null;
@@ -30,6 +31,7 @@ class Request
         $this->id = $id;
         $this->action = $action;
         $this->uri    = $_SERVER['REQUEST_URI'];
+        $this->path   = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->host   = $_SERVER['HTTP_HOST'];
         $this->fields = ! empty ( $_POST['tr'] ) ? $_POST['tr'] : [];
         $this->post   = ! empty ( $_POST ) ? $_POST : null;
@@ -91,11 +93,21 @@ class Request
     /**
      * Get the request URI
      *
-     * @return null
+     * @return null|string
      */
     public function getUri()
     {
         return $this->uri;
+    }
+
+    /**
+     * Get the request path
+     *
+     * @return mixed|null
+     */
+    public function getPath()
+    {
+        return $this->path;
     }
 
     /**

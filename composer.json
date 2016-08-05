@@ -12,7 +12,7 @@
     ],
     "autoload": {
         "files": [
-            "src/helpers.php"
+            "helpers.php"
         ],
         "psr-4": {
             "TypeRocket\\": "src/"

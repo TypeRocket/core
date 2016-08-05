@@ -3,7 +3,7 @@ namespace TypeRocket\Controllers;
 
 use TypeRocket\Models\CommentsModel;
 
-class CommentsController extends Controller
+class CommentsBaseController extends Controller
 {
 
     /**

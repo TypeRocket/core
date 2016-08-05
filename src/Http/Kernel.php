@@ -17,7 +17,7 @@ class Kernel
         'resourceGlobal' =>
             [
                 Middleware\AuthRead::class,
-                Middleware\ValidateCsrf::class
+                Middleware\BaseVerifyNonce::class
             ],
         'noResource' =>
             [ Middleware\AuthAdmin::class ],

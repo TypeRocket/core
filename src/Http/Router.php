@@ -34,11 +34,7 @@ class Router
         $this->response = $response;
         $this->action = $this->getAction( $action_method );
         $resource = ucfirst( $this->request->getResource() );
-        $controller  = "\\TypeRocket\\Controllers\\{$resource}Controller";
-
-        if( ! class_exists( $controller ) ) {
-            $controller  = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$resource}Controller";
-        }
+        $controller  = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$resource}Controller";
 
         if ( class_exists( $controller ) ) {
             $this->controller = $controller = new $controller( $this->request, $this->response);

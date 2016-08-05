@@ -1,4 +1,5 @@
 <?php
+if( ! function_exists('tr_get_model') ) {
 /**
  * Get model by recourse
  *
@@ -6,24 +7,22 @@
  *
  * @return null
  */
-function tr_get_model($resource) {
-
+function tr_get_model($resource)
+{
     $Resource = ucfirst($resource);
-    $model = "\\TypeRocket\\Models\\{$Resource}Model";
-    $object = null;
+    $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
+    $object   = null;
 
-    if( ! class_exists($model) ) {
-        $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}Model";
-    }
-
-    if( class_exists($model) ) {
+    if (class_exists($model)) {
         /** @var \TypeRocket\Models\Model $object */
         $object = new $model;
     }
 
     return $object;
 }
+}
 
+if( ! function_exists('tr_taxonomy') ) {
 /**
  * Register taxonomy
  *
@@ -43,7 +42,9 @@ function tr_taxonomy(
 
     return $obj;
 }
+}
 
+if( ! function_exists('tr_post_type') ) {
 /**
  * Register post type
  *
@@ -63,7 +64,9 @@ function tr_post_type(
 
     return $obj;
 }
+}
 
+if( ! function_exists('tr_meta_box') ) {
 /**
  * Register meta box
  *
@@ -83,7 +86,9 @@ function tr_meta_box(
 
     return $obj;
 }
+}
 
+if( ! function_exists('tr_page') ) {
 /**
  * @param $resource
  * @param $action
@@ -92,13 +97,16 @@ function tr_meta_box(
  *
  * @return \TypeRocket\Page
  */
-function tr_page( $resource, $action, $title, array $settings = []) {
+function tr_page($resource, $action, $title, array $settings = [])
+{
     $obj = new \TypeRocket\Page($resource, $action, $title, $settings);
     $obj->addToRegistry();
 
     return $obj;
 }
+}
 
+if( ! function_exists('tr_resource_pages') ) {
 /**
  * @param string $singular
  * @param string $plural
@@ -106,20 +114,23 @@ function tr_page( $resource, $action, $title, array $settings = []) {
  *
  * @return \TypeRocket\Page
  */
-function tr_resource_pages( $singular, $plural = null, array $settings = [] ) {
+function tr_resource_pages($singular, $plural = null, array $settings = [])
+{
 
-    if( ! $plural ) {
+    if ( ! $plural) {
         $plural = \TypeRocket\Inflect::pluralize($singular);
     }
 
     return tr_page($plural, 'index', $plural, $settings)->apply(
-        tr_page($plural, 'edit', 'Edit ' . $singular )->useController()->addNewButton()->removeMenu(),
-        tr_page($plural, 'show', $singular )->useController()->addNewButton()->removeMenu(),
-        tr_page($plural, 'delete', 'Delete ' . $singular )->useController()->removeMenu(),
-        tr_page($plural, 'add', 'Add ' . $singular )->useController()->setArgument('menu', 'Add New')
+        tr_page($plural, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
+        tr_page($plural, 'show', $singular)->useController()->addNewButton()->removeMenu(),
+        tr_page($plural, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
+        tr_page($plural, 'add', 'Add ' . $singular)->useController()->setArgument('menu', 'Add New')
     )->addNewButton()->useController();
 }
+}
 
+if( ! function_exists('tr_tabs') ) {
 /**
  * Create tabs
  *
@@ -129,7 +140,9 @@ function tr_tabs()
 {
     return new \TypeRocket\Layout\Tabs();
 }
+}
 
+if( ! function_exists('tr_tables') ) {
 /**
  * Create tables
  *
@@ -137,10 +150,13 @@ function tr_tabs()
  *
  * @return \TypeRocket\Layout\Tables
  */
-function tr_tables( \TypeRocket\Models\SchemaModel $model ) {
-    return new \TypeRocket\Layout\Tables( $model );
+function tr_tables(\TypeRocket\Models\SchemaModel $model)
+{
+    return new \TypeRocket\Layout\Tables($model);
+}
 }
 
+if( ! function_exists('tr_buffer') ) {
 /**
  * Create buffer
  *
@@ -150,7 +166,9 @@ function tr_buffer()
 {
     return new \TypeRocket\Buffer();
 }
+}
 
+if( ! function_exists('tr_form') ) {
 /**
  * Instance the From
  *
@@ -160,11 +178,13 @@ function tr_buffer()
  *
  * @return \TypeRocket\Form
  */
-function tr_form($resource = 'auto', $action = 'update', $item_id = null )
+function tr_form($resource = 'auto', $action = 'update', $item_id = null)
 {
     return new \TypeRocket\Form($resource, $action, $item_id);
 }
+}
 
+if( ! function_exists('tr_posts_field') ) {
 /**
  * Get the posts field
  *
@@ -173,44 +193,47 @@ function tr_form($resource = 'auto', $action = 'update', $item_id = null )
  *
  * @return array|mixed|null|string
  */
-function tr_posts_field( $name, $item_id = null )
+function tr_posts_field($name, $item_id = null)
 {
     global $post;
 
-    if (isset( $post->ID ) && is_null( $item_id )) {
+    if (isset($post->ID) && is_null($item_id)) {
         $item_id = $post->ID;
     }
 
     $model = new \TypeRocket\Models\PostTypesModel();
     $model->findById($item_id);
 
-    return $model->getFieldValue( $name );
+    return $model->getFieldValue($name);
+}
 }
 
+if( ! function_exists('tr_posts_components_field') ) {
 /**
  * Get components
  *
  * @param string $name use dot notation
  * @param null $item_id
  */
-function tr_posts_components_field( $name, $item_id = null ) {
+function tr_posts_components_field($name, $item_id = null)
+{
     global $post;
 
-    if (isset( $post->ID ) && is_null( $item_id )) {
+    if (isset($post->ID) && is_null($item_id)) {
         $item_id = $post->ID;
     }
 
     $model = new \TypeRocket\Models\PostTypesModel();
     $model->findById($item_id);
 
-    $builder_data = $model->getFieldValue( $name );
+    $builder_data = $model->getFieldValue($name);
 
-    if( is_array($builder_data) ) {
-        foreach($builder_data as $data) {
-            $key = key($data);
+    if (is_array($builder_data)) {
+        foreach ($builder_data as $data) {
+            $key       = key($data);
             $component = strtolower(key($data));
-            $function = 'tr_component_' . $name . '_' . $component;
-            if(function_exists($function)) {
+            $function  = 'tr_component_' . $name . '_' . $component;
+            if (function_exists($function)) {
                 $function($data[$key]);
             } else {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder content here by defining: <code>function {$function}(\$data) {}</code></div>";
@@ -219,7 +242,9 @@ function tr_posts_components_field( $name, $item_id = null ) {
     }
 
 }
+}
 
+if( ! function_exists('tr_users_field') ) {
 /**
  * Get users field
  *
@@ -228,24 +253,26 @@ function tr_posts_components_field( $name, $item_id = null ) {
  *
  * @return array|mixed|null|string
  */
-function tr_users_field( $name, $item_id = null )
+function tr_users_field($name, $item_id = null)
 {
     global $user_id, $post;
 
-    if (isset( $user_id ) && is_null( $item_id )) {
+    if (isset($user_id) && is_null($item_id)) {
         $item_id = $user_id;
-    } elseif (is_null( $item_id ) && isset( $post->ID )) {
-        $item_id = get_the_author_meta( 'ID' );
-    } elseif (is_null( $item_id )) {
+    } elseif (is_null($item_id) && isset($post->ID)) {
+        $item_id = get_the_author_meta('ID');
+    } elseif (is_null($item_id)) {
         $item_id = get_current_user_id();
     }
 
     $model = new \TypeRocket\Models\UsersModel();
     $model->findById($item_id);
 
-    return $model->getFieldValue( $name );
+    return $model->getFieldValue($name);
+}
 }
 
+if( ! function_exists('tr_options_field') ) {
 /**
  * Get options
  *
@@ -253,13 +280,15 @@ function tr_users_field( $name, $item_id = null )
  *
  * @return array|mixed|null|string
  */
-function tr_options_field( $name )
+function tr_options_field($name)
 {
     $model = new \TypeRocket\Models\OptionsModel();
 
-    return $model->getFieldValue( $name );
+    return $model->getFieldValue($name);
+}
 }
 
+if( ! function_exists('tr_comments_field') ) {
 /**
  * Get comments field
  *
@@ -268,20 +297,22 @@ function tr_options_field( $name )
  *
  * @return array|mixed|null|string
  */
-function tr_comments_field( $name, $item_id = null )
+function tr_comments_field($name, $item_id = null)
 {
     global $comment;
 
-    if (isset( $comment->comment_ID ) && is_null( $item_id )) {
+    if (isset($comment->comment_ID) && is_null($item_id)) {
         $item_id = $comment->comment_ID;
     }
 
     $model = new \TypeRocket\Models\CommentsModel();
     $model->findById($item_id);
 
-    return $model->getFieldValue( $name );
+    return $model->getFieldValue($name);
+}
 }
 
+if( ! function_exists('tr_taxonomies_field') ) {
 /**
  *  Get taxonomy field
  *
@@ -291,15 +322,17 @@ function tr_comments_field( $name, $item_id = null )
  *
  * @return array|mixed|null|string
  */
-function tr_taxonomies_field( $name, $taxonomy, $item_id = null )
+function tr_taxonomies_field($name, $taxonomy, $item_id = null)
 {
     /** @var \TypeRocket\Models\TaxonomiesModel $model */
     $model = tr_get_model($taxonomy);
     $model->findById($item_id);
 
-    return $model->getFieldValue( $name );
+    return $model->getFieldValue($name);
+}
 }
 
+if( ! function_exists('tr_resource_field') ) {
 /**
  * Get resource
  *
@@ -309,15 +342,17 @@ function tr_taxonomies_field( $name, $taxonomy, $item_id = null )
  *
  * @return array|mixed|null|string
  */
-function tr_resource_field( $name, $resource, $item_id = null )
+function tr_resource_field($name, $resource, $item_id = null)
 {
     /** @var \TypeRocket\Models\TaxonomiesModel $model */
     $model = tr_get_model($resource);
     $model->findById($item_id);
 
-    return $model->getFieldValue( $name );
+    return $model->getFieldValue($name);
+}
 }
 
+if( ! function_exists('tr_is_json') ) {
 /**
  * Detect is JSON
  *
@@ -325,40 +360,103 @@ function tr_resource_field( $name, $resource, $item_id = null )
  *
  * @return bool
  */
-function tr_is_json( $string ) {
+function tr_is_json($string)
+{
     $j = json_decode($string);
     $r = $j ? true : false;
+
     return $r;
 }
+}
 
+if( ! function_exists('tr_frontend') ) {
 /**
  * Enable TypeRocket on the front end of the website
  */
-function tr_frontend() {
+function tr_frontend()
+{
     $core = new TypeRocket\Core(false);
     $core->initFrontEnd();
 }
+}
 
+if( ! function_exists('tr_redirect') ) {
 /**
  * @return \TypeRocket\Http\Redirect
  */
-function tr_redirect() {
+function tr_redirect()
+{
     return new \TypeRocket\Http\Redirect();
 }
+}
 
+if( ! function_exists('tr_cookie') ) {
 /**
  * @return \TypeRocket\Http\Cookie
  */
-function tr_cookie() {
+function tr_cookie()
+{
     return new \TypeRocket\Http\Cookie();
 }
+}
 
+if( ! function_exists('tr_view') ) {
 /**
  * @param $dots
  * @param array $data
  *
  * @return \TypeRocket\View
  */
-function tr_view( $dots , array $data = [] ) {
-    return new \TypeRocket\View( $dots, $data );
+function tr_view($dots, array $data = [])
+{
+    return new \TypeRocket\View($dots, $data);
+}
+}
+
+if( ! function_exists('str_starts') ) {
+/**
+ * String starts with
+ *
+ * @param $needle
+ * @param $subject
+ *
+ * @return bool
+ */
+function str_starts( $needle, $subject ) {
+    return substr($subject, 0, strlen($needle) ) === $needle;
+}
+}
+
+
+if( ! function_exists('str_ends') ) {
+/**
+ * String ends with
+ *
+ * @param $needle
+ * @param $subject
+ *
+ * @return bool
+ */
+function str_ends( $needle, $subject ) {
+    $length = mb_strlen($needle);
+    if ($length == 0) {
+        return true;
+    }
+
+    return ( mb_substr($subject, -$length ) === $needle );
+}
+}
+
+if( ! function_exists('str_contains') ) {
+/**
+ * String ends with
+ *
+ * @param $needle
+ * @param $subject
+ *
+ * @return bool
+ */
+function str_contains( $needle, $subject ) {
+    return ( mb_strpos( $subject, $needle ) !== false );
+}
 }

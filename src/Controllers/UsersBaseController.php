@@ -3,7 +3,7 @@ namespace TypeRocket\Controllers;
 
 use TypeRocket\Models\UsersModel;
 
-class UsersController extends Controller
+class UsersBaseController extends Controller
 {
 
     /**

@@ -1,12 +1,12 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Models\PostTypesModel;
+use TypeRocket\Models\TaxonomiesModel;
 
-abstract class PostTypesController extends Controller
+abstract class TaxonomiesBaseController extends Controller
 {
 
-    /** @var PostTypesModel */
+    /** @var TaxonomiesModel */
     protected $model = null;
     protected $type = null;
 
@@ -20,7 +20,7 @@ abstract class PostTypesController extends Controller
         $this->type = $type;
 
         if( ! $this->modelClass ) {
-            $class = "\\" . TR_APP_NAMESPACE . "\\Models\\{$this->type}Model";
+            $class = "\\" . TR_APP_NAMESPACE . "\\Models\\{$this->type}";
         } else {
             $class = $this->modelClass;
         }
@@ -29,7 +29,7 @@ abstract class PostTypesController extends Controller
     }
 
     /**
-     * Update Post by ID
+     * Update Taxonomy Term by ID
      *
      * @param null $id
      *
@@ -40,7 +40,7 @@ abstract class PostTypesController extends Controller
         $errors = $this->model->findById( $id )->update( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {
-            $this->response->flashNext($this->type . ' not updated', 'success' );
+            $this->response->flashNext($this->type . ' not updated', 'error' );
             $this->response->setError( 'model', $errors );
         } else {
             $this->response->flashNext($this->type . ' updated', 'success' );
@@ -50,13 +50,13 @@ abstract class PostTypesController extends Controller
     }
 
     /**
-     * Create Post
+     * Create Taxonomy Term
      */
     public function create()
     {
         $errors = $this->model->create( $this->request->getFields() )->getErrors();
 
-        if ( ! empty ( $errors ) ) {
+        if ( ! empty ( $errors )) {
             $this->response->flashNext($this->type . ' not created', 'error' );
             $this->response->setError( 'model', $errors );
         } else {
