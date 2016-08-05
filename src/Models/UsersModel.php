@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
-class UsersModel extends Model
+abstract class UsersModel extends Model
 {
 
     protected $builtin = [

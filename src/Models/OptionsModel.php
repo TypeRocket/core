@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
-class OptionsModel extends Model
+abstract class OptionsModel extends Model
 {
 
     protected $id = 1;

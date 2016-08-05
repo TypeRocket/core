@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
-class CommentsModel extends Model
+abstract class CommentsModel extends Model
 {
 
     protected $builtin = [

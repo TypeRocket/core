@@ -1,9 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Models\CommentsModel;
-
-class CommentsBaseController extends Controller
+abstract class CommentsBaseController extends Controller
 {
 
     /**
@@ -15,7 +13,7 @@ class CommentsBaseController extends Controller
      */
     public function update( $id = null )
     {
-        $comments = new CommentsModel();
+        $comments = new $this->$modelClass;
         $errors   = $comments->findById( $id )->update( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {
@@ -33,7 +31,7 @@ class CommentsBaseController extends Controller
      */
     public function create()
     {
-        $comments = new CommentsModel();
+        $comments = new $this->modelClass;
         $errors   = $comments->create( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {

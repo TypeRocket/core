@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
-class TaxonomiesModel extends Model
+abstract class TaxonomiesModel extends Model
 {
 
     protected $taxonomy = null;

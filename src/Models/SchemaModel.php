@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Models;
 
-class SchemaModel extends Model
+abstract class SchemaModel extends Model
 {
     public $resource = null;
     public $table = null;

@@ -19,13 +19,7 @@ abstract class TaxonomiesBaseController extends Controller
         $type       = substr( $reflect->getShortName(), 0, - 10 );
         $this->type = $type;
 
-        if( ! $this->modelClass ) {
-            $class = "\\" . TR_APP_NAMESPACE . "\\Models\\{$this->type}";
-        } else {
-            $class = $this->modelClass;
-        }
-
-        $this->model = new $class();
+        $this->model = new $this->modelClass;
     }
 
     /**

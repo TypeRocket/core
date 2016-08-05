@@ -1,9 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Models\UsersModel;
-
-class UsersBaseController extends Controller
+abstract class UsersBaseController extends Controller
 {
 
     /**
@@ -15,7 +13,7 @@ class UsersBaseController extends Controller
      */
     public function update( $id = null )
     {
-        $user   = new UsersModel();
+        $user   = new $this->modelClass;
         $errors = $user->findById( $id )->update( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {
@@ -32,7 +30,7 @@ class UsersBaseController extends Controller
      */
     public function create()
     {
-        $user   = new UsersModel();
+        $user   = new $this->modelClass;
         $errors = $user->create( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {

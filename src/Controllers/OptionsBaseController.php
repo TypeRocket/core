@@ -1,9 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Models\OptionsModel;
-
-class OptionsBaseController extends Controller
+abstract class OptionsBaseController extends Controller
 {
 
     /**
@@ -15,7 +13,7 @@ class OptionsBaseController extends Controller
      */
     public function update( $id )
     {
-        $options = new OptionsModel();
+        $options = new $this->modelClass;
         $errors  = $options->create( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {
@@ -32,7 +30,7 @@ class OptionsBaseController extends Controller
      */
     public function create()
     {
-        $options = new OptionsModel();
+        $options = new $this->modelClass;
         $errors  = $options->create( $this->request->getFields() )->getErrors();
 
         if ( ! empty( $errors ) ) {
