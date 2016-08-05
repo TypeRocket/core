@@ -56,7 +56,8 @@ class Core
         | Load TypeRocket Router
         |
         */
-        $tr_routes_file = realpath( TR_APP_FOLDER_PATH . '/Http/routes.php' );
+        $paths = Config::getPaths();
+        $tr_routes_file = realpath( $paths['app'] . '/Http/routes.php' );
         if( file_exists($tr_routes_file) ) {
             $tr_routes_vars = require( $tr_routes_file );
             new Http\Routes( $tr_routes_vars );

@@ -6,6 +6,7 @@ use \TypeRocket\Http\Request,
 
 abstract class Responder
 {
+    /** @var \TypeRocket\Http\Kernel */
     public $kernel;
 
     abstract public function respond( $id );
