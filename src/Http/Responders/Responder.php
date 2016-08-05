@@ -1,8 +1,7 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use \TypeRocket\Http\Kernel,
-    \TypeRocket\Http\Request,
+use \TypeRocket\Http\Request,
     \TypeRocket\Http\Response;
 
 abstract class Responder
@@ -13,9 +12,6 @@ abstract class Responder
 
     /**
      * Run the Kernel
-     *
-     * A class XKernel to override the Kernel but it should extend the
-     * Kernel.
      *
      * @param Request $request
      * @param Response $response

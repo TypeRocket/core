@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Http;
 
-class Kernel
+abstract class Kernel
 {
 
     public $request;
@@ -11,31 +11,7 @@ class Kernel
     public $router;
     public $group;
 
-    protected $middleware = [
-        'hookGlobal' =>
-            [ Middleware\AuthRead::class ],
-        'resourceGlobal' =>
-            [
-                Middleware\AuthRead::class,
-                Middleware\BaseVerifyNonce::class
-            ],
-        'noResource' =>
-            [ Middleware\AuthAdmin::class ],
-        'users' =>
-            [ Middleware\IsUserOrCanEditUsers::class ],
-        'posts' =>
-            [ Middleware\OwnsPostOrCanEditPosts::class ],
-        'pages' =>
-            [ Middleware\OwnsPostOrCanEditPosts::class ],
-        'comments' =>
-            [ Middleware\OwnsCommentOrCanEditComments::class ],
-        'options' =>
-            [ Middleware\CanManageOptions::class ],
-        'categories' =>
-            [ Middleware\CanManageCategories::class ],
-        'tags' =>
-            [ Middleware\CanManageCategories::class ]
-    ];
+    protected $middleware = [];
 
     /**
      * Handle Middleware
