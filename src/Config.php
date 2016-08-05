@@ -83,18 +83,18 @@ class Config
     private function defaultPaths()
     {
         return [
-            'assets'  => __DIR__ . '/../assets',
-            'views'  => defined( 'TR_VIEWS' ) ? TR_VIEWS : get_stylesheet_directory() . '/../../views',
-            'pages'  => defined( 'TR_PAGES' ) ? TR_PAGES : get_stylesheet_directory() . '/pages',
-            'plugins' => defined( 'TR_PLUGINS_FOLDER_PATH' ) ? TR_PLUGINS_FOLDER_PATH : get_stylesheet_directory() . '/plugins',
-            'components'  => defined( 'TR_COMPONENTS_FOLDER_PATH' ) ? TR_COMPONENTS_FOLDER_PATH : get_stylesheet_directory() . '/components',
-            'thumbnails'  => defined( 'TR_COMPONENTS_THUMBNAIL_FOLDER_PATH' ) ? TR_COMPONENTS_THUMBNAIL_FOLDER_PATH : get_stylesheet_directory() . '/components',
-            'extend'  => defined( 'TR_APP_FOLDER_PATH' ) ? TR_APP_FOLDER_PATH : get_stylesheet_directory() . '/app',
-            'urls'    => [
+            'assets'  => TR_PATH . '/assets',
+            'views'  => TR_PATH . '/views',
+            'pages'  => TR_PATH . '/pages',
+            'plugins' => TR_PATH . '/plugins',
+            'components'  => TR_PATH . '/components',
+            'thumbnails'  => TR_PATH . '/components/thumbnails',
+            'app'  => TR_PATH . '/app',
+            'urls' => [
                 'theme'   => get_stylesheet_directory_uri(),
-                'assets'  => defined( 'TR_ASSETS_URL' ) ? TR_ASSETS_URL : get_stylesheet_directory_uri() . '/typerocket/assets',
-                'plugins' => defined( 'TR_PLUGINS_URL' ) ? TR_PLUGINS_URL : get_stylesheet_directory_uri() . '/plugins',
-                'thumbnails' => defined( 'TR_COMPONENTS_THUMBNAIL_URL' ) ? TR_COMPONENTS_THUMBNAIL_URL : get_stylesheet_directory_uri() . '/components',
+                'assets'  => TR_URL . '/assets',
+                'plugins' => TR_URL . '/plugins',
+                'thumbnails' => TR_URL . '/components/thumbnails',
             ]
         ];
     }
