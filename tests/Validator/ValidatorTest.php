@@ -1,7 +1,6 @@
 <?php
-use PHPUnit\Framework\TestCase;
 
-class ValidatorTest extends TestCase
+class ValidatorTest extends PHPUnit_Framework_TestCase
 {
 
     public function testEmailFieldPasses()
@@ -47,8 +46,6 @@ class ValidatorTest extends TestCase
         $validator = new \TypeRocket\Validator([
             'person.*.email' => 'email'
         ], $fields);
-
-        var_dump( $validator->getErrors() );
 
         $this->assertEquals(3, count($validator->getErrors()) );
     }
