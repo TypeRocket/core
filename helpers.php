@@ -402,7 +402,7 @@ function tr_cookie()
 
 if( ! function_exists('tr_view') ) {
 /**
- * @param $dots
+ * @param string $dots
  * @param array $data
  *
  * @return \TypeRocket\View
@@ -411,6 +411,22 @@ function tr_view($dots, array $data = [])
 {
     return new \TypeRocket\View($dots, $data);
 }
+}
+
+if( ! function_exists('tr_validator') ) {
+    /**
+     * Validate fields
+     *
+     * @param array $options
+     * @param array $fields
+     * @param null $modelClass
+     *
+     * @return \TypeRocket\Validator
+     */
+    function tr_validator( $options, $fields, $modelClass = null )
+    {
+        return new \TypeRocket\Validator( $options, $fields, $modelClass );
+    }
 }
 
 if( ! function_exists('str_starts') ) {
