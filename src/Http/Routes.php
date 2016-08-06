@@ -18,14 +18,20 @@ class Routes
     public static $vars = [];
     public static $request;
 
+    /**
+     * Routes constructor.
+     */
     public function __construct()
     {
         self::$request = new Request();
 
-        add_filter('do_parse_request', \Closure::bind(function( $bool ) {
-            $this->route();
-            return $bool;
-        }, $this) );
+        if( ! is_admin() ) {
+            add_filter('do_parse_request', \Closure::bind(function( $bool ) {
+                $this->route();
+                return $bool;
+            }, $this) );
+        }
+
     }
 
     /**
@@ -38,14 +44,6 @@ class Routes
     public static function addRoute( $method, $path, $handler )
     {
         self::$routes[$method][$path] = $handler;
-    }
-
-    /**
-     *  Load the template for the front-end without globals
-     */
-    private function getTemplate() {
-        extract(View::$data);
-        include ( View::$template );
     }
 
     /**
@@ -66,7 +64,25 @@ class Routes
         }
 
         if (is_callable($handle)) {
-            call_user_func_array($handle, $args);
+            $returned = call_user_func_array($handle, $args);
+
+            if( $returned instanceof View ) {
+                $this->getTemplate();
+            }
+
+            if( $returned instanceof Redirect ) {
+                $returned->now();
+            }
+
+            if( is_string($returned) ) {
+                echo $returned;
+                die();
+            }
+
+            if( is_array($returned) ) {
+                wp_send_json($returned);
+            }
+
         } else {
             list($action, $resource) = explode('@', $handle);
             $respond = new ResourceResponder();
@@ -76,7 +92,16 @@ class Routes
             $respond->respond( isset($wilds['id']) ? $wilds['id'] : null );
             $this->getTemplate();
         }
+
         die();
+    }
+
+    /**
+     *  Load the template for the front-end without globals
+     */
+    private function getTemplate() {
+        extract(View::$data);
+        include ( View::$template );
     }
 
     /**

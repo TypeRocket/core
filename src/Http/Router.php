@@ -39,24 +39,14 @@ class Router
         if ( class_exists( $controller ) ) {
             $this->controller = $controller = new $controller( $this->request, $this->response);
 
-            try {
-                $param = new \ReflectionParameter(array($controller, $this->action), 0);
-            } catch( \Exception $e) {
-                $param = null;
-            }
-
-            if( $this->request->getResourceId() && ! $param ) {
-                $this->response->setMessage('Something went wrong with item');
-                $this->response->exitAny(405);
-            }
-
             if ( ! $controller instanceof Controller || ! method_exists( $controller, $this->action ) ) {
                 $this->response->setMessage('Something went wrong');
                 $this->response->exitAny(405);
-            } else {
-                $this->item_id    = $this->request->getResourceId();
-                $this->middleware = $this->controller->getMiddleware();
             }
+
+            $this->item_id    = $this->request->getResourceId();
+            $this->middleware = $this->controller->getMiddleware();
+
         } else {
             wp_die('Missing controller: ' . $controller );
         }
@@ -68,7 +58,23 @@ class Router
     public function handle() {
         $action = $this->action;
         $controller = $this->controller;
-        $this->returned = $controller->$action( $this->item_id );
+        $params = (new \ReflectionMethod($controller, $this->action))->getParameters();
+
+        if( $params ) {
+
+            $args = [];
+            $vars = Routes::$vars;
+
+            foreach ($params as $index => $param ) {
+                if( isset($vars[$param->getName()]) && $param->getName() != 'id' ) {
+                    $args[$index] = $vars[$param->getName()];
+                }
+            }
+
+            $this->returned = call_user_func_array( [$controller, $action], array_merge([$this->item_id], $args) );
+        } else {
+            $this->returned = $controller->$action();
+        }
     }
 
     /**

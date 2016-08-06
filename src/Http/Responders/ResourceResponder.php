@@ -23,10 +23,12 @@ class ResourceResponder extends Responder
     {
         $request  = new Request( $this->resource, null, $id, $this->action );
         $response = new Response();
-
         $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod);
-        $returned = $this->kernel->router->returned;
+        $this->response( $this->kernel->router->returned , $response);
+    }
 
+    public function response($returned, Response $response)
+    {
         if( $returned && empty($_POST['_tr_ajax_request']) ) {
 
             if( $returned instanceof Redirect ) {
