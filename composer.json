@@ -10,6 +10,10 @@
             "email": "kevin.dees2@gmail.com"
         }
     ],
+    "require-dev": {
+        "php": ">=5.6",
+        "phpunit/phpunit": "5.5.*"
+    },
     "autoload": {
         "files": [
             "helpers.php"

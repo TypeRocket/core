@@ -414,19 +414,31 @@ function tr_view($dots, array $data = [])
 }
 
 if( ! function_exists('tr_validator') ) {
-    /**
-     * Validate fields
-     *
-     * @param array $options
-     * @param array $fields
-     * @param null $modelClass
-     *
-     * @return \TypeRocket\Validator
-     */
-    function tr_validator( $options, $fields, $modelClass = null )
-    {
-        return new \TypeRocket\Validator( $options, $fields, $modelClass );
-    }
+/**
+ * Validate fields
+ *
+ * @param array $options
+ * @param array $fields
+ * @param null $modelClass
+ *
+ * @return \TypeRocket\Validator
+ */
+function tr_validator( $options, $fields, $modelClass = null )
+{
+    return new \TypeRocket\Validator( $options, $fields, $modelClass );
+}
+}
+
+if( ! function_exists('tr_route') ) {
+/**
+ * Route
+ *
+ * @return \TypeRocket\Http\Route
+ */
+function tr_route()
+{
+    return new \TypeRocket\Http\Route();
+}
 }
 
 if( ! function_exists('str_starts') ) {

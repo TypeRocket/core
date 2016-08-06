@@ -7,6 +7,7 @@ use TypeRocket\Http\Response;
 class Validator
 {
     public $errors = [];
+    public $passes = [];
     public $options = [];
     public $fields = [];
     public $modelClass = [];
@@ -39,6 +40,25 @@ class Validator
     }
 
     /**
+     * Get passes
+     *
+     * @return array
+     */
+    public function getPasses()
+    {
+        return $this->passes;
+    }
+
+    /**
+     * Check if passes
+     *
+     * @return bool
+     */
+    public function passed() {
+        return empty($this->errors);
+    }
+
+    /**
      * Flash validator errors on next request
      *
      * @param \TypeRocket\Http\Response $response
@@ -63,7 +83,7 @@ class Validator
      */
     private function mapFieldsToValidation() {
         foreach ($this->options as $path => $handle) {
-            $this->ArrayDots($this->fields, $path, $handle);
+            $this->ArrayDots($this->fields, $path, $handle, $path);
         }
     }
 
@@ -73,10 +93,11 @@ class Validator
      * @param array $arr
      * @param $path
      * @param $handle
+     * @param $fullPath
      *
      * @return array|null
      */
-    private function ArrayDots(array &$arr, $path, $handle) {
+    private function ArrayDots(array &$arr, $path, $handle, $fullPath) {
         $loc = &$arr;
         $dots = explode('.', $path);
         foreach($dots as $step)
@@ -87,7 +108,8 @@ class Validator
                 $indies = array_keys($new_loc);
                 foreach($indies as $index) {
                     if(isset($new_loc[$index])) {
-                        $this->ArrayDots($new_loc[$index], implode('.', $dots), $handle);
+                        $newFullPath = preg_replace('(\*)', "{$index}", $fullPath, 1);
+                        $this->ArrayDots($new_loc[$index], implode('.', $dots), $handle, $newFullPath);
                     }
                 }
             } elseif( isset($loc[$step] ) ) {
@@ -100,7 +122,7 @@ class Validator
 
         if(!isset($indies)) {
             if( !empty($handle) ) {
-                $this->validateField( $handle, $loc, $path );
+                $this->validateField( $handle, $loc, $fullPath );
             }
         }
 
@@ -117,32 +139,42 @@ class Validator
     private function validateField( $handle, $value, $name ) {
         $list = explode('|', $handle);
         foreach( $list as $validation) {
-            list( $type, $option, $option2 ) = explode(':', $validation, 3);
-            $field_name = '"<strong>' . ucwords(preg_replace('/\_/', ' ', $name)) . '</strong>"';
+            list( $type, $option, $option2 ) = array_pad(explode(':', $validation, 3), 3, null);
+            $field_name = '"<strong>' . ucwords(preg_replace('/\_|\./', ' ', $name)) . '</strong>"';
             switch($type) {
                 case 'required' :
                     if( empty( $value ) ) {
                         $this->errors[$name] =  $field_name . ' is required.';
+                    } else {
+                        $this->passes[$name] = $value;
                     }
                     break;
                 case 'length' :
                     if( mb_strlen($value) < $option ) {
                         $this->errors[$name] =  $field_name . " must be at least $option characters long.";
+                    } else {
+                        $this->passes[$name] = $value;
                     }
                     break;
                 case 'email' :
                     if( ! filter_var($value, FILTER_VALIDATE_EMAIL) ) {
                         $this->errors[$name] =  $field_name . " must be at an email address.";
+                    } else {
+                        $this->passes[$name] = $value;
                     }
                     break;
                 case 'numeric' :
                     if( ! is_numeric($value) ) {
                         $this->errors[$name] =  $field_name . " must be a numeric value.";
+                    } else {
+                        $this->passes[$name] = $value;
                     }
                     break;
                 case 'url' :
                     if( ! filter_var($value, FILTER_VALIDATE_URL) ) {
                         $this->errors[$name] =  $field_name . " must be at a URL.";
+                    } else {
+                        $this->passes[$name] = $value;
                     }
                     break;
                 case 'unique' :
@@ -158,6 +190,8 @@ class Validator
                         $result = $model->first();
                         if($result) {
                             $this->errors[$name] =  $field_name . ' is taken.';
+                        } else {
+                            $this->passes[$name] = $value;
                         }
                     }
                     break;

@@ -11,7 +11,7 @@ class Route
      * @param string $path request path rewrite to add
      * @param string $handler the call that handles the request
      */
-    public static function get($path, $handler)
+    public function get($path, $handler)
     {
         Routes::addRoute('GET', $path, $handler);
     }
@@ -22,7 +22,7 @@ class Route
      * @param string $path request path rewrite to add
      * @param string $handler the action controller call
      */
-    public static function post($path, $handler)
+    public function post($path, $handler)
     {
         Routes::addRoute('POST', $path, $handler);
     }
@@ -33,7 +33,7 @@ class Route
      * @param string $path request path rewrite to add
      * @param string $handler the action controller call
      */
-    public static function put($path, $handler)
+    public function put($path, $handler)
     {
         Routes::addRoute('PUT', $path, $handler);
     }
@@ -44,7 +44,7 @@ class Route
      * @param string $path request path rewrite to add
      * @param string $handler the action controller call
      */
-    public static function delete($path, $handler)
+    public function delete($path, $handler)
     {
         Routes::addRoute('DELETE', $path, $handler);
     }
@@ -55,7 +55,7 @@ class Route
      * @param string $path request path rewrite to add
      * @param string $handler the action controller call
      */
-    public static function any($path, $handler)
+    public function any($path, $handler)
     {
         Routes::addRoute('PUT', $path, $handler);
         Routes::addRoute('POST', $path, $handler);
