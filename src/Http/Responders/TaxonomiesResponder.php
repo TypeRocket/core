@@ -3,7 +3,7 @@ namespace TypeRocket\Http\Responders;
 
 use \TypeRocket\Http\Request,
     \TypeRocket\Http\Response,
-    \TypeRocket\Registry;
+    \TypeRocket\Register\Registry;
 
 class TaxonomiesResponder extends Responder
 {

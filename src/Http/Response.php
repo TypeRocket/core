@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Http;
 
-use TypeRocket\Layout\Notice;
+use TypeRocket\Elements\Notice;
 
 /**
  * Class Response

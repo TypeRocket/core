@@ -17,20 +17,20 @@ class Loader
     /**
      * Set Plugins on construction
      *
-     * @param PluginCollection $plugins
+     * @param array $plugins
      */
-    public function __construct(PluginCollection $plugins)
+    public function __construct( array $plugins)
     {
-        $this->setCollection($plugins);
+        $this->setPlugins($plugins);
     }
 
     /**
-     * Set the collection of plugins
+     * Set the plugins
      *
-     * @param PluginCollection $collection
+     * @param array $collection
      */
-    private function setCollection(PluginCollection $collection) {
-        $this->plugins = apply_filters('tr_plugins_collection', $collection);
+    private function setPlugins( array $collection) {
+        $this->plugins = apply_filters('tr_set_plugins', $collection);
     }
 
     /**

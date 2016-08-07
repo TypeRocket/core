@@ -76,16 +76,14 @@ class WpRestApi
      *
      * Only users who can edit others posts.
      *
-     * @param \WP_REST_Request $request
-     *
      * @return mixed|void
      */
-    public static function permission( \WP_REST_Request $request )
+    public static function permission()
     {
         $permissions = false;
         $logged_in = wp_validate_auth_cookie( $_COOKIE[LOGGED_IN_COOKIE], 'logged_in' );
         if( $logged_in ) {
-            list($username, $time, $token) = explode('|',$_COOKIE[LOGGED_IN_COOKIE], 3);
+            list($username, $time, $token) = array_pad( explode('|',$_COOKIE[LOGGED_IN_COOKIE], 3), 3, null);
             $user = get_user_by('login', $username);
             $permissions = user_can( $user, 'edit_others_posts' );
         }

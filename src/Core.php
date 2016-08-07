@@ -1,12 +1,13 @@
 <?php
 namespace TypeRocket;
 
-use TypeRocket\Http\Cookie,
-    TypeRocket\Http\Rewrites\Builder,
-    TypeRocket\Http\Rewrites\Matrix,
-    TypeRocket\Http\Rewrites\Rest,
-    TypeRocket\Http\Routes,
-    TypeRocket\Layout\Notice;
+use TypeRocket\Http\Cookie;
+use TypeRocket\Http\Rewrites\Builder;
+use TypeRocket\Http\Rewrites\Matrix;
+use TypeRocket\Http\Rewrites\Rest;
+use TypeRocket\Http\Routes;
+use TypeRocket\Elements\Notice;
+use TypeRocket\Register\Registry;
 
 class Core
 {
@@ -16,7 +17,7 @@ class Core
     public function initCore()
     {
         $this->initHooks();
-        $this->loadPlugins( new Plugin\PluginCollection() );
+        $this->loadPlugins();
         $this->loadResponders();
 
         /*
@@ -43,7 +44,11 @@ class Core
         |
         */
         $paths = Config::getPaths();
-        require( $paths['base'] . '/routes.php' );
+        $routeFile = $paths['base'] . '/routes.php';
+        if( file_exists($routeFile) ) {
+            /** @noinspection PhpIncludeInspection */
+            require( $routeFile );
+        }
         new Http\Routes();
 
         $this->initEndpoints();
@@ -82,19 +87,11 @@ class Core
 
     /**
      * Load plugins
-     *
-     * @param Plugin\PluginCollection $collection
      */
-    public function loadPlugins( Plugin\PluginCollection $collection )
+    public function loadPlugins()
     {
         if (Config::getPlugins()) {
-            $plugins = Config::getPlugins();
-
-            foreach ($plugins as $plugin) {
-                $collection->append( $plugin );
-            }
-
-            $loader = new Plugin\Loader( $collection );
+            $loader = new Plugin\Loader( Config::getPlugins() );
             $loader->load();
         }
     }
@@ -134,8 +131,8 @@ class Core
             $singular = $obj->labels->singular_name;
 
             if ($obj->public == true) :
-                $view    = sprintf( __( '<a href="%s">View %s</a>' ), esc_url( get_permalink( $post->ID ) ),
-                    $singular );
+                /** @noinspection HtmlUnknownTarget */
+                $view    = sprintf( __( '<a href="%s">View %s</a>' ), esc_url( get_permalink( $post->ID ) ), $singular );
                 $preview = sprintf( __( '<a target="_blank" href="%s">Preview %s</a>' ),
                     esc_url( add_query_arg( 'preview', 'true', get_permalink( $post->ID ) ) ), $singular );
             else :

@@ -13,6 +13,7 @@ abstract class OptionsBaseController extends Controller
      */
     public function update( $id )
     {
+        /** @var \TypeRocket\Models\Model $options */
         $options = new $this->modelClass;
         $errors  = $options->create( $this->request->getFields() )->getErrors();
 
@@ -30,6 +31,7 @@ abstract class OptionsBaseController extends Controller
      */
     public function create()
     {
+        /** @var \TypeRocket\Models\Model $options */
         $options = new $this->modelClass;
         $errors  = $options->create( $this->request->getFields() )->getErrors();
 

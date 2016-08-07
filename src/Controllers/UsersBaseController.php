@@ -13,6 +13,7 @@ abstract class UsersBaseController extends Controller
      */
     public function update( $id = null )
     {
+        /** @var \TypeRocket\Models\Model $user */
         $user   = new $this->modelClass;
         $errors = $user->findById( $id )->update( $this->request->getFields() )->getErrors();
 
@@ -30,6 +31,7 @@ abstract class UsersBaseController extends Controller
      */
     public function create()
     {
+        /** @var \TypeRocket\Models\Model $user */
         $user   = new $this->modelClass;
         $errors = $user->create( $this->request->getFields() )->getErrors();
 

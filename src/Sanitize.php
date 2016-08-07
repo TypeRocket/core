@@ -113,7 +113,7 @@ class Sanitize
      */
     public static function hex( $hex, $default = '#000000' )
     {
-        if (Validate::hex( $hex )) {
+        if ( preg_match("/^([a-f0-9]{3}){1,2}$/", $hex ) ) {
             return $hex;
         }
 

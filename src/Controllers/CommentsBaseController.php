@@ -13,6 +13,7 @@ abstract class CommentsBaseController extends Controller
      */
     public function update( $id = null )
     {
+        /** @var \TypeRocket\Models\Model $comments */
         $comments = new $this->$modelClass;
         $errors   = $comments->findById( $id )->update( $this->request->getFields() )->getErrors();
 
@@ -31,6 +32,7 @@ abstract class CommentsBaseController extends Controller
      */
     public function create()
     {
+        /** @var \TypeRocket\Models\Model $comments */
         $comments = new $this->modelClass;
         $errors   = $comments->create( $this->request->getFields() )->getErrors();
 

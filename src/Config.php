@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket;
 
+use TypeRocket\Elements\Icons;
+
 class Config
 {
 

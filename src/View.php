@@ -5,26 +5,26 @@ namespace TypeRocket;
 class View
 {
     static public $data = [];
-    static public $file = null;
-    static public $template = null;
+    static public $page = null;
+    static public $view = null;
 
     /**
      * View constructor.
      *
      * Take a custom file location or dot notation of view location.
      *
-     * @param $file
+     * @param string $dots dot syntax or specific file path
      * @param array $data
      */
-    public function __construct( $file , array $data = [] )
+    public function __construct( $dots , array $data = [] )
     {
-        if( file_exists($file) ) {
-            self::$file = $file;
-            self::$template = $file;
+        if( file_exists( $dots ) ) {
+            self::$page = $dots;
+            self::$view = $dots;
         } else {
-            $dots = explode('.', $file);
-            self::$file = Config::getPaths()['pages'] . '/' . implode('/', $dots) . '.php';
-            self::$template =  Config::getPaths()['views'] . '/' . implode('/', $dots) . '.php';
+            $dots = explode('.', $dots);
+            self::$page = Config::getPaths()['pages'] . '/' . implode('/', $dots) . '.php';
+            self::$view =  Config::getPaths()['views'] . '/' . implode('/', $dots) . '.php';
         }
 
         if( !empty( $data ) ) {
@@ -39,8 +39,8 @@ class View
      *
      * @return null|string
      */
-    public function file() {
-        return self::$file;
+    public function getPage() {
+        return self::$page;
     }
 
     /**
@@ -50,8 +50,8 @@ class View
      *
      * @return null|string
      */
-    public function template() {
-        return self::$template;
+    public function getView() {
+        return self::$view;
     }
 
     /**
@@ -59,7 +59,7 @@ class View
      *
      * @return array
      */
-    public function data()
+    public function getData()
     {
         return self::$data;
     }

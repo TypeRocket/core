@@ -67,7 +67,7 @@ class Routes
             $returned = call_user_func_array($handle, $args);
 
             if( $returned instanceof View ) {
-                $this->getTemplate();
+                $this->loadView();
             }
 
             if( $returned instanceof Redirect ) {
@@ -90,7 +90,7 @@ class Routes
             $respond->setAction( $action );
             $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
             $respond->respond( isset($wilds['id']) ? $wilds['id'] : null );
-            $this->getTemplate();
+            $this->loadView();
         }
 
         die();
@@ -99,9 +99,10 @@ class Routes
     /**
      *  Load the template for the front-end without globals
      */
-    private function getTemplate() {
-        extract(View::$data);
-        include ( View::$template );
+    private function loadView() {
+        extract( View::$data );
+        /** @noinspection PhpIncludeInspection */
+        include ( View::$view );
     }
 
     /**

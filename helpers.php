@@ -5,7 +5,7 @@ if( ! function_exists('tr_get_model') ) {
  *
  * @param string $resource use the resource name to get model
  *
- * @return null
+ * @return null|\TypeRocket\Models\Model $object
  */
 function tr_get_model($resource)
 {
@@ -30,14 +30,14 @@ if( ! function_exists('tr_taxonomy') ) {
  * @param null $plural
  * @param array $settings
  *
- * @return \TypeRocket\Taxonomy
+ * @return \TypeRocket\Register\Taxonomy
  */
 function tr_taxonomy(
     $singular,
     $plural = null,
     $settings = []
 ) {
-    $obj = new \TypeRocket\Taxonomy($singular, $plural, $settings);
+    $obj = new \TypeRocket\Register\Taxonomy($singular, $plural, $settings);
     $obj->addToRegistry();
 
     return $obj;
@@ -52,14 +52,14 @@ if( ! function_exists('tr_post_type') ) {
  * @param string|null $plural Plural name for post type
  * @param array $settings The settings for the post type
  *
- * @return \TypeRocket\PostType
+ * @return \TypeRocket\Register\PostType
  */
 function tr_post_type(
     $singular,
     $plural = null,
     $settings = []
 ) {
-    $obj = new \TypeRocket\PostType($singular, $plural, $settings);
+    $obj = new \TypeRocket\Register\PostType($singular, $plural, $settings);
     $obj->addToRegistry();
 
     return $obj;
@@ -74,14 +74,14 @@ if( ! function_exists('tr_meta_box') ) {
  * @param null $screen
  * @param array $settings
  *
- * @return \TypeRocket\MetaBox
+ * @return \TypeRocket\Register\MetaBox
  */
 function tr_meta_box(
     $name = null,
     $screen = null,
     $settings = []
 ) {
-    $obj = new \TypeRocket\MetaBox($name, $screen, $settings);
+    $obj = new \TypeRocket\Register\MetaBox($name, $screen, $settings);
     $obj->addToRegistry();
 
     return $obj;
@@ -95,11 +95,11 @@ if( ! function_exists('tr_page') ) {
  * @param $title
  * @param array $settings
  *
- * @return \TypeRocket\Page
+ * @return \TypeRocket\Register\Page
  */
 function tr_page($resource, $action, $title, array $settings = [])
 {
-    $obj = new \TypeRocket\Page($resource, $action, $title, $settings);
+    $obj = new \TypeRocket\Register\Page($resource, $action, $title, $settings);
     $obj->addToRegistry();
 
     return $obj;
@@ -112,13 +112,13 @@ if( ! function_exists('tr_resource_pages') ) {
  * @param string $plural
  * @param array $settings
  *
- * @return \TypeRocket\Page
+ * @return \TypeRocket\Register\Page
  */
 function tr_resource_pages($singular, $plural = null, array $settings = [])
 {
 
     if ( ! $plural) {
-        $plural = \TypeRocket\Inflect::pluralize($singular);
+        $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
     }
 
     return tr_page($plural, 'index', $plural, $settings)->apply(
@@ -134,11 +134,11 @@ if( ! function_exists('tr_tabs') ) {
 /**
  * Create tabs
  *
- * @return \TypeRocket\Layout\Tabs
+ * @return \TypeRocket\Elements\Tabs
  */
 function tr_tabs()
 {
-    return new \TypeRocket\Layout\Tabs();
+    return new \TypeRocket\Elements\Tabs();
 }
 }
 
@@ -148,11 +148,11 @@ if( ! function_exists('tr_tables') ) {
  *
  * @param $model
  *
- * @return \TypeRocket\Layout\Tables
+ * @return \TypeRocket\Elements\Tables
  */
 function tr_tables(\TypeRocket\Models\SchemaModel $model)
 {
-    return new \TypeRocket\Layout\Tables($model);
+    return new \TypeRocket\Elements\Tables($model);
 }
 }
 
@@ -160,11 +160,11 @@ if( ! function_exists('tr_buffer') ) {
 /**
  * Create buffer
  *
- * @return \TypeRocket\Buffer
+ * @return \TypeRocket\Utility\Buffer
  */
 function tr_buffer()
 {
-    return new \TypeRocket\Buffer();
+    return new \TypeRocket\Utility\Buffer();
 }
 }
 
@@ -176,11 +176,11 @@ if( ! function_exists('tr_form') ) {
  * @param string $action update or create
  * @param null|int $item_id you can set this to null or an integer
  *
- * @return \TypeRocket\Form
+ * @return \TypeRocket\Elements\Form
  */
 function tr_form($resource = 'auto', $action = 'update', $item_id = null)
 {
-    return new \TypeRocket\Form($resource, $action, $item_id);
+    return new \TypeRocket\Elements\Form($resource, $action, $item_id);
 }
 }
 
