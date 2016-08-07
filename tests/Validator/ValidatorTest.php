@@ -7,7 +7,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $fields['email'] = 'example@typerocket.com';
 
-        $validator = new \TypeRocket\Validator([
+        $validator = new \TypeRocket\Utility\Validator([
             'email' => 'email'
         ], $fields);
 
@@ -18,7 +18,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $fields['person']['email'] = 'example@typerocket.com';
 
-        $validator = new \TypeRocket\Validator([
+        $validator = new \TypeRocket\Utility\Validator([
             'person.email' => 'email'
         ], $fields);
 
@@ -30,7 +30,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $fields['person'][1]['email'] = 'example@typerocket.com';
         $fields['person'][2]['email'] = 'example2.1@typerocket.com';
 
-        $validator = new \TypeRocket\Validator([
+        $validator = new \TypeRocket\Utility\Validator([
             'person.*.email' => 'email'
         ], $fields);
 
@@ -43,7 +43,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $fields['person'][2]['email'] = 'e@example2.1@typerocket.com';
         $fields['person'][3]['email'] = 'example2.1typerocket.com';
 
-        $validator = new \TypeRocket\Validator([
+        $validator = new \TypeRocket\Utility\Validator([
             'person.*.email' => 'email'
         ], $fields);
 
