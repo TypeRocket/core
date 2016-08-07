@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Register;
 
-use TypeRocket\Sanitize;
+use TypeRocket\Utility\Sanitize;
 
 class MetaBox extends Registrable
 {

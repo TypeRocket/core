@@ -1,9 +1,9 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use \TypeRocket\Http\Request,
-    \TypeRocket\Http\Response,
-    \TypeRocket\Register\Registry;
+use \TypeRocket\Http\Request;
+use \TypeRocket\Http\Response;
+use \TypeRocket\Register\Registry;
 
 class TaxonomiesResponder extends Responder
 {

@@ -1,5 +1,5 @@
 <?php
-namespace TypeRocket;
+namespace TypeRocket\Core;
 
 use TypeRocket\Elements\Icons;
 
@@ -86,18 +86,16 @@ class Config
     {
         return [
             'base'  => TR_PATH,
-            'assets'  => TR_PATH . '/assets',
+            'resource'  => TR_PATH . '/resource',
             'views'  => TR_PATH . '/views',
             'pages'  => TR_PATH . '/pages',
             'plugins' => TR_PATH . '/plugins',
             'components'  => TR_PATH . '/components',
-            'thumbnails'  => TR_PATH . '/components/thumbnails',
             'app'  => TR_PATH . '/app',
             'urls' => [
                 'theme'   => get_stylesheet_directory_uri(),
-                'assets'  => TR_URL . '/assets',
-                'plugins' => TR_URL . '/plugins',
-                'thumbnails' => TR_URL . '/components/thumbnails',
+                'assets'  => TR_ASSETS_URL,
+                'components' => TR_ASSETS_URL . '/components',
             ]
         ];
     }

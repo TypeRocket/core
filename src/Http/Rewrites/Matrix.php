@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Http\Rewrites;
 
-use TypeRocket\Config;
+use TypeRocket\Core\Config;
 
 class Matrix
 {
@@ -10,9 +10,9 @@ class Matrix
     public function __construct()
     {
         if( defined('TR_START') ) {
-            $group = get_query_var('typerocket_matrix_group', null);
-            $type = get_query_var('typerocket_matrix_type', null);
-            $folder = get_query_var('typerocket_matrix_folder', null);
+            $group = get_query_var('tr_matrix_group', null);
+            $type = get_query_var('tr_matrix_type', null);
+            $folder = get_query_var('tr_matrix_folder', null);
             $formGroup = $_POST['form_group'];
 
             $load = apply_filters('tr_matrix_api_load', true, $group, $type, $formGroup);

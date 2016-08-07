@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Html\Generator,
-    \TypeRocket\Elements\Traits\MaxlengthTrait;
+use \TypeRocket\Html\Generator;
+use \TypeRocket\Elements\Traits\MaxlengthTrait;
 
 class Text extends Field
 {

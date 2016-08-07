@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Http\Middleware;
 
-use \TypeRocket\Config;
+use \TypeRocket\Core\Config;
 
 /**
  * Class BaseVerifyNonce

@@ -1,10 +1,10 @@
 <?php
 namespace TypeRocket\Register;
 
-use TypeRocket\Config;
+use TypeRocket\Core\Config;
 use TypeRocket\Elements\Icons;
 use TypeRocket\Utility\Inflect;
-use TypeRocket\Sanitize;
+use TypeRocket\Utility\Sanitize;
 
 class PostType extends Registrable
 {

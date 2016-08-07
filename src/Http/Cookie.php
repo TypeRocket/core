@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Http;
 
-use TypeRocket\Sanitize;
+use TypeRocket\Utility\Sanitize;
 
 class Cookie
 {

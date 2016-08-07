@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Http\Rewrites;
 
-use TypeRocket\Config;
+use TypeRocket\Core\Config;
 
 class Builder
 {
@@ -10,9 +10,9 @@ class Builder
     public function __construct()
     {
         if( defined('TR_START') ) {
-            $group = get_query_var('typerocket_builder_group', null);
-            $type = get_query_var('typerocket_builder_type', null);
-            $folder = get_query_var('typerocket_builder_folder', null);
+            $group = get_query_var('tr_builder_group', null);
+            $type = get_query_var('tr_builder_type', null);
+            $folder = get_query_var('tr_builder_folder', null);
             $formGroup = $_POST['form_group'];
 
             $load = apply_filters('tr_matrix_api_load', true, $group, $type, $formGroup);

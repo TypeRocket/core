@@ -2,9 +2,9 @@
 
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Utility\Buffer,
-    \TypeRocket\Config,
-    \TypeRocket\Html\Generator;
+use \TypeRocket\Utility\Buffer;
+use \TypeRocket\Core\Config;
+use \TypeRocket\Html\Generator;
 
 class Builder extends Matrix
 {
@@ -57,7 +57,7 @@ class Builder extends Matrix
                     <input type="button" value="Add New" class="button tr-builder-add-button">
                     <?php echo $this->getSelectHtml(); ?>
                 </div>
-                <ul data-thumbnails="<?php echo $this->paths['urls']['thumbnails']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
+                <ul data-thumbnails="<?php echo $this->paths['urls']['components']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
                     <?php foreach($this->components as $option):
                         $count++;
                         $type = $option[0];
@@ -150,10 +150,7 @@ class Builder extends Matrix
      */
     private function getComponentThumbnail($name, $type) {
         $path = '/' .$name . '/' . $type . '.png';
-        $thumbnail = '';
-        if(file_exists( $this->paths['thumbnails'] . $path)) {
-            $thumbnail = $this->paths['urls']['thumbnails'] . $path;
-        }
+        $thumbnail = $this->paths['urls']['components'] . $path;
         return $thumbnail;
     }
 
@@ -214,7 +211,7 @@ class Builder extends Matrix
                                 /** @noinspection PhpIncludeInspection */
                                 include( $file );
                             } else {
-                                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> No Builder file found <code>{$file}</code></div>";
+                                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> No component file found <code>{$file}</code></div>";
                             }
                             ?>
                         </div>

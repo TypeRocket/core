@@ -375,7 +375,7 @@ if( ! function_exists('tr_frontend') ) {
  */
 function tr_frontend()
 {
-    $core = new TypeRocket\Core(false);
+    $core = new TypeRocket\Core\Launcher();
     $core->initFrontEnd();
 }
 }
@@ -405,11 +405,11 @@ if( ! function_exists('tr_view') ) {
  * @param string $dots
  * @param array $data
  *
- * @return \TypeRocket\View
+ * @return \TypeRocket\Template\View
  */
 function tr_view($dots, array $data = [])
 {
-    return new \TypeRocket\View($dots, $data);
+    return new \TypeRocket\Template\View($dots, $data);
 }
 }
 
@@ -421,11 +421,11 @@ if( ! function_exists('tr_validator') ) {
  * @param array $fields
  * @param null $modelClass
  *
- * @return \TypeRocket\Validator
+ * @return \TypeRocket\Utility\Validator
  */
 function tr_validator( $options, $fields, $modelClass = null )
 {
-    return new \TypeRocket\Validator( $options, $fields, $modelClass );
+    return new \TypeRocket\Utility\Validator( $options, $fields, $modelClass );
 }
 }
 

@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Elements;
 
-use TypeRocket\Config;
+use TypeRocket\Core\Config;
 use TypeRocket\Elements\Fields\Submit;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;

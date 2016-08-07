@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use \TypeRocket\Http\Request,
-    \TypeRocket\Http\Response;
+use \TypeRocket\Http\Request;
+use \TypeRocket\Http\Response;
 
 /**
  * Class Controller

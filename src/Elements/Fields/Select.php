@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Elements\Traits\OptionsTrait,
-    \TypeRocket\Html\Generator;
+use \TypeRocket\Elements\Traits\OptionsTrait;
+use \TypeRocket\Html\Generator;
 
 class Select extends Field
 {

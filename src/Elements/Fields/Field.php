@@ -1,9 +1,9 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Elements\Form,
-    \TypeRocket\Sanitize,
-    \Typerocket\Elements\Traits\FormConnectorTrait;
+use \TypeRocket\Elements\Form;
+use \TypeRocket\Utility\Sanitize;
+use \Typerocket\Elements\Traits\FormConnectorTrait;
 
 abstract class Field
 {

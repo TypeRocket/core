@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
-use TypeRocket\Elements\Fields\Field,
-    TypeRocket\Http\Cookie;
+use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Http\Cookie;
 
 abstract class Model
 {

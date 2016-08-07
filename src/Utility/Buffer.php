@@ -1,8 +1,6 @@
 <?php
 namespace TypeRocket\Utility;
 
-use TypeRocket\Sanitize;
-
 class Buffer
 {
 

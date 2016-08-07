@@ -1,5 +1,4 @@
 <?php
-
 namespace TypeRocket\Models;
 
 abstract class SchemaModel extends Model

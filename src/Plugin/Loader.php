@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Plugin;
 
-use \TypeRocket\Config;
+use \TypeRocket\Core\Config;
 
 /**
  * Plugin Loader

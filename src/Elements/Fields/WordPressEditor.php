@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Sanitize;
+use \TypeRocket\Utility\Sanitize;
 
 class WordPressEditor extends Field implements ScriptField
 {

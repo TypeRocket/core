@@ -1,15 +1,16 @@
 <?php
-namespace TypeRocket;
+namespace TypeRocket\Core;
 
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Rewrites\Builder;
 use TypeRocket\Http\Rewrites\Matrix;
 use TypeRocket\Http\Rewrites\Rest;
-use TypeRocket\Http\Routes;
 use TypeRocket\Elements\Notice;
+use TypeRocket\Http\Routes;
+use TypeRocket\Plugin\Loader;
 use TypeRocket\Register\Registry;
 
-class Core
+class Launcher
 {
     /**
      * Core Init
@@ -49,7 +50,7 @@ class Core
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
         }
-        new Http\Routes();
+        new Routes();
 
         $this->initEndpoints();
     }
@@ -91,7 +92,7 @@ class Core
     public function loadPlugins()
     {
         if (Config::getPlugins()) {
-            $loader = new Plugin\Loader( Config::getPlugins() );
+            $loader = new Loader( Config::getPlugins() );
             $loader->load();
         }
     }

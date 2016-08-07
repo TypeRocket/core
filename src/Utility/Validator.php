@@ -1,6 +1,6 @@
 <?php
 
-namespace TypeRocket;
+namespace TypeRocket\Utility;
 
 use TypeRocket\Http\Response;
 

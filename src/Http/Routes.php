@@ -2,8 +2,8 @@
 
 namespace TypeRocket\Http;
 
-use TypeRocket\Http\Responders\ResourceResponder,
-    TypeRocket\View;
+use TypeRocket\Http\Responders\ResourceResponder;
+use TypeRocket\Template\View;
 
 /**
  * Class Routes

@@ -2,7 +2,7 @@
 namespace TypeRocket\Register;
 
 use TypeRocket\Utility\Inflect;
-use TypeRocket\Sanitize;
+use TypeRocket\Utility\Sanitize;
 
 /**
  * Taxonomy

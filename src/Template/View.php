@@ -1,6 +1,8 @@
 <?php
 
-namespace TypeRocket;
+namespace TypeRocket\Template;
+
+use TypeRocket\Core\Config;
 
 class View
 {

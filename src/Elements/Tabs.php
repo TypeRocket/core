@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Elements;
 
-use TypeRocket\Sanitize;
+use TypeRocket\Utility\Sanitize;
 
 class Tabs
 {

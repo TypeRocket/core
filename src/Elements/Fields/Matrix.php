@@ -1,10 +1,10 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Elements\Traits\OptionsTrait,
-    \TypeRocket\Html\Generator,
-    \TypeRocket\Config,
-    \TypeRocket\Sanitize;
+use \TypeRocket\Elements\Traits\OptionsTrait;
+use \TypeRocket\Html\Generator;
+use \TypeRocket\Core\Config;
+use \TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Buffer;
 
 class Matrix extends Field implements ScriptField {
@@ -232,7 +232,7 @@ class Matrix extends Field implements ScriptField {
                                 /** @noinspection PhpIncludeInspection */
                                 include( $file );
                             } else {
-                                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> No Matrix file found <code>{$file}</code></div>";
+                                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> No component file found <code>{$file}</code></div>";
                             }
                             ?>
                         </div>

@@ -1,9 +1,9 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Html\Generator,
-    \TypeRocket\Config,
-    \TypeRocket\Elements\Traits\MaxlengthTrait;
+use \TypeRocket\Html\Generator;
+use \TypeRocket\Core\Config;
+use \TypeRocket\Elements\Traits\MaxlengthTrait;
 
 class Editor extends Textarea implements ScriptField
 {

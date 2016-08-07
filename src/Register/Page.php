@@ -2,11 +2,11 @@
 
 namespace TypeRocket\Register;
 
-use TypeRocket\Config;
+use TypeRocket\Core\Config;
 use TypeRocket\Http\Responders\ResourceResponder;
-use TypeRocket\Sanitize;
+use TypeRocket\Utility\Sanitize;
 use TypeRocket\Elements\Icons;
-use TypeRocket\View;
+use TypeRocket\Template\View;
 
 class Page extends Registrable
 {

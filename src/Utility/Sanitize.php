@@ -1,5 +1,5 @@
 <?php
-namespace TypeRocket;
+namespace TypeRocket\Utility;
 
 class Sanitize
 {

@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use \TypeRocket\Http\Request,
-    \TypeRocket\Http\Response;
+use \TypeRocket\Http\Request;
+use \TypeRocket\Http\Response;
 
 class UsersResponder extends Responder {
 

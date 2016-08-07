@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Http\Middleware;
 
-use \TypeRocket\Http\Response,
-    \TypeRocket\Http\Request;
+use \TypeRocket\Http\Response;
+use \TypeRocket\Http\Request;
 
 abstract class Middleware
 {

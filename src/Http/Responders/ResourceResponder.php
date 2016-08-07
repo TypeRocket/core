@@ -1,9 +1,9 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use \TypeRocket\Http\Redirect,
-    \TypeRocket\Http\Request,
-    \TypeRocket\Http\Response;
+use \TypeRocket\Http\Redirect;
+use \TypeRocket\Http\Request;
+use \TypeRocket\Http\Response;
 
 class ResourceResponder extends Responder
 {
