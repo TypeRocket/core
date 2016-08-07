@@ -35,6 +35,7 @@ abstract class Field
         $args = func_get_args();
         $this->init();
         $setup = new \ReflectionMethod( $this, 'setup' );
+        $setup->setAccessible( true );
         $args = $this->assignAutoArgs($args);
 
         if ($this instanceof ScriptField) {
@@ -42,6 +43,7 @@ abstract class Field
         }
 
         $setup->invokeArgs( $this, $args );
+        $setup->setAccessible( false );
     }
 
     /**
