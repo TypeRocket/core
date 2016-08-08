@@ -21,7 +21,7 @@ class MakeMiddleware extends Command
     /**
      * Execute Command
      *
-     * Example command: php galaxy make:controller resource members
+     * Example command: php galaxy make:middleware MiddlewareName
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output

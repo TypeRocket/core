@@ -8,6 +8,7 @@ class CommandCollection extends \ArrayObject
         Commands\MakeController::class,
         Commands\MakeMiddleware::class,
         Commands\MakeModel::class,
+        Commands\GenerateSeed::class,
     ];
 
     /**
