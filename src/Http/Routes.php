@@ -26,9 +26,9 @@ class Routes
         self::$request = new Request();
 
         if( ! is_admin() ) {
-            add_filter('do_parse_request', \Closure::bind(function( $bool ) {
+            add_filter('template_include', \Closure::bind(function( $template ) {
                 $this->route();
-                return $bool;
+                return $template;
             }, $this) );
         }
 
