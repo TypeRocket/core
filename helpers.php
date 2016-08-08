@@ -242,9 +242,9 @@ function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\M
             $paths = \TypeRocket\Core\Config::getPaths();
             $file  = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
             if( file_exists($file) ) {
-                ( function( $file, $data, $item_id ) {
+                ( function( $file, $data, $name, $item_id, $model) {
                     include( $file );
-                } )($file, $data[$key], $item_id);
+                } )($file, $data[$key], $name, $item_id, $model);
             } else {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
             }
