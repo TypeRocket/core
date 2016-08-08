@@ -89,6 +89,7 @@ class Config
             'resource'  => TR_PATH . '/resource',
             'views'  => TR_PATH . '/views',
             'pages'  => TR_PATH . '/pages',
+            'visuals'  => TR_PATH . '/visuals',
             'plugins' => TR_PATH . '/plugins',
             'components'  => TR_PATH . '/components',
             'app'  => TR_PATH . '/app',

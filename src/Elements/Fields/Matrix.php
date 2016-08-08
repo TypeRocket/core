@@ -4,6 +4,7 @@ namespace TypeRocket\Elements\Fields;
 use \TypeRocket\Elements\Traits\OptionsTrait;
 use \TypeRocket\Html\Generator;
 use \TypeRocket\Core\Config;
+use TypeRocket\Models\PostTypesModel;
 use \TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Buffer;
 
@@ -14,6 +15,20 @@ class Matrix extends Field implements ScriptField {
     protected $mxid = null;
     protected $componentFolder = null;
     protected $paths;
+
+    /**
+     * Define debug function
+     *
+     * @return string
+     */
+    protected function debugHelperFunction()
+    {
+        if( $this->getModel() instanceof PostTypesModel) {
+            return "tr_components_field('{$this->getDots()}');";
+        }
+        $class = get_class($this->getModel());
+        return "tr_components_field('{$this->getDots()}', '{$this->getItemId()}', \\{$class}::class);";
+    }
 
     /**
      * Run on construction

@@ -493,16 +493,12 @@ abstract class Field
     }
 
     /**
-     * Set the field debugger helper for the front-end
+     * Define the field debugger helper for the front-end
      *
-     * @param null $helper
-     *
-     * @return $this
+     * @return mixed
      */
-    public function setDebugHelperFunction( $helper = null ) {
-        $this->helper = $helper;
-
-        return $this;
+    protected function debugHelperFunction() {
+        return false;
     }
 
     /**
@@ -511,7 +507,7 @@ abstract class Field
      * @return null
      */
     public function getDebugHelperFunction() {
-        return $this->helper;
+        return $this->debugHelperFunction();
     }
 
     /**

@@ -208,14 +208,20 @@ function tr_posts_field($name, $item_id = null)
 }
 }
 
-if( ! function_exists('tr_posts_components_field') ) {
+if( ! function_exists('tr_components_field') ) {
 /**
  * Get components
  *
+ * Auto binding only for post types
+ *
  * @param string $name use dot notation
  * @param null $item_id
+ *
+ * @param $modelClass
+ *
+ * @return array|mixed|null|string
  */
-function tr_posts_components_field($name, $item_id = null)
+function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\PostTypesModel::class )
 {
     global $post;
 
@@ -223,7 +229,8 @@ function tr_posts_components_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $model = new \TypeRocket\Models\PostTypesModel();
+    /** @var \TypeRocket\Models\Model $model */
+    $model = new $modelClass;
     $model->findById($item_id);
 
     $builder_data = $model->getFieldValue($name);
@@ -232,15 +239,19 @@ function tr_posts_components_field($name, $item_id = null)
         foreach ($builder_data as $data) {
             $key       = key($data);
             $component = strtolower(key($data));
-            $function  = 'tr_component_' . $name . '_' . $component;
-            if (function_exists($function)) {
-                $function($data[$key]);
+            $paths = \TypeRocket\Core\Config::getPaths();
+            $file  = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
+            if( file_exists($file) ) {
+                ( function( $file, $data, $item_id ) {
+                    include( $file );
+                } )($file, $data[$key], $item_id);
             } else {
-                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder content here by defining: <code>function {$function}(\$data) {}</code></div>";
+                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
             }
         }
     }
 
+    return $builder_data;
 }
 }
 
