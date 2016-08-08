@@ -248,7 +248,7 @@ abstract class Registrable
         foreach ($this->use as $obj) {
             if ($obj instanceof Registrable) {
                 $class  = get_class($obj);
-                $class  = substr($class, 11);
+                $class  = substr($class, 11 + 9 );
                 $method = 'add' . $class;
                 if (method_exists($this, $method)) {
                     $this->$method($obj);
