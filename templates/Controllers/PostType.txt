@@ -1,0 +1,10 @@
+<?php
+namespace {{namespace}}\Controllers;
+
+use App\Models\{{model}};
+use TypeRocket\Controllers\PostTypesBaseController;
+
+class {{controller}} extends PostTypesBaseController
+{
+    protected $modelClass = {{model}}::class;
+}

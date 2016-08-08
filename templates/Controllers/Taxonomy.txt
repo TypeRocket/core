@@ -1,0 +1,10 @@
+<?php
+namespace {{namespace}}\Controllers;
+
+use \App\Models\{{model}};
+use \TypeRocket\Controllers\TaxonomiesBaseController;
+
+class {{controller}} extends TaxonomiesBaseController
+{
+    protected $modelClass = {{model}}::class;
+}

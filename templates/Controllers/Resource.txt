@@ -1,0 +1,104 @@
+<?php
+namespace {{namespace}}\Controllers;
+
+use TypeRocket\Controllers\ResourceBaseController;
+
+class {{controller}} extends ResourceBaseController
+{
+
+    /**
+     * The index page
+     *
+     * @return mixed
+     */
+    function index()
+    {
+        // TODO: Implement index() method.
+    }
+
+    /**
+     * The add page
+     *
+     * @return mixed
+     */
+    function add()
+    {
+        // TODO: Implement add() method.
+    }
+
+    /**
+     * Create item
+     *
+     * AJAX requests and normal requests can be made to this action
+     *
+     * @return mixed
+     */
+    function create()
+    {
+        // TODO: Implement create() method.
+    }
+
+    /**
+     * The edit page
+     *
+     * @param $id
+     *
+     * @return mixed
+     */
+    function edit($id)
+    {
+        // TODO: Implement edit() method.
+    }
+
+    /**
+     * Update item
+     *
+     * AJAX requests and normal requests can be made to this action
+     *
+     * @param $id
+     *
+     * @return mixed
+     */
+    function update($id)
+    {
+        // TODO: Implement update() method.
+    }
+
+    /**
+     * The show page
+     *
+     * @param $id
+     *
+     * @return mixed
+     */
+    function show($id)
+    {
+        // TODO: Implement show() method.
+    }
+
+    /**
+     * The delete page
+     *
+     * @param $id
+     *
+     * @return mixed
+     */
+    function delete($id)
+    {
+        // TODO: Implement delete() method.
+    }
+
+    /**
+     * Destroy item
+     *
+     * AJAX requests and normal requests can be made to this action
+     *
+     * @param $id
+     *
+     * @return mixed
+     */
+    function destroy($id)
+    {
+        // TODO: Implement destroy() method.
+    }
+}

@@ -1,0 +1,20 @@
+<?php
+namespace {{namespace}}\Http\Middleware;
+
+use TypeRocket\Http\Middleware\Middleware;
+
+class {{middleware}} extends Middleware
+{
+
+    public function handle()
+    {
+        $request = $this->request;
+        $response = $this->response;
+
+        // Do stuff before controller is called
+
+        $this->next->handle();
+
+        // Do stuff after controller is called
+    }
+}

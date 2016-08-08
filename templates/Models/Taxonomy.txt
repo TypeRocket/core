@@ -1,0 +1,9 @@
+<?php
+namespace {{namespace}}\Models;
+
+use TypeRocket\Models\TaxonomiesModel;
+
+class {{model}} extends TaxonomiesModel
+{
+    protected $taxonomy = '{{id}}';
+}

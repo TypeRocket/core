@@ -12,7 +12,8 @@
     ],
     "require-dev": {
         "php": ">=5.5.9",
-        "phpunit/phpunit": "4.8.*"
+        "phpunit/phpunit": "4.8.*",
+        "symfony/console": "3.1.*"
     },
     "autoload": {
         "files": [

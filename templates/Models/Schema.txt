@@ -1,0 +1,9 @@
+<?php
+namespace {{namespace}}\Models;
+
+use TypeRocket\Models\SchemaModel;
+
+class {{model}} extends SchemaModel
+{
+
+}
