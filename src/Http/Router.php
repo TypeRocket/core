@@ -65,13 +65,17 @@ class Router
             $args = [];
             $vars = Routes::$vars;
 
-            foreach ($params as $index => $param ) {
-                if( isset($vars[$param->getName()]) && $param->getName() != 'id' ) {
-                    $args[$index] = $vars[$param->getName()];
+            if( !empty($vars) ) {
+                foreach ($params as $index => $param ) {
+                    if( isset($vars[$param->getName()]) ) {
+                        $args[$index] = $vars[$param->getName()];
+                    }
                 }
+            } else {
+                $args[] = $this->item_id;
             }
 
-            $this->returned = call_user_func_array( [$controller, $action], array_merge([$this->item_id], $args) );
+            $this->returned = call_user_func_array( [$controller, $action], $args );
         } else {
             $this->returned = $controller->$action();
         }
