@@ -517,7 +517,7 @@ class Form
     public function password( $name, array $attr = [], array $settings = [], $label = true )
     {
         $field = new Fields\Text( $name, $attr, $settings, $label, $this );
-        $field->setType( 'password' );
+        $field->setType( 'password' )->setPopulate(false);
 
         return $field;
     }

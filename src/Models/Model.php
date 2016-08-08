@@ -440,8 +440,12 @@ abstract class Model
 
         $keys = $this->getDotKeys( $field );
 
-        if($this->old) {
-            $data = $this->old[$keys[0]];
+        if( $this->old ) {
+            if( ! empty($this->old[$keys[0]]) ) {
+                $data = $this->old[$keys[0]];
+            } else {
+                $data = null;
+            }
         } else {
             $data = $this->getBaseFieldValue( $keys[0] );
         }
