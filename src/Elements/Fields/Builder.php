@@ -108,7 +108,7 @@ class Builder extends Matrix
             $generator->newElement( 'ul', array(
                 'data-mxid' => $this->mxid,
                 'class' => "tr-builder-select builder-select-{$name}",
-                'data-group' => $this->getForm()->getGroup()
+                'data-group' => $this->getGroup()
             ) );
 
             foreach ($options as $name => $value) {
@@ -178,7 +178,7 @@ class Builder extends Matrix
                     $count++;
                     $tr_matrix_group = $this->getName();
                     $tr_matrix_type  = $block_name = lcfirst( $tr_matrix_type );
-                    $root_group      = $form->getGroup();
+                    $root_group      = $this->getGroup();
                     $form->setDebugStatus(false);
                     $append_group = $root_group;
 

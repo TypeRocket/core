@@ -63,7 +63,6 @@ class Repeater extends Field implements ScriptField
 
         // setup repeater
         $cache_group = $form->getGroup();
-        $cache_sub   = $form->getSub();
 
         $root_group = $this->getDots();
         $form->setGroup( $this->getDots() . ".{{ {$name} }}" );
@@ -98,7 +97,6 @@ class Repeater extends Field implements ScriptField
         }
         $html .= '</div>'; // end tr-repeater-fields
         $form->setGroup( $cache_group );
-        $form->setSub( $cache_sub );
         $html .= '</div>'; // end tr-repeater
 
         return $html;

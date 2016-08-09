@@ -83,7 +83,7 @@ class Matrix extends Field implements ScriptField {
 <div class='matrix-controls controls'>
 {$select}
 <div class=\"tr-repeater-button-add\">
-<input type=\"button\" value=\"Add New\" data-id='{$this->mxid}' data-group='{$group}' data-folder='{$folder}' class=\"button matrix-button\">
+<input type=\"button\" value=\"Add New\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
 </div>
 <div class=\"button-group\">
 <input type=\"button\" value=\"Flip\" class=\"flip button\">
@@ -128,10 +128,11 @@ class Matrix extends Field implements ScriptField {
 
         if ($options) {
             $generator = new Generator();
+            $formGroup = $this->getGroup();
             $generator->newElement( 'select', [
                 'data-mxid' => $this->mxid,
                 'class' => "matrix-select-{$name}",
-                'data-group' => $this->getForm()->getGroup()
+                'data-group' => $formGroup
             ]);
             $default = $this->getSetting('default');
 
@@ -222,7 +223,7 @@ class Matrix extends Field implements ScriptField {
 
                     $tr_matrix_group = $this->getName();
                     $tr_matrix_type  = lcfirst( $tr_matrix_type );
-                    $root_group        = $form->getGroup();
+                    $root_group        = $this->getGroup();
                     $form->setDebugStatus(false);
                     $append_group = $root_group;
 

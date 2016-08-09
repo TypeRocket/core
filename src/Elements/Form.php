@@ -11,6 +11,7 @@ use TypeRocket\Models\SchemaModel;
 use TypeRocket\Models\TaxonomiesModel;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
 use TypeRocket\Register\Registry;
+use TypeRocket\Utility\Buffer;
 
 class Form
 {
@@ -487,6 +488,37 @@ class Form
         }
 
         return $html;
+    }
+
+    /**
+     * Get fields as row
+     *
+     * Array of fields or args of fields
+     *
+     * @param array|Field $fields
+     *
+     * @return string
+     */
+    public function row( $fields ) {
+
+        if( is_array( $fields) ) {
+            $size = count($fields);
+        } else {
+            $fields = func_get_args();
+            $size = count($fields);
+        }
+
+        $buffer = new Buffer();
+        $buffer->startBuffer();
+        echo "<div class=\"control-row-{$size}\" >";
+        foreach( $fields as $field) {
+            if( $field instanceof Field ) {
+                echo $field;
+            }
+        }
+        echo "</div>";
+
+        return $buffer->getCurrent();
     }
 
     /**

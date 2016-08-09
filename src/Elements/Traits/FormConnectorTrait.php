@@ -82,30 +82,6 @@ trait FormConnectorTrait
     }
 
     /**
-     * Set Sub Group into dot notation
-     *
-     * @param $sub
-     *
-     * @return $this
-     */
-    public function setSub( $sub )
-    {
-        $this->sub = $sub;
-
-        return $this;
-    }
-
-    /**
-     * Get Sub Group
-     *
-     * @return null
-     */
-    public function getSub()
-    {
-        return $this->sub;
-    }
-
-    /**
      * Set whether to populate Field from database. If set to false fields will
      * always be left empty and with their default values.
      *

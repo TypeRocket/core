@@ -53,6 +53,20 @@ class Buffer
     }
 
     /**
+     * Get buffered output
+     *
+     * Do not index buffer get and clear buffer
+     *
+     * @return string
+     */
+    public function getCurrent() {
+        $data = ob_get_clean();
+        $this->buffering = false;
+
+        return $data;
+    }
+
+    /**
      * Remove all data from Buffer
      */
     public function cleanBuffer() {

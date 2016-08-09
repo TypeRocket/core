@@ -17,7 +17,6 @@ abstract class Field
     /** @var Form */
     private $form = null;
     private $prefix = 'tr';
-    private $helper = null;
     private $label = false;
 
     /**
@@ -126,7 +125,6 @@ abstract class Field
     {
         $this->form = clone $form;
         $this->setGroup( $this->form->getGroup() );
-        $this->setSub( $this->form->getSub() );
         $this->itemId = $this->form->getItemId();
         $this->resource = $this->form->getResource();
         $this->action = $this->form->getAction();
