@@ -29,7 +29,7 @@ class GenerateSeed extends Command
     {
         $replace = 'PUT_TYPEROCKET_SEED_HERE';
         $with = 'seed_' . escapeshellcmd( uniqid() );
-        $path = realpath(TR_PATH . '/config.php');
+        $path = realpath(TR_PATH . '/config/app.php');
         $data = file($path);
         $fileContent = '';
         $found = false;
@@ -45,12 +45,12 @@ class GenerateSeed extends Command
 
             if($found) {
                 file_put_contents($path, $fileContent);
-                $output->writeln('<fg=green>Seeded config.php with: ' . $with );
+                $output->writeln('<fg=green>Seeded config/app.php with: ' . $with );
             } else {
-                $output->writeln('<fg=red>Manually Seed config.php with: ' . $with);
+                $output->writeln('<fg=red>Manually Seed config/app.php with: ' . $with);
             }
         } else {
-            $output->writeln('<fg=red>Manually Seed config.php with: ' . $with);
+            $output->writeln('<fg=red>Manually Seed config/app.php with: ' . $with);
         }
     }
 

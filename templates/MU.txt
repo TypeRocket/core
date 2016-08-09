@@ -6,15 +6,17 @@ Author: Robojuice
 Version: 3.0.0
 Author URI: http://robojuice.com
 */
-define( 'TR_START', microtime( true ) );
-$typerocket_config = require TR_PATH . '/config/app.php';
-new \TypeRocket\Core\Config( $typerocket_config );
+if( defined('TR_PATH') ) {
+    define( 'TR_START', microtime( true ) );
+    $typerocket_config = require TR_PATH . '/config/app.php';
+    new \TypeRocket\Core\Config( $typerocket_config );
 
-$typerocket_core = new \TypeRocket\Core\Launcher();
-$typerocket_core->initCore();
+    $typerocket_core = new \TypeRocket\Core\Launcher();
+    $typerocket_core->initCore();
 
-if( \TypeRocket\Core\Config::getTemplates() ) {
-    $typerocket_core->overrideTemplates();
+    if( \TypeRocket\Core\Config::getTemplates() ) {
+        $typerocket_core->overrideTemplates();
+    }
+
+    define( 'TR_END', microtime( true ) );
 }
-
-define( 'TR_END', microtime( true ) );
