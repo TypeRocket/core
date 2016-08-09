@@ -146,7 +146,7 @@ class Registry
             /** @var Taxonomy $obj */
             if ( $term == $obj->getId() || $term->taxonomy == $obj->getId() ) {
                 $func = 'add_form_content_' . $obj->getId() . '_' . $type;
-                echo '<div class="typerocket-container">';
+                echo '<div class="typerocket-container typerocket-taxonomy-style">';
                 $form = $obj->getForm( $type );
                 if (is_callable( $form )) {
                     call_user_func( $form, $term );
