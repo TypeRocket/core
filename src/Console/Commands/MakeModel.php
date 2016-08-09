@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use TypeRocket\Utility\File;
 
 class MakeModel extends Command
 {
@@ -17,13 +18,13 @@ class MakeModel extends Command
 
         $this->addArgument('type', InputArgument::REQUIRED, 'The type: schema, posttype or taxonomy.');
         $this->addArgument('name', InputArgument::REQUIRED, 'The name of the model.');
-        $this->addArgument('id', InputArgument::OPTIONAL, 'The posttype or taxonomy WP ID. eg. post, page, category, post_tag...');
+        $this->addArgument('id', InputArgument::REQUIRED, 'The posttype, resource or taxonomy WP ID. eg. post, page, category, post_tag...');
     }
 
     /**
      * Execute Command
      *
-     * Example command: php galaxy make:model schema members
+     * Example command: php galaxy make:model schema members members
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
@@ -66,17 +67,15 @@ class MakeModel extends Command
      */
     private function makeFile( $model, $type, $id, OutputInterface $output ) {
 
-        $replace = ['{{namespace}}', '{{model}}', '{{id}}'];
-        $with = [ TR_APP_NAMESPACE, $model, $id ];
-        $template = file_get_contents( __DIR__ . '/../../../templates/Models/' . $type . '.txt');
+        $tags = ['{{namespace}}', '{{model}}', '{{id}}'];
+        $replacements = [ TR_APP_NAMESPACE, $model, $id ];
+        $template =  __DIR__ . '/../../../templates/Models/' . $type . '.txt';
+        $new = TR_PATH . '/app/Models/' . $model . ".php";
 
-        $modelContent = str_replace($replace, $with, $template);
-        $new_file_location = TR_PATH . '/app/Models/' . $model . ".php";
+        $file = new File( $template );
+        $new = $file->copyTemplateFile( $new, $tags, $replacements );
 
-        if( ! file_exists($new_file_location) ) {
-            $myfile = fopen( $new_file_location, "w") or die("Unable to open file!");
-            fwrite($myfile, $modelContent);
-            fclose($myfile);
+        if( $new ) {
             $output->writeln('<fg=green>Model created: ' . $model . ' as ' . $type . '</>');
         } else {
             $output->writeln('<fg=red>TypeRocket ' . $model . ' exists.</>');

@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use TypeRocket\Utility\File;
 
 class MakeController extends Command
 {
@@ -66,17 +67,15 @@ class MakeController extends Command
      */
     private function makeFile( $controller, $type, $model, OutputInterface $output ) {
 
-        $replace = ['{{namespace}}', '{{controller}}', '{{model}}'];
-        $with = [ TR_APP_NAMESPACE, $controller, $model ];
-        $template = file_get_contents( __DIR__ . '/../../../templates/Controllers/' . $type . '.txt');
+        $tags = ['{{namespace}}', '{{controller}}', '{{model}}'];
+        $replacements = [ TR_APP_NAMESPACE, $controller, $model ];
+        $template = __DIR__ . '/../../../templates/Controllers/' . $type . '.txt';
+        $new = TR_PATH . '/app/Controllers/' . $controller . ".php";
 
-        $controllerContent = str_replace($replace, $with, $template);
-        $new_file_location = TR_PATH . '/app/Controllers/' . $controller . ".php";
+        $file = new File( $template );
+        $new = $file->copyTemplateFile( $new, $tags, $replacements );
 
-        if( ! file_exists($new_file_location) ) {
-            $myfile = fopen( $new_file_location, "w") or die("Unable to open file!");
-            fwrite($myfile, $controllerContent);
-            fclose($myfile);
+        if( $new ) {
             $output->writeln('<fg=green>Controller created: ' . $controller . ' as ' . $type . '</>');
         } else {
             $output->writeln('<fg=red>TypeRocket ' . $controller . ' exists.</>');

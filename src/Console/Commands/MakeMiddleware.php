@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use TypeRocket\Utility\File;
 
 class MakeMiddleware extends Command
 {
@@ -42,17 +43,15 @@ class MakeMiddleware extends Command
      */
     private function makeFile( $middleware, OutputInterface $output ) {
 
-        $replace = ['{{namespace}}', '{{middleware}}'];
-        $with = [ TR_APP_NAMESPACE, $middleware ];
-        $template = file_get_contents( __DIR__ . '/../../../templates/Middleware.txt');
+        $tags = ['{{namespace}}', '{{middleware}}'];
+        $replacements = [ TR_APP_NAMESPACE, $middleware ];
+        $template = __DIR__ . '/../../../templates/Middleware.txt';
+        $new = TR_PATH . '/app/Http/Middleware/' . $middleware . ".php";
 
-        $controllerContent = str_replace($replace, $with, $template);
-        $new_file_location = TR_PATH . '/app/Http/Middleware/' . $middleware . ".php";
+        $file = new File( $template );
+        $new = $file->copyTemplateFile( $new, $tags, $replacements );
 
-        if( ! file_exists($new_file_location) ) {
-            $myfile = fopen( $new_file_location, "w") or die("Unable to open file!");
-            fwrite($myfile, $controllerContent);
-            fclose($myfile);
+        if( $new ) {
             $output->writeln('<fg=green>Controller created: ' . $middleware . '</>');
         } else {
             $output->writeln('<fg=red>TypeRocket ' . $middleware . ' exists.</>');
