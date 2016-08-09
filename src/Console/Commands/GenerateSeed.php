@@ -11,7 +11,7 @@ class GenerateSeed extends Command
     protected function configure()
     {
         $this->setName('seed')
-             ->setDescription('Generate seed for config.php.')
+             ->setDescription('Generate seed for config.php')
              ->setHelp("This command generates a seed for config.php by replacing PUT_TYPEROCKET_SEED_HERE with a seed.");
     }
 

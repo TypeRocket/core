@@ -12,7 +12,7 @@ class MakeMiddleware extends Command
     protected function configure()
     {
         $this->setName('make:middleware')
-             ->setDescription('Make new middleware.')
+             ->setDescription('Make new middleware')
              ->setHelp("This command allows you to make new middleware.");
 
         $this->addArgument('name', InputArgument::REQUIRED, 'The name of the middleware using same letter case.');

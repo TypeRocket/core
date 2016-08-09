@@ -12,7 +12,7 @@ class MakeModel extends Command
     protected function configure()
     {
         $this->setName('make:model')
-             ->setDescription('Make new model.')
+             ->setDescription('Make new model')
              ->setHelp("This command allows you to make new models.");
 
         $this->addArgument('type', InputArgument::REQUIRED, 'The type: schema, posttype or taxonomy.');

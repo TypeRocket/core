@@ -12,7 +12,7 @@ class MakeController extends Command
     protected function configure()
     {
         $this->setName('make:controller')
-            ->setDescription('Make new controller.')
+            ->setDescription('Make new controller')
             ->setHelp("This command allows you to make new controllers.");
 
         $this->addArgument('type', InputArgument::REQUIRED, 'The type: resource, posttype or taxonomy.');
