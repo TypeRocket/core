@@ -37,9 +37,9 @@ class GenerateSeed extends Command
             foreach ($data as $line ) {
                 if ( strpos($line, $replace) !== false ) {
                     $found = true;
-                    $fileContent .= trim(str_replace($replace, $with, $line)) . PHP_EOL;
+                    $fileContent .= rtrim(str_replace($replace, $with, $line)) . PHP_EOL;
                 } else {
-                    $fileContent .= trim($line) . PHP_EOL;
+                    $fileContent .= rtrim($line) . PHP_EOL;
                 }
             }
 
