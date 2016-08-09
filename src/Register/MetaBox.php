@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Register;
 
+use TypeRocket\Core\Config;
 use TypeRocket\Utility\Sanitize;
 
 class MetaBox extends Registrable
@@ -150,7 +151,7 @@ class MetaBox extends Registrable
                         call_user_func_array( $callback, [$obj]);
                     elseif (function_exists( $func )) :
                         $func( $obj );
-                    elseif (TR_DEBUG == true) :
+                    elseif ( Config::getDebugStatus() == true) :
                         echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                     endif;
                     echo '</div>';

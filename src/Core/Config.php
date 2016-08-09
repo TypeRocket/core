@@ -1,30 +1,40 @@
 <?php
 namespace TypeRocket\Core;
 
-use TypeRocket\Elements\Icons;
-
 class Config
 {
 
-    static private $paths = null;
-    static private $debug = false;
-    static private $seed = null;
-    static private $icons = null;
-    static private $plugins = null;
+    static private $config = null;
     static private $frontend = false;
 
     /**
      * Set initial values
+     *
+     * @param array $config
      */
-    public function __construct()
+    public function __construct( $config = [] )
     {
-        if (self::$paths === null) {
-            self::$debug   = defined( 'TR_DEBUG' ) ? TR_DEBUG : false;
-            self::$seed    = defined( 'TR_SEED' ) ? TR_SEED : md5(NONCE_KEY);
-            self::$plugins = defined( 'TR_PLUGINS' ) ? TR_PLUGINS : '';
-            self::$icons   = defined( 'TR_ICONS' ) ? TR_ICONS : Icons::class;
-            self::$paths   = $this->defaultPaths();
+        $key = array_search('configurations', array_keys( $config ), true);
+        if ($key !== false) {
+            $slice = array_slice($config, $key, null, true);
+            $config = array_merge($slice['configurations'], ['app']);
         }
+
+        if (self::$config === null) {
+            foreach ($config as $type) {
+                self::$config[$type] = include TR_PATH . "/config/{$type}.php";
+            }
+        }
+    }
+
+    /**
+     * Check if using outside root
+     *
+     * @return mixed|null|void
+     */
+    static public function getTemplates()
+    {
+        return self::$config['app']['templates'];
     }
 
     /**
@@ -34,7 +44,7 @@ class Config
      */
     static public function getPaths()
     {
-        return self::$paths;
+        return self::$config['paths'];
     }
 
     /**
@@ -44,7 +54,7 @@ class Config
      */
     static public function getDebugStatus()
     {
-        return self::$debug;
+        return self::$config['app']['debug'];
     }
 
     /**
@@ -54,7 +64,7 @@ class Config
      */
     static public function getSeed()
     {
-        return self::$seed;
+        return self::$config['app']['seed'];
     }
 
     /**
@@ -74,31 +84,7 @@ class Config
      */
     static public function getPlugins()
     {
-        return explode( '|', self::$plugins );
-    }
-
-    /**
-     * Set default paths
-     *
-     * @return array
-     */
-    private function defaultPaths()
-    {
-        return [
-            'base'  => TR_PATH,
-            'resource'  => TR_PATH . '/resource',
-            'views'  => TR_PATH . '/views',
-            'pages'  => TR_PATH . '/pages',
-            'visuals'  => TR_PATH . '/visuals',
-            'plugins' => TR_PATH . '/plugins',
-            'components'  => TR_PATH . '/components',
-            'app'  => TR_PATH . '/app',
-            'urls' => [
-                'theme'   => get_stylesheet_directory_uri(),
-                'assets'  => TR_ASSETS_URL,
-                'components' => TR_ASSETS_URL . '/components',
-            ]
-        ];
+        return self::$config['app']['plugins'];
     }
 
     /**
@@ -118,21 +104,7 @@ class Config
      */
     public static function getIcons()
     {
-        return new self::$icons();
-    }
-
-    /**
-     * Set Icons
-     *
-     * This action can not be undone
-     *
-     * @param string $class set the icon class
-     */
-    public static function setIcons( $class )
-    {
-        if( class_exists( $class ) ) {
-            self::$icons = $class;
-        }
+        return new self::$config['app']['icons'];
     }
 
 }

@@ -326,7 +326,7 @@ class Page extends Registrable
                 extract( View::$data );
                 /** @noinspection PhpIncludeInspection */
                 include( View::$page );
-            } elseif( TR_DEBUG == true ) {
+            } elseif( Config::getDebugStatus() == true ) {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by creating or setting a view.</div>";
             }
             echo '</div></div>';

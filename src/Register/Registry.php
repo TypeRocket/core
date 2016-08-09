@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Register;
 
+use TypeRocket\Core\Config;
+
 class Registry
 {
 
@@ -152,7 +154,7 @@ class Registry
                     call_user_func( $form, $term );
                 } elseif (function_exists( $func )) {
                     call_user_func( $func, $term );
-                } elseif (TR_DEBUG == true) {
+                } elseif ( Config::getDebugStatus() == true) {
                     echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                 }
                 echo '</div>';
@@ -195,7 +197,7 @@ class Registry
                     call_user_func( $form );
                 } elseif (function_exists( $func )) {
                     call_user_func( $func, $post );
-                } elseif (TR_DEBUG == true) {
+                } elseif (Config::getDebugStatus() == true) {
                     echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                 }
                 echo '</div>';

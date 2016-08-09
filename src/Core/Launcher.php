@@ -53,6 +53,8 @@ class Launcher
         new Routes();
 
         $this->initEndpoints();
+
+        return $this;
     }
 
     /**
@@ -73,6 +75,22 @@ class Launcher
         add_action( 'admin_init', [$this, 'addJs']);
         add_action( 'admin_footer', [$this, 'addBottomJs']);
         add_action( 'admin_notices', [$this, 'setFlash']);
+    }
+
+    public function overrideTemplates()
+    {
+        $paths = Config::getPaths();
+        $templates = Config::getTemplates();
+
+        define( 'WP_DEFAULT_THEME', Config::getTemplates() );
+        register_theme_directory( $paths['themes'] );
+
+        add_filter('template_directory', function() use ( $paths, $templates ) {
+            return $paths['themes'] . '/' . $templates;
+        } );
+        add_filter('stylesheet_directory', function() use ( $paths, $templates ) {
+            return $paths['themes'] . '/' . $templates;
+        } );
     }
 
     /**
