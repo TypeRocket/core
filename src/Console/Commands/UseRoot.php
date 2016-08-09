@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TypeRocket\Utility\File;
 use Symfony\Component\Console\Input\ArrayInput;
 
-class UseWordPress extends Command
+class UseRoot extends Command
 {
     protected function configure()
     {

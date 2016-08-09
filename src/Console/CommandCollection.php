@@ -10,7 +10,7 @@ class CommandCollection extends \ArrayObject
         Commands\MakeModel::class,
         Commands\GenerateSeed::class,
         Commands\UseTemplates::class,
-        Commands\UseWordPress::class,
+        Commands\UseRoot::class,
     ];
 
     /**
