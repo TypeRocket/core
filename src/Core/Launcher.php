@@ -85,12 +85,27 @@ class Launcher
         define( 'WP_DEFAULT_THEME', Config::getTemplates() );
         register_theme_directory( $paths['themes'] );
 
+        // Set Directories
         add_filter('template_directory', function() use ( $paths, $templates ) {
             return $paths['themes'] . '/' . $templates;
         } );
+
         add_filter('stylesheet_directory', function() use ( $paths, $templates ) {
             return $paths['themes'] . '/' . $templates;
         } );
+
+        // Set URIs
+        add_filter('template_directory_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'];
+        });
+
+        add_filter('stylesheet_directory_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'];
+        });
+
+        add_filter('stylesheet_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/css/theme.css';
+        });
     }
 
     /**
