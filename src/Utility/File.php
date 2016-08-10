@@ -13,7 +13,7 @@ class File
      *
      * @param $file
      */
-    public function __construct($file)
+    public function __construct( $file )
     {
         $this->file = $file;
 
@@ -91,6 +91,55 @@ class File
         if( ! $this->existing ) {
             file_put_contents( $this->file , fopen( $url , 'r') );
         }
+    }
+
+    /**
+     * Remove Recursive
+     *
+     * Delete everything, files and folders.
+     *
+     * @param null $path
+     * @param bool $removeSelf
+     *
+     * @return bool
+     */
+    public function removeRecursiveDirectory($path = null, $removeSelf = true )
+    {
+        $path = $path ? $path : $this->file;
+
+        if( str_starts( TR_PATH, $path) && file_exists( $path ) ) {
+            $path = mb_substr( $path, mb_strlen(TR_PATH) );
+        }
+
+        $dir = rtrim( TR_PATH . '/' . trim($path, '/'), '/' );
+
+        if( ! TR_PATH || $dir == TR_PATH || ! $path ) {
+            die('You are about to delete your entire project!');
+        }
+
+        if( empty($dir) || $dir == '/' || $dir == '\\' ) {
+            die('You are about to delete your server!');
+        }
+
+        if( file_exists( $dir ) ) {
+            $it = new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS );
+            $files = new \RecursiveIteratorIterator( $it, \RecursiveIteratorIterator::CHILD_FIRST );
+            foreach($files as $file) {
+                if ($file->isDir()){
+                    rmdir($file->getRealPath());
+                } else {
+                    unlink($file->getRealPath());
+                }
+            }
+
+            if($removeSelf) {
+                rmdir($dir);
+            }
+        } else {
+            return false;
+        }
+
+        return true;
     }
 
 }

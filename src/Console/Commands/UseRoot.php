@@ -64,6 +64,7 @@ class UseRoot extends Command
         $this->configWordPress( $input, $output );
         $this->useTemplates($input, $output);
         $this->updateTypeRocketPaths($input, $output);
+        $this->cleanWordPressThemes($input, $output);
 
         $output->writeln('<fg=green>TypeRocket is connected, Happy coding!');
     }
@@ -191,5 +192,28 @@ class UseRoot extends Command
             $file->replaceOnLine($path, $replacements[$index]);
         }
 
+    }
+
+    /**
+     * Clean WordPress Themes
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     */
+    protected function cleanWordPressThemes( InputInterface $input, OutputInterface $output ) {
+        $twentyThemes = glob( TR_PATH . "/wordpress/wp-content/themes/twenty*/");
+
+        foreach ($twentyThemes as $value) {
+
+            // Message
+            $output->writeln('<fg=green>Deleting ' . $value);
+            if( str_starts( TR_PATH, $value) && file_exists( $value ) ) {
+
+                // Delete theme
+                ( new File($value) )->removeRecursiveDirectory();
+            } else {
+                $output->writeln('<fg=red>Error deleting none project file ' . $value);
+            }
+        }
     }
 }
