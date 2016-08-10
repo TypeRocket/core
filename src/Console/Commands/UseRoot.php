@@ -173,7 +173,7 @@ class UseRoot extends Command
      */
     protected function updateTypeRocketPaths(InputInterface $input, OutputInterface $output) {
         // Message
-        $output->writeln('<fg=green>Updating Typerocket paths');
+        $output->writeln('<fg=green>Updating TypeRocket paths');
 
         // Update file
         $file = new File(TR_PATH . '/config/paths.php');
