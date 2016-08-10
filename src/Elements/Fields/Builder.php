@@ -21,7 +21,7 @@ class Builder extends Matrix
         wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], '1.0', true );
         wp_enqueue_script( 'wp-color-picker' );
         wp_enqueue_media();
-        wp_enqueue_script( 'typerocket-editor', $assets . '/js/redactor.min.js', ['jquery'], '1.0', true );
+        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/redactor.min.js', ['jquery'], '1.0', true );
     }
 
     /**

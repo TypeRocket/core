@@ -95,16 +95,16 @@ class Launcher
         } );
 
         // Set URIs
-        add_filter('template_directory_uri', function() use ( $paths ) {
-            return $paths['urls']['assets'];
+        add_filter('template_directory_uri', function() use ( $paths, $templates ) {
+            return $paths['urls']['assets'] . '/' . $templates;
         });
 
-        add_filter('stylesheet_directory_uri', function() use ( $paths ) {
-            return $paths['urls']['assets'];
+        add_filter('stylesheet_directory_uri', function() use ( $paths, $templates ) {
+            return $paths['urls']['assets'] . '/' . $templates;
         });
 
-        add_filter('stylesheet_uri', function() use ( $paths ) {
-            return $paths['urls']['assets'] . '/css/theme.css';
+        add_filter('stylesheet_uri', function() use ( $paths, $templates ) {
+            return $paths['urls']['assets'] . '/' . $templates . '/css/theme.css';
         });
 
         add_filter('theme_root_uri', function() use ( $paths ) {
@@ -220,7 +220,7 @@ class Launcher
         $paths = Config::getPaths();
         $assets = $paths['urls']['assets'];
 
-        wp_enqueue_style( 'typerocket-styles', $assets . '/css/typerocket.css' );
+        wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css' );
 
         if (is_admin()) {
             wp_enqueue_style( 'wp-color-picker' );
@@ -235,7 +235,7 @@ class Launcher
         $paths = Config::getPaths();
         $assets = $paths['urls']['assets'];
 
-        wp_enqueue_script( 'typerocket-scripts-global', $assets . '/js/global.js', [], '1.0' );
+        wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], '1.0' );
     }
 
     /**
@@ -249,7 +249,7 @@ class Launcher
         $paths = Config::getPaths();
         $assets = $paths['urls']['assets'];
 
-        wp_enqueue_script( 'typerocket-scripts', $assets . '/js/typerocket.js', [ 'jquery' ], '1.0', true );
+        wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], '1.0', true );
     }
 
     /**
