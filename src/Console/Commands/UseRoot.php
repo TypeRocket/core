@@ -21,11 +21,11 @@ class UseRoot extends Command
     {
         $this->setName('use:root')
              ->setDescription('Use TypeRocket as root')
-             ->setHelp("This command download WordPress and root TypeRocket.");
+             ->setHelp("This command downloads WordPress and roots TypeRocket.");
 
         $this->addArgument('database', InputArgument::REQUIRED, 'The database name');
         $this->addArgument('username', InputArgument::REQUIRED, 'The database username');
-        $this->addArgument('password', InputArgument::REQUIRED, 'The user passowrd');
+        $this->addArgument('password', InputArgument::REQUIRED, 'The database user password');
     }
 
     /**
