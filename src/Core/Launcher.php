@@ -106,6 +106,10 @@ class Launcher
         add_filter('stylesheet_uri', function() use ( $paths ) {
             return $paths['urls']['assets'] . '/css/theme.css';
         });
+
+        add_filter('theme_root_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'];
+        });
     }
 
     /**
