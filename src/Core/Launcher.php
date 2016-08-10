@@ -137,6 +137,10 @@ class Launcher
      * TypeRocket to work.
      */
     private function loadResponders() {
+        if( defined('WP_INSTALLING') && WP_INSTALLING) {
+            return;
+        }
+
         add_action( 'save_post', 'TypeRocket\Http\Responders\Hook::posts' );
         add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
         add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
