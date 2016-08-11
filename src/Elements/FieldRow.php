@@ -3,10 +3,12 @@
 namespace TypeRocket\Elements;
 
 use TypeRocket\Elements\Fields\Field;
-use TypeRocket\Utility\Buffer;
+use TypeRocket\Elements\Traits\AttributesTrait;
+use TypeRocket\Html\Generator;
 
 class FieldRow
 {
+    use AttributesTrait;
 
     public $fields = [];
     public $size = [];
@@ -26,7 +28,13 @@ class FieldRow
             $fields = func_get_args();
         }
 
+        $this->fields = $fields;
         $this->size = count($fields);
+    }
+
+    public function setAttributes()
+    {
+
     }
 
     /**
@@ -36,17 +44,19 @@ class FieldRow
      */
     public function __toString()
     {
-        $buffer = new Buffer();
-        $buffer->startBuffer();
-        echo "<div class=\"control-row-{$this->size}\" >";
+        $fieldsHtml = '';
+        $class = "control-row-{$this->size}";
+
         foreach( $this->fields as $field) {
             if( $field instanceof Field ) {
-                echo $field;
+                $fieldsHtml .= (string) $field;
             }
         }
-        echo "</div>";
 
-        return $buffer->getCurrent();
+        $this->appendStringToAttribute('class', $class);
+        $html = ( new Generator() )->newElement('div', $this->getAttributes(), $fieldsHtml)->getString();
+
+        return $html;
     }
 
 }

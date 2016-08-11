@@ -2,17 +2,17 @@
 namespace TypeRocket\Elements\Fields;
 
 use \TypeRocket\Elements\Form;
+use TypeRocket\Elements\Traits\AttributesTrait;
 use \TypeRocket\Utility\Sanitize;
 use \TypeRocket\Elements\Traits\FormConnectorTrait;
 
 abstract class Field
 {
-    use FormConnectorTrait;
+    use FormConnectorTrait, AttributesTrait;
 
     private $name = null;
     private $type = null;
     private $required = false;
-    private $attr = [];
 
     /** @var Form */
     private $form = null;
@@ -143,60 +143,6 @@ abstract class Field
     }
 
     /**
-     * Set Attributes
-     *
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function setAttributes( array $attributes )
-    {
-        $this->attr = $attributes;
-
-        return $this;
-    }
-
-    /**
-     * Get Attribute by key
-     *
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attr;
-    }
-
-    /**
-     * Set Attribute by key
-     *
-     * @param $key
-     * @param $value
-     *
-     * @return Field $this
-     */
-    public function setAttribute( $key, $value )
-    {
-        $this->attr[(string) $key] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param null $default
-     *
-     * @return null
-     */
-    public function getAttribute( $key, $default = null )
-    {
-        if ( ! array_key_exists( $key, $this->attr )) {
-            return $default;
-        }
-
-        return $this->attr[$key];
-    }
-
-    /**
      * Set Help Text
      *
      * @param string $value help text
@@ -219,44 +165,6 @@ abstract class Field
     public function getHelp()
     {
         return $this->settings['help'];
-    }
-
-    /**
-     * Remove Attribute by key
-     *
-     * @param $key
-     *
-     * @return $this
-     */
-    public function removeAttribute( $key )
-    {
-
-        if (array_key_exists( $key, $this->attr )) {
-            unset( $this->attr[$key] );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Append a string to an attribute
-     *
-     * @param string $key the attribute if set
-     * @param string $text the string to append
-     * @param string $separator separate stings by this
-     *
-     * @return $this
-     */
-    public function appendStringToAttribute( $key, $text, $separator = ' ' )
-    {
-
-        if (array_key_exists( $key, $this->attr )) {
-            $text = $this->attr[$key] . $separator . (string) $text;
-        }
-
-        $this->attr[$key] = $text;
-
-        return $this;
     }
 
     /**
