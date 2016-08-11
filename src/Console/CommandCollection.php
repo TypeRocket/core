@@ -34,4 +34,13 @@ class CommandCollection extends \ArrayObject
         }
     }
 
+    public function enableCustom()
+    {
+        $custom = Config::getCommands();
+
+        foreach ( $custom as $command ) {
+            $this->append($command);
+        }
+    }
+
 }

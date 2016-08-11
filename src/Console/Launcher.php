@@ -11,6 +11,7 @@ class Launcher
     {
         $application = new Application();
         $commands = new CommandCollection();
+        $commands->enableCustom();
 
         if( file_exists( Config::getWordPressPath() ) ) {
             define('WP_USE_THEMES', false);

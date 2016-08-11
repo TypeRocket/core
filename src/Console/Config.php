@@ -46,4 +46,14 @@ class Config
     {
         return self::$config['galaxy']['wordpress'];
     }
+
+    /**
+     * Get Custom Commands
+     *
+     * @return null
+     */
+    public static function getCommands()
+    {
+        return self::$config['galaxy']['commands'];
+    }
 }
