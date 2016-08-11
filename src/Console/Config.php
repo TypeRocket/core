@@ -44,6 +44,6 @@ class Config
      */
     public static function getWordPressPath()
     {
-        return rtrim(self::$config['wordpress'], '/');
+        return self::$config['galaxy']['wordpress'];
     }
 }

@@ -6,7 +6,7 @@ Author: Robojuice
 Version: 3.0.0
 Author URI: http://robojuice.com
 */
-if( defined('TR_PATH') ) {
+if( defined('TR_PATH') && ! defined('TR_GALAXY') ) {
     define( 'TR_START', microtime( true ) );
     $typerocket_config = require TR_PATH . '/config/app.php';
     new \TypeRocket\Core\Config( $typerocket_config );
