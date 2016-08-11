@@ -28,6 +28,7 @@ class FieldRow
             $fields = func_get_args();
         }
 
+        $this->setAttribute('class', '');
         $this->fields = $fields;
         $this->size = count($fields);
     }

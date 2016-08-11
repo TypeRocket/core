@@ -93,7 +93,7 @@ trait AttributesTrait
             $text = $this->attr[$key] . $separator . (string) $text;
         }
 
-        $this->attr[$key] = $text;
+        $this->attr[$key] = trim($text);
 
         return $this;
     }
