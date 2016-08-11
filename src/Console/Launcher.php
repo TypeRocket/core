@@ -11,6 +11,15 @@ class Launcher
     {
         $application = new Application();
         $commands = new CommandCollection();
+
+        if( file_exists( Config::getWordPressPath() ) ) {
+            define('WP_USE_THEMES', false);
+            global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
+            require( Config::getWordPressPath() );
+
+            $commands->enableWordPress();
+        }
+
         foreach ($commands as $command ) {
             $application->add( new $command );
         }

@@ -13,11 +13,25 @@ class CommandCollection extends \ArrayObject
         Commands\UseRoot::class,
     ];
 
+    public $wordpress = [
+        Commands\FlushRewrites::class
+    ];
+
     /**
      * Load icons and their font encoding
      */
     public function __construct() {
         $this->exchangeArray($this->commands);
+    }
+
+    /**
+     * Enable WordPress Commands
+     */
+    public function enableWordPress()
+    {
+        foreach ( $this->wordpress as $command ) {
+            $this->append($command);
+        }
     }
 
 }
