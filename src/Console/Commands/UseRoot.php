@@ -74,8 +74,16 @@ class UseRoot extends Command
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return bool
      */
     protected function configWordPress( InputInterface $input, OutputInterface $output ) {
+        // Check for wp-config.php
+        if( file_exists($this->configWP) ) {
+            $output->writeln('<fg=red>wp-config.php already exists in TypeRocket');
+            return false;
+        }
+
         // Message
         $output->writeln('<fg=green>Creating wp-config.php');
 
@@ -108,6 +116,7 @@ class UseRoot extends Command
             $output->writeln('<fg=red>WordPress salts failed');
         }
 
+        return true;
     }
 
     /**

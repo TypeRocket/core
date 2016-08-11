@@ -44,7 +44,13 @@ class Search extends Field
 
         if( empty($taxonomy) && $value ) {
             $post = get_post($value);
-            $title = 'Selection: <b>' . $post->post_title . ' (' . $post->post_type . ')</b>';
+            $status = '';
+
+            if( $post->post_status == 'draft' ) {
+                $status = ' draft ';
+            }
+
+            $title = 'Selection: <b>' . $post->post_title . ' (' . $status . $post->post_type . ')</b>';
         } elseif( $value ) {
             $term = get_term( $value, $taxonomy );
             $title = 'Selection: <b>' . $term->name . '</b>';
