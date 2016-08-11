@@ -30,13 +30,16 @@ class Request
         $this->method = $method ? $method : $this->getFormMethod();
         $this->id = $id;
         $this->action = $action;
-        $this->uri    = $_SERVER['REQUEST_URI'];
-        $this->path   = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $this->host   = $_SERVER['HTTP_HOST'];
         $this->fields = ! empty ( $_POST['tr'] ) ? $_POST['tr'] : [];
         $this->post   = ! empty ( $_POST ) ? $_POST : null;
         $this->get    = ! empty ( $_GET ) ? $_GET : null;
         $this->files  = ! empty ( $_FILES ) ? $_FILES : null;
+        $this->uri    = ! empty ( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
+        $this->host   = ! empty ( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;
+
+        if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
+            $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        }
     }
 
     /**

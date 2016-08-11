@@ -54,6 +54,7 @@ class Config
      */
     public static function getCommands()
     {
-        return self::$config['galaxy']['commands'];
+        $commands = self::$config['galaxy']['commands'];
+        return !empty($commands) ? $commands : [];
     }
 }

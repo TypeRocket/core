@@ -14,7 +14,7 @@ class Launcher
         $commands->enableCustom();
 
         if( file_exists( Config::getWordPressPath() ) ) {
-            define('WP_USE_THEMES', false);
+            define('WP_USE_THEMES', true);
             global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
             require( Config::getWordPressPath() );
 

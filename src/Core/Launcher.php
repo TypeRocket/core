@@ -257,26 +257,11 @@ class Launcher
      */
     public function initEndpoints()
     {
-        add_action('admin_init', function() {
-            // Controller API
-            $regex = 'tr_json_api/v1/([^/]*)/?$';
-            $location = 'index.php?tr_json_controller=$matches[1]';
-            add_rewrite_rule( $regex, $location, 'top' );
+        add_action('admin_init', [$this, 'addRewrites']);
 
-            $regex = 'tr_json_api/v1/([^/]*)/([^/]*)/?$';
-            $location = 'index.php?tr_json_controller=$matches[1]&tr_json_item=$matches[2]';
-            add_rewrite_rule( $regex, $location, 'top' );
-
-            // Matrix API
-            $regex = 'tr_matrix_api/v1/([^/]*)/([^/]*)/([^/]*)/?$';
-            $location = 'index.php?tr_matrix_group=$matches[1]&tr_matrix_type=$matches[2]&tr_matrix_folder=$matches[3]';
-            add_rewrite_rule( $regex, $location, 'top' );
-
-            // Builder API
-            $regex = 'tr_builder_api/v1/([^/]*)/([^/]*)/([^/]*)/?$';
-            $location = 'index.php?tr_builder_group=$matches[1]&tr_builder_type=$matches[2]&tr_builder_folder=$matches[3]';
-            add_rewrite_rule( $regex, $location, 'top' );
-        });
+        if( defined('TR_GALAXY') ) {
+            $this->addRewrites();
+        }
 
         add_filter( 'query_vars', function($vars) {
             $vars[] = 'tr_json_controller';
@@ -346,6 +331,30 @@ class Launcher
                 'permission_callback' => '\\TypeRocket\\Http\\Rewrites\\WpRestApi::permission'
             ]);
         } );
+    }
+
+    /**
+     * Add Rewrite rules
+     */
+    public function addRewrites()
+    {
+        $regex = 'tr_json_api/v1/([^/]*)/?$';
+        $location = 'index.php?tr_json_controller=$matches[1]';
+        add_rewrite_rule( $regex, $location, 'top' );
+
+        $regex = 'tr_json_api/v1/([^/]*)/([^/]*)/?$';
+        $location = 'index.php?tr_json_controller=$matches[1]&tr_json_item=$matches[2]';
+        add_rewrite_rule( $regex, $location, 'top' );
+
+        // Matrix API
+        $regex = 'tr_matrix_api/v1/([^/]*)/([^/]*)/([^/]*)/?$';
+        $location = 'index.php?tr_matrix_group=$matches[1]&tr_matrix_type=$matches[2]&tr_matrix_folder=$matches[3]';
+        add_rewrite_rule( $regex, $location, 'top' );
+
+        // Builder API
+        $regex = 'tr_builder_api/v1/([^/]*)/([^/]*)/([^/]*)/?$';
+        $location = 'index.php?tr_builder_group=$matches[1]&tr_builder_type=$matches[2]&tr_builder_folder=$matches[3]';
+        add_rewrite_rule( $regex, $location, 'top' );
     }
 
 }
