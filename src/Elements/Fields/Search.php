@@ -47,7 +47,7 @@ class Search extends Field
             $status = '';
 
             if( $post->post_status == 'draft' ) {
-                $status = ' draft ';
+                $status = 'draft ';
             }
 
             $title = 'Selection: <b>' . $post->post_title . ' (' . $status . $post->post_type . ')</b>';
