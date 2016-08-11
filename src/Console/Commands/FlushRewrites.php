@@ -11,8 +11,8 @@ class FlushRewrites extends Command
     protected function configure()
     {
         $this->setName('wp:flush')
-             ->setDescription('Flush the WordPress rewrites')
-             ->setHelp("This command soft flushes the WordPress rewrite rules and permalinks.");
+             ->setDescription('Hard flush the WordPress rewrites')
+             ->setHelp("This command hard flushes the WordPress rewrite rules and permalinks.");
     }
 
     /**
@@ -28,7 +28,7 @@ class FlushRewrites extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<fg=green>Flushed the WordPress rewrites');
-        flush_rewrite_rules();
+        flush_rewrite_rules( true );
     }
 
 }
