@@ -33,11 +33,6 @@ class FieldRow
         $this->size = count($fields);
     }
 
-    public function setAttributes()
-    {
-
-    }
-
     /**
      * Return Fields as String in Row
      *
