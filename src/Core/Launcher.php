@@ -260,7 +260,7 @@ class Launcher
         add_action('admin_init', [$this, 'addRewrites']);
 
         if( defined('TR_GALAXY') ) {
-            $this->addRewrites();
+            add_action('init', [$this, 'addRewrites']);
         }
 
         add_filter( 'query_vars', function($vars) {
