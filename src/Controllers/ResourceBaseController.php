@@ -12,14 +12,18 @@ abstract class ResourceBaseController extends Controller
      *
      * @return mixed
      */
-    abstract function edit( $id );
+    public function edit( $id ) {
+        return null;
+    }
 
     /**
      * The add page
      *
      * @return mixed
      */
-    abstract function add();
+    public function add() {
+        return null;
+    }
 
     /**
      * The show page
@@ -28,14 +32,18 @@ abstract class ResourceBaseController extends Controller
      *
      * @return mixed
      */
-    abstract function show( $id );
+    public function show( $id ) {
+        return null;
+    }
 
     /**
      * The index page
      *
      * @return mixed
      */
-    abstract function index();
+    public function index() {
+        return null;
+    }
 
     /**
      * The delete page
@@ -44,7 +52,9 @@ abstract class ResourceBaseController extends Controller
      *
      * @return mixed
      */
-    abstract function delete($id);
+    public function delete($id) {
+        return null;
+    }
 
     /**
      * Destroy item
@@ -55,7 +65,9 @@ abstract class ResourceBaseController extends Controller
      *
      * @return mixed
      */
-    abstract function destroy($id);
+    public function destroy($id) {
+        return null;
+    }
 
 
 }

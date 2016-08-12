@@ -87,7 +87,9 @@ abstract class Controller
      *
      * @return mixed
      */
-    abstract function update( $id );
+    public function update( $id ) {
+        return null;
+    }
 
     /**
      * Create item
@@ -96,6 +98,8 @@ abstract class Controller
      *
      * @return mixed
      */
-    abstract function create();
+    public function create() {
+        return null;
+    }
 
 }
