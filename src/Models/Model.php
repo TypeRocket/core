@@ -399,6 +399,7 @@ abstract class Model
             foreach ( $fields->fillable as $field_name ) {
                 $this->unlockField($field_name);
             }
+            $fields = $fields->getArrayCopy();
         }
 
         // Fillable

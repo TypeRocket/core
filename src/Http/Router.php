@@ -2,6 +2,7 @@
 namespace TypeRocket\Http;
 
 use TypeRocket\Controllers\Controller;
+use TypeRocket\Utility\Validator;
 
 /**
  * Class Router
@@ -67,7 +68,12 @@ class Router
 
             if( !empty($vars) ) {
                 foreach ($params as $index => $param ) {
-                    if( isset($vars[$param->getName()]) ) {
+                    if ( isset($vars[$param->getName()]) &&  $param->hasType() ) {
+                        $paramType = $param->getType();
+                        if( $paramType == 'Fields' || $paramType == Fields::class ) {
+                            $args[$index] = new Fields( $this->request->getFields() );
+                        }
+                    } elseif( isset($vars[$param->getName()]) ) {
                         $args[$index] = $vars[$param->getName()];
                     }
                 }
