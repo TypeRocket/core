@@ -18,7 +18,7 @@ class Validator
      * Validate data mapped to fields
      *
      * @param array $options the options and validation handler
-     * @param array $fields the fields to be validated
+     * @param array|\ArrayObject $fields the fields to be validated
      * @param null $modelClass must be a class of SchemaModel
      */
     public function __construct($options, $fields, $modelClass = null)

@@ -3,6 +3,7 @@ namespace TypeRocket\Models;
 
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
+use TypeRocket\Http\Fields;
 
 abstract class Model
 {
@@ -393,6 +394,13 @@ abstract class Model
      */
     public function secureFields( array $fields )
     {
+        // Unlock fillable fields
+        if( $fields instanceof Fields ) {
+            foreach ( $fields->fillable as $field_name ) {
+                $this->unlockField($field_name);
+            }
+        }
+
         // Fillable
         $fillable = [];
         if ( ! empty( $this->fillable ) && is_array( $this->fillable )) {

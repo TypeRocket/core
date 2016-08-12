@@ -18,7 +18,7 @@ class CommandCollection extends \ArrayObject
     ];
 
     /**
-     * Load icons and their font encoding
+     * Load commands
      */
     public function __construct() {
         $this->exchangeArray($this->commands);
@@ -34,6 +34,9 @@ class CommandCollection extends \ArrayObject
         }
     }
 
+    /**
+     * Enable custom commands
+     */
     public function enableCustom()
     {
         $commands = Config::getCommands();
