@@ -8,11 +8,13 @@ class Fields extends \ArrayObject
 {
 
     public $fillable = [];
+    public $fieldsArray = [];
 
     /**
      * Load commands
      */
     public function __construct( $fields = [] ) {
+        $this->fieldsArray = $fields;
         $this->exchangeArray( $fields );
     }
 
@@ -39,12 +41,12 @@ class Fields extends \ArrayObject
     /**
      * Validate fields
      *
-     * @param $options
+     * @param array $options
      * @param $modelClass
      *
      * @return \TypeRocket\Utility\Validator
      */
-    public function validate($options, $modelClass)
+    public function validate($options, $modelClass = null)
     {
         return new Validator($options, $this, $modelClass);
     }
