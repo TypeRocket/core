@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Controllers;
 
-abstract class ResourceBaseController extends Controller
+class ResourceBaseController extends Controller
 {
 
     /**
