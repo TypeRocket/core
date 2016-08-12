@@ -425,6 +425,9 @@ abstract class SchemaModel extends Model
                 $result = $this->cachedResult;
             } else {
                 $result = $wpdb->get_results( $sql );
+                if($result && $this->returnOne) {
+                    $result = $result[0];
+                }
             }
 
             if($result && $this->returnOne) {
