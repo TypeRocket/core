@@ -13,7 +13,7 @@ use \TypeRocket\Http\Response;
  *
  * @package TypeRocket\Controllers
  */
-abstract class Controller
+class Controller
 {
 
     /** @var \TypeRocket\Http\Response */

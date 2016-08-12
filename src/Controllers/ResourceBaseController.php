@@ -69,5 +69,4 @@ class ResourceBaseController extends Controller
         return null;
     }
 
-
 }
