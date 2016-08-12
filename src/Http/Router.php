@@ -72,15 +72,16 @@ class Router
             if( !empty($vars) || ( ! empty($params) && ! $this->item_id ) ) {
                 foreach ($params as $index => $param ) {
                     $varName = $param->getName();
-                    if ( $param->getClass() ) {
+                    if ( $param->getClass() && ! isset($vars[$varName]) ) {
 
                         $instance = (new Resolver)->resolve( $param->getClass()->name );
 
                         if( $instance instanceof SchemaModel &&
-                            $instance->getRouterInjectionColumn() == $varName &&
-                            isset($vars[$varName]) )
+                            isset($vars[ $instance->getRouterInjectionColumn() ]) )
                         {
-                            $instance = $instance->findFirstWhereOrDie( $varName, $vars[$varName] );
+                            $injectionColumn = $instance->getRouterInjectionColumn();
+                            $modelId = $vars[ $injectionColumn ];
+                            $instance = $instance->findFirstWhereOrDie($injectionColumn, $modelId );
                         }
 
                         $args[$index] = $instance;
