@@ -68,7 +68,7 @@ class Router
 
             if( !empty($vars) ) {
                 foreach ($params as $index => $param ) {
-                    if ( isset($vars[$param->getName()]) &&  $param->hasType() ) {
+                    if ( $param->hasType() ) {
                         $paramType = $param->getType();
                         if( $paramType == 'Fields' || $paramType == Fields::class ) {
                             $args[$index] = new Fields( $this->request->getFields() );
