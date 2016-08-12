@@ -3,6 +3,8 @@ namespace TypeRocket\Http;
 
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Resolver;
+use TypeRocket\Models\Model;
+use TypeRocket\Models\SchemaModel;
 use TypeRocket\Utility\Validator;
 
 /**
@@ -69,11 +71,27 @@ class Router
 
             if( !empty($vars) || ( ! empty($params) && ! $this->item_id ) ) {
                 foreach ($params as $index => $param ) {
+                    $varName = $param->getName();
                     if ( $param->getClass() ) {
-                        $class = $param->getClass();
-                        $args[$index] = (new Resolver)->resolve( $class->name );
-                    } elseif( isset($vars[$param->getName()]) ) {
-                        $args[$index] = $vars[$param->getName()];
+
+                        $instance = (new Resolver)->resolve( $param->getClass()->name );
+
+                        if( $instance instanceof Model &&
+                            $instance->getRouterInjectionColumn() == $varName &&
+                            isset($vars[$varName]))
+                        {
+                            if( $instance instanceof SchemaModel ) {
+                                $instance = $instance
+                                    ->findFirstWhereOrDie( $varName, $vars[$varName] );
+                            } else {
+                                $instance = $instance
+                                    ->findById( $vars[$varName] );
+                            }
+                        }
+
+                        $args[$index] = $instance;
+                    } elseif( isset($vars[$varName]) ) {
+                        $args[$index] = $vars[$varName];
                     }
                 }
             } else {

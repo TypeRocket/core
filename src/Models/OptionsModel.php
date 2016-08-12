@@ -5,6 +5,7 @@ abstract class OptionsModel extends Model
 {
 
     protected $id = 1;
+    public $idColumn = 'option_id';
 
     /**
      * Do nothing since options are not true resources

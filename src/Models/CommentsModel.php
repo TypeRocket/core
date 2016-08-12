@@ -4,6 +4,8 @@ namespace TypeRocket\Models;
 abstract class CommentsModel extends Model
 {
 
+    public $idColumn = 'comment_ID';
+
     protected $builtin = [
         'comment_author',
         'comment_author_email',

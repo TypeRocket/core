@@ -3,6 +3,7 @@ namespace TypeRocket\Models;
 
 abstract class TaxonomiesModel extends Model
 {
+    public $idColumn = 'term_id';
 
     protected $taxonomy = null;
 

@@ -3,6 +3,7 @@ namespace TypeRocket\Models;
 
 class PostTypesModel extends Model
 {
+    public $idColumn = 'ID';
 
     protected $builtin = [
         'post_author',

@@ -18,6 +18,7 @@ abstract class Model
     protected $builtin = [];
     private $data = null;
     private $old = null;
+    public $idColumn = 'ID';
 
     /**
      * Construct Model based on resource
@@ -564,6 +565,16 @@ abstract class Model
         }
 
         return $loc;
+    }
+
+    /**
+     * Get column of router injection
+     *
+     * @return string
+     */
+    public function getRouterInjectionColumn()
+    {
+        return $this->idColumn;
     }
 
     /**

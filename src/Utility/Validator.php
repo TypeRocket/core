@@ -8,7 +8,7 @@ class Validator
 {
     public $errors = [];
     public $passes = [];
-    public $options = [];
+    public $rules = [];
     public $fields = [];
     public $modelClass = [];
 
@@ -17,15 +17,15 @@ class Validator
      *
      * Validate data mapped to fields
      *
-     * @param array $options the options and validation handler
+     * @param array $rules the rules and validation handler
      * @param array|\ArrayObject $fields the fields to be validated
      * @param null $modelClass must be a class of SchemaModel
      */
-    public function __construct($options, $fields, $modelClass = null)
+    public function __construct($rules, $fields, $modelClass = null)
     {
         $this->modelClass = $modelClass;
         $this->fields = $fields;
-        $this->options = $options;
+        $this->rules = $rules;
 
         $this->mapFieldsToValidation();
     }
@@ -82,7 +82,7 @@ class Validator
      * @return array
      */
     private function mapFieldsToValidation() {
-        foreach ($this->options as $path => $handle) {
+        foreach ($this->rules as $path => $handle) {
             $this->ArrayDots($this->fields, $path, $handle, $path);
         }
     }

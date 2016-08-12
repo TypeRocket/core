@@ -210,6 +210,26 @@ abstract class SchemaModel extends Model
     }
 
     /**
+     * Find first where of die
+     *
+     * @param $column
+     * @param $arg1
+     * @param null $arg2
+     * @param string $condition
+     *
+     * @return object
+     * @internal param $id
+     *
+     */
+    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
+        if( ! $data = $this->where( $column, $arg1, $arg2, $condition)->first()) {
+            wp_die('Something went wrong');
+        }
+
+        return $data;
+    }
+
+    /**
      * Delete
      *
      * @param array|\ArrayObject $ids
