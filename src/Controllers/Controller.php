@@ -78,28 +78,4 @@ class Controller
         return $this;
     }
 
-    /**
-     * Update item
-     *
-     * AJAX requests and normal requests can be made to this action
-     *
-     * @param $id
-     *
-     * @return mixed
-     */
-    public function update( $id ) {
-        return null;
-    }
-
-    /**
-     * Create item
-     *
-     * AJAX requests and normal requests can be made to this action
-     *
-     * @return mixed
-     */
-    public function create() {
-        return null;
-    }
-
 }
