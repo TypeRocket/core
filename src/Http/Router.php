@@ -76,17 +76,11 @@ class Router
 
                         $instance = (new Resolver)->resolve( $param->getClass()->name );
 
-                        if( $instance instanceof Model &&
+                        if( $instance instanceof SchemaModel &&
                             $instance->getRouterInjectionColumn() == $varName &&
-                            isset($vars[$varName]))
+                            isset($vars[$varName]) )
                         {
-                            if( $instance instanceof SchemaModel ) {
-                                $instance = $instance
-                                    ->findFirstWhereOrDie( $varName, $vars[$varName] );
-                            } else {
-                                $instance = $instance
-                                    ->findById( $vars[$varName] );
-                            }
+                            $instance = $instance->findFirstWhereOrDie( $varName, $vars[$varName] );
                         }
 
                         $args[$index] = $instance;

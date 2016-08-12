@@ -9,6 +9,8 @@ abstract class SchemaModel extends Model
 
     protected $query = [];
     public $lastCompiledSQL = null;
+    public $cachedResult = null;
+    public $cacheBust = false;
     public $returnOne = false;
 
     protected $guard = [
@@ -47,7 +49,8 @@ abstract class SchemaModel extends Model
      * @return array|null|object
      */
     public function get() {
-        return $this->runQuery();
+        $this->cachedResult = $this->runQuery();
+        return $this->cachedResult;
     }
 
     /**
@@ -136,7 +139,7 @@ abstract class SchemaModel extends Model
     public function first() {
         $this->returnOne = true;
         $this->take(1);
-        return $this->runQuery();
+        return $this->get();
     }
 
     /**
@@ -222,11 +225,11 @@ abstract class SchemaModel extends Model
      *
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
-        if( ! $data = $this->where( $column, $arg1, $arg2, $condition)->first()) {
+        if( ! $data = $this->where( $column, $arg1, $arg2, $condition)->first() ) {
             wp_die('Something went wrong');
         }
 
-        return $data;
+        return $this;
     }
 
     /**
@@ -275,6 +278,14 @@ abstract class SchemaModel extends Model
         }
 
         return $this;
+    }
+
+    /**
+     * Bust Cached Result
+     */
+    public function cacheBust()
+    {
+        $this->cacheBust = true;
     }
 
     /**
@@ -409,7 +420,12 @@ abstract class SchemaModel extends Model
             $result = $wpdb->get_var( $sql );
         } else {
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
-            $result = $wpdb->get_results( $sql );
+
+            if( $this->lastCompiledSQL == $sql && ! $this->cacheBust ) {
+                $result = $this->cachedResult;
+            } else {
+                $result = $wpdb->get_results( $sql );
+            }
 
             if($result && $this->returnOne) {
                 $result = $result[0];
