@@ -12,6 +12,8 @@ class Fields extends \ArrayObject
 
     /**
      * Load commands
+     *
+     * @param array $fields
      */
     public function __construct( $fields = [] ) {
 
@@ -53,24 +55,7 @@ class Fields extends \ArrayObject
      */
     public function validate($options, $modelClass = null)
     {
-        return new Validator($options, $this, $modelClass);
-    }
-
-    /**
-     * Run php array methods
-     *
-     * @param $func
-     * @param $argv
-     *
-     * @return mixed
-     */
-    public function __call($func, $argv)
-    {
-        if (!is_callable($func) || substr($func, 0, 6) !== 'array_')
-        {
-            throw new \BadMethodCallException(__CLASS__.'->'.$func);
-        }
-        return call_user_func_array($func, array_merge(array($this->getArrayCopy()), $argv));
+        return new Validator($options, $this->getArrayCopy(), $modelClass);
     }
 
 }
