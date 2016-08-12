@@ -14,6 +14,11 @@ class Fields extends \ArrayObject
      * Load commands
      */
     public function __construct( $fields = [] ) {
+
+        if( empty($fields) ) {
+            $fields = (new Request())->getFields();
+        }
+
         $this->fieldsArray = $fields;
         $this->exchangeArray( $fields );
     }
