@@ -19,7 +19,7 @@ class Loader
      *
      * @param array $plugins
      */
-    public function __construct( array $plugins)
+    public function __construct( $plugins)
     {
         $this->setPlugins($plugins);
     }
@@ -29,7 +29,7 @@ class Loader
      *
      * @param array $collection
      */
-    private function setPlugins( array $collection) {
+    private function setPlugins( $collection) {
         $this->plugins = apply_filters('tr_set_plugins', $collection);
     }
 

@@ -21,11 +21,11 @@ abstract class OptionsModel extends Model
     /**
      * Create options from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    function create( array $fields )
+    function create( $fields )
     {
         $fields = $this->secureFields( $fields );
         $fields = array_merge($this->default, $fields, $this->static);
@@ -37,11 +37,11 @@ abstract class OptionsModel extends Model
     /**
      * Update options from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    function update( array $fields )
+    function update( $fields )
     {
         $fields = $this->secureFields( $fields );
         $fields = array_merge($fields, $this->static);
@@ -53,9 +53,9 @@ abstract class OptionsModel extends Model
     /**
      * Save options' fields from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      */
-    private function saveOptions( array $fields )
+    private function saveOptions( $fields )
     {
         if ( ! empty( $fields )) {
             foreach ($fields as $key => $value) :

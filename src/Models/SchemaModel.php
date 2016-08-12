@@ -28,11 +28,11 @@ abstract class SchemaModel extends Model
     /**
      * Find all
      *
-     * @param array $ids
+     * @param array|\ArrayObject $ids
      *
      * @return SchemaModel $this
      */
-    public function findAll( array $ids = [] )
+    public function findAll( $ids = [] )
     {
         if(!empty($ids)) {
             $this->where( $this->idColumn , 'IN', $ids);
@@ -145,11 +145,11 @@ abstract class SchemaModel extends Model
      * When a resource is created the Model ID should be set to the
      * resource's ID.
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return mixed
      */
-    public function create(array $fields)
+    public function create( $fields)
     {
         $fields = $this->secureFields($fields);
         $fields = array_merge($this->default, $fields, $this->static);
@@ -164,11 +164,11 @@ abstract class SchemaModel extends Model
     /**
      * Update resource by TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return mixed
      */
-    public function update(array $fields = [])
+    public function update( $fields = [])
     {
         $fields = $this->secureFields($fields);
         $fields = array_merge($this->default, $fields, $this->static);
@@ -212,11 +212,11 @@ abstract class SchemaModel extends Model
     /**
      * Delete
      *
-     * @param array $ids
+     * @param array|\ArrayObject $ids
      *
      * @return array|false|int|null|object
      */
-    public function delete( array $ids = [] ) {
+    public function delete( $ids = [] ) {
         $this->query['delete'] = true;
         unset($this->query['select']);
 
@@ -280,11 +280,11 @@ abstract class SchemaModel extends Model
     /**
      * Run the SQL query from the query property
      *
-     * @param array $query
+     * @param array|\ArrayObject $query
      *
      * @return array|bool|false|int|null|object
      */
-    protected function runQuery( array $query = [] ) {
+    protected function runQuery( $query = [] ) {
         /** @var \wpdb $wpdb */
         global $wpdb;
 

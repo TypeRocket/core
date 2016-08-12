@@ -13,7 +13,7 @@ trait AttributesTrait
      *
      * @return $this
      */
-    public function setAttributes( array $attributes )
+    public function setAttributes( $attributes )
     {
         $this->attr = $attributes;
 

@@ -57,11 +57,11 @@ class PostTypesModel extends Model
      * are saved to the correct type. See the PagesModel
      * as example.
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    public function create( array $fields )
+    public function create( $fields )
     {
         $fields = $this->secureFields($fields);
         $fields = array_merge($this->default, $fields, $this->static);
@@ -94,11 +94,11 @@ class PostTypesModel extends Model
     /**
      * Update post from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    public function update( array $fields )
+    public function update( $fields )
     {
         if($this->id != null && ! wp_is_post_revision( $this->id ) ) {
             $fields = $this->secureFields($fields);
@@ -127,9 +127,9 @@ class PostTypesModel extends Model
     /**
      * Save post meta fields from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      */
-    private function saveMeta( array $fields )
+    private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields($fields);
         if ( ! empty($fields) && ! empty( $this->id )) :

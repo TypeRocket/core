@@ -98,7 +98,7 @@ class Response {
      *
      * @return $this
      */
-    public function setErrors( array $errors )
+    public function setErrors( $errors )
     {
         $this->errors = $errors;
 

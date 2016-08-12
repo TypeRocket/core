@@ -44,11 +44,11 @@ abstract class CommentsModel extends Model
     /**
      * Create comment from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    public function create( array $fields )
+    public function create( $fields )
     {
         $fields  = $this->secureFields( $fields );
         $fields  = array_merge( $this->default, $fields, $this->static );
@@ -83,11 +83,11 @@ abstract class CommentsModel extends Model
     /**
      * Update comment from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    public function update( array $fields )
+    public function update( $fields )
     {
         if ($this->id != null) {
             $fields  = $this->secureFields( $fields );
@@ -114,9 +114,9 @@ abstract class CommentsModel extends Model
     /**
      * Save comment meta fields from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      */
-    private function saveMeta( array $fields )
+    private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields( $fields );
         if ( ! empty( $fields ) && ! empty( $this->id )) :
@@ -140,11 +140,11 @@ abstract class CommentsModel extends Model
     /**
      * Format irregular fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return array
      */
-    private function formatFields( array $fields )
+    private function formatFields( $fields )
     {
 
         if ( ! empty( $fields['comment_post_id'] )) {

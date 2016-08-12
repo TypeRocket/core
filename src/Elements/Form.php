@@ -466,7 +466,7 @@ class Form
      *
      * @return string
      */
-    public function getFromFieldsString( array $fields = [] )
+    public function getFromFieldsString( $fields = [] )
     {
         $html = '';
 

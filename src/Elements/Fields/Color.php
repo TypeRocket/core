@@ -63,7 +63,7 @@ class Color extends Field implements ScriptField
      *
      * @return $this
      */
-    public function setPalette( array $palette ) {
+    public function setPalette( $palette ) {
         if( ! empty( $palette) ) {
             $this->setSetting('palette', $palette );
         }

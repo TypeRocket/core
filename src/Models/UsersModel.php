@@ -39,11 +39,11 @@ abstract class UsersModel extends Model
     /**
      * Create users from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    function create( array $fields )
+    function create( $fields )
     {
         $fields = $this->secureFields( $fields );
         $fields = array_merge( $this->default, $fields, $this->static );
@@ -72,11 +72,11 @@ abstract class UsersModel extends Model
     /**
      * Update user from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    function update( array $fields )
+    function update( $fields )
     {
         if ($this->id != null) {
             $fields = $this->secureFields( $fields );
@@ -102,9 +102,9 @@ abstract class UsersModel extends Model
     /**
      * Save user meta fields from TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      */
-    private function saveMeta( array $fields )
+    private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields( $fields );
         if ( ! empty( $fields ) && ! empty( $this->id )) :

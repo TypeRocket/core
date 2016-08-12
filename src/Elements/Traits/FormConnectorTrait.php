@@ -113,7 +113,7 @@ trait FormConnectorTrait
      *
      * @return $this
      */
-    public function setSettings( array $settings )
+    public function setSettings( $settings )
     {
         $this->settings = $settings;
 

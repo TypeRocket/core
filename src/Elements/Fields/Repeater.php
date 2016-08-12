@@ -119,7 +119,7 @@ class Repeater extends Field implements ScriptField
      *
      * @return $this
      */
-    public function setFields( array $fields )
+    public function setFields( $fields )
     {
         $this->fields = $fields;
 

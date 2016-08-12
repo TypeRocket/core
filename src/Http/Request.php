@@ -166,13 +166,15 @@ class Request
     /**
      * Set the fields
      *
-     * @param array $fields
+     * @param Fields $fields
      *
-     * @return array
+     * @return $this;
      */
-    public function setFields( array $fields)
+    public function setFields( Fields $fields )
     {
-        return $this->fields = $fields;
+        $this->fields = $fields;
+
+        return $this;
     }
 
 }

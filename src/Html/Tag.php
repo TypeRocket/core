@@ -141,7 +141,7 @@ class Tag
      *
      * @return $this
      */
-    public function setAttributes( array $attributes )
+    public function setAttributes( $attributes )
     {
         $this->attributes = $attributes;
 
@@ -170,7 +170,7 @@ class Tag
      *
      * @return $this
      */
-    public function updateAttributes( array $attributes )
+    public function updateAttributes( $attributes )
     {
         $this->attributes = array_merge( $this->attributes, $attributes );
 

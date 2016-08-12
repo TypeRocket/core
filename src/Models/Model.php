@@ -56,11 +56,11 @@ abstract class Model
      *
      * Fields that are write protected by default unless fillable
      *
-     * @param array $static
+     * @param array|\ArrayObject $static
      *
      * @return $this
      */
-    public function setStaticFields( array $static )
+    public function setStaticFields( $static )
     {
         $this->static = $static;
 
@@ -72,11 +72,11 @@ abstract class Model
      *
      * Fields that are write protected by default unless fillable
      *
-     * @param array $default
+     * @param array|\ArrayObject $default
      *
      * @return $this
      */
-    public function setDefaultFields( array $default )
+    public function setDefaultFields( $default )
     {
         $this->static = $default;
 
@@ -88,11 +88,11 @@ abstract class Model
      *
      * Fields that are write protected by default unless fillable
      *
-     * @param array $fillable
+     * @param array|\ArrayObject $fillable
      *
      * @return $this
      */
-    public function setFillableFields( array $fillable )
+    public function setFillableFields( $fillable )
     {
         $this->fillable = $fillable;
 
@@ -104,11 +104,11 @@ abstract class Model
      *
      * Fields that are write protected by default unless fillable
      *
-     * @param array $format
+     * @param array|\ArrayObject $format
      *
      * @return $this
      */
-    public function setFormatFields( array $format )
+    public function setFormatFields( $format )
     {
         $this->format = $format;
 
@@ -120,11 +120,11 @@ abstract class Model
      *
      * Fields that are write protected by default unless fillable
      *
-     * @param array $guard
+     * @param array|\ArrayObject $guard
      *
      * @return $this
      */
-    public function setGuardFields( array $guard )
+    public function setGuardFields( $guard )
     {
         $this->guard = $guard;
 
@@ -358,11 +358,11 @@ abstract class Model
      * Get only the fields that are considered to
      * be meta fields.
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return array
      */
-    protected function getFilteredMetaFields( array $fields )
+    protected function getFilteredMetaFields( $fields )
     {
         $builtin = array_flip( $this->builtin );
 
@@ -373,11 +373,11 @@ abstract class Model
      * Get only the fields that are considered to
      * be builtin fields.
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return array
      */
-    protected function getFilteredBuiltinFields( array $fields )
+    protected function getFilteredBuiltinFields( $fields )
     {
         $builtin = array_flip( $this->builtin );
 
@@ -388,11 +388,11 @@ abstract class Model
      * Get fields that have been checked against fillable and guard.
      * Fillable fields override guarded fields.
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return mixed|void
      */
-    public function secureFields( array $fields )
+    public function secureFields( $fields )
     {
         // Unlock fillable fields
         if( $fields instanceof Fields ) {
@@ -509,11 +509,11 @@ abstract class Model
     /**
      * Format fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return array
      */
-    private function formatFields(array $fields) {
+    private function formatFields( $fields) {
 
         foreach ($this->format as $path => $fn) {
             $this->ArrayDots($fields, $path, $fn);
@@ -525,13 +525,13 @@ abstract class Model
     /**
      * Used to format fields
      *
-     * @param array $arr
+     * @param array|\ArrayObject $arr
      * @param $path
      * @param $fn
      *
      * @return array|null
      */
-    private function ArrayDots(array &$arr, $path, $fn) {
+    private function ArrayDots( &$arr, $path, $fn) {
         $loc = &$arr;
         $dots = explode('.', $path);
         foreach($dots as $step)
@@ -599,20 +599,20 @@ abstract class Model
      * When a resource is created the Model ID should be set to the
      * resource's ID.
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return mixed
      */
-    abstract function create( array $fields );
+    abstract function create( $fields );
 
     /**
      * Update resource by TypeRocket fields
      *
-     * @param array $fields
+     * @param array|\ArrayObject $fields
      *
      * @return mixed
      */
-    abstract function update( array $fields );
+    abstract function update( $fields );
 
     /**
      * Find resource by ID

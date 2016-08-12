@@ -207,7 +207,7 @@ class Page extends Registrable
      *
      * @return string
      */
-    public function getUrl( array $params = [] ) {
+    public function getUrl( $params = [] ) {
         $query = http_build_query( array_merge(
             [ 'page' => $this->getSlug() ],
             $params
@@ -224,7 +224,7 @@ class Page extends Registrable
      *
      * @return string
      */
-    public function getUrlWithParams( array $params = [] ) {
+    public function getUrlWithParams( $params = [] ) {
         parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $request_params);
 
         $query = http_build_query( array_merge(
