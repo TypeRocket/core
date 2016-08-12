@@ -273,6 +273,11 @@ class Response {
      * @return Response $this
      */
     public function withFields( $fields ) {
+
+        if( $fields instanceof Fields) {
+            $fields = $fields->getArrayCopy();
+        }
+
         if( !empty( $fields ) ) {
             $cookie = new Cookie();
             $cookie->setTransient('tr_old_fields', $fields);

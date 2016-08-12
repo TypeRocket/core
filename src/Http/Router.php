@@ -70,7 +70,8 @@ class Router
             if( !empty($vars) || ( ! empty($params) && ! $this->item_id ) ) {
                 foreach ($params as $index => $param ) {
                     if ( $param->getClass() ) {
-                        $args[$index] = new Resolver( $param->getClass() );
+                        $class = $param->getClass();
+                        $args[$index] = (new Resolver)->resolve( $class->name );
                     } elseif( isset($vars[$param->getName()]) ) {
                         $args[$index] = $vars[$param->getName()];
                     }

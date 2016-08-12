@@ -29,6 +29,11 @@ class Redirect
      * @return \TypeRocket\Http\Redirect $this
      */
     public function withFields( $fields, $notFields = [] ) {
+
+        if( $fields instanceof Fields) {
+            $fields = $fields->getArrayCopy();
+        }
+
         if( !empty( $fields ) ) {
             $cookie = new Cookie();
             $send = array_diff_key($fields, array_flip($notFields));
