@@ -69,28 +69,32 @@ class Router
             $args = [];
             $vars = Routes::$vars;
 
-            if( !empty($vars) || ( ! empty($params) && ! $this->item_id ) ) {
-                foreach ($params as $index => $param ) {
-                    $varName = $param->getName();
-                    if ( $param->getClass() && ! isset($vars[$varName]) ) {
+            foreach ($params as $index => $param ) {
+                $varName = $param->getName();
+                if ( $param->getClass() && ! isset($vars[$varName]) ) {
 
-                        $instance = (new Resolver)->resolve( $param->getClass()->name );
+                    $instance = (new Resolver)->resolve( $param->getClass()->name );
 
-                        if( $instance instanceof SchemaModel &&
-                            isset($vars[ $instance->getRouterInjectionColumn() ]) )
-                        {
-                            $injectionColumn = $instance->getRouterInjectionColumn();
+                    if( $instance instanceof SchemaModel &&
+                        isset($vars[ $instance->getRouterInjectionColumn() ]) || $this->item_id )
+                    {
+                        $injectionColumn = $instance->getRouterInjectionColumn();
+                        if( isset($vars[ $instance->getRouterInjectionColumn() ]) ) {
                             $modelId = $vars[ $injectionColumn ];
-                            $instance = $instance->findFirstWhereOrDie($injectionColumn, $modelId );
+                        } else {
+                            $modelId = $this->item_id;
                         }
 
-                        $args[$index] = $instance;
-                    } elseif( isset($vars[$varName]) ) {
-                        $args[$index] = $vars[$varName];
+                        $injectionColumn = $instance->getRouterInjectionColumn();
+                        $instance = $instance->findFirstWhereOrDie($injectionColumn, $modelId );
                     }
+
+                    $args[$index] = $instance;
+                } elseif( isset($vars[$varName]) ) {
+                    $args[$index] = $vars[$varName];
+                } else {
+                    $args[$index] = $args[] = $this->item_id;
                 }
-            } else {
-                $args[] = $this->item_id;
             }
 
             $this->returned = call_user_func_array( [$controller, $action], $args );
