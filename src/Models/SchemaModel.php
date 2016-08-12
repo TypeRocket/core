@@ -429,10 +429,6 @@ abstract class SchemaModel extends Model
                     $result = $result[0];
                 }
             }
-
-            if($result && $this->returnOne) {
-                $result = $result[0];
-            }
         }
 
         $this->lastCompiledSQL = $sql;
