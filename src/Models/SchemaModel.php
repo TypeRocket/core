@@ -6,8 +6,6 @@ abstract class SchemaModel extends Model
     public $resource = null;
     public $table = null;
     public $idColumn = 'id';
-    public $objectClass = Object::class;
-    public $collectionClass = Collection::class;
 
     protected $query = [];
     public $lastCompiledSQL = null;
