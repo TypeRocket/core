@@ -6,7 +6,7 @@ class Object
 {
 
     public $schemaClass = SchemaModel::class;
-    public $properties = [];
+    private $properties = [];
 
     /**
      * Load attributes from database
@@ -31,7 +31,7 @@ class Object
         $model = new $this->schemaClass();
 
         return $model
-            ->setGuardFields([])
+            ->setGuardFields([$model->idColumn])
             ->setFillableFields([])
             ->findById($this->properties[$model->idColumn])
             ->update($this->properties);
