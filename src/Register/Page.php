@@ -370,7 +370,7 @@ class Page extends Registrable
 
             if(isset($_GET)) {
                 foreach ($_GET as $name => $value) {
-                    if( str_starts('tr_', $name) ) {
+                    if( str_starts('route_', $name) ) {
                         $args[mb_substr($name, 3)] = $value;
                     }
                 }

@@ -3,6 +3,7 @@ namespace TypeRocket\Http;
 
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Resolver;
+use TypeRocket\Models\Object;
 use TypeRocket\Models\SchemaModel;
 
 /**
@@ -69,23 +70,23 @@ class Router
 
             foreach ($params as $index => $param ) {
                 $varName = $param->getName();
-                if ( $param->getClass() ) {
+                $class = $param->getClass();
+                if ( $class ) {
 
                     $instance = (new Resolver)->resolve( $param->getClass()->name );
 
-                    if( $instance instanceof SchemaModel ) {
-                        $injectionColumn = $instance->getRouterInjectionColumn();
+                    if( $instance instanceof Object ) {
+                        $injectionColumn = (new $instance->schemaClass)->getRouterInjectionColumn();
                         if( isset($vars[ $injectionColumn ]) ) {
-                            $modelId = $vars[ $injectionColumn ];
-                            $instance = $instance->findFirstWhereOrDie($injectionColumn, $modelId );
+                            $instance = $instance->getFromDatabase( $vars[ $injectionColumn ] );
                         }
                     }
 
                     $args[$index] = $instance;
-                } if( isset($vars[$varName]) ) {
+                } elseif( isset($vars[$varName]) ) {
                     $args[$index] = $vars[$varName];
                 } else {
-                    $args[$index] = $param->getDefaultValue();
+                    $args[$index] = $param;
                 }
             }
 

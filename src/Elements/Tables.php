@@ -172,15 +172,15 @@ class Tables
                         foreach ($this->page->pages as $page) {
                             /** @var Page $page */
                             if ($page->action == 'edit') {
-                                $edit_url = $page->getUrl(['tr_id' => (int)$result->id]);
+                                $edit_url = $page->getUrl(['route_id' => (int)$result->id]);
                             }
 
                             if ($page->action == 'show') {
-                                $show_url = $page->getUrl(['tr_id' => (int)$result->id]);
+                                $show_url = $page->getUrl(['route_id' => (int)$result->id]);
                             }
 
                             if ($page->action == 'delete') {
-                                $delete_url = $page->getUrl(['tr_id' => (int)$result->id]);
+                                $delete_url = $page->getUrl(['route_id' => (int)$result->id]);
                             }
                         }
 

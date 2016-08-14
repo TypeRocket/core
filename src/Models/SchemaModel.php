@@ -6,11 +6,12 @@ abstract class SchemaModel extends Model
     public $resource = null;
     public $table = null;
     public $idColumn = 'id';
+    public $objectClass = Object::class;
+    public $collectionClass = Collection::class;
 
     protected $query = [];
     public $lastCompiledSQL = null;
     public $cachedResult = null;
-    public $cacheBust = false;
     public $returnOne = false;
 
     protected $guard = [
@@ -49,8 +50,7 @@ abstract class SchemaModel extends Model
      * @return array|null|object
      */
     public function get() {
-        $this->cachedResult = $this->runQuery();
-        return $this->cachedResult;
+        return $this->runQuery();
     }
 
     /**
@@ -229,7 +229,7 @@ abstract class SchemaModel extends Model
             wp_die('Something went wrong');
         }
 
-        return $this;
+        return $data;
     }
 
     /**
@@ -281,14 +281,6 @@ abstract class SchemaModel extends Model
     }
 
     /**
-     * Bust Cached Result
-     */
-    public function cacheBust()
-    {
-        $this->cacheBust = true;
-    }
-
-    /**
      * Get base field value
      *
      * Some fields need to be saved as serialized arrays. Getting
@@ -320,7 +312,6 @@ abstract class SchemaModel extends Model
         global $wpdb;
 
         $table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
-        $result = [];
         $sql_select_columns = '*';
         $sql_where = $sql_limit = $sql_values = $sql_columns = $sql_update = $sql = $sql_order ='';
 
@@ -368,7 +359,7 @@ abstract class SchemaModel extends Model
         if( !empty($query['update']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = preg_replace("/[^a-z0-9\\\\_]+/", '', $column);
+                $columns[] = preg_replace("/[^a-zA-Z0-9\\\\_]+/", '', $column);
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', json_encode($data) );
@@ -420,14 +411,9 @@ abstract class SchemaModel extends Model
             $result = $wpdb->get_var( $sql );
         } else {
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
-
-            if( $this->lastCompiledSQL == $sql && ! $this->cacheBust ) {
-                $result = $this->cachedResult;
-            } else {
-                $result = $wpdb->get_results( $sql );
-                if($result && $this->returnOne) {
-                    $result = $result[0];
-                }
+            $result = $wpdb->get_results( $sql, ARRAY_A );
+            if($result && $this->returnOne) {
+                $result = $result[0];
             }
         }
 
