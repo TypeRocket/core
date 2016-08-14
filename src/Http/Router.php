@@ -3,9 +3,7 @@ namespace TypeRocket\Http;
 
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Resolver;
-use TypeRocket\Models\Model;
 use TypeRocket\Models\SchemaModel;
-use TypeRocket\Utility\Validator;
 
 /**
  * Class Router

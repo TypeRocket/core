@@ -29,9 +29,9 @@ class Request
     public function __construct( $resource = null, $method = null, $args = null, $action = 'auto' )
     {
         $this->resource = $resource;
-        $this->method = $method ? $method : $this->getFormMethod();
         $this->routerArgs = $args;
         $this->action = $action;
+        $this->method = $method ? $method : $this->getFormMethod();
         $this->fields = ! empty ( $_POST['tr'] ) ? $_POST['tr'] : [];
         $this->post   = ! empty ( $_POST ) ? $_POST : null;
         $this->get    = ! empty ( $_GET ) ? $_GET : null;
@@ -180,20 +180,6 @@ class Request
     public function getFields()
     {
         return $this->fields;
-    }
-
-    /**
-     * Set the fields
-     *
-     * @param Fields $fields
-     *
-     * @return $this;
-     */
-    public function setFields( Fields $fields )
-    {
-        $this->fields = $fields;
-
-        return $this;
     }
 
 }
