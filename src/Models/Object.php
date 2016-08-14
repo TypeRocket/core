@@ -15,7 +15,7 @@ class Object
      *
      * @return $this
      */
-    public function getFromDatabase( $id ) {
+    public function populate( $id ) {
 
         /** @var SchemaModel $model */
         $model = new $this->schemaClass();

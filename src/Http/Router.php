@@ -4,7 +4,6 @@ namespace TypeRocket\Http;
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Resolver;
 use TypeRocket\Models\Object;
-use TypeRocket\Models\SchemaModel;
 
 /**
  * Class Router
@@ -78,7 +77,7 @@ class Router
                     if( $instance instanceof Object ) {
                         $injectionColumn = (new $instance->schemaClass)->getRouterInjectionColumn();
                         if( isset($vars[ $injectionColumn ]) ) {
-                            $instance = $instance->getFromDatabase( $vars[ $injectionColumn ] );
+                            $instance = $instance->populate( $vars[ $injectionColumn ] );
                         }
                     }
 
