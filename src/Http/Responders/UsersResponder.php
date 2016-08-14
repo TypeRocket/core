@@ -15,6 +15,10 @@ class UsersResponder extends Responder {
      */
     public function respond( $userId ) {
 
+        if( ! is_array($userId) ) {
+            $userId = [ 'id' => $userId ];
+        }
+
         $request = new Request('users', 'PUT', $userId, 'update');
         $response = new Response();
         $response->blockFlash();

@@ -15,6 +15,10 @@ class CommentsResponder extends Responder {
      */
     public function respond( $commentId ) {
 
+        if( ! is_array($commentId) ) {
+            $commentId = [ 'id' => $commentId ];
+        }
+
         $request = new Request('comments', 'PUT', $commentId, 'update');
         $response = new Response();
         $response->blockFlash();

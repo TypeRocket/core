@@ -7,7 +7,7 @@ class Request
     private $resource = null;
     private $action = null;
     private $method = null;
-    private $id = null;
+    private $routerArgs = null;
     private $uri = null;
     private $path = null;
     private $host = null;
@@ -21,14 +21,16 @@ class Request
      *
      * @param string $resource the resource
      * @param string $method the method PUT, POST, GET, DELETE
-     * @param int $id the resource ID
+     * @param array $args the router args
      * @param string $action
+     *
+     * @internal param int $id the resource ID
      */
-    public function __construct( $resource = null, $method = null, $id = null, $action = 'auto' )
+    public function __construct( $resource = null, $method = null, $args = null, $action = 'auto' )
     {
         $this->resource = $resource;
         $this->method = $method ? $method : $this->getFormMethod();
-        $this->id = $id;
+        $this->routerArgs = $args;
         $this->action = $action;
         $this->fields = ! empty ( $_POST['tr'] ) ? $_POST['tr'] : [];
         $this->post   = ! empty ( $_POST ) ? $_POST : null;
@@ -84,13 +86,30 @@ class Request
     }
 
     /**
-     * Get the Resource ID
+     * Get the router args
      *
      * @return null
      */
-    public function getResourceId()
+    public function getRouterArgs()
     {
-        return $this->id;
+        return $this->routerArgs;
+    }
+
+    /**
+     * Get the router arg
+     *
+     * @param $key
+     * @param null $default
+     *
+     * @return mixed
+     */
+    public function getRouterArg($key, $default = null)
+    {
+        if( array_key_exists($key, $this->routerArgs) ) {
+            $default = $this->routerArgs[$key];
+        }
+
+        return $default;
     }
 
     /**

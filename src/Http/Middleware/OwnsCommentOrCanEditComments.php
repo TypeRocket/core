@@ -15,7 +15,7 @@ class OwnsCommentOrCanEditComments extends Middleware
     public function handle() {
 
         $currentUser = wp_get_current_user();
-        $item_id = $this->request->getResourceId();
+        $item_id = $this->request->getRouterArg('id');
         $comment = get_comment( $item_id );
 
         if ( empty($comment->user_id) || ( ! empty($comment->user_id) && $comment->user_id != $currentUser->ID && ! current_user_can( 'edit_comment' ) ) ) {

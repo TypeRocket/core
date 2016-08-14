@@ -30,6 +30,10 @@ class TaxonomiesResponder extends Responder
             $resource = 'categories';
         }
 
+        if( ! is_array($id) ) {
+            $id = [ 'id' => $id ];
+        }
+
         $request  = new Request( $resource, 'PUT', $id, 'update' );
         $response = new Response();
         $response->blockFlash();

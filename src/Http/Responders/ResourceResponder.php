@@ -21,6 +21,10 @@ class ResourceResponder extends Responder
      */
     public function respond( $id )
     {
+        if( ! is_array($id) ) {
+            $id = [ 'id' => $id ];
+        }
+
         $request  = new Request( $this->resource, null, $id, $this->action );
         $response = new Response();
         $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod);

@@ -3,6 +3,7 @@ namespace TypeRocket\Http\Responders;
 
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
+use TypeRocket\Http\RouteArguments;
 use \TypeRocket\Register\Registry;
 
 class PostsResponder extends Responder
@@ -31,6 +32,10 @@ class PostsResponder extends Responder
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
             $resource = 'posts';
+        }
+
+        if( ! is_array($postId) ) {
+            $postId = [ 'id' => $postId ];
         }
 
         $request  = new Request( $resource, 'PUT', $postId, 'update' );

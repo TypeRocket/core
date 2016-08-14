@@ -15,7 +15,7 @@ class IsUserOrCanEditUsers extends Middleware
     public function handle() {
 
         $currentUser = wp_get_current_user();
-        $user  = get_user_by( 'id', $this->request->getResourceId() );
+        $user  = get_user_by( 'id', $this->request->getRouterArg('id') );
 
         if ($user->ID != $currentUser->ID && ! current_user_can( 'edit_users' )) {
             $this->response->setError( 'auth', false );

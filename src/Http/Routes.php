@@ -15,7 +15,7 @@ use TypeRocket\Template\View;
 class Routes
 {
     public static $routes = [];
-    public static $vars = [];
+    public $vars = [];
     public static $request;
 
     /**
@@ -56,7 +56,7 @@ class Routes
     private function runRoute($path = null, $handle = null, $wilds = null)
     {
         $args = [$path, self::$request, $wilds];
-        self::$vars = $wilds;
+        $this->vars = $wilds;
 
         if( ! str_ends('/', self::$request->getPath() ) ) {
             wp_redirect( self::$request->getPath() . '/' );
@@ -89,7 +89,7 @@ class Routes
             $respond->setResource( ucfirst($resource) );
             $respond->setAction( $action );
             $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
-            $respond->respond( isset($wilds['id']) ? $wilds['id'] : null );
+            $respond->respond( $this->vars );
             $this->loadView();
         }
 
