@@ -17,15 +17,11 @@ class ResourceResponder extends Responder
      *
      * Create proper request and run through Kernel
      *
-     * @param $id
+     * @param $args
      */
-    public function respond( $id )
+    public function respond( $args )
     {
-        if( ! is_array($id) ) {
-            $id = [ 'id' => $id ];
-        }
-
-        $request  = new Request( $this->resource, null, $id, $this->action );
+        $request  = new Request( $this->resource, null, $args, $this->action );
         $response = new Response();
         $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod);
         $this->response( $this->kernel->router->returned , $response);

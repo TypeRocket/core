@@ -9,8 +9,6 @@ abstract class Responder
     /** @var \TypeRocket\Http\Kernel */
     public $kernel;
 
-    abstract public function respond( $id );
-
     /**
      * Run the Kernel
      *

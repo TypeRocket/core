@@ -366,8 +366,17 @@ class Page extends Registrable
             $respond = new ResourceResponder();
             $respond->setResource( $this->resource );
             $respond->setAction( $this->action );
-            $item_id = !empty($_GET['item_id']) ? (int) $_GET['item_id'] : null;
-            $respond->respond( $item_id );
+            $args = [];
+
+            if(isset($_GET)) {
+                foreach ($_GET as $name => $value) {
+                    if( str_starts('tr_', $name) ) {
+                        $args[mb_substr($name, 3)] = $value;
+                    }
+                }
+            }
+
+            $respond->respond( $args );
         }
     }
 

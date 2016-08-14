@@ -17,7 +17,7 @@ class Hook {
      */
     static public function posts($id) {
         $responder = new PostsResponder();
-        $responder->respond($id);
+        $responder->respond([ 'id' => $id ]);
     }
 
     /**
@@ -27,7 +27,7 @@ class Hook {
      */
     static public function comments($id) {
         $responder = new CommentsResponder();
-        $responder->respond($id);
+        $responder->respond([ 'id' => $id ]);
     }
 
     /**
@@ -37,7 +37,7 @@ class Hook {
      */
     static public function users($id) {
         $responder = new UsersResponder();
-        $responder->respond($id);
+        $responder->respond([ 'id' => $id ]);
     }
 
     /**
@@ -50,7 +50,7 @@ class Hook {
     static public function taxonomies($term_id, $term_taxonomy_id, $taxonomy) {
         $responder = new TaxonomiesResponder();
         $responder->taxonomy = $taxonomy;
-        $responder->respond($term_id);
+        $responder->respond([ 'id' => $term_id ]);
     }
 
 }

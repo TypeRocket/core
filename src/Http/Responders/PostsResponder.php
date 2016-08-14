@@ -15,10 +15,12 @@ class PostsResponder extends Responder
      * Detect the post types registered resource and run the Kernel
      * against that resource.
      *
-     * @param $postId
+     * @param $args
      */
-    public function respond( $postId )
+    public function respond( $args )
     {
+        $postId = $args['id'];
+
         if ( ! $id = wp_is_post_revision( $postId ) ) {
             $id = $postId;
         }
@@ -34,11 +36,7 @@ class PostsResponder extends Responder
             $resource = 'posts';
         }
 
-        if( ! is_array($postId) ) {
-            $postId = [ 'id' => $postId ];
-        }
-
-        $request  = new Request( $resource, 'PUT', $postId, 'update' );
+        $request  = new Request( $resource, 'PUT', $args, 'update' );
         $response = new Response();
         $response->blockFlash();
 

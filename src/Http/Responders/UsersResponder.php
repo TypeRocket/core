@@ -11,15 +11,11 @@ class UsersResponder extends Responder {
      *
      * Create proper request and run through Kernel
      *
-     * @param $userId
+     * @param $args
      */
-    public function respond( $userId ) {
+    public function respond( $args ) {
 
-        if( ! is_array($userId) ) {
-            $userId = [ 'id' => $userId ];
-        }
-
-        $request = new Request('users', 'PUT', $userId, 'update');
+        $request = new Request('users', 'PUT', $args, 'update');
         $response = new Response();
         $response->blockFlash();
 

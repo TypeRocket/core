@@ -11,15 +11,11 @@ class CommentsResponder extends Responder {
      *
      * Create proper request and run through Kernel
      *
-     * @param $commentId
+     * @param $args
      */
-    public function respond( $commentId ) {
+    public function respond( $args ) {
 
-        if( ! is_array($commentId) ) {
-            $commentId = [ 'id' => $commentId ];
-        }
-
-        $request = new Request('comments', 'PUT', $commentId, 'update');
+        $request = new Request('comments', 'PUT', $args, 'update');
         $response = new Response();
         $response->blockFlash();
 

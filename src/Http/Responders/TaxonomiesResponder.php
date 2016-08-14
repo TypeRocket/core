@@ -16,9 +16,9 @@ class TaxonomiesResponder extends Responder
      * Detect the post types registered resource and run the Kernel
      * against that resource.
      *
-     * @param $id
+     * @param $args
      */
-    public function respond( $id )
+    public function respond( $args )
     {
         $taxonomy   = $this->taxonomy;
         $resource   = Registry::getTaxonomyResource( $taxonomy );
@@ -30,11 +30,7 @@ class TaxonomiesResponder extends Responder
             $resource = 'categories';
         }
 
-        if( ! is_array($id) ) {
-            $id = [ 'id' => $id ];
-        }
-
-        $request  = new Request( $resource, 'PUT', $id, 'update' );
+        $request  = new Request( $resource, 'PUT', $args, 'update' );
         $response = new Response();
         $response->blockFlash();
 

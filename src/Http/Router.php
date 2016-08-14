@@ -72,17 +72,20 @@ class Router
                 if ( $param->getClass() ) {
 
                     $instance = (new Resolver)->resolve( $param->getClass()->name );
-                    $injectionColumn = $instance->getRouterInjectionColumn();
 
-                    if( $instance instanceof SchemaModel && isset($vars[ $injectionColumn ]) )
-                    {
-                        $modelId = $vars[ $injectionColumn ];
-                        $instance = $instance->findFirstWhereOrDie($injectionColumn, $modelId );
+                    if( $instance instanceof SchemaModel ) {
+                        $injectionColumn = $instance->getRouterInjectionColumn();
+                        if( isset($vars[ $injectionColumn ]) ) {
+                            $modelId = $vars[ $injectionColumn ];
+                            $instance = $instance->findFirstWhereOrDie($injectionColumn, $modelId );
+                        }
                     }
 
                     $args[$index] = $instance;
                 } if( isset($vars[$varName]) ) {
                     $args[$index] = $vars[$varName];
+                } else {
+                    $args[$index] = $param->getDefaultValue();
                 }
             }
 

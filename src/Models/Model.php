@@ -574,7 +574,7 @@ abstract class Model
      */
     public function getRouterInjectionColumn()
     {
-        return $this->idColumn;
+        return strtolower($this->idColumn);
     }
 
     /**

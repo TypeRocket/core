@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Http\Request;
 use TypeRocket\Models\PostTypesModel;
 
 abstract class PostTypesBaseController extends Controller
