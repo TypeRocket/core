@@ -60,7 +60,7 @@ abstract class CommentsModel extends Model
              ! empty( $builtin['comment_content'] )
         ) {
             remove_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
-            $comment   = wp_new_comment( $this->formatFields( $builtin ) );
+            $comment   = wp_new_comment( $this->caseFieldColumns( $builtin ) );
             add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
 
             if (empty( $comment )) {
@@ -90,18 +90,19 @@ abstract class CommentsModel extends Model
      */
     public function update( $fields )
     {
-        if ($this->id != null) {
+        $id = $this->getID();
+        if ($id != null) {
             $fields  = $this->secureFields( $fields );
             $fields  = array_merge( $fields, $this->static );
             $builtin = $this->getFilteredBuiltinFields( $fields );
 
             if ( ! empty( $builtin )) {
                 remove_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
-                $builtin['comment_id'] = $this->id;
-                $builtin = $this->formatFields( $builtin );
+                $builtin['comment_id'] = $id;
+                $builtin = $this->caseFieldColumns( $builtin );
                 wp_update_comment( $builtin );
                 add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
-                $this->findById($this->id);
+                $this->findById($id);
             }
 
             $this->saveMeta( $fields );
@@ -145,7 +146,7 @@ abstract class CommentsModel extends Model
      *
      * @return array
      */
-    private function formatFields( $fields )
+    private function caseFieldColumns( $fields )
     {
 
         if ( ! empty( $fields['comment_post_id'] )) {
@@ -197,7 +198,7 @@ abstract class CommentsModel extends Model
             }
 
         } else {
-            $data = get_metadata( 'comment', $this->id, $field_name, true );
+            $data = get_metadata( 'comment', $this->getID(), $field_name, true );
         }
 
         return $this->getValueOrNull( $data );
