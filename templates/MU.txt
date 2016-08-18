@@ -2,9 +2,9 @@
 /*
 Plugin Name: TypeRocket
 Description: The WordPress Framework Designed for Developers.
-Author: Robojuice
+Author: TypeRocket
 Version: 3.0.0
-Author URI: http://robojuice.com
+Author URI: http://typerocket.com
 */
 if( defined('TR_PATH') ) {
     define( 'TR_START', microtime( true ) );
