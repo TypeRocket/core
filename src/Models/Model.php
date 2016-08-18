@@ -9,8 +9,6 @@ use TypeRocket\Http\Fields;
 
 abstract class Model
 {
-
-    protected $id = null;
     protected $fillable = [];
     protected $guard = ['id'];
     protected $format = [];
@@ -37,11 +35,10 @@ abstract class Model
         $this->query = new Query();
         $this->query->table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
 
-        $reflect = new \ReflectionClass( $this );
-        $type    = $reflect->getShortName();
+        $type    = (new \ReflectionClass( $this ))->getShortName();
         $suffix  = '';
 
-        if ( ! empty( $type )) {
+        if ( ! empty( $type ) ) {
             $suffix = '_' . $type;
         }
 
@@ -276,17 +273,6 @@ abstract class Model
     }
 
     /**
-     * Resource ID
-     *
-     * The ID of the resource being used.
-     *
-     * @return null
-     */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
      * Get Errors
      *
      * Get any errors that have been logged
@@ -456,7 +442,7 @@ abstract class Model
             $field = $field->getDots();
         }
 
-        if ($this->id == null && ! $this->old ) {
+        if ($this->getID() == null && ! $this->old ) {
             return null;
         }
 
@@ -738,7 +724,7 @@ abstract class Model
      *
      * @return mixed
      */
-    public function create( $fields)
+    public function create( $fields )
     {
         $fields = $this->secureFields($fields);
         $fields = array_merge($this->default, $fields, $this->static);
@@ -753,7 +739,7 @@ abstract class Model
      *
      * @return mixed
      */
-    public function update( $fields = [])
+    public function update( $fields )
     {
         $fields = $this->secureFields($fields);
         $fields = array_merge($this->default, $fields, $this->static);
@@ -770,7 +756,13 @@ abstract class Model
      */
     public function findById($id)
     {
-        $this->query->findById($id);
+        $results = $this->query->findById($id)->get();
+
+        if( $results instanceof Results ) {
+            return $results;
+        }
+
+        $this->properties = $results;
 
         return $this;
     }
@@ -869,7 +861,7 @@ abstract class Model
      */
     protected function getBaseFieldValue($field_name)
     {
-        $data = $this->query->findById($this->id)->get();
+        $data = $this->query->findById($this->getID())->get();
         return $this->getValueOrNull( wp_unslash($data->$field_name) );
     }
 
@@ -884,14 +876,22 @@ abstract class Model
     }
 
     /**
+     * Get the ID from properties
+     *
+     * @return mixed
+     */
+    public function getID()
+    {
+        return $this->properties[$this->idColumn];
+    }
+
+    /**
      * Save changes directly
      *
      * @return mixed
      */
     public function save() {
         return $this
-            ->setGuardFields([$this->idColumn])
-            ->setFillableFields([])
             ->findById($this->properties[$this->idColumn])
             ->update($this->properties);
     }

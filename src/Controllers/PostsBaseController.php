@@ -31,14 +31,15 @@ abstract class PostsBaseController extends Controller
      */
     public function update( $id = null )
     {
-        $errors = $this->model->findById( $id )->update( $this->request->getFields() )->getErrors();
+        $post = $this->model->findById( $id );
+        $errors = $post->update( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {
             $this->response->flashNext($this->type . ' not updated', 'success' );
             $this->response->setError( 'model', $errors );
         } else {
             $this->response->flashNext($this->type . ' updated', 'success' );
-            $this->response->setData('resourceId', $this->model->getId());
+            $this->response->setData('resourceId', $id );
         }
 
     }
@@ -56,7 +57,7 @@ abstract class PostsBaseController extends Controller
         } else {
             $this->response->flashNext($this->type . ' created', 'success' );
             $this->response->setStatus(201);
-            $this->response->setData('resourceId', $this->model->getId());
+            $this->response->setData('resourceId', $this->model->getID());
         }
 
     }

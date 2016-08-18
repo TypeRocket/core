@@ -22,7 +22,7 @@ abstract class UsersBaseController extends Controller
             $this->response->setError( 'model', $errors );
         } else {
             $this->response->flashNext( 'User updated', 'success' );
-            $this->response->setData('resourceId', $user->getId());
+            $this->response->setData('resourceId', $user->getID());
         }
     }
 
@@ -41,7 +41,7 @@ abstract class UsersBaseController extends Controller
         } else {
             $this->response->flashNext( 'User created', 'success' );
             $this->response->setStatus(201);
-            $this->response->setData('resourceId', $user->getId());
+            $this->response->setData('resourceId', $user->getID());
         }
     }
 

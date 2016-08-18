@@ -22,7 +22,7 @@ abstract class CommentsBaseController extends Controller
             $this->response->setError( 'model', $errors );
         } else {
             $this->response->flashNext( 'Comment updated', 'success' );
-            $this->response->setData('resourceId', $comments->getId());
+            $this->response->setData('resourceId', $comments->getID() );
         }
 
     }
@@ -42,7 +42,7 @@ abstract class CommentsBaseController extends Controller
         } else {
             $this->response->flashNext( 'Comment created', 'success' );
             $this->response->setStatus(201);
-            $this->response->setData('resourceId', $comments->getId());
+            $this->response->setData('resourceId', $comments->getID() );
         }
 
     }

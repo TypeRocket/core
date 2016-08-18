@@ -33,9 +33,7 @@ abstract class TermsModel extends Model
      */
     public function findById( $id )
     {
-        $this->id   = $id;
-        $this->setData('term', get_term( $this->id, $this->taxonomy ) );
-
+        $this->properties = get_term( $id, $this->taxonomy, ARRAY_A );
         return $this;
     }
 
@@ -68,8 +66,7 @@ abstract class TermsModel extends Model
                 $default      = 'name is required';
                 $this->errors = ! empty( $term->errors ) ? $term->errors : [$default];
             } else {
-                $this->id   = $term;
-                $this->setData('term', get_term( $this->id, $this->taxonomy ) );
+                $this->findById($term);
             }
         }
 

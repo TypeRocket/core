@@ -47,8 +47,8 @@ class PostsModel extends Model
      * @return $this
      */
     public function findById($id) {
-        $this->id = $id;
-        $this->setData('post', get_post( $this->id ));
+        $this->properties = get_post( $id, ARRAY_A );
+
         return $this;
     }
 
@@ -83,8 +83,7 @@ class PostsModel extends Model
                 $default      = 'post_name (slug), post_title, post_content, and post_excerpt are required';
                 $this->errors = ! empty( $post->errors ) ? $post->errors : [$default];
             } else {
-                $this->id   = $post;
-                $this->setData('post', get_post( $this->id ));
+                $this->findById($post);
             }
         }
 
@@ -102,19 +101,19 @@ class PostsModel extends Model
      */
     public function update( $fields )
     {
-        if($this->id != null && ! wp_is_post_revision( $this->id ) ) {
+        $id = $this->getID();
+        if( $id != null && ! wp_is_post_revision( $id ) ) {
             $fields = $this->secureFields($fields);
             $fields = array_merge($fields, $this->static);
             $builtin = $this->getFilteredBuiltinFields($fields);
 
             if ( ! empty( $builtin ) ) {
                 remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
-                $builtin['ID'] = $this->id;
-                $post = $this->getData('post');
-                $builtin['post_type'] = $post->post_type;
+                $builtin['ID'] = $id;
+                $builtin['post_type'] = $this->post_type;
                 wp_update_post( $builtin );
                 add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
-                $this->setData('post', get_post( $this->id ));
+                $this->findById($this->ID);
             }
 
             $this->saveMeta( $fields );
@@ -134,9 +133,10 @@ class PostsModel extends Model
     private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields($fields);
-        if ( ! empty($fields) && ! empty( $this->id )) :
-            if ($parent_id = wp_is_post_revision( $this->id )) {
-                $this->id = $parent_id;
+        $id = $this->getID();
+        if ( ! empty($fields) && ! empty( $id )) :
+            if ($parent_id = wp_is_post_revision( $id )) {
+                $id = $parent_id;
             }
 
             foreach ($fields as $key => $value) :
@@ -144,17 +144,18 @@ class PostsModel extends Model
                     $value = trim( $value );
                 }
 
-                $current_value = get_post_meta( $this->id, $key, true );
+                $current_value = get_post_meta( $id, $key, true );
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
-                    update_post_meta( $this->id, $key, $value );
+                    $updated = update_post_meta( $id, $key, $value );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
-                    delete_post_meta( $this->id, $key );
+                    delete_post_meta( $id, $key );
                 endif;
 
             endforeach;
         endif;
 
+        return $this;
     }
 
     /**
@@ -170,21 +171,21 @@ class PostsModel extends Model
      */
     protected function getBaseFieldValue( $field_name )
     {
-
+        $id = $this->getID();
         if(in_array($field_name, $this->builtin)) {
             switch ($field_name) {
                 case 'post_password' :
                     $data = '';
                     break;
                 case 'id' :
-                    $data = get_post_field( 'ID', $this->id, 'raw' );
+                    $data = get_post_field( 'ID', $id, 'raw' );
                     break;
                 default :
-                    $data = get_post_field( $field_name, $this->id, 'raw' );
+                    $data = get_post_field( $field_name, $id, 'raw' );
                     break;
             }
         } else {
-            $data = get_metadata( 'post', $this->id, $field_name, true );
+            $data = get_metadata( 'post', $id, $field_name, true );
         }
 
         return $this->getValueOrNull($data);

@@ -4,7 +4,6 @@ namespace TypeRocket\Models;
 abstract class OptionsModel extends Model
 {
 
-    protected $id = 1;
     public $idColumn = 'option_id';
     public $resource = 'options';
 

@@ -38,8 +38,7 @@ abstract class CommentsModel extends Model
      */
     public function findById( $id )
     {
-        $this->id   = $id;
-        $this->setData('comment', get_comment( $this->id ) );
+        $this->properties = get_comment( $id, ARRAY_A );
 
         return $this;
     }
@@ -68,8 +67,7 @@ abstract class CommentsModel extends Model
                 $message      = 'Comment not created.';
                 $this->errors = [$message];
             } else {
-                $this->id   = $comment;
-                $this->setData('comment', get_comment( $this->id ) );
+                $this->findById($comment);
             }
         } else {
             $this->errors = [
@@ -103,7 +101,7 @@ abstract class CommentsModel extends Model
                 $builtin = $this->formatFields( $builtin );
                 wp_update_comment( $builtin );
                 add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
-                $this->setData('comment', get_comment( $this->id ) );
+                $this->findById($this->id);
             }
 
             $this->saveMeta( $fields );
@@ -183,21 +181,18 @@ abstract class CommentsModel extends Model
     protected function getBaseFieldValue( $field_name )
     {
         if (in_array( $field_name, $this->builtin )) {
-
-            $comment = $this->getData('comment');
-
             switch ($field_name) {
                 case 'comment_author_ip' :
-                    $data = $comment->comment_author_IP;
+                    $data = $this->properties['comment_author_IP'];
                     break;
                 case 'comment_post_id' :
-                    $data = $comment->comment_post_ID;
+                    $data = $this->properties['comment_post_ID'];
                     break;
                 case 'comment_id' :
-                    $data = $comment->comment_ID;
+                    $data = $this->properties['comment_ID'];
                     break;
                 default :
-                    $data = $comment->$field_name;
+                    $data = $this->properties[$field_name];
                     break;
             }
 

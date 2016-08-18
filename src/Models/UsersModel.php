@@ -32,8 +32,7 @@ abstract class UsersModel extends Model
      */
     public function findById( $id )
     {
-        $this->id   = $id;
-        $this->setData('user', get_userdata( $this->id ));
+        $this->properties = get_user_by( 'id', $id );
 
         return $this;
     }
@@ -60,11 +59,9 @@ abstract class UsersModel extends Model
             if ($user instanceof \WP_Error || ! is_int( $user )) {
                 $this->errors = isset( $user->errors ) ? $user->errors : [];
             } else {
-                $this->id   = $user;
-                $this->setData('user', get_userdata( $this->id ));
+                $this->findById($user);
             }
         }
-
 
         $this->saveMeta( $fields );
 

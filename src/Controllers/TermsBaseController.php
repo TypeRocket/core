@@ -38,7 +38,7 @@ abstract class TermsBaseController extends Controller
             $this->response->setError( 'model', $errors );
         } else {
             $this->response->flashNext($this->type . ' updated', 'success' );
-            $this->response->setData('resourceId', $this->model->getId());
+            $this->response->setData('resourceId', $this->model->getID());
         }
 
     }
@@ -56,7 +56,7 @@ abstract class TermsBaseController extends Controller
         } else {
             $this->response->flashNext($this->type . ' created', 'success' );
             $this->response->setStatus(201);
-            $this->response->setData('resourceId', $this->model->getId());
+            $this->response->setData('resourceId', $this->model->getID());
         }
 
     }
