@@ -110,10 +110,10 @@ class PostsModel extends Model
             if ( ! empty( $builtin ) ) {
                 remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
                 $builtin['ID'] = $id;
-                $builtin['post_type'] = $this->post_type;
+                $builtin['post_type'] = $this->properties['post_type'];
                 wp_update_post( $builtin );
                 add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
-                $this->findById($this->ID);
+                $this->findById( $id );
             }
 
             $this->saveMeta( $fields );
@@ -149,7 +149,7 @@ class PostsModel extends Model
                 $current_value = get_post_meta( $id, $key, true );
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
-                    $updated = update_post_meta( $id, $key, $value );
+                    update_post_meta( $id, $key, $value );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
                     delete_post_meta( $id, $key );
                 endif;

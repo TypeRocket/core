@@ -117,6 +117,8 @@ abstract class CommentsModel extends Model
      * Save comment meta fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
+     *
+     * @return $this
      */
     private function saveMeta( $fields )
     {
@@ -137,6 +139,8 @@ abstract class CommentsModel extends Model
 
             endforeach;
         endif;
+
+        return $this;
     }
 
     /**

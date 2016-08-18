@@ -116,6 +116,8 @@ abstract class TermsModel extends Model
      * Save term meta fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
+     *
+     * @return $this
      */
     private function saveMeta( $fields )
     {
@@ -137,6 +139,7 @@ abstract class TermsModel extends Model
             endforeach;
         endif;
 
+        return $this;
     }
 
     /**

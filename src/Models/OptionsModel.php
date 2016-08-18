@@ -55,6 +55,8 @@ abstract class OptionsModel extends Model
      * Save options' fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
+     *
+     * @return $this
      */
     private function saveOptions( $fields )
     {
@@ -76,6 +78,7 @@ abstract class OptionsModel extends Model
             endforeach;
         }
 
+        return $this;
     }
 
     /**
