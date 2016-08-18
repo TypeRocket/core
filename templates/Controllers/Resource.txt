@@ -1,9 +1,9 @@
 <?php
 namespace {{namespace}}\Controllers;
 
-use TypeRocket\Controllers\ResourceBaseController;
+use TypeRocket\Controllers\Controller;
 
-class {{controller}} extends ResourceBaseController
+class {{controller}} extends Controller
 {
 
     /**
