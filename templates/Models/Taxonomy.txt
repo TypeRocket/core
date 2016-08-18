@@ -1,9 +1,9 @@
 <?php
 namespace {{namespace}}\Models;
 
-use TypeRocket\Models\TaxonomiesModel;
+use TypeRocket\Models\TermsModel;
 
-class {{model}} extends TaxonomiesModel
+class {{model}} extends TermsModel
 {
     protected $taxonomy = '{{id}}';
 }

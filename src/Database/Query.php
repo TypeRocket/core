@@ -1,20 +1,15 @@
 <?php
-namespace TypeRocket\Models;
+namespace TypeRocket\Database;
 
-abstract class SchemaModel extends Model
+class Query
 {
-    public $resource = null;
     public $table = null;
     public $idColumn = 'id';
 
-    protected $query = [];
     public $lastCompiledSQL = null;
     public $cachedResult = null;
     public $returnOne = false;
-
-    protected $guard = [
-        'id'
-    ];
+    protected $query = [];
 
     /**
      * Get Date Time
@@ -31,7 +26,7 @@ abstract class SchemaModel extends Model
      *
      * @param array|\ArrayObject $ids
      *
-     * @return SchemaModel $this
+     * @return Query $this
      */
     public function findAll( $ids = [] )
     {
@@ -152,9 +147,6 @@ abstract class SchemaModel extends Model
      */
     public function create( $fields)
     {
-        $fields = $this->secureFields($fields);
-        $fields = array_merge($this->default, $fields, $this->static);
-
         $this->query['create'] = true;
         unset($this->query['select']);
         $this->query['data'] = $fields;
@@ -171,9 +163,6 @@ abstract class SchemaModel extends Model
      */
     public function update( $fields = [])
     {
-        $fields = $this->secureFields($fields);
-        $fields = array_merge($this->default, $fields, $this->static);
-
         $this->query['update'] = true;
         unset($this->query['select']);
         $this->query['data'] = $fields;
@@ -191,8 +180,7 @@ abstract class SchemaModel extends Model
     public function findById($id)
     {
         $this->returnOne = true;
-        $this->id        = (int) $id;
-        return $this->where( $this->idColumn , $id)->take(1)->findAll();
+        return $this->where( $this->idColumn, $id)->take(1)->findAll();
     }
 
     /**
@@ -279,26 +267,6 @@ abstract class SchemaModel extends Model
     }
 
     /**
-     * Get base field value
-     *
-     * Some fields need to be saved as serialized arrays. Getting
-     * the field by the base value is used by Fields to populate
-     * their values.
-     *
-     * This method must be implemented to return the base value
-     * of a field if it is saved as a bracket group.
-     *
-     * @param $field_name
-     *
-     * @return null
-     */
-    protected function getBaseFieldValue($field_name)
-    {
-        $data = $this->findById($this->id)->get();
-        return $this->getValueOrNull( wp_unslash($data->$field_name) );
-    }
-
-    /**
      * Run the SQL query from the query property
      *
      * @param array|\ArrayObject $query
@@ -309,7 +277,7 @@ abstract class SchemaModel extends Model
         /** @var \wpdb $wpdb */
         global $wpdb;
 
-        $table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
+        $table = $this->table;
         $sql_select_columns = '*';
         $sql_where = $sql_limit = $sql_values = $sql_columns = $sql_update = $sql = $sql_order ='';
 
@@ -409,9 +377,14 @@ abstract class SchemaModel extends Model
             $result = $wpdb->get_var( $sql );
         } else {
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
-            $result = $wpdb->get_results( $sql, ARRAY_A );
-            if($result && $this->returnOne) {
-                $result = $result[0];
+            $results = $wpdb->get_results( $sql, ARRAY_A );
+            if($results && $this->returnOne) {
+                $result = $results[0];
+            } else {
+                $result = new Results();
+                foreach ($results as $object) {
+                    $result->prepend($object);
+                }
             }
         }
 

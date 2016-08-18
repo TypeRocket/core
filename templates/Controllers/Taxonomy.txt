@@ -2,9 +2,9 @@
 namespace {{namespace}}\Controllers;
 
 use \App\Models\{{model}};
-use \TypeRocket\Controllers\TaxonomiesBaseController;
+use \TypeRocket\Controllers\TermsBaseController;
 
-class {{controller}} extends TaxonomiesBaseController
+class {{controller}} extends TermsBaseController
 {
     protected $modelClass = {{model}}::class;
 }

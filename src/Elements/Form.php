@@ -6,9 +6,9 @@ use TypeRocket\Elements\Fields\Submit;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
-use TypeRocket\Models\PostTypesModel;
+use TypeRocket\Models\PostsModel;
 use TypeRocket\Models\SchemaModel;
-use TypeRocket\Models\TaxonomiesModel;
+use TypeRocket\Models\TermsModel;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
 use TypeRocket\Register\Registry;
 
@@ -340,11 +340,11 @@ class Form
             $controller = $resource;
             $param = '';
 
-            if($this->model instanceof PostTypesModel) {
+            if($this->model instanceof PostsModel) {
                 $controller = 'posts';
             }
 
-            if($this->model instanceof TaxonomiesModel) {
+            if($this->model instanceof TermsModel) {
                 $controller = 'taxonomies';
                 $param = ", '{$resource}'";
                 $id = $field->getItemId() ? $field->getItemId() : '$id';

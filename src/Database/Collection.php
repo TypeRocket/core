@@ -1,7 +1,9 @@
 <?php
-namespace TypeRocket\Html;
 
-class TagCollection extends \ArrayObject
+namespace TypeRocket\Database;
+
+
+class Results extends \ArrayObject
 {
     /**
      * Add item to top of collection

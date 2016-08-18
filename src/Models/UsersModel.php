@@ -4,6 +4,7 @@ namespace TypeRocket\Models;
 abstract class UsersModel extends Model
 {
     public $idColumn = 'ID';
+    public $resource = 'users';
 
     protected $builtin = [
         'user_login',

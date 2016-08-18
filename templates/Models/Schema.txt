@@ -1,9 +1,9 @@
 <?php
 namespace {{namespace}}\Models;
 
-use TypeRocket\Models\SchemaModel;
+use TypeRocket\Models\Model;
 
-class {{model}} extends SchemaModel
+class {{model}} extends Model
 {
     public $resource = '{{id}}';
 }

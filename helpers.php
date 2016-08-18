@@ -201,7 +201,7 @@ function tr_posts_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $model = new \TypeRocket\Models\PostTypesModel();
+    $model = new \TypeRocket\Models\PostsModel();
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
@@ -221,7 +221,7 @@ if( ! function_exists('tr_components_field') ) {
  *
  * @return array|mixed|null|string
  */
-function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\PostTypesModel::class )
+function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\PostsModel::class )
 {
     global $post;
 
@@ -336,7 +336,7 @@ if( ! function_exists('tr_taxonomies_field') ) {
  */
 function tr_taxonomies_field($name, $taxonomy, $item_id = null)
 {
-    /** @var \TypeRocket\Models\TaxonomiesModel $model */
+    /** @var \TypeRocket\Models\TermsModel $model */
     $model = tr_get_model($taxonomy);
     $model->findById($item_id);
 
@@ -356,7 +356,7 @@ if( ! function_exists('tr_resource_field') ) {
  */
 function tr_resource_field($name, $resource, $item_id = null)
 {
-    /** @var \TypeRocket\Models\TaxonomiesModel $model */
+    /** @var \TypeRocket\Models\TermsModel $model */
     $model = tr_get_model($resource);
     $model->findById($item_id);
 

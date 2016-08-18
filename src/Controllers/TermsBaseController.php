@@ -1,13 +1,12 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Http\Request;
-use TypeRocket\Models\PostTypesModel;
+use TypeRocket\Models\TermsModel;
 
-abstract class PostTypesBaseController extends Controller
+abstract class TermsBaseController extends Controller
 {
 
-    /** @var PostTypesModel */
+    /** @var TermsModel */
     protected $model = null;
     protected $type = null;
 
@@ -24,7 +23,7 @@ abstract class PostTypesBaseController extends Controller
     }
 
     /**
-     * Update Post by ID
+     * Update Taxonomy Term by ID
      *
      * @param null $id
      *
@@ -35,7 +34,7 @@ abstract class PostTypesBaseController extends Controller
         $errors = $this->model->findById( $id )->update( $this->request->getFields() )->getErrors();
 
         if ( ! empty ( $errors )) {
-            $this->response->flashNext($this->type . ' not updated', 'success' );
+            $this->response->flashNext($this->type . ' not updated', 'error' );
             $this->response->setError( 'model', $errors );
         } else {
             $this->response->flashNext($this->type . ' updated', 'success' );
@@ -45,13 +44,13 @@ abstract class PostTypesBaseController extends Controller
     }
 
     /**
-     * Create Post
+     * Create Taxonomy Term
      */
     public function create()
     {
         $errors = $this->model->create( $this->request->getFields() )->getErrors();
 
-        if ( ! empty ( $errors ) ) {
+        if ( ! empty ( $errors )) {
             $this->response->flashNext($this->type . ' not created', 'error' );
             $this->response->setError( 'model', $errors );
         } else {

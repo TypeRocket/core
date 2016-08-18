@@ -1,9 +1,10 @@
 <?php
 namespace TypeRocket\Models;
 
-class PostTypesModel extends Model
+class PostsModel extends Model
 {
     public $idColumn = 'ID';
+    public $resource = 'posts';
 
     protected $builtin = [
         'post_author',

@@ -1,9 +1,10 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class TaxonomiesModel extends Model
+abstract class TermsModel extends Model
 {
     public $idColumn = 'term_id';
+    public $resource = 'terms';
 
     protected $taxonomy = null;
 

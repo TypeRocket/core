@@ -5,6 +5,7 @@ abstract class CommentsModel extends Model
 {
 
     public $idColumn = 'comment_ID';
+    public $resource = 'comments';
 
     protected $builtin = [
         'comment_author',

@@ -2,9 +2,9 @@
 namespace {{namespace}}\Controllers;
 
 use App\Models\{{model}};
-use TypeRocket\Controllers\PostTypesBaseController;
+use TypeRocket\Controllers\PostsBaseController;
 
-class {{controller}} extends PostTypesBaseController
+class {{controller}} extends PostsBaseController
 {
     protected $modelClass = {{model}}::class;
 }

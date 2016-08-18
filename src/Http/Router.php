@@ -3,6 +3,7 @@ namespace TypeRocket\Http;
 
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Resolver;
+use TypeRocket\Models\Model;
 use TypeRocket\Models\Object;
 
 /**
@@ -74,10 +75,10 @@ class Router
 
                     $instance = (new Resolver)->resolve( $param->getClass()->name );
 
-                    if( $instance instanceof Object ) {
-                        $injectionColumn = (new $instance->schemaClass)->getRouterInjectionColumn();
+                    if( $instance instanceof Model ) {
+                        $injectionColumn = $instance->getRouterInjectionColumn();
                         if( isset($vars[ $injectionColumn ]) ) {
-                            $instance = $instance->populate( $vars[ $injectionColumn ] );
+                            $instance = $instance->findFirstWhereOrDie($injectionColumn, $vars[ $injectionColumn ] );
                         }
                     }
 

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Database\Query;
+use TypeRocket\Database\Results;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
@@ -10,23 +12,33 @@ abstract class Model
 
     protected $id = null;
     protected $fillable = [];
-    protected $guard = [];
+    protected $guard = ['id'];
     protected $format = [];
     protected $static = [];
     protected $default = [];
     protected $errors = null;
     protected $builtin = [];
-    private $data = null;
+    protected $resource = null;
+    protected $table = null;
+    private $query;
     private $old = null;
-    public $idColumn = 'ID';
+
+    public $properties = [];
+    public $idColumn = 'id';
 
     /**
      * Construct Model based on resource
      */
     public function __construct()
     {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
+        $this->query = new Query();
+        $this->query->table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
+
         $reflect = new \ReflectionClass( $this );
-        $type    = substr( $reflect->getShortName(), 0, - 5 );
+        $type    = $reflect->getShortName();
         $suffix  = '';
 
         if ( ! empty( $type )) {
@@ -329,12 +341,12 @@ abstract class Model
      *
      * @return null
      */
-    public function getData( $key )
+    public function getProperty( $key )
     {
         $data = null;
 
-        if (array_key_exists( $key, $this->data )) {
-            $data = $this->data[$key];
+        if (array_key_exists( $key, $this->properties )) {
+            $data = $this->properties[$key];
         }
 
         return $data;
@@ -348,9 +360,9 @@ abstract class Model
      *
      * @return $this
      */
-    protected function setData( $key, $value )
+    protected function setProperty( $key, $value )
     {
-        $this->data[$key] = $value;
+        $this->properties[$key] = $value;
 
         return $this;
     }
@@ -606,6 +618,117 @@ abstract class Model
     }
 
     /**
+     * Find all
+     *
+     * @param array|\ArrayObject $ids
+     *
+     * @return Model $this
+     */
+    public function findAll( $ids = [] )
+    {
+        $this->query->findAll($ids);
+
+        return $this;
+    }
+
+    /**
+     * Get results from find methods
+     *
+     * @return array|null|object
+     */
+    public function get() {
+        $results = $this->query->get();
+
+        if( $results instanceof Results ) {
+            return $results;
+        }
+
+        $this->properties = $results;
+
+        return $this;
+    }
+
+    /**
+     * Where
+     *
+     * @param string $column
+     * @param string $arg1
+     * @param null|string $arg2
+     * @param string $condition
+     *
+     * @return $this
+     */
+    public function where($column, $arg1, $arg2 = null, $condition = 'AND')
+    {
+        $this->query->where($column, $arg1, $arg2, $condition);
+
+        return $this;
+    }
+
+    /**
+     * Or Where
+     *
+     * @param string $column
+     * @param string $arg1
+     * @param null|string $arg2
+     *
+     * @return Model $this
+     */
+    public function orWhere($column, $arg1, $arg2 = null)
+    {
+        $this->query->where($column, $arg1, $arg2, 'OR');
+
+        return $this;
+    }
+
+    /**
+     * Order by
+     *
+     * @param string $column name of column
+     * @param string $direction default ASC other DESC
+     *
+     * @return $this
+     */
+    public function orderBy($column = 'id', $direction = 'ASC')
+    {
+        $this->query->orderBy($column, $direction);
+
+        return $this;
+    }
+
+    /**
+     * Take only a select group
+     *
+     * @param $limit
+     *
+     * @param int $offset
+     *
+     * @return $this
+     */
+    public function take( $limit, $offset = 0 ) {
+        $this->query->take($limit, $offset);
+
+        return $this;
+    }
+
+    /**
+     * Find the first record and set properties
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function first() {
+        $results = $this->query->first();
+
+        if( $results instanceof Results ) {
+            return $results;
+        }
+
+        $this->properties = $results;
+
+        return $this;
+    }
+
+    /**
      * Create resource by TypeRocket fields
      *
      * When a resource is created the Model ID should be set to the
@@ -615,7 +738,13 @@ abstract class Model
      *
      * @return mixed
      */
-    abstract function create( $fields );
+    public function create( $fields)
+    {
+        $fields = $this->secureFields($fields);
+        $fields = array_merge($this->default, $fields, $this->static);
+
+        return $this->create($fields);
+    }
 
     /**
      * Update resource by TypeRocket fields
@@ -624,16 +753,105 @@ abstract class Model
      *
      * @return mixed
      */
-    abstract function update( $fields );
+    public function update( $fields = [])
+    {
+        $fields = $this->secureFields($fields);
+        $fields = array_merge($this->default, $fields, $this->static);
+
+        return $this->query->update($fields);
+    }
 
     /**
      * Find resource by ID
      *
      * @param $id
      *
-     * @return mixed|$this
+     * @return $this
      */
-    abstract function findById( $id );
+    public function findById($id)
+    {
+        $this->query->findById($id);
+
+        return $this;
+    }
+
+    /**
+     * Find by ID or die
+     *
+     * @param $id
+     *
+     * @return object
+     */
+    public function findOrDie($id) {
+        $results = $this->query->findOrDie($id);
+
+        if( $results instanceof Results ) {
+            return $results;
+        }
+
+        $this->properties = $results;
+
+        return $this;
+    }
+
+    /**
+     * Find first where of die
+     *
+     * @param $column
+     * @param $arg1
+     * @param null $arg2
+     * @param string $condition
+     *
+     * @return object
+     * @internal param $id
+     *
+     */
+    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
+        $results = $this->query->findFirstWhereOrDie( $column, $arg1, $arg2, $condition);
+
+        if( $results instanceof Results ) {
+            return $results;
+        }
+
+        $this->properties = $results;
+
+        return $this;
+    }
+
+    /**
+     * Delete
+     *
+     * @param array|\ArrayObject $ids
+     *
+     * @return array|false|int|null|object
+     */
+    public function delete( $ids = [] ) {
+        return $this->delete($ids);
+    }
+
+    /**
+     * Count results
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function count()
+    {
+        return $this->query->count();
+    }
+
+    /**
+     * Select only specific columns
+     *
+     * @param $args
+     *
+     * @return $this
+     */
+    public function select($args)
+    {
+        $this->query->select($args);
+
+        return $this;
+    }
 
     /**
      * Get base field value
@@ -643,12 +861,62 @@ abstract class Model
      * their values.
      *
      * This method must be implemented to return the base value
-     * of a field if it is saved as a dot group.
+     * of a field if it is saved as a bracket group.
      *
      * @param $field_name
      *
      * @return null
      */
-    abstract protected function getBaseFieldValue( $field_name );
+    protected function getBaseFieldValue($field_name)
+    {
+        $data = $this->query->findById($this->id)->get();
+        return $this->getValueOrNull( wp_unslash($data->$field_name) );
+    }
+
+    /**
+     * Get Date Time
+     *
+     * @return bool|string
+     */
+    public function getDateTime()
+    {
+        return date('Y-m-d H:i:s', time());
+    }
+
+    /**
+     * Save changes directly
+     *
+     * @return mixed
+     */
+    public function save() {
+        return $this
+            ->setGuardFields([$this->idColumn])
+            ->setFillableFields([])
+            ->findById($this->properties[$this->idColumn])
+            ->update($this->properties);
+    }
+
+    /**
+     * Get attribute as property
+     *
+     * @param $key
+     *
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        return $this->properties[$key];
+    }
+
+    /**
+     * Set attribute as property
+     *
+     * @param $key
+     * @param null $value
+     */
+    public function __set($key, $value = null)
+    {
+        $this->properties[$key] = $value;
+    }
 
 }
