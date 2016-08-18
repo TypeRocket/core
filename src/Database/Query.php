@@ -87,7 +87,7 @@ class Query
      * @param string $arg1
      * @param null|string $arg2
      *
-     * @return \TypeRocket\Models\SchemaModel
+     * @return Query
      */
     public function orWhere($column, $arg1, $arg2 = null)
     {

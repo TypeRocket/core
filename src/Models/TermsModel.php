@@ -84,22 +84,22 @@ abstract class TermsModel extends Model
      */
     public function update( $fields )
     {
-        if($this->id != null) {
+        $id = $this->getID();
+        if($id != null) {
             $fields = $this->secureFields($fields);
             $fields = array_merge($fields, $this->static);
             $builtin = $this->getFilteredBuiltinFields($fields);
 
             if ( ! empty( $builtin ) ) {
                 remove_action('edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
-                $term = wp_update_term( $this->id, $this->taxonomy, $builtin );
+                $term = wp_update_term( $id, $this->taxonomy, $builtin );
                 add_action('edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
                 if ( $term instanceof \WP_Error || $term === 0 ) {
                     $default      = 'name is required';
                     $this->errors = ! empty( $term->errors ) ? $term->errors : [$default];
                 } else {
-                    $this->id   = $term;
-                    $this->setData('term', get_term( $this->id, $this->taxonomy ) );
+                    $this->findById($id);
                 }
             }
 
@@ -152,35 +152,20 @@ abstract class TermsModel extends Model
      */
     protected function getBaseFieldValue( $field_name )
     {
-
         if(in_array($field_name, $this->builtin)) {
             switch ($field_name) {
                 case 'term_id' :
-                    /** @var \WP_Term $term */
-                    $term = $this->getData('term');
-                    $data = $term->term_id;
-                    break;
                 case 'name' :
-                    /** @var \WP_Term $term */
-                    $term = $this->getData('term');
-                    $data = $term->name;
-                    break;
                 case 'description' :
-                    /** @var \WP_Term $term */
-                    $term = $this->getData('term');
-                    $data = $term->description;
-                    break;
                 case 'slug' :
-                    /** @var \WP_Term $term */
-                    $term = $this->getData('term');
-                    $data = $term->slug;
+                    $data = $this->properties[$field_name];
                     break;
                 default :
-                    $data = get_term_meta( $field_name, $this->id, 'raw' );
+                    $data = get_term_meta( $field_name, $this->getID(), 'raw' );
                     break;
             }
         } else {
-            $data = get_metadata( 'term', $this->id, $field_name, true );
+            $data = get_metadata( 'term', $this->getID(), $field_name, true );
         }
 
         return $this->getValueOrNull($data);

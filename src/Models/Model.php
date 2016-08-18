@@ -18,6 +18,7 @@ abstract class Model
     protected $builtin = [];
     protected $resource = null;
     protected $table = null;
+
     private $query;
     private $old = null;
 

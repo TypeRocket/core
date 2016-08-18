@@ -24,6 +24,9 @@ class Controller
     protected $middleware = [];
     protected $modelClass = null;
 
+    /*
+     * Construct Controller
+     */
     public function __construct( Request $request, Response $response )
     {
         $this->response = $response;
@@ -33,6 +36,8 @@ class Controller
     }
 
     /**
+     * Run when object is created
+     *
      * @return $this
      */
     protected function init()
@@ -41,6 +46,8 @@ class Controller
     }
 
     /**
+     * Run just before middleware is run
+     *
      * @return $this
      */
     protected function routing()

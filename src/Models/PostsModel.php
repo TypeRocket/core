@@ -129,6 +129,8 @@ class PostsModel extends Model
      * Save post meta fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
+     *
+     * @return $this
      */
     private function saveMeta( $fields )
     {

@@ -32,7 +32,8 @@ abstract class UsersModel extends Model
      */
     public function findById( $id )
     {
-        $this->properties = get_user_by( 'id', $id );
+        $user = get_user_by( 'id', $id );
+        $this->properties = (array) $user->data;
 
         return $this;
     }
@@ -77,17 +78,18 @@ abstract class UsersModel extends Model
      */
     function update( $fields )
     {
-        if ($this->id != null) {
+        $id = $this->getID();
+        if ($id != null) {
             $fields = $this->secureFields( $fields );
             $fields = array_merge( $fields, $this->static );
 
             $builtin = $this->getFilteredBuiltinFields( $fields );
             if ( ! empty( $builtin )) {
                 remove_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
-                $builtin['ID'] = $this->id;
+                $builtin['ID'] = $id;
                 wp_update_user( $builtin );
                 add_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
-                $this->setData('user', get_userdata( $this->id ));
+                $this->findById($id);
             }
 
             $this->saveMeta( $fields );
@@ -106,18 +108,19 @@ abstract class UsersModel extends Model
     private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields( $fields );
-        if ( ! empty( $fields ) && ! empty( $this->id )) :
+        $id = $this->getID();
+        if ( ! empty( $fields ) && ! empty( $id )) :
             foreach ($fields as $key => $value) :
                 if (is_string( $value )) {
                     $value = trim( $value );
                 }
 
-                $current_value = get_user_meta( $this->id, $key, true );
+                $current_value = get_user_meta( $id, $key, true );
 
                 if (isset( $value ) && $value !== $current_value) :
-                    update_user_meta( $this->id, $key, $value );
+                    update_user_meta( $id, $key, $value );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
-                    delete_user_meta( $this->id, $key );
+                    delete_user_meta( $id, $key );
                 endif;
 
             endforeach;
@@ -137,25 +140,22 @@ abstract class UsersModel extends Model
      */
     protected function getBaseFieldValue( $field_name )
     {
-
+        $id = $this->getID();
         if (in_array( $field_name, $this->builtin )) {
-
-            /** @var \WP_User $user */
-            $user = $this->getData('user');
 
             switch ($field_name) {
                 case 'id' :
-                    $data = $user->ID;
+                    $data = $id;
                     break;
                 case 'user_pass' :
                     $data = '';
                     break;
                 default :
-                    $data = $user->$field_name;
+                    $data = $this->properties[$field_name];
                     break;
             }
         } else {
-            $data = get_metadata( 'user', $this->id, $field_name, true );
+            $data = get_metadata( 'user', $id, $field_name, true );
         }
 
         return $this->getValueOrNull( $data );
