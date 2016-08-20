@@ -380,11 +380,13 @@ class Query
             $results = $wpdb->get_results( $sql, ARRAY_A );
             if($results && $this->returnOne) {
                 $result = $results[0];
-            } else {
+            } elseif( $results ) {
                 $result = new Results();
                 foreach ($results as $object) {
                     $result->prepend($object);
                 }
+            } else {
+                $result = false;
             }
         }
 

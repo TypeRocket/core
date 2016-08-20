@@ -746,7 +746,7 @@ abstract class Model
     {
         $fields = $this->provisionFields( $fields );
 
-        return $this->create($fields);
+        return $this->query->create($fields);
     }
 
     /**
@@ -778,7 +778,9 @@ abstract class Model
             return $results;
         }
 
-        $this->properties = $results;
+        if( $results ) {
+            $this->properties = $results;
+        }
 
         return $this;
     }
@@ -907,9 +909,12 @@ abstract class Model
      * @return mixed
      */
     public function save() {
-        return $this
-            ->findById($this->properties[$this->idColumn])
-            ->update($this->properties);
+        $this->findById($this->properties[$this->idColumn]);
+        if( !empty($this->properties[$this->idColumn]) ) {
+            return $this->update($this->properties);
+        }
+
+        return $this->create($this->properties);
     }
 
     /**
