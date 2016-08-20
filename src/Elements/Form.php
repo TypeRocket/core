@@ -6,9 +6,9 @@ use TypeRocket\Elements\Fields\Submit;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
-use TypeRocket\Models\PostsModel;
-use TypeRocket\Models\SchemaModel;
-use TypeRocket\Models\TermsModel;
+use TypeRocket\Models\WPPost;
+use TypeRocket\Models\WPTerm;
+use TypeRocket\Models\Model;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
 use TypeRocket\Register\Registry;
 
@@ -61,37 +61,39 @@ class Form
             global $post, $comment, $user_id, $taxonomy, $tag_ID;
 
             if (isset( $post->ID )) {
-                $item_id    = $post->ID;
+                $item_id  = $post->ID;
                 $resource = Registry::getPostTypeResource($post->post_type);
 
-                $Resource = ucfirst($resource);
+                $Resource = ucfirst($resource[0]);
+                $resource = $resource[0];
                 $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
                 $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$Resource}Controller";
 
                 if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
-                    $resource = 'posts';
+                    $resource = 'post';
                 }
             } elseif (isset( $comment->comment_ID )) {
                 $item_id  = $comment->comment_ID;
-                $resource = 'comments';
+                $resource = 'comment';
             } elseif (isset( $user_id )) {
                 $item_id  = $user_id;
-                $resource = 'users';
+                $resource = 'user';
             } elseif ( isset( $taxonomy ) || isset($tag_ID) ) {
                 $item_id  = $tag_ID;
                 $resource = Registry::getTaxonomyResource($taxonomy);
 
-                $Resource = ucfirst($resource);
+                $Resource = ucfirst($resource[0]);
+                $resource = $resource[0];
                 $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
                 $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$Resource}Controller";
 
                 if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
-                    $resource = 'categories';
+                    $resource = 'category';
                 }
 
             } else {
                 $item_id    = null;
-                $resource = 'options';
+                $resource = 'option';
             }
 
             $this->itemId = $item_id;
@@ -340,18 +342,18 @@ class Form
             $controller = $resource;
             $param = '';
 
-            if($this->model instanceof PostsModel) {
+            if($this->model instanceof WPPost) {
                 $controller = 'posts';
             }
 
-            if($this->model instanceof TermsModel) {
+            if($this->model instanceof WPTerm) {
                 $controller = 'taxonomies';
                 $param = ", '{$resource}'";
                 $id = $field->getItemId() ? $field->getItemId() : '$id';
                 $param .= ', '.$id;
             }
 
-            if($this->model instanceof SchemaModel) {
+            if($this->model instanceof Model) {
                 $controller = 'resource';
                 $param = ", '{$resource}'";
                 $id = $field->getItemId() ? $field->getItemId() : '$id';

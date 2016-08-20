@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
-abstract class OptionsBaseController extends Controller
+abstract class WPOptionController extends Controller
 {
 
     /**

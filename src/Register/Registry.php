@@ -7,16 +7,23 @@ class Registry
 {
 
     private static $collection = [];
-    private static $postTypes = ['post' => 'posts', 'page' => 'pages'];
-    private static $taxonomies = ['category' => 'categories', 'post_tag' => 'tags'];
+    private static $postTypes = [
+        'post' => ['post', 'posts'],
+        'page' => ['page', 'pages']
+    ];
+
+    private static $taxonomies = [
+        'category' => ['category', 'categories'],
+        'post_tag' => ['tag', 'tags']
+    ];
 
     /**
      * Add a post type resource
      *
      * @param string $id post type id
-     * @param string $resource resource name ex. posts, pages, books
+     * @param array $resource resource name ex. posts, pages, books
      */
-    public static function addPostTypeResource($id, $resource) {
+    public static function addPostTypeResource($id, $resource = []) {
         self::$postTypes[$id] = $resource;
     }
 
@@ -46,9 +53,9 @@ class Registry
      * Add a taxonomy resource
      *
      * @param string $id post type id
-     * @param string $resource resource name ex. posts, pages, books
+     * @param array $resource resource name ex. posts, pages, books
      */
-    public static function addTaxonomyResource($id, $resource) {
+    public static function addTaxonomyResource($id, $resource = []) {
         self::$taxonomies[$id] = $resource;
     }
 

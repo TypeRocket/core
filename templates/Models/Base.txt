@@ -1,7 +1,7 @@
 <?php
 namespace {{namespace}}\Models;
 
-use TypeRocket\Models\Model;
+use \TypeRocket\Models\Model;
 
 class {{model}} extends Model
 {

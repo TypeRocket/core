@@ -1,0 +1,9 @@
+<?php
+namespace {{namespace}}\Models;
+
+use \TypeRocket\Models\WPPost;
+
+class {{model}} extends WPPost
+{
+    public $postType = '{{id}}';
+}

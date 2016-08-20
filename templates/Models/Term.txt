@@ -1,0 +1,9 @@
+<?php
+namespace {{namespace}}\Models;
+
+use \TypeRocket\Models\WPTerm;
+
+class {{model}} extends WPTerm
+{
+    public $taxonomy = '{{id}}';
+}

@@ -1,12 +1,10 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Models\TermsModel;
-
-abstract class TermsBaseController extends Controller
+abstract class WPTermController extends Controller
 {
 
-    /** @var TermsModel */
+    /** @var \TypeRocket\Models\WPTerm */
     protected $model = null;
     protected $type = null;
 

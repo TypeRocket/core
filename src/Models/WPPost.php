@@ -1,12 +1,12 @@
 <?php
 namespace TypeRocket\Models;
 
-class PostsModel extends Model
+class WPPost extends Model
 {
     public $idColumn = 'ID';
     public $resource = 'posts';
 
-    protected $builtin = [
+    public $builtin = [
         'post_author',
         'post_date',
         'post_date_gmt',
@@ -32,12 +32,24 @@ class PostsModel extends Model
         'id'
     ];
 
-    protected $guard = [
+    public $guard = [
         'post_type',
         'id'
     ];
 
-    protected $postType = null;
+    public $postType = null;
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->prefix . 'posts';
+    }
 
     /**
      * Find post by ID
@@ -65,8 +77,7 @@ class PostsModel extends Model
      */
     public function create( $fields )
     {
-        $fields = $this->secureFields($fields);
-        $fields = array_merge($this->default, $fields, $this->static);
+        $fields = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields($fields);
 
         if ( ! empty( $builtin )) {
@@ -103,8 +114,7 @@ class PostsModel extends Model
     {
         $id = $this->getID();
         if( $id != null && ! wp_is_post_revision( $id ) ) {
-            $fields = $this->secureFields($fields);
-            $fields = array_merge($fields, $this->static);
+            $fields = $this->provisionFields( $fields );
             $builtin = $this->getFilteredBuiltinFields($fields);
 
             if ( ! empty( $builtin ) ) {
@@ -171,7 +181,7 @@ class PostsModel extends Model
      *
      * @return null
      */
-    protected function getBaseFieldValue( $field_name )
+    public function getBaseFieldValue( $field_name )
     {
         $id = $this->getID();
         if(in_array($field_name, $this->builtin)) {

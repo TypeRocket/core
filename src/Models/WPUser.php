@@ -1,12 +1,12 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class UsersModel extends Model
+class WPUser extends Model
 {
     public $idColumn = 'ID';
     public $resource = 'users';
 
-    protected $builtin = [
+    public $builtin = [
         'user_login',
         'user_nicename',
         'user_email',
@@ -19,7 +19,7 @@ abstract class UsersModel extends Model
         'user_pass'
     ];
 
-    protected $guard = [
+    public $guard = [
         'id'
     ];
 
@@ -47,9 +47,7 @@ abstract class UsersModel extends Model
      */
     function create( $fields )
     {
-        $fields = $this->secureFields( $fields );
-        $fields = array_merge( $this->default, $fields, $this->static );
-
+        $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields( $fields );
 
         if ( ! empty( $builtin )) {
@@ -80,8 +78,7 @@ abstract class UsersModel extends Model
     {
         $id = $this->getID();
         if ($id != null) {
-            $fields = $this->secureFields( $fields );
-            $fields = array_merge( $fields, $this->static );
+            $fields = $this->provisionFields( $fields );
 
             $builtin = $this->getFilteredBuiltinFields( $fields );
             if ( ! empty( $builtin )) {
@@ -142,7 +139,7 @@ abstract class UsersModel extends Model
      *
      * @return null
      */
-    protected function getBaseFieldValue( $field_name )
+    public function getBaseFieldValue( $field_name )
     {
         $id = $this->getID();
         if (in_array( $field_name, $this->builtin )) {

@@ -1,12 +1,10 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use TypeRocket\Models\PostsModel;
-
-abstract class PostsBaseController extends Controller
+abstract class WPPostController extends Controller
 {
 
-    /** @var PostsModel */
+    /** @var \TypeRocket\Models\WPPost */
     protected $model = null;
     protected $type = null;
 

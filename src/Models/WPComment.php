@@ -1,13 +1,13 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class CommentsModel extends Model
+class WPComment extends Model
 {
 
     public $idColumn = 'comment_ID';
     public $resource = 'comments';
 
-    protected $builtin = [
+    public $builtin = [
         'comment_author',
         'comment_author_email',
         'comment_author_url',
@@ -25,7 +25,7 @@ abstract class CommentsModel extends Model
         'comment_id'
     ];
 
-    protected $guard = [
+    public $guard = [
         'comment_id'
     ];
 
@@ -52,8 +52,7 @@ abstract class CommentsModel extends Model
      */
     public function create( $fields )
     {
-        $fields  = $this->secureFields( $fields );
-        $fields  = array_merge( $this->default, $fields, $this->static );
+        $fields  = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields( $fields );
 
         if ( ! empty( $builtin['comment_post_id'] ) &&
@@ -92,8 +91,7 @@ abstract class CommentsModel extends Model
     {
         $id = $this->getID();
         if ($id != null) {
-            $fields  = $this->secureFields( $fields );
-            $fields  = array_merge( $fields, $this->static );
+            $fields  = $this->provisionFields($fields);
             $builtin = $this->getFilteredBuiltinFields( $fields );
 
             if ( ! empty( $builtin )) {
@@ -183,7 +181,7 @@ abstract class CommentsModel extends Model
      *
      * @return null
      */
-    protected function getBaseFieldValue( $field_name )
+    public function getBaseFieldValue( $field_name )
     {
         if (in_array( $field_name, $this->builtin )) {
             switch ($field_name) {

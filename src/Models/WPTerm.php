@@ -1,21 +1,21 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class TermsModel extends Model
+abstract class WPTerm extends Model
 {
     public $idColumn = 'term_id';
     public $resource = 'terms';
 
-    protected $taxonomy = null;
+    public $taxonomy = null;
 
-    protected $builtin = [
+    public $builtin = [
         'description',
         'name',
         'slug',
         'parent'
     ];
 
-    protected $guard = [
+    public $guard = [
         'term_id',
         'term_taxonomy_id',
         'taxonomy',
@@ -23,6 +23,18 @@ abstract class TermsModel extends Model
         'parent',
         'count',
     ];
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->prefix . 'terms';
+    }
 
     /**
      * Get comment by ID
@@ -50,8 +62,7 @@ abstract class TermsModel extends Model
      */
     public function create( $fields )
     {
-        $fields = $this->secureFields($fields);
-        $fields = array_merge($this->default, $fields, $this->static);
+        $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields($fields);
 
         if ( ! empty( $builtin ) ) {
@@ -86,8 +97,7 @@ abstract class TermsModel extends Model
     {
         $id = $this->getID();
         if($id != null) {
-            $fields = $this->secureFields($fields);
-            $fields = array_merge($fields, $this->static);
+            $fields = $this->provisionFields( $fields );
             $builtin = $this->getFilteredBuiltinFields($fields);
 
             if ( ! empty( $builtin ) ) {
@@ -122,18 +132,19 @@ abstract class TermsModel extends Model
     private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields($fields);
-        if ( ! empty($fields) && ! empty( $this->id ) ) :
+        $id = $this->getID();
+        if ( ! empty($fields) && ! empty( $id ) ) :
             foreach ($fields as $key => $value) :
                 if (is_string( $value )) {
                     $value = trim( $value );
                 }
 
-                $current_value = get_term_meta( $this->id, $key, true );
+                $current_value = get_term_meta( $id, $key, true );
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
-                    update_term_meta( $this->id, $key, $value );
+                    update_term_meta( $id, $key, $value );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
-                    delete_term_meta( $this->id, $key );
+                    delete_term_meta( $id, $key );
                 endif;
 
             endforeach;
@@ -153,8 +164,9 @@ abstract class TermsModel extends Model
      *
      * @return null
      */
-    protected function getBaseFieldValue( $field_name )
+    public function getBaseFieldValue( $field_name )
     {
+        $id = $this->getID();
         if(in_array($field_name, $this->builtin)) {
             switch ($field_name) {
                 case 'term_id' :
@@ -164,11 +176,11 @@ abstract class TermsModel extends Model
                     $data = $this->properties[$field_name];
                     break;
                 default :
-                    $data = get_term_meta( $field_name, $this->getID(), 'raw' );
+                    $data = get_term_meta( $field_name, $id, 'raw' );
                     break;
             }
         } else {
-            $data = get_metadata( 'term', $this->getID(), $field_name, true );
+            $data = get_metadata( 'term', $id, $field_name, true );
         }
 
         return $this->getValueOrNull($data);

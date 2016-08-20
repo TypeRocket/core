@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
-abstract class CommentsBaseController extends Controller
+abstract class WPCommentController extends Controller
 {
 
     /**

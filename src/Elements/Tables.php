@@ -4,7 +4,7 @@ namespace TypeRocket\Elements;
 
 use TypeRocket\Core\Config;
 use TypeRocket\Html\Generator;
-use TypeRocket\Models\SchemaModel;
+use TypeRocket\Models\Model;
 use TypeRocket\Register\Page;
 
 class Tables
@@ -25,10 +25,10 @@ class Tables
     /**
      * Tables constructor.
      *
-     * @param \TypeRocket\Models\SchemaModel $model
+     * @param \TypeRocket\Models\Model $model
      * @param int $limit
      */
-    public function __construct( SchemaModel $model, $limit = 25 )
+    public function __construct( Model $model, $limit = 25 )
     {
         $this->limit = $limit;
         $this->model = clone $model;

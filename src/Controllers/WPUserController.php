@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
-abstract class UsersBaseController extends Controller
+abstract class WPUserController extends Controller
 {
 
     /**

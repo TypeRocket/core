@@ -19,7 +19,7 @@ class Validator
      *
      * @param array $rules the rules and validation handler
      * @param array|\ArrayObject $fields the fields to be validated
-     * @param null $modelClass must be a class of SchemaModel
+     * @param null $modelClass must be a class of Model
      */
     public function __construct($rules, $fields, $modelClass = null)
     {
@@ -179,7 +179,7 @@ class Validator
                     break;
                 case 'unique' :
                     if( $this->modelClass ) {
-                        /** @var \TypeRocket\Models\SchemaModel $model */
+                        /** @var \TypeRocket\Models\Model $model */
                         $model = new $this->modelClass;
                         $model->where($option, $value);
 

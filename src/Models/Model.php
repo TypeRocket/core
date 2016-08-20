@@ -9,19 +9,16 @@ use TypeRocket\Http\Fields;
 
 abstract class Model
 {
-    protected $fillable = [];
-    protected $guard = ['id'];
-    protected $format = [];
-    protected $static = [];
-    protected $default = [];
-    protected $errors = null;
-    protected $builtin = [];
-    protected $resource = null;
-    protected $table = null;
-
-    private $query;
-    private $old = null;
-
+    public $fillable = [];
+    public $guard = ['id'];
+    public $format = [];
+    public $static = [];
+    public $errors = null;
+    public $builtin = [];
+    public $resource = null;
+    public $table = null;
+    public $query;
+    public $old = null;
     public $properties = [];
     public $idColumn = 'id';
 
@@ -30,8 +27,11 @@ abstract class Model
      */
     public function __construct()
     {
+        $this->init();
         /** @var \wpdb $wpdb */
         global $wpdb;
+
+        $this->table = $this->initTable( $wpdb );
 
         $this->query = new Query();
         $this->query->table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
@@ -43,11 +43,22 @@ abstract class Model
             $suffix = '_' . $type;
         }
 
-        $this->init();
         $this->fillable = apply_filters( 'tr_model_fillable' . $suffix, $this->fillable, $this );
         $this->guard    = apply_filters( 'tr_model_guard' . $suffix, $this->guard, $this );
         $this->format   = apply_filters( 'tr_model_format' . $suffix, $this->format, $this );
         do_action( 'tr_model', $this );
+    }
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return null
+     */
+    public function initTable($wpdb)
+    {
+        return $this->table;
     }
 
     /**
@@ -347,7 +358,7 @@ abstract class Model
      *
      * @return $this
      */
-    protected function setProperty( $key, $value )
+    public function setProperty( $key, $value )
     {
         $this->properties[$key] = $value;
 
@@ -362,7 +373,7 @@ abstract class Model
      *
      * @return array
      */
-    protected function getFilteredMetaFields( $fields )
+    public function getFilteredMetaFields( $fields )
     {
         $builtin = array_flip( $this->builtin );
 
@@ -377,7 +388,7 @@ abstract class Model
      *
      * @return array
      */
-    protected function getFilteredBuiltinFields( $fields )
+    public function getFilteredBuiltinFields( $fields )
     {
         $builtin = array_flip( $this->builtin );
 
@@ -385,14 +396,17 @@ abstract class Model
     }
 
     /**
+     * Provision Fields
+     *
      * Get fields that have been checked against fillable and guard.
-     * Fillable fields override guarded fields.
+     * Fillable fields override guarded fields. Format fields to
+     * specification. Override given values with static values.
      *
      * @param array|\ArrayObject $fields
      *
      * @return mixed|void
      */
-    public function secureFields( $fields )
+    public function provisionFields( $fields )
     {
         // Unlock fillable fields
         if( $fields instanceof Fields ) {
@@ -427,7 +441,10 @@ abstract class Model
             $fields = $this->formatFields($fields);
         }
 
-        return apply_filters( 'tr_model_secure_fields', $fields, $this );
+        // Override with static values
+        $fields = array_merge( $fields, $this->static);
+
+        return apply_filters( 'tr_model_provision_fields', $fields, $this );
     }
 
     /**
@@ -599,7 +616,7 @@ abstract class Model
      *
      * @return null
      */
-    protected function getValueOrNull( $value )
+    public function getValueOrNull( $value )
     {
         return ( isset( $value ) && $value !== '' ) ? $value : null;
     }
@@ -727,8 +744,7 @@ abstract class Model
      */
     public function create( $fields )
     {
-        $fields = $this->secureFields($fields);
-        $fields = array_merge($this->default, $fields, $this->static);
+        $fields = $this->provisionFields( $fields );
 
         return $this->create($fields);
     }
@@ -742,8 +758,7 @@ abstract class Model
      */
     public function update( $fields )
     {
-        $fields = $this->secureFields($fields);
-        $fields = array_merge($this->default, $fields, $this->static);
+        $fields = $this->provisionFields( $fields );
 
         return $this->query->update($fields);
     }
@@ -860,7 +875,7 @@ abstract class Model
      *
      * @return null
      */
-    protected function getBaseFieldValue($field_name)
+    public function getBaseFieldValue($field_name)
     {
         $data = $this->query->findById($this->getID())->get();
         return $this->getValueOrNull( wp_unslash($data->$field_name) );

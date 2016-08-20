@@ -3,7 +3,6 @@ namespace TypeRocket\Http\Responders;
 
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
-use TypeRocket\Http\RouteArguments;
 use \TypeRocket\Register\Registry;
 
 class PostsResponder extends Responder
@@ -27,13 +26,13 @@ class PostsResponder extends Responder
 
         $type       = get_post_type( $id );
         $resource   = Registry::getPostTypeResource( $type );
-        $prefix     = ucfirst( $resource );
-
+        $prefix     = ucfirst( $resource[0] );
         $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
         $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}";
+        $resource = $resource[0];
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
-            $resource = 'posts';
+            $resource = 'post';
         }
 
         $request  = new Request( $resource, 'PUT', $args, 'update' );

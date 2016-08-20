@@ -16,9 +16,9 @@ class MakeController extends Command
             ->setDescription('Make new controller')
             ->setHelp("This command allows you to make new controllers.");
 
-        $this->addArgument('type', InputArgument::REQUIRED, 'The type: resource, posttype or taxonomy.');
+        $this->addArgument('type', InputArgument::REQUIRED, 'The type: base, post or term.');
         $this->addArgument('name', InputArgument::REQUIRED, 'The name of the resource for the controller.');
-        $this->addArgument('model', InputArgument::OPTIONAL, 'The model for the posttype or taxonomy controller.');
+        $this->addArgument('model', InputArgument::OPTIONAL, 'The model for the post or term controller.');
     }
 
     /**
@@ -38,17 +38,13 @@ class MakeController extends Command
         $model = $input->getArgument('model');
 
         switch ( strtolower($type) ) {
-            case 'resource' :
-                $type = 'Resource';
-                break;
-            case 'posttype' :
-                $type = 'PostType';
-                break;
-            case 'taxonomy' :
-                $type = 'Taxonomy';
+            case 'base' :
+            case 'post' :
+            case 'term' :
+                $type = ucfirst($type);
                 break;
             default :
-                $output->writeln('<fg=red>Type must be: resource, posttype or taxonomy</>');
+                $output->writeln('<fg=red>Type must be: base, post or term</>');
                 die();
                 break;
         }

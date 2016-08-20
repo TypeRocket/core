@@ -16,9 +16,9 @@ class MakeModel extends Command
              ->setDescription('Make new model')
              ->setHelp("This command allows you to make new models.");
 
-        $this->addArgument('type', InputArgument::REQUIRED, 'The type: schema, posttype or taxonomy.');
+        $this->addArgument('type', InputArgument::REQUIRED, 'The type: base, post or term.');
         $this->addArgument('name', InputArgument::REQUIRED, 'The name of the model.');
-        $this->addArgument('id', InputArgument::REQUIRED, 'The posttype, resource or taxonomy WP ID. eg. post, page, category, post_tag...');
+        $this->addArgument('id', InputArgument::REQUIRED, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
     }
 
     /**
@@ -38,17 +38,17 @@ class MakeModel extends Command
         $id = $input->getArgument('id');
 
         switch ( strtolower($type) ) {
-            case 'schema' :
-                $type = 'Schema';
+            case 'base' :
+                $type = 'Base';
                 break;
-            case 'posttype' :
-                $type = 'PostType';
+            case 'post' :
+                $type = 'Post';
                 break;
-            case 'taxonomy' :
-                $type = 'Taxonomy';
+            case 'term' :
+                $type = 'Term';
                 break;
             default :
-                $output->writeln('<fg=red>Type must be: schema, posttype or taxonomy</>');
+                $output->writeln('<fg=red>Type must be: base, post or term</>');
                 die();
                 break;
         }

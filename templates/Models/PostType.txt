@@ -1,9 +1,0 @@
-<?php
-namespace {{namespace}}\Models;
-
-use TypeRocket\Models\PostsModel;
-
-class {{model}} extends PostsModel
-{
-    protected $postType = '{{id}}';
-}

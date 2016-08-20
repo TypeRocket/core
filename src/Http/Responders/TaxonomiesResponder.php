@@ -22,12 +22,13 @@ class TaxonomiesResponder extends Responder
     {
         $taxonomy   = $this->taxonomy;
         $resource   = Registry::getTaxonomyResource( $taxonomy );
-        $prefix     = ucfirst( $resource );
+        $prefix     = ucfirst( $resource[0] );
         $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
         $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}";
+        $resource = $resource[0];
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
-            $resource = 'categories';
+            $resource = 'category';
         }
 
         $request  = new Request( $resource, 'PUT', $args, 'update' );

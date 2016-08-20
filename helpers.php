@@ -150,7 +150,7 @@ if( ! function_exists('tr_tables') ) {
  *
  * @return \TypeRocket\Elements\Tables
  */
-function tr_tables(\TypeRocket\Models\SchemaModel $model)
+function tr_tables(\TypeRocket\Models\Model $model)
 {
     return new \TypeRocket\Elements\Tables($model);
 }
@@ -201,7 +201,7 @@ function tr_posts_field($name, $item_id = null)
         $item_id = $post->ID;
     }
 
-    $model = new \TypeRocket\Models\PostsModel();
+    $model = new \TypeRocket\Models\WPPost();
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
@@ -221,7 +221,7 @@ if( ! function_exists('tr_components_field') ) {
  *
  * @return array|mixed|null|string
  */
-function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\PostsModel::class )
+function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\WPPost::class )
 {
     global $post;
 
@@ -243,6 +243,7 @@ function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\M
             $file  = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
             if( file_exists($file) ) {
                 $fn = function( $file, $data, $name, $item_id, $model) {
+                    /** @noinspection PhpIncludeInspection */
                     include( $file );
                 };
                 $fn($file, $data[$key], $name, $item_id, $model);
@@ -336,7 +337,7 @@ if( ! function_exists('tr_taxonomies_field') ) {
  */
 function tr_taxonomies_field($name, $taxonomy, $item_id = null)
 {
-    /** @var \TypeRocket\Models\TermsModel $model */
+    /** @var \TypeRocket\Models\WPTerm $model */
     $model = tr_get_model($taxonomy);
     $model->findById($item_id);
 
@@ -356,7 +357,7 @@ if( ! function_exists('tr_resource_field') ) {
  */
 function tr_resource_field($name, $resource, $item_id = null)
 {
-    /** @var \TypeRocket\Models\TermsModel $model */
+    /** @var \TypeRocket\Models\Model $model */
     $model = tr_get_model($resource);
     $model->findById($item_id);
 
@@ -463,7 +464,7 @@ if( ! function_exists('str_starts') ) {
  * @return bool
  */
 function str_starts( $needle, $subject ) {
-    return substr($subject, 0, strlen($needle) ) === $needle;
+    return mb_substr($subject, 0, mb_strlen($needle) ) === $needle;
 }
 }
 

@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class OptionsModel extends Model
+class WPOption extends Model
 {
 
     public $idColumn = 'option_id';
@@ -14,8 +14,7 @@ abstract class OptionsModel extends Model
      *
      * @return $this
      */
-    public function findById($id) {
-
+    public function findById( $id ) {
         return $this;
     }
 
@@ -26,10 +25,9 @@ abstract class OptionsModel extends Model
      *
      * @return $this
      */
-    function create( $fields )
+    public function create( $fields )
     {
-        $fields = $this->secureFields( $fields );
-        $fields = array_merge($this->default, $fields, $this->static);
+        $fields = $this->provisionFields( $fields );
         $this->saveOptions( $fields );
 
         return $this;
@@ -42,10 +40,9 @@ abstract class OptionsModel extends Model
      *
      * @return $this
      */
-    function update( $fields )
+    public function update( $fields )
     {
-        $fields = $this->secureFields( $fields );
-        $fields = array_merge($fields, $this->static);
+        $fields = $this->provisionFields( $fields );
         $this->saveOptions( $fields );
 
         return $this;
@@ -92,7 +89,7 @@ abstract class OptionsModel extends Model
      *
      * @return null
      */
-    protected function getBaseFieldValue( $field_name )
+    public function getBaseFieldValue( $field_name )
     {
         $data = get_option( $field_name );
         return $this->getValueOrNull($data);
