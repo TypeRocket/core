@@ -92,7 +92,7 @@ class Form
                 }
 
             } else {
-                $item_id    = null;
+                $item_id  = null;
                 $resource = 'option';
             }
 
@@ -119,7 +119,7 @@ class Form
      *
      * @return Form $this
      */
-    public function useRest()
+    public function useJson()
     {
         $scheme        = is_ssl() ? 'https' : 'http';
         $this->formUrl = home_url('/', $scheme ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;

@@ -94,4 +94,16 @@ class WPOption extends Model
         $data = get_option( $field_name );
         return $this->getValueOrNull($data);
     }
+
+    /**
+     * Get ID as TRUE
+     *
+     * Always get the ID as true since wp_options is more
+     * of a central store
+     *
+     * @return int
+     */
+    public function getID() {
+        return true;
+    }
 }
