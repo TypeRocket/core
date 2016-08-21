@@ -20,7 +20,7 @@ class Form
     /** @var \TypeRocket\Elements\Fields\Field $currentField */
     private $currentField = '';
     private $debugStatus = null;
-    private $useAjax = false;
+    private $useAjax = null;
     private $formUrl;
     private $method = null;
 
@@ -33,7 +33,7 @@ class Form
      */
     public function __construct( $resource = 'auto', $action = 'update', $itemId = null )
     {
-        $this->resource = $resource;
+        $this->resource = strtolower($resource);
         $this->action = $action;
         $this->itemId = $itemId;
         $this->autoConfig();
@@ -60,7 +60,7 @@ class Form
         if ($this->resource === 'auto') {
             global $post, $comment, $user_id, $taxonomy, $tag_ID;
 
-            if (isset( $post->ID )) {
+            if ( isset( $post->ID ) ) {
                 $item_id  = $post->ID;
                 $resource = Registry::getPostTypeResource($post->post_type);
 
@@ -72,10 +72,10 @@ class Form
                 if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
                     $resource = 'post';
                 }
-            } elseif (isset( $comment->comment_ID )) {
+            } elseif ( isset($comment->comment_ID ) ) {
                 $item_id  = $comment->comment_ID;
                 $resource = 'comment';
-            } elseif (isset( $user_id )) {
+            } elseif ( isset( $user_id ) ) {
                 $item_id  = $user_id;
                 $resource = 'user';
             } elseif ( isset( $taxonomy ) || isset($tag_ID) ) {
@@ -97,8 +97,19 @@ class Form
             }
 
             $this->itemId = $item_id;
-            $this->resource = $resource;
+            $this->resource = strtolower($resource);
         }
+
+        return $this;
+    }
+
+    /**
+     * Disable Ajax
+     *
+     * @return Form $this
+     */
+    public function disableAjax() {
+        $this->useAjax = false;
 
         return $this;
     }
@@ -121,6 +132,10 @@ class Form
      */
     public function useJson()
     {
+        if( $this->useAjax === null ) {
+            $this->useAjax();
+        }
+
         $scheme        = is_ssl() ? 'https' : 'http';
         $this->formUrl = home_url('/', $scheme ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
 
@@ -155,7 +170,7 @@ class Form
         $params = [];
 
         if($this->itemId) {
-            $params = ['item_id' => $this->itemId];
+            $params = ['route_id' => $this->itemId];
         }
 
         $action = $this->action;
@@ -256,7 +271,7 @@ class Form
             'method'      => 'POST'
         ];
 
-        if ($this->useAjax == true) {
+        if ($this->useAjax === true) {
             $ajax = [
                 'class'    => 'typerocket-ajax-form'
             ];
@@ -268,7 +283,7 @@ class Form
         $generator = new Generator();
         $r .= $form->getStringOpenTag();
 
-        if ($this->useAjax == true) {
+        if ($this->useAjax === true) {
             $r .= $generator->newInput( 'hidden', '_tr_ajax_request', '1' )->getString();
         }
 

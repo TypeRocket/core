@@ -39,13 +39,9 @@ class MakeModel extends Command
 
         switch ( strtolower($type) ) {
             case 'base' :
-                $type = 'Base';
-                break;
             case 'post' :
-                $type = 'Post';
-                break;
             case 'term' :
-                $type = 'Term';
+                $type = ucfirst($type);
                 break;
             default :
                 $output->writeln('<fg=red>Type must be: base, post or term</>');
