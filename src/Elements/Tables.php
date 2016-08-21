@@ -12,6 +12,8 @@ class Tables
     public $results;
     public $columns;
     public $count;
+
+    /** @var Model|null $model */
     public $model;
     public $primary = 'id';
 
@@ -25,21 +27,26 @@ class Tables
     /**
      * Tables constructor.
      *
-     * @param \TypeRocket\Models\Model $model
      * @param int $limit
+     * @param \TypeRocket\Models\Model $model
+     *
      */
-    public function __construct( Model $model, $limit = 25 )
+    public function __construct( $limit = 25, $model = null )
     {
-        $this->limit = $limit;
-        $this->model = clone $model;
-        $this->count = $model->findAll()->count();
-        $this->paged = !empty($_GET['paged']) ? (int) $_GET['paged'] : 1;
+        global $_tr_page, $_tr_resource;
 
-        if( !empty( $_GET['order'] ) && !empty( $_GET['orderby'] ) ) {
-            $this->model->orderBy($_GET['orderby'], $_GET['order']);
+        if(!empty($_tr_page) && $_tr_page instanceof Page ) {
+            $this->page = $_tr_page;
         }
 
-        $this->offset = ( $this->paged - 1 ) * $this->limit;
+        if( $model instanceof Model) {
+            $this->setModel($model);
+        } elseif(!empty($_tr_resource) && $_tr_resource instanceof Model ) {
+            $this->setModel($_tr_resource);
+        }
+
+        $this->paged = !empty($_GET['paged']) ? (int) $_GET['paged'] : 1;
+        $this->setLimit($limit);
     }
 
     /**
@@ -97,6 +104,24 @@ class Tables
      */
     public function setPage( Page $page) {
         $this->page = $page;
+
+        return $this;
+    }
+
+    /**
+     * Set Model
+     *
+     * @param \TypeRocket\Models\Model $model
+     *
+     * @return $this
+     */
+    public function setModel( Model $model )
+    {
+        $this->model = clone $model;
+        $this->count = $model->findAll()->count();
+        if( !empty( $_GET['order'] ) && !empty( $_GET['orderby'] ) ) {
+            $this->model->orderBy($_GET['orderby'], $_GET['order']);
+        }
 
         return $this;
     }

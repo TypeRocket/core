@@ -1,7 +1,5 @@
 <?php
-
 namespace TypeRocket\Database;
-
 
 class Results extends \ArrayObject
 {

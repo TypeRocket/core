@@ -43,6 +43,7 @@ class Query
      * @return array|null|object
      */
     public function get() {
+        unset($this->query['count']);
         return $this->runQuery();
     }
 
@@ -149,6 +150,7 @@ class Query
     {
         $this->query['create'] = true;
         unset($this->query['select']);
+        unset($this->query['count']);
         $this->query['data'] = $fields;
 
         return $this->runQuery();
@@ -165,6 +167,7 @@ class Query
     {
         $this->query['update'] = true;
         unset($this->query['select']);
+        unset($this->query['count']);
         $this->query['data'] = $fields;
 
         return $this->runQuery();
@@ -383,7 +386,7 @@ class Query
             } elseif( $results ) {
                 $result = new Results();
                 foreach ($results as $object) {
-                    $result->prepend($object);
+                    $result->append( (object) $object );
                 }
             } else {
                 $result = false;

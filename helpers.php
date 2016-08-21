@@ -121,11 +121,11 @@ function tr_resource_pages($singular, $plural = null, array $settings = [])
         $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
     }
 
-    return tr_page($plural, 'index', $plural, $settings)->apply(
-        tr_page($plural, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
-        tr_page($plural, 'show', $singular)->useController()->addNewButton()->removeMenu(),
-        tr_page($plural, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
-        tr_page($plural, 'add', 'Add ' . $singular)->useController()->setArgument('menu', 'Add New')
+    return tr_page($singular, 'index', $plural, $settings)->apply(
+        tr_page($singular, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
+        tr_page($singular, 'show', $singular)->useController()->addNewButton()->removeMenu(),
+        tr_page($singular, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
+        tr_page($singular, 'add', 'Add ' . $singular)->useController()->setArgument('menu', 'Add New')
     )->addNewButton()->useController();
 }
 }
@@ -146,13 +146,14 @@ if( ! function_exists('tr_tables') ) {
 /**
  * Create tables
  *
- * @param $model
+ * @param int $limit
+ * @param \TypeRocket\Models\Model $model
  *
  * @return \TypeRocket\Elements\Tables
  */
-function tr_tables(\TypeRocket\Models\Model $model)
+function tr_tables($limit = 25, $model = null)
 {
-    return new \TypeRocket\Elements\Tables($model);
+    return new \TypeRocket\Elements\Tables($limit, $model);
 }
 }
 

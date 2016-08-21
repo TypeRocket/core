@@ -323,9 +323,7 @@ class Page extends Registrable
                 /** @noinspection PhpIncludeInspection */
                 include( $this->args['view_file'] );
             } elseif (file_exists( View::$page )) {
-                extract( View::$data );
-                /** @noinspection PhpIncludeInspection */
-                include( View::$page );
+                $this->loadView();
             } elseif( Config::getDebugStatus() == true ) {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by creating or setting a view.</div>";
             }
@@ -419,5 +417,18 @@ class Page extends Registrable
 
         return $this;
 
+    }
+
+    protected function loadView() {
+        $GLOBALS['_tr_page'] = $this;
+        $class = '\\' . TR_APP_NAMESPACE . '\\Models\\' . ucfirst($this->resource);
+        if( class_exists( $class ) ) {
+            $GLOBALS['_tr_resource'] = new $class;
+        }
+        unset($class);
+
+        extract( View::$data );
+        /** @noinspection PhpIncludeInspection */
+        include( View::$page );
     }
 }
