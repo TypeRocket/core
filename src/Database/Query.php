@@ -43,7 +43,7 @@ class Query
      * @return array|null|object
      */
     public function get() {
-        unset($this->query['count']);
+        $this->setQueryType();
         return $this->runQuery();
     }
 
@@ -148,9 +148,7 @@ class Query
      */
     public function create( $fields)
     {
-        $this->query['create'] = true;
-        unset($this->query['select']);
-        unset($this->query['count']);
+        $this->setQueryType('create');
         $this->query['data'] = $fields;
 
         return $this->runQuery();
@@ -165,9 +163,7 @@ class Query
      */
     public function update( $fields = [])
     {
-        $this->query['update'] = true;
-        unset($this->query['select']);
-        unset($this->query['count']);
+        $this->setQueryType('update');
         $this->query['data'] = $fields;
 
         return $this->runQuery();
@@ -229,8 +225,7 @@ class Query
      * @return array|false|int|null|object
      */
     public function delete( $ids = [] ) {
-        $this->query['delete'] = true;
-        unset($this->query['select']);
+        $this->setQueryType('delete');
 
         if(!empty($ids)) {
             $this->where( $this->idColumn , 'IN', $ids);
@@ -246,9 +241,39 @@ class Query
      */
     public function count()
     {
-        $this->query['count'] = true;
+        $this->setQueryType('count');
 
         return $this->runQuery();
+    }
+
+    /**
+     * Set Query Type
+     *
+     * @param string|null $type
+     *
+     * @param bool|array $args
+     *
+     * @return $this
+     */
+    protected function setQueryType( $type = null , $args = true ) {
+
+        $actions = [
+          'count', 'update', 'delete', 'create'
+        ];
+
+        foreach ($actions as $action ) {
+            unset($this->query[$action]);
+        }
+
+        if( in_array($type, $actions) ) {
+            unset($this->query['select']);
+        }
+
+        if($type) {
+            $this->query[$type] = $args;
+        }
+
+        return $this;
     }
 
     /**
