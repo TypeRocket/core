@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Inflect;
 
 class MakeModel extends Command
 {
@@ -18,7 +19,7 @@ class MakeModel extends Command
 
         $this->addArgument('type', InputArgument::REQUIRED, 'The type: base, post or term.');
         $this->addArgument('name', InputArgument::REQUIRED, 'The name of the model.');
-        $this->addArgument('id', InputArgument::REQUIRED, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
+        $this->addArgument('id', InputArgument::OPTIONAL, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
     }
 
     /**
@@ -62,6 +63,14 @@ class MakeModel extends Command
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
     private function makeFile( $model, $type, $id, OutputInterface $output ) {
+
+        if( ! $id ) {
+            if( $type == 'Base') {
+                $id = strtolower(Inflect::pluralize($model));
+            } else {
+                $id = strtolower($model);
+            }
+        }
 
         $tags = ['{{namespace}}', '{{model}}', '{{id}}'];
         $replacements = [ TR_APP_NAMESPACE, $model, $id ];
