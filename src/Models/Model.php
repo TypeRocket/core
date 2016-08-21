@@ -6,6 +6,7 @@ use TypeRocket\Database\Results;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
+use TypeRocket\Utility\Inflect;
 
 abstract class Model
 {
@@ -32,11 +33,15 @@ abstract class Model
         global $wpdb;
 
         $this->table = $this->initTable( $wpdb );
+        $type    = (new \ReflectionClass( $this ))->getShortName();
+
+        if( ! $this->resource ) {
+            $this->resource = strtolower( Inflect::pluralize($type) );
+        }
 
         $this->query = new Query();
         $this->query->table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
 
-        $type    = (new \ReflectionClass( $this ))->getShortName();
         $suffix  = '';
 
         if ( ! empty( $type ) ) {
