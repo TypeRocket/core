@@ -951,7 +951,8 @@ abstract class Model
      *
      * @param $results
      *
-     * @return $this|null
+     * @return Model|Results|null
+     *
      */
     protected function getQueryResult( $results ) {
         if( ! $results ) {
