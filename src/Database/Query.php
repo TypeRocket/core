@@ -22,6 +22,23 @@ class Query
     }
 
     /**
+     * Unslash Results
+     *
+     * @param array $results
+     *
+     * @return array
+     */
+    public function unslashResults($results)
+    {
+        $unslashed = [];
+        foreach ($results as $field => $value) {
+            $unslashed[$field] = wp_unslash($value);
+        }
+
+        return $unslashed;
+    }
+
+    /**
      * Find all
      *
      * @param array|\ArrayObject $ids
@@ -407,7 +424,7 @@ class Query
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
             $results = $wpdb->get_results( $sql, ARRAY_A );
             if($results && $this->returnOne) {
-                $result = $results[0];
+                $result = $this->unslashResults( $results[0] );
             } elseif( $results ) {
                 $result = new Results();
                 foreach ($results as $object) {

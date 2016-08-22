@@ -447,7 +447,7 @@ abstract class Model
         }
 
         // Override with static values
-        $fields = array_merge( $fields, $this->static);
+        $fields = array_merge( (array) $this->properties, $fields, $this->static);
 
         return apply_filters( 'tr_model_provision_fields', $fields, $this );
     }
@@ -894,7 +894,7 @@ abstract class Model
             $data = (array) $this->query->findById($this->getID())->get();
         }
 
-        return $this->getValueOrNull( wp_unslash($data[$field_name]) );
+        return $this->getValueOrNull( $data[$field_name] );
     }
 
     /**
