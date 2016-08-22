@@ -23,6 +23,7 @@ abstract class Model
     public $old = null;
     public $properties = [];
     public $idColumn = 'id';
+    public $resultsClass = Results::class;
 
     /**
      * Construct Model based on resource
@@ -41,6 +42,7 @@ abstract class Model
         }
 
         $this->query = new Query();
+        $this->query->resultsClass = $this->resultsClass;
         $this->query->table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
 
         $suffix  = '';
@@ -987,6 +989,32 @@ abstract class Model
     }
 
     /**
+     * Property Exists
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->properties[$key]);
+    }
+
+    /**
+     * Unset Property
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function __unset($key)
+    {
+        if(isset($this->properties[$key])) {
+            unset($this->properties[$key]);
+        }
+    }
+
+    /**
      * Set attribute as property
      *
      * @param $key
@@ -994,7 +1022,7 @@ abstract class Model
      */
     public function __set($key, $value = null)
     {
-        $this->properties[$key] = $value;
+        $this->setProperty($key, $value);
     }
 
 }

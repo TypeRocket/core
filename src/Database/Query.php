@@ -7,8 +7,8 @@ class Query
     public $idColumn = 'id';
 
     public $lastCompiledSQL = null;
-    public $cachedResult = null;
     public $returnOne = false;
+    public $resultsClass = Results::class;
     protected $query = [];
 
     /**
@@ -409,7 +409,7 @@ class Query
             if($results && $this->returnOne) {
                 $result = $results[0];
             } elseif( $results ) {
-                $result = new Results();
+                $result = new $this->resultsClass;
                 foreach ($results as $object) {
                     $result->append( (object) $object );
                 }
