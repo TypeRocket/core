@@ -1,10 +1,13 @@
 <?php
 namespace TypeRocket\Database;
 
+use TypeRocket\Models\Model;
+
 class Results extends \ArrayObject
 {
 
-    public $modelClass = null;
+    public $class = null;
+    public $property = 'properties';
 
     /**
      * Add item to top of collection
@@ -19,11 +22,13 @@ class Results extends \ArrayObject
     }
 
     /**
-     * Cast results to Model
+     * Cast results
+     *
+     * Casting is normally to a Model class
      */
-    public function castResultsToModel()
+    public function castResults()
     {
-        if( ! $this->modelClass) {
+        if( ! $this->class ) {
             return;
         }
 
@@ -31,8 +36,15 @@ class Results extends \ArrayObject
         $models = [];
         if(!empty($array)) {
             foreach ( $array as $item ) {
-                $model = (new $this->modelClass);
-                $model->properties = (array) $item;
+                $model = (new $this->class);
+
+                if( $model instanceof Model ) {
+                    $model->properties = (array) $item;
+                } else {
+                    $property = $this->property;
+                    $model->$property = (array) $item;
+                }
+
                 $models[] = $model;
             }
         }
