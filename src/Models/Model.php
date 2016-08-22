@@ -473,7 +473,7 @@ abstract class Model
 
         if( $this->old ) {
             if( ! empty($this->old[$keys[0]]) ) {
-                $data = $this->old[$keys[0]];
+                $data = wp_unslash( $this->old[$keys[0]] );
             } else {
                 $data = null;
             }

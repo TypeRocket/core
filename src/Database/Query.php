@@ -22,16 +22,16 @@ class Query
     }
 
     /**
-     * Unslash Results
+     * Unslash Result
      *
-     * @param array $results
+     * @param array $result
      *
      * @return array
      */
-    public function unslashResults($results)
+    public function unslashResult($result)
     {
         $unslashed = [];
-        foreach ($results as $field => $value) {
+        foreach ($result as $field => $value) {
             $unslashed[$field] = wp_unslash($value);
         }
 
@@ -424,10 +424,11 @@ class Query
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
             $results = $wpdb->get_results( $sql, ARRAY_A );
             if($results && $this->returnOne) {
-                $result = $this->unslashResults( $results[0] );
+                $result = $this->unslashResult( $results[0] );
             } elseif( $results ) {
                 $result = new Results();
                 foreach ($results as $object) {
+                    $object = $this->unslashResult( $object );
                     $result->append( (object) $object );
                 }
             } else {
