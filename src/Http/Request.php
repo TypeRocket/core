@@ -15,6 +15,7 @@ class Request
     private $post = null;
     private $get = null;
     private $files = null;
+    private $cookies = null;
 
     /**
      * Construct the request
@@ -36,6 +37,7 @@ class Request
         $this->fields = ! empty ( $this->post['tr'] ) ? $this->post['tr'] : [];
         $this->get    = ! empty ( $_GET ) ? wp_unslash($_GET) : null;
         $this->files  = ! empty ( $_FILES ) ? $_FILES : null;
+        $this->cookies  = ! empty ( $_COOKIE ) ? wp_unslash($_COOKIE) : null;
         $this->uri    = ! empty ( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
         $this->host   = ! empty ( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;
 
