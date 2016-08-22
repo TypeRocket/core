@@ -13,6 +13,7 @@ abstract class Model
     public $fillable = [];
     public $guard = ['id'];
     public $format = [];
+    public $cast = [];
     public $static = [];
     public $errors = null;
     public $builtin = [];
@@ -349,7 +350,7 @@ abstract class Model
         $data = null;
 
         if (array_key_exists( $key, $this->properties )) {
-            $data = $this->properties[$key];
+            $data = $this->getCast($key);;
         }
 
         return $data;
@@ -932,6 +933,48 @@ abstract class Model
     }
 
     /**
+     * Get Cast
+     *
+     * Get the cast value of a property
+     *
+     * @param $property
+     *
+     * @return mixed
+     */
+    public function getCast( $property )
+    {
+        $value = !empty($this->properties[$property]) ? $this->properties[$property] : null;
+
+        if ( ! empty( $this->cast[$property] ) ) {
+            $handle = $this->cast[$property];
+
+            if ( $handle == 'int' || $handle == 'integer' ) {
+                // Integer
+                $value = (int) $value;
+            } if ( $handle == 'array' ) {
+                // Priority Array
+                if ( is_string($value) && tr_is_json($value)  ) {
+                    $value = json_decode( $value, true );
+                } elseif ( is_string($value) && is_serialized( $value ) ) {
+                    $value = unserialize( $value );
+                }
+            } if ( $handle == 'object' ) {
+                // Priority Object
+                if ( is_string($value) && tr_is_json($value)  ) {
+                    $value = json_decode( $value );
+                } elseif ( is_string($value) && is_serialized( $value ) ) {
+                    $value = unserialize( $value );
+                }
+            } elseif ( is_callable($handle) ) {
+                // Callback
+                $value = call_user_func($this->cast[$property], $value );
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Get attribute as property
      *
      * @param $key
@@ -940,7 +983,7 @@ abstract class Model
      */
     public function __get($key)
     {
-        return $this->properties[$key];
+        return $this->getProperty($key);
     }
 
     /**
