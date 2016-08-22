@@ -888,7 +888,12 @@ abstract class Model
      */
     public function getBaseFieldValue($field_name)
     {
-        $data = (array) $this->query->findById($this->getID())->get();
+        $data = (array) $this->properties;
+
+        if( $this->getID() && empty( $data[$field_name] ) ) {
+            $data = (array) $this->query->findById($this->getID())->get();
+        }
+
         return $this->getValueOrNull( wp_unslash($data[$field_name]) );
     }
 
@@ -909,7 +914,7 @@ abstract class Model
      */
     public function getID()
     {
-        return $this->properties[$this->idColumn];
+        return !empty($this->properties[$this->idColumn]) ? $this->properties[$this->idColumn] : null;
     }
 
     /**
