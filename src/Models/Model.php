@@ -22,6 +22,7 @@ abstract class Model
     public $query;
     public $old = null;
     public $properties = [];
+    public $explicitProperties = [];
     public $idColumn = 'id';
     public $resultsClass = Results::class;
 
@@ -366,9 +367,10 @@ abstract class Model
      *
      * @return $this
      */
-    public function setProperty( $key, $value )
+    public function setProperty( $key, $value = null )
     {
         $this->properties[$key] = $value;
+        $this->explicitProperties[$key] = $value;
 
         return $this;
     }
@@ -450,7 +452,7 @@ abstract class Model
         }
 
         // Override with static values
-        $fields = array_merge( $fields, $this->static);
+        $fields = array_merge( $this->explicitProperties, $fields, $this->static);
 
         return apply_filters( 'tr_model_provision_fields', $fields, $this );
     }
@@ -893,15 +895,17 @@ abstract class Model
     /**
      * Save changes directly
      *
+     * @param array $fields
+     *
      * @return mixed
      */
-    public function save() {
+    public function save( $fields = [] ) {
         $this->findById($this->properties[$this->idColumn]);
         if( !empty($this->properties[$this->idColumn]) ) {
-            return $this->update($this->properties);
+            return $this->update($fields);
         }
 
-        return $this->create($this->properties);
+        return $this->create($fields);
     }
 
     /**
