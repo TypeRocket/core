@@ -863,6 +863,10 @@ abstract class Model
      */
     public function select($args)
     {
+        if( ! is_array($args) ) {
+            $args = func_get_args();
+        }
+
         $this->query->select($args);
 
         return $this;
@@ -884,8 +888,8 @@ abstract class Model
      */
     public function getBaseFieldValue($field_name)
     {
-        $data = $this->query->findById($this->getID())->get();
-        return $this->getValueOrNull( wp_unslash($data->$field_name) );
+        $data = (array) $this->query->findById($this->getID())->get();
+        return $this->getValueOrNull( wp_unslash($data[$field_name]) );
     }
 
     /**

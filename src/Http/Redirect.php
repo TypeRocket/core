@@ -72,7 +72,7 @@ class Redirect
         $query['page'] = $resource . '_' . $action;
 
         if($item_id) {
-            $query['item_id'] = (int) $item_id;
+            $query['route_id'] = (int) $item_id;
         }
 
         $scheme = is_ssl() ? 'https' : 'http';
