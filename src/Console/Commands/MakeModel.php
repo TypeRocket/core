@@ -1,42 +1,37 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
+use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Inflect;
 
 class MakeModel extends Command
 {
+    protected $command = [
+        'make:model',
+        'Make new model',
+        'This command allows you to make new models.',
+    ];
 
-    protected function configure()
+    protected function config()
     {
-        $this->setName('make:model')
-             ->setDescription('Make new model')
-             ->setHelp("This command allows you to make new models.");
-
-        $this->addArgument('type', InputArgument::REQUIRED, 'The type: base, post or term.');
-        $this->addArgument('name', InputArgument::REQUIRED, 'The name of the model.');
-        $this->addArgument('id', InputArgument::OPTIONAL, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
+        $this->addArgument('type', self::REQUIRED, 'The type: base, post or term.');
+        $this->addArgument('name', self::REQUIRED, 'The name of the model.');
+        $this->addArgument('id', self::OPTIONAL, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
     }
 
     /**
      * Execute Command
      *
-     * Example command: php galaxy make:model schema members members
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * Example command: php galaxy make:model base member
      *
      * @return int|null|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function exec()
     {
-        $type = $input->getArgument('type');
-        $name = $input->getArgument('name');
-        $id = $input->getArgument('id');
+        $type = $this->getArgument('type');
+        $name = $this->getArgument('name');
+        $id = $this->getArgument('id');
 
         switch ( strtolower($type) ) {
             case 'base' :
@@ -45,13 +40,13 @@ class MakeModel extends Command
                 $type = ucfirst($type);
                 break;
             default :
-                $output->writeln('<fg=red>Type must be: base, post or term</>');
+                $this->error('Type must be: base, post or term');
                 die();
                 break;
         }
 
         $model = ucfirst($name);
-        $this->makeFile($model, $type, $id, $output);
+        $this->makeFile($model, $type, $id);
     }
 
     /**
@@ -60,9 +55,8 @@ class MakeModel extends Command
      * @param $model
      * @param $type
      * @param $id
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    private function makeFile( $model, $type, $id, OutputInterface $output ) {
+    private function makeFile( $model, $type, $id ) {
 
         if( ! $id ) {
             if( $type == 'Base') {
@@ -81,9 +75,9 @@ class MakeModel extends Command
         $new = $file->copyTemplateFile( $new, $tags, $replacements );
 
         if( $new ) {
-            $output->writeln('<fg=green>Model created: ' . $model . ' as ' . $type . '</>');
+            $this->success('Model created: ' . $model . ' as ' . $type . '</>');
         } else {
-            $output->writeln('<fg=red>TypeRocket ' . $model . ' exists.</>');
+            $this->error('TypeRocket ' . $model . ' exists.');
         }
 
     }

@@ -257,11 +257,7 @@ class Launcher
      */
     public function initEndpoints()
     {
-        add_action('admin_init', [$this, 'addRewrites']);
-
-        if( defined('TR_GALAXY') ) {
-            add_action('init', [$this, 'addRewrites']);
-        }
+        add_action('init', [$this, 'addRewrites']);
 
         add_filter( 'query_vars', function($vars) {
             $vars[] = 'tr_json_controller';

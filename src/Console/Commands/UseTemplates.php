@@ -1,22 +1,21 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
+use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 
 class UseTemplates extends Command
 {
 
-    protected function configure()
-    {
-        $this->setName('use:templates')
-             ->setDescription('Use TypeRocket for templates')
-             ->setHelp("This command generates mu-plugins to enable using TypeRocket templates.");
+    protected $command = [
+        'use:templates',
+        'Use TypeRocket for templates',
+        'This command generates mu-plugins to enable using TypeRocket templates.'
+    ];
 
-        $this->addArgument('path', InputArgument::REQUIRED, 'The absolute path of wp-content');
+    protected function config()
+    {
+        $this->addArgument('path', self::REQUIRED, 'The absolute path of wp-content');
     }
 
     /**
@@ -24,14 +23,11 @@ class UseTemplates extends Command
      *
      * Example command: php galaxy use:templates {wp-content}
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return int|null|void
+     * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function exec()
     {
-        $path = rtrim($input->getArgument('path'), '/');
+        $path = rtrim( $this->getArgument('path'), '/');
 
         if( file_exists($path) ) {
             $template = __DIR__ . '/../../../templates/MU.txt';
@@ -45,9 +41,9 @@ class UseTemplates extends Command
             $created = $file->copyTemplateFile($new);
 
             if( $created ) {
-                $output->writeln('<fg=green>TypeRocket templates enabled at: ' . $created . '</>');
+                $this->success('TypeRocket templates enabled at: ' . $created );
             } else {
-                $output->writeln('<fg=red>TypeRocket templates already enabled ' . $new . ' exists.</>');
+                $this->error('TypeRocket templates already enabled ' . $new . ' exists.');
             }
 
             try {
@@ -56,17 +52,17 @@ class UseTemplates extends Command
                 $found = $file->replaceOnLine("'templates' => false,", $enabled );
 
                 if($found) {
-                    $output->writeln('<fg=green>Enabled templates in config/app.php' );
+                    $this->success('Enabled templates in config/app.php' );
                 } else {
-                    $output->writeln('<fg=red>Manually set templates in config/app.php to: \'templates\'');
+                    $this->error('Manually set templates in config/app.php to: \'templates\'');
                 }
 
             } catch ( \Exception $e ) {
-                $output->writeln('<fg=red>File empty or missing');
+                $this->error('File empty or missing');
             }
 
         } else {
-            $output->writeln('<fg=red>Path not found: ' . $path);
+            $this->error('Path not found: ' . $path);
         }
     }
 

@@ -2,10 +2,7 @@
 
 namespace TypeRocket\Console\Commands;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use Symfony\Component\Console\Input\ArrayInput;
 
@@ -16,16 +13,17 @@ class UseRoot extends Command
     protected $archiveWP;
     protected $contentWP;
 
+    protected $command = [
+        'use:root',
+        'Use TypeRocket as root',
+        'This command downloads WordPress and roots TypeRocket.',
+    ];
 
-    protected function configure()
+    protected function config()
     {
-        $this->setName('use:root')
-             ->setDescription('Use TypeRocket as root')
-             ->setHelp("This command downloads WordPress and roots TypeRocket.");
-
-        $this->addArgument('database', InputArgument::REQUIRED, 'The database name');
-        $this->addArgument('username', InputArgument::REQUIRED, 'The database username');
-        $this->addArgument('password', InputArgument::REQUIRED, 'The database user password');
+        $this->addArgument('database', self::REQUIRED, 'The database name');
+        $this->addArgument('username', self::REQUIRED, 'The database username');
+        $this->addArgument('password', self::REQUIRED, 'The database user password');
     }
 
     /**
@@ -33,16 +31,13 @@ class UseRoot extends Command
      *
      * Example command: php galaxy use:root
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return int|null|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function exec()
     {
         // Check for WordPress folder
         if( ! file_exists( TR_PATH . '/wordpress' ) ) {
-            $output->writeln('<fg=red>WordPress folder missing or moved');
+            $this->error('WordPress folder missing or moved');
             die();
         }
 
@@ -54,38 +49,35 @@ class UseRoot extends Command
 
         // Fail if already installed
         if( file_exists( $this->configSampleWP ) ) {
-            $output->writeln('<fg=red>WordPress already installed');
+            $this->error('WordPress already installed');
             die();
         }
 
         // Run
-        $this->downloadWordPress($input, $output );
-        $this->unArchiveWordPress($input, $output );
-        $this->configWordPress( $input, $output );
-        $this->useTemplates($input, $output);
-        $this->updateTypeRocketPaths($input, $output);
-        $this->cleanWordPressThemes($input, $output);
+        $this->downloadWordPress();
+        $this->unArchiveWordPress();
+        $this->configWordPress();
+        $this->useTemplates();
+        $this->updateTypeRocketPaths();
+        $this->cleanWordPressThemes();
 
-        $output->writeln('<fg=green>TypeRocket is connected, Happy coding!');
+        $this->success('TypeRocket is connected, Happy coding!');
     }
 
     /**
      * Configure WordPress
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return bool
      */
-    protected function configWordPress( InputInterface $input, OutputInterface $output ) {
+    protected function configWordPress() {
         // Check for wp-config.php
         if( file_exists($this->configWP) ) {
-            $output->writeln('<fg=red>wp-config.php already exists in TypeRocket');
+            $this->error('wp-config.php already exists in TypeRocket');
             return false;
         }
 
         // Message
-        $output->writeln('<fg=green>Creating wp-config.php');
+        $this->success('Creating wp-config.php');
 
         // Copy files
         copy( $this->configSampleWP , $this->configWP );
@@ -98,9 +90,9 @@ class UseRoot extends Command
         $file->replaceOnLine($needle, $replace);
 
         // WP config
-        $file->replaceOnLine('database_name_here', $input->getArgument('database'));
-        $file->replaceOnLine('username_here', $input->getArgument('username'));
-        $file->replaceOnLine('password_here', $input->getArgument('password'));
+        $file->replaceOnLine('database_name_here', $this->getArgument('database'));
+        $file->replaceOnLine('username_here', $this->getArgument('username'));
+        $file->replaceOnLine('password_here', $this->getArgument('password'));
 
         // Salts
         $lines = (array) file('https://api.wordpress.org/secret-key/1.1/salt/');
@@ -113,7 +105,7 @@ class UseRoot extends Command
             }
         } else {
             // Error
-            $output->writeln('<fg=red>WordPress salts failed');
+            $this->error('WordPress salts failed');
         }
 
         return true;
@@ -121,14 +113,11 @@ class UseRoot extends Command
 
     /**
      * Download WordPress
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    protected function downloadWordPress(InputInterface $input, OutputInterface $output)
+    protected function downloadWordPress()
     {
         // Message
-        $output->writeln('<fg=green>Downloading WordPress');
+        $this->success('Downloading WordPress');
 
         // Download
         $file = new File( $this->archiveWP );
@@ -137,53 +126,44 @@ class UseRoot extends Command
 
     /**
      * Un-archive WordPress
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    protected function unArchiveWordPress( InputInterface $input, OutputInterface $output ) {
+    protected function unArchiveWordPress() {
         $zip = new \ZipArchive;
 
         if ( $zip->open( $this->archiveWP ) ) {
             // Message
-            $output->writeln('<fg=green>Extracting WordPress');
+            $this->success('Extracting WordPress');
 
             $zip->extractTo( TR_PATH );
             $zip->close();
         } else {
             // Error
-            $output->writeln('<fg=red>Error opening archive file');
+            $this->error('Error opening archive file');
             die();
         }
 
         // Cleanup zip file
         if( file_exists( $this->archiveWP ) ) {
-            $output->writeln('<fg=green>Archive file deleted');
+            $this->success('Archive file deleted');
             unlink( $this->archiveWP );
         }
     }
 
     /**
      * Use Templates
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    protected function useTemplates(InputInterface $input, OutputInterface $output) {
+    protected function useTemplates() {
         $command = $this->getApplication()->find('use:templates');
         $input = new ArrayInput( [ 'path' => TR_PATH . '/wordpress/wp-content' ] );
-        $command->run($input, $output);
+        $command->run($input, $this->output);
     }
 
     /**
      * Update TypeRocket Paths
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    protected function updateTypeRocketPaths(InputInterface $input, OutputInterface $output) {
+    protected function updateTypeRocketPaths() {
         // Message
-        $output->writeln('<fg=green>Updating TypeRocket paths');
+        $this->success('Updating TypeRocket paths');
 
         // Update file
         $file = new File(TR_PATH . '/config/paths.php');
@@ -205,23 +185,20 @@ class UseRoot extends Command
 
     /**
      * Clean WordPress Themes
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    protected function cleanWordPressThemes( InputInterface $input, OutputInterface $output ) {
+    protected function cleanWordPressThemes() {
         $twentyThemes = glob( TR_PATH . "/wordpress/wp-content/themes/twenty*/");
 
         foreach ($twentyThemes as $value) {
 
             // Message
-            $output->writeln('<fg=green>Deleting ' . $value);
+            $this->success('Deleting ' . $value);
             if( str_starts( TR_PATH, $value) && file_exists( $value ) ) {
 
                 // Delete theme
                 ( new File($value) )->removeRecursiveDirectory();
             } else {
-                $output->writeln('<fg=red>Error deleting none project file ' . $value);
+                $this->error('Error deleting none project file ' . $value);
             }
         }
     }
