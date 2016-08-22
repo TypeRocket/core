@@ -650,14 +650,7 @@ abstract class Model
      */
     public function get() {
         $results = $this->query->get();
-
-        if( $results instanceof Results ) {
-            return $results;
-        }
-
-        $this->properties = $results;
-
-        return $this;
+        return $this->getQueryResult($results);
     }
 
     /**
@@ -730,14 +723,7 @@ abstract class Model
      */
     public function first() {
         $results = $this->query->first();
-
-        if( $results instanceof Results ) {
-            return $results;
-        }
-
-        $this->properties = $results;
-
-        return $this;
+        return $this->getQueryResult($results);
     }
 
     /**
@@ -781,16 +767,7 @@ abstract class Model
     public function findById($id)
     {
         $results = $this->query->findById($id)->get();
-
-        if( $results instanceof Results ) {
-            return $results;
-        }
-
-        if( $results ) {
-            $this->properties = $results;
-        }
-
-        return $this;
+        return $this->getQueryResult($results);
     }
 
     /**
@@ -802,14 +779,7 @@ abstract class Model
      */
     public function findOrDie($id) {
         $results = $this->query->findOrDie($id);
-
-        if( $results instanceof Results ) {
-            return $results;
-        }
-
-        $this->properties = $results;
-
-        return $this;
+        return $this->getQueryResult($results);
     }
 
     /**
@@ -974,6 +944,27 @@ abstract class Model
         }
 
         return $value;
+    }
+
+    /**
+     * Get the Query result
+     *
+     * @param $results
+     *
+     * @return $this|null
+     */
+    protected function getQueryResult( $results ) {
+        if( ! $results ) {
+            return null;
+        }
+
+        if( $results instanceof Results ) {
+            return $results;
+        }
+
+        $this->properties = $results;
+
+        return $this;
     }
 
     /**
