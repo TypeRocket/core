@@ -142,7 +142,7 @@ abstract class WPTerm extends Model
                 $current_value = get_term_meta( $id, $key, true );
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
-                    update_term_meta( $id, $key, $value );
+                    update_term_meta( $id, $key, wp_slash($value) );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
                     delete_term_meta( $id, $key );
                 endif;

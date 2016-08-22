@@ -22,23 +22,6 @@ class Query
     }
 
     /**
-     * Unslash Result
-     *
-     * @param array $result
-     *
-     * @return array
-     */
-    public function unslashResult($result)
-    {
-        $unslashed = [];
-        foreach ($result as $field => $value) {
-            $unslashed[$field] = wp_unslash($value);
-        }
-
-        return $unslashed;
-    }
-
-    /**
      * Find all
      *
      * @param array|\ArrayObject $ids
@@ -356,7 +339,7 @@ class Query
                 $columns[] = preg_replace("/[^a-z0-9\\\\_]+/", '', $column);
 
                 if( is_array($data) ) {
-                    $inserts[] = $wpdb->prepare( '%s', json_encode($data) );
+                    $inserts[] = $wpdb->prepare( '%s', serialize($data) );
                 } else {
                     $inserts[] = $wpdb->prepare( '%s', $data );
                 }
@@ -373,7 +356,7 @@ class Query
                 $columns[] = preg_replace("/[^a-zA-Z0-9\\\\_]+/", '', $column);
 
                 if( is_array($data) ) {
-                    $inserts[] = $wpdb->prepare( '%s', json_encode($data) );
+                    $inserts[] = $wpdb->prepare( '%s', serialize($data) );
                 } else {
                     $inserts[] = $wpdb->prepare( '%s', $data );
                 }
@@ -424,11 +407,10 @@ class Query
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
             $results = $wpdb->get_results( $sql, ARRAY_A );
             if($results && $this->returnOne) {
-                $result = $this->unslashResult( $results[0] );
+                $result = $results[0];
             } elseif( $results ) {
                 $result = new Results();
                 foreach ($results as $object) {
-                    $object = $this->unslashResult( $object );
                     $result->append( (object) $object );
                 }
             } else {

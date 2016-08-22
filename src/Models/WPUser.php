@@ -117,7 +117,7 @@ class WPUser extends Model
                 $current_value = get_user_meta( $id, $key, true );
 
                 if (isset( $value ) && $value !== $current_value) :
-                    update_user_meta( $id, $key, $value );
+                    update_user_meta( $id, $key, wp_slash($value) );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
                     delete_user_meta( $id, $key );
                 endif;

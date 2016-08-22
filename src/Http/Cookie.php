@@ -92,7 +92,7 @@ class Cookie
         $data = null;
 
         if( !empty($_COOKIE[$name]) ) {
-            $data = $_COOKIE[$name];
+            $data = wp_unslash($_COOKIE[$name]);
         }
 
         return $data;

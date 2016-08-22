@@ -32,9 +32,9 @@ class Request
         $this->routerArgs = $args;
         $this->action = $action;
         $this->method = $method ? $method : $this->getFormMethod();
-        $this->fields = ! empty ( $_POST['tr'] ) ? $_POST['tr'] : [];
-        $this->post   = ! empty ( $_POST ) ? $_POST : null;
-        $this->get    = ! empty ( $_GET ) ? $_GET : null;
+        $this->post   = ! empty ( $_POST ) ? wp_unslash($_POST) : null;
+        $this->fields = ! empty ( $this->post['tr'] ) ? $this->post['tr'] : [];
+        $this->get    = ! empty ( $_GET ) ? wp_unslash($_GET) : null;
         $this->files  = ! empty ( $_FILES ) ? $_FILES : null;
         $this->uri    = ! empty ( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
         $this->host   = ! empty ( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;

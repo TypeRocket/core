@@ -86,7 +86,7 @@ class Router
                 } elseif( isset($vars[$varName]) ) {
                     $args[$index] = $vars[$varName];
                 } else {
-                    $args[$index] = $param->getDefaultValue() ? $param->getDefaultValue() : null;
+                    $args[$index] = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
                 }
             }
 
