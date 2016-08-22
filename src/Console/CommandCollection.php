@@ -7,6 +7,7 @@ class CommandCollection extends \ArrayObject
     public $commands = [
         Commands\MakeController::class,
         Commands\MakeMiddleware::class,
+        Commands\MakeCommand::class,
         Commands\MakeModel::class,
         Commands\GenerateSeed::class,
         Commands\UseTemplates::class,

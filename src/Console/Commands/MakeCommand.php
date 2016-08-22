@@ -16,7 +16,7 @@ class MakeCommand extends Command
 
     protected function config()
     {
-        $this->addArgument('command', self::REQUIRED, 'The command class name.');
+        $this->addArgument('class', self::REQUIRED, 'The command class name.');
         $this->addArgument('name', self::REQUIRED, 'The command name used by galaxy.');
     }
 
@@ -29,7 +29,7 @@ class MakeCommand extends Command
      */
     protected function exec()
     {
-        $command = $this->getArgument('command');
+        $command = $this->getArgument('class');
         $name = strtolower( $this->getArgument('name') );
 
         if( ! file_exists( TR_PATH . '/app/Commands' ) ) {
@@ -38,7 +38,7 @@ class MakeCommand extends Command
 
         $tags = ['{{namespace}}', '{{command}}', '{{name}}'];
         $replacements = [ TR_APP_NAMESPACE, $command, $name ];
-        $template = __DIR__ . '/../../../templates/Controllers/Command.txt';
+        $template = __DIR__ . '/../../../templates/Command.txt';
         $new = TR_PATH . '/app/Commands/' . $command . ".php";
 
         $file = new File( $template );
@@ -46,6 +46,7 @@ class MakeCommand extends Command
 
         if( $new ) {
             $this->success('Command created: ' . $command );
+            $this->warning('Configure Command ' . $command . ': Add your command to config/galaxy.php' );
         } else {
             $this->error('TypeRocket ' . $command . ' exists.');
         }
