@@ -8,17 +8,14 @@ services:
  - mysql
 
 before_script:
-   - composer self-update
-   - chmod ugo+x bin/travis.sh
+ - composer self-update
+ - chmod ugo+x bin/travis.sh
 
 script: ./bin/travis.sh $(phpenv version-name)
 
-before_install:
-  -
-
 install:
-  - travis_retry composer install --no-interaction --prefer-source --dev
+ - travis_retry composer install --no-interaction --prefer-source --dev
 
 notifications:
-  on_success: never
-  on_failure: always
+ on_success: never
+ on_failure: always
