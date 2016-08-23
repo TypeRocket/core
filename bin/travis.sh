@@ -3,8 +3,7 @@ set -ev
 
 ## ARGS
 PHPVERSION=$1
-WORKINGDIR=$(pwd)
-echo WORKINGDIR
+WORKINGDIR=$2
 
 ## DATABASE
 mysql -e "SET NAMES utf8; create database IF NOT EXISTS wordpress;" -uroot
@@ -27,5 +26,5 @@ echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$PHPVERSION/etc/php.ini
 
 # configure apache virtual hosts
 sudo cp -f bin/travis-ci-apache /etc/apache2/sites-available/default
-sudo sed -i "s/%TRAVIS_BUILD_DIR%/$WORKINGDIR/g" /etc/apache2/sites-available/default
+sudo sed -i "s|%TRAVIS_BUILD_DIR%|$WORKINGDIR|g" /etc/apache2/sites-available/default
 sudo service apache2 restart
