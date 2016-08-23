@@ -124,6 +124,7 @@ class Sanitize
      * Sanitize Underscore
      *
      * Remove all special characters and replace spaces and dashes with underscores
+     * allowing only a single underscore
      *
      * @param $name
      *
@@ -133,8 +134,8 @@ class Sanitize
     {
         if (is_string( $name )) {
             $name    = trim( sanitize_title( $name, '' ) );
-            $pattern = '/-+/';
-            $name    = preg_replace( $pattern, '_', $name );
+            $name    = preg_replace( '/-+/', '_', $name );
+            $name    = preg_replace( '/_+/', '_', $name );
         }
 
         return $name;
@@ -144,6 +145,7 @@ class Sanitize
      * Sanitize Dash
      *
      * Remove all special characters and replace spaces and underscores with dashes
+     * allowing only a single dash
      *
      * @param $name
      *
@@ -153,8 +155,8 @@ class Sanitize
     {
         if (is_string( $name )) {
             $name    = trim( sanitize_title( $name, '' ) );
-            $pattern = '/_+/';
-            $name    = preg_replace( $pattern, '-', $name );
+            $name    = preg_replace( '/_+/', '-', $name );
+            $name    = preg_replace( '/-+/', '-', $name );
         }
 
         return $name;
