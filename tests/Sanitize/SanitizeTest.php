@@ -6,23 +6,23 @@ class SanitizeTest extends PHPUnit_Framework_TestCase
     {
         require BASE_WP;
 
-        $string = '--2-"exam!ple_@';
+        $string = '--2__"exam!ple-1_@';
         $sanitized = \TypeRocket\Utility\Sanitize::dash($string);
 
         var_dump($string, $sanitized);
 
-        $this->assertTrue( $sanitized == '-2-example-' );
+        $this->assertTrue( $sanitized == '-2-example-1-' );
     }
 
     public function testSanitizeUnderscore()
     {
         require BASE_WP;
 
-        $string = '--"exam!ple--1_@';
+        $string = '--"2__exam!ple--1_@';
         $sanitized = \TypeRocket\Utility\Sanitize::underscore($string);
 
         var_dump($string, $sanitized);
 
-        $this->assertTrue( $sanitized == '_example_1_' );
+        $this->assertTrue( $sanitized == '_2_example_1_' );
     }
 }
