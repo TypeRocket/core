@@ -2,7 +2,8 @@
 set -ev
 
 ## ARGS
-PHPVERSION = $1
+echo $1
+PHPVERSION={$1}
 
 ## DATABASE
 mysql -e "SET NAMES utf8; create database IF NOT EXISTS typerocket;" -uroot
