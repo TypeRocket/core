@@ -133,7 +133,7 @@ class Sanitize
     {
         if (is_string( $name )) {
             $name    = trim( sanitize_title( $name, '' ) );
-            $pattern = '/(\-+)/';
+            $pattern = '/-+/';
             $name    = preg_replace( $pattern, '_', $name );
         }
 
@@ -153,7 +153,7 @@ class Sanitize
     {
         if (is_string( $name )) {
             $name    = trim( sanitize_title( $name, '' ) );
-            $pattern = '/(\_+)/';
+            $pattern = '/_+/';
             $name    = preg_replace( $pattern, '-', $name );
         }
 
