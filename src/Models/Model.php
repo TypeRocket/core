@@ -446,13 +446,13 @@ abstract class Model
             }
         }
 
+        // Override with static values
+        $fields = array_merge( $this->explicitProperties, $fields, $this->static);
+
         // Format
         if ( ! empty( $this->format ) && is_array( $this->format )) {
             $fields = $this->formatFields($fields);
         }
-
-        // Override with static values
-        $fields = array_merge( $this->explicitProperties, $fields, $this->static);
 
         return apply_filters( 'tr_model_provision_fields', $fields, $this );
     }
@@ -900,7 +900,7 @@ abstract class Model
      * @return mixed
      */
     public function save( $fields = [] ) {
-        if( $this->findById($this->properties[$this->idColumn]) ) {
+        if( isset( $this->properties[$this->idColumn] ) || $this->findById($this->properties[$this->idColumn]) ) {
             return $this->update($fields);
         }
         return $this->create($fields);
