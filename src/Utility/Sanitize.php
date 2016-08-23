@@ -127,7 +127,7 @@ class Sanitize
      * allowing only a single underscore after trimming whitespace form string and
      * lower casing
      *
-     * ` --"2_ _e\'\'X  AM!pl\'e-"-1_@` -> _2_ex_ample_1_
+     * ` --"2_ _e''X  AM!pl'e-"-1_@` -> _2_ex_ample_1_
      *
      * @param $name
      *
@@ -136,7 +136,7 @@ class Sanitize
     public static function underscore( $name )
     {
         if (is_string( $name )) {
-            $name = preg_replace("/[^A-Za-z0-9\\-\\_?]/",'', strtolower(trim($name)) );
+            $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
             $name = preg_replace( '/[-\\s]+/', '_', $name );
             $name = preg_replace( '/_+/', '_', $name );
         }
