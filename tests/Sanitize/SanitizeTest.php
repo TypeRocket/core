@@ -6,19 +6,19 @@ class SanitizeTest extends PHPUnit_Framework_TestCase
     {
         require BASE_WP;
 
-        $string = '--2_ _"e\'\'X  AM!\'ple-1_@';
+        $string = ' --"2_ _e\'\'X  AM!pl\'e-"-1_@';
         $sanitized = \TypeRocket\Utility\Sanitize::dash($string);
 
         var_dump($string, $sanitized);
 
-        $this->assertTrue( $sanitized == '-2-ex_ample-1-' );
+        $this->assertTrue( $sanitized == '-2-ex-ample-1-' );
     }
 
     public function testSanitizeUnderscore()
     {
         require BASE_WP;
 
-        $string = '--"2_ _e\'\'X  AM!pl\'e--1_@';
+        $string = ' --"2_ _e\'\'X  AM!pl\'e-"-1_@';
         $sanitized = \TypeRocket\Utility\Sanitize::underscore($string);
 
         var_dump($string, $sanitized);
