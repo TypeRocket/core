@@ -9,6 +9,7 @@ WORKINGDIR=$2
 mysql -e "SET NAMES utf8; create database IF NOT EXISTS wordpress;" -uroot
 
 ## INSTALL WORDPRESS
+#### http://blog.wppusher.com/continuous-integration-with-wordpress-and-circleci/
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod +x wp-cli.phar
 ./wp-cli.phar core download --allow-root --path=wordpress
