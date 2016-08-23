@@ -8,9 +8,6 @@ class SanitizeTest extends PHPUnit_Framework_TestCase
 
         $string = ' --"2_ _e\'\'X  AM!pl\'e-"-1_@';
         $sanitized = \TypeRocket\Utility\Sanitize::dash($string);
-
-        var_dump($string, $sanitized);
-
         $this->assertTrue( $sanitized == '-2-ex-ample-1-' );
     }
 
@@ -20,9 +17,6 @@ class SanitizeTest extends PHPUnit_Framework_TestCase
 
         $string = ' --"2_ _e\'\'X  AM!pl\'e-"-1_@';
         $sanitized = \TypeRocket\Utility\Sanitize::underscore($string);
-
-        var_dump($string, $sanitized);
-
         $this->assertTrue( $sanitized == '_2_ex_ample_1_' );
     }
 }

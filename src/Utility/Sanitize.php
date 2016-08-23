@@ -124,7 +124,8 @@ class Sanitize
      * Sanitize Underscore
      *
      * Remove all special characters and replace spaces and dashes with underscores
-     * allowing only a single underscore
+     * allowing only a single underscore after trimming whitespace form string and
+     * lower casing
      *
      * ` --"2_ _e\'\'X  AM!pl\'e-"-1_@` -> _2_ex_ample_1_
      *
@@ -147,7 +148,8 @@ class Sanitize
      * Sanitize Dash
      *
      * Remove all special characters and replace spaces and underscores with dashes
-     * allowing only a single dash
+     * allowing only a single dash after trimming whitespace form string and
+     * lower casing
      *
      * ` --"2_ _e\'\'X  AM!pl\'e-"-1_@` -> -2-ex-ample-1-
      *
