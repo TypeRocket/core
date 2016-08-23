@@ -2,11 +2,18 @@ language: php
 php:
  - '5.5'
  - '5.6'
- - '7.0'
- - hhvm
+
+services:
+ - mysql
 
 before_script:
    - composer self-update
+   - chmod ugo+x bin/travis.sh
+
+script: ./bin/travis.sh $(phpenv version-name)
+
+before_install:
+  -
 
 install:
   - travis_retry composer install --no-interaction --prefer-source --dev
