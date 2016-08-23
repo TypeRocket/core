@@ -2,11 +2,17 @@
 set -ev
 
 ## ARGS
-echo $1
-PHPVERSION={$1}
+PHPVERSION=$1
 
 ## DATABASE
-mysql -e "SET NAMES utf8; create database IF NOT EXISTS typerocket;" -uroot
+mysql -e "SET NAMES utf8; create database IF NOT EXISTS wordpress;" -uroot
+
+## INSTALL WORDPRESS
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+./wp-cli.phar core download --allow-root --path=wordpress
+./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=travis --dbpass=root --dbhost=127.0.0.1 --path=wordpress
+./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@example.com --url=http://127.0.0.1 --title=WordPress --path=wordpress
 
 ## APACHE
 sudo apt-get update
