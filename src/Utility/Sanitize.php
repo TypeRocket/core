@@ -126,6 +126,8 @@ class Sanitize
      * Remove all special characters and replace spaces and dashes with underscores
      * allowing only a single underscore
      *
+     * ` --"2_ _e\'\'X  AM!pl\'e-"-1_@` -> _2_ex_ample_1_
+     *
      * @param $name
      *
      * @return mixed|string
@@ -133,7 +135,7 @@ class Sanitize
     public static function underscore( $name )
     {
         if (is_string( $name )) {
-            $name = preg_replace("/[^A-Za-z0-9\\-\\_?!]/",'', strtolower(trim($name)) );
+            $name = preg_replace("/[^A-Za-z0-9\\-\\_?]/",'', strtolower(trim($name)) );
             $name = preg_replace( '/[-\\s]+/', '_', $name );
             $name = preg_replace( '/_+/', '_', $name );
         }
@@ -147,6 +149,8 @@ class Sanitize
      * Remove all special characters and replace spaces and underscores with dashes
      * allowing only a single dash
      *
+     * ` --"2_ _e\'\'X  AM!pl\'e-"-1_@` -> -2-ex-ample-1-
+     *
      * @param $name
      *
      * @return mixed|string
@@ -154,7 +158,7 @@ class Sanitize
     public static function dash( $name )
     {
         if (is_string( $name )) {
-            $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?!]/",'', strtolower(trim($name)) );
+            $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
             $name = preg_replace( '/[_\\s]+/', '-', $name );
             $name = preg_replace( '/-+/', '-', $name );
         }
