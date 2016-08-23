@@ -904,7 +904,6 @@ abstract class Model
         if( !empty($this->properties[$this->idColumn]) ) {
             return $this->update($fields);
         }
-
         return $this->create($fields);
     }
 
