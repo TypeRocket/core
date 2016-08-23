@@ -900,8 +900,7 @@ abstract class Model
      * @return mixed
      */
     public function save( $fields = [] ) {
-        $this->findById($this->properties[$this->idColumn]);
-        if( !empty($this->properties[$this->idColumn]) ) {
+        if( $this->findById($this->properties[$this->idColumn]) ) {
             return $this->update($fields);
         }
         return $this->create($fields);

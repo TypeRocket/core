@@ -121,11 +121,13 @@ function tr_resource_pages($singular, $plural = null, array $settings = [])
         $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
     }
 
+    $menu_id = 'add_resource_' . preg_replace( '/[^a-z0-9_\-]/', '', strtolower($singular) );
+
     return tr_page($singular, 'index', $plural, $settings)->apply(
         tr_page($singular, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
         tr_page($singular, 'show', $singular)->useController()->addNewButton()->removeMenu(),
         tr_page($singular, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
-        tr_page($singular, 'add', 'Add ' . $singular)->useController()->setArgument('menu', 'Add New')
+        tr_page($singular, 'add', 'Add ' . $singular)->useController()->setArgument('menu', 'Add New')->adminBar($menu_id, $singular, 'new-content' )
     )->addNewButton()->useController();
 }
 }

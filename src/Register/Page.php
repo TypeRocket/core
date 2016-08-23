@@ -354,6 +354,33 @@ class Page extends Registrable
     }
 
     /**
+     * Add Admin Bar Menu Item
+     *
+     * @param $id
+     * @param null $title
+     * @param string $parent_id
+     */
+    public function adminBar( $id, $title = null, $parent_id = 'site-name')
+    {
+        if( current_user_can( $this->args['capability'] ) ) {
+            add_action('admin_bar_menu', \Closure::bind(function() use ($parent_id, $title, $id) {
+                /** @var $wp_admin_bar \WP_Admin_Bar */
+                global $wp_admin_bar;
+                $link = $this->getUrl();
+                $wp_admin_bar->add_menu( [
+                    'id' => $id,
+                    'parent' => $parent_id,
+                    'meta' => [
+                        'class' => 'custom-page-admin-bar-item',
+                    ],
+                    'title' => $title ? $title : $this->getTitle(),
+                    'href' => $link
+                ] );
+            }, $this), 80);
+        }
+    }
+
+    /**
      * Invoked if $useController is true
      */
     public function respond()
