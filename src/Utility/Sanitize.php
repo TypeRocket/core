@@ -123,7 +123,7 @@ class Sanitize
     /**
      * Sanitize Underscore
      *
-     * Remove all special characters and replace spaces with underscores
+     * Remove all special characters and replace spaces and dashes with underscores
      *
      * @param $name
      *
@@ -143,7 +143,7 @@ class Sanitize
     /**
      * Sanitize Dash
      *
-     * Remove all special characters and replace spaces with dashes
+     * Remove all special characters and replace spaces and underscores with dashes
      *
      * @param $name
      *
@@ -153,7 +153,7 @@ class Sanitize
     {
         if (is_string( $name )) {
             $name    = trim( sanitize_title( $name, '' ) );
-            $pattern = '/(\-+)/';
+            $pattern = '/(\_+)/';
             $name    = preg_replace( $pattern, '-', $name );
         }
 
