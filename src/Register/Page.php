@@ -359,6 +359,8 @@ class Page extends Registrable
      * @param $id
      * @param null $title
      * @param string $parent_id
+     * 
+     * @return $this
      */
     public function adminBar( $id, $title = null, $parent_id = 'site-name')
     {
@@ -378,6 +380,8 @@ class Page extends Registrable
                 ] );
             }, $this), 80);
         }
+        
+        return $this;
     }
 
     /**
