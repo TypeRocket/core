@@ -15,7 +15,7 @@ class SelectTest extends PHPUnit_Framework_TestCase
         var_dump($query->lastCompiledSQL);
         var_dump($result);
 
-        $this->assertTrue( $query->lastCompiledSQL == 'SELECT post_title, ID FROM wp_posts WHERE ID = \'1\'' );
+        $this->assertTrue( $query->lastCompiledSQL == 'SELECT `post_title`, `ID` FROM wp_posts WHERE ID = \'1\'' );
     }
 
 }

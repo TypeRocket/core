@@ -307,6 +307,7 @@ class Query
 
         $table = $this->table;
         $sql_select_columns = '*';
+        $regex_column_name = "/[^a-zA-Z0-9\\\\_]+/";
         $sql_where = $sql_limit = $sql_values = $sql_columns = $sql_update = $sql = $sql_order ='';
 
         if( empty($query) ) {
@@ -336,7 +337,7 @@ class Query
         if( !empty($query['create']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = preg_replace("/[^a-z0-9\\\\_]+/", '', $column);
+                $columns[] = preg_replace($regex_column_name, '', $column);
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', serialize($data) );
@@ -353,7 +354,7 @@ class Query
         if( !empty($query['update']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = preg_replace("/[^a-zA-Z0-9\\\\_]+/", '', $column);
+                $columns[] = preg_replace($regex_column_name, '', $column);
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', serialize($data) );
@@ -371,9 +372,14 @@ class Query
 
         // compile columns to select
         if( !empty($query['select']) && is_array($query['select']) ) {
-            $sql_select_columns = trim(array_reduce($query['select'], function( $carry = '', $value ) use ( $table ) {
-                return $carry . ',`' . preg_replace("/[^a-z0-9\\\\_]+/", '', $value) . '`';
-            }), ',');
+            $sql_select_columns = array_reduce(
+                $query['select'],
+                function( $carry = '', $value ) use ( $table, $regex_column_name ) {
+                    return $carry . ',`' . preg_replace($regex_column_name, '', $value) . '`';
+                }
+            );
+
+            $sql_select_columns = trim($sql_select_columns, ',');
         }
 
         // compile take
@@ -383,7 +389,7 @@ class Query
 
         // compile order
         if( !empty($query['order_by']) ) {
-            $order_column = preg_replace("/[^a-z0-9\\\\_]+/", '', $query['order_by']['column']);
+            $order_column = preg_replace($regex_column_name, '', $query['order_by']['column']);
             $order_direction = $query['order_by']['direction'] == 'ASC' ? 'ASC' : 'DESC';
             $sql_order .= " ORDER BY {$order_column} {$order_direction}";
         }
