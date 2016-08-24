@@ -100,12 +100,15 @@ class Routes
      *  Load the template for the front-end without globals
      */
     private function loadView() {
-        add_filter('wp_title', function( $title ) {
-            if( View::$title ) {
+        add_filter('document_title_parts', function( $title ) {
+            if( is_string(View::$title) ) {
+                $title = [];
+                $title['title'] = View::$title;
+            } elseif ( is_array(View::$title) ) {
                 $title = View::$title;
             }
             return $title;
-        }, 9);
+        });
 
         extract( View::$data );
         /** @noinspection PhpIncludeInspection */
