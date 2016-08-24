@@ -10,15 +10,8 @@ class ResultsTest extends PHPUnit_Framework_TestCase
         $this->assertTrue( $results[0] );
     }
 
-    public function testCastToResults()
+    public function testCastToResultsToModel()
     {
-        // Test null
-        $results = new \TypeRocket\Database\Results();
-        $isNull = $results->castResults();
-
-        $this->assertTrue( $isNull === null );
-
-        // Test with custom model
         $results = new \TypeRocket\Database\Results();
         $results->prepend(['post_title' => 'New Post 1']);
         $results->prepend(['post_title' => 'New Post 2']);
@@ -32,13 +25,33 @@ class ResultsTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue( $r1 );
         $this->assertTrue( $r2 );
+    }
 
-        // test with custom property
+    public function testCastResultsReturnNull()
+    {
+        $results = new \TypeRocket\Database\Results();
+        $isNull = $results->castResults();
+        $this->assertTrue( $isNull === null );
+    }
+
+    public function testCastResultsReturnNoneModel()
+    {
         $results = new \TypeRocket\Database\Results();
         $results->prepend(['post_title' => 'New Post 1']);
         $results->class = \stdClass::class;
         $results->castResults();
         $this->assertTrue( $results[0] instanceof \stdClass );
+    }
+
+    public function testCastResultsReturnNoneModelWithCustomProperty()
+    {
+        $results = new \TypeRocket\Database\Results();
+        $results->prepend(['post_title' => 'New Post 1']);
+        $results->class = \stdClass::class;
+        $results->property = 'attributes';
+        $results->castResults();
+        $this->assertTrue( $results[0] instanceof \stdClass );
+        $this->assertTrue( isset($results[0]->attributes) );
     }
 
 }
