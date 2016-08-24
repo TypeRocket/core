@@ -356,7 +356,7 @@ abstract class Model
         $data = null;
 
         if (array_key_exists( $key, $this->properties )) {
-            $data = $this->getCast($key);
+            $data = $this->properties[$key];
         }
 
         return $data;
@@ -387,12 +387,7 @@ abstract class Model
      */
     public function getProperties()
     {
-        $properties = [];
-        foreach ($this->properties as $name => $property ) {
-            $properties[$name] = $this->getCast($name);
-        }
-
-        return $properties;
+        return $this->properties;
     }
 
     /**
@@ -828,18 +823,38 @@ abstract class Model
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
         $results = $this->query->findFirstWhereOrDie( $column, $arg1, $arg2, $condition);
+        return $this->fetchResult( $results );
+    }
 
-        if( $results instanceof Results ) {
-            return $results;
+    /**
+     * Fetch Result
+     *
+     * @param $result
+     *
+     * @return mixed
+     */
+    protected function fetchResult( $result )
+    {
+        if( ! $result ) {
+            return null;
         }
 
-        if ( is_object($results) ) {
-            $this->propertiesUnaltered = clone $results;
+        if( $result instanceof Results ) {
+            return $result;
+        }
+
+        if ( is_object($result) ) {
+            $this->propertiesUnaltered = clone $result;
         } else {
-            $this->propertiesUnaltered = $results;
+            $this->propertiesUnaltered = $result;
         }
 
-        $this->properties = $results;
+        $properties = [];
+        foreach ($result as $name => $property ) {
+            $properties[$name] = $this->getCast($name);
+        }
+
+        $this->properties = $properties;
 
         return $this;
     }
@@ -993,23 +1008,7 @@ abstract class Model
      *
      */
     protected function getQueryResult( $results ) {
-        if( ! $results ) {
-            return null;
-        }
-
-        if( $results instanceof Results ) {
-            return $results;
-        }
-
-        if ( is_object($results) ) {
-            $this->propertiesUnaltered = clone $results;
-        } else {
-            $this->propertiesUnaltered = $results;
-        }
-
-        $this->properties = $results;
-
-        return $this;
+        return $this->fetchResult( $results );
     }
 
     /**
