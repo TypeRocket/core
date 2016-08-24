@@ -759,11 +759,11 @@ class Model
      * When a resource is created the Model ID should be set to the
      * resource's ID.
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return mixed
      */
-    public function create( $fields )
+    public function create( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
 
@@ -773,11 +773,11 @@ class Model
     /**
      * Update resource by TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return mixed
      */
-    public function update( $fields )
+    public function update( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
 
@@ -950,7 +950,7 @@ class Model
     /**
      * Save changes directly
      *
-     * @param array $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return mixed
      */
