@@ -342,7 +342,9 @@ abstract class Model
     }
 
     /**
-     * Get Data by key
+     * Get Property
+     *
+     * By key
      *
      * @param $key
      *
@@ -360,7 +362,9 @@ abstract class Model
     }
 
     /**
-     * Set Data by key
+     * Set Property
+     *
+     * By key
      *
      * @param $key
      * @param $value
@@ -373,6 +377,16 @@ abstract class Model
         $this->explicitProperties[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * Get Properties
+     *
+     * @return array
+     */
+    public function getProperties()
+    {
+        return $this->properties;
     }
 
     /**
