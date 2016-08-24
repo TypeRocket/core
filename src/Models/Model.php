@@ -835,25 +835,29 @@ abstract class Model
      */
     protected function fetchResult( $result )
     {
+        // Return Null
         if( ! $result ) {
             return null;
         }
 
+        // Return Results
         if( $result instanceof Results ) {
             return $result;
         }
 
+        // Create Unaltered copy
         if ( is_object($result) ) {
             $this->propertiesUnaltered = clone $result;
         } else {
             $this->propertiesUnaltered = $result;
         }
 
+        // Cast properties
         $properties = [];
+        $this->properties = $result;
         foreach ($result as $name => $property ) {
             $properties[$name] = $this->getCast($name);
         }
-
         $this->properties = $properties;
 
         return $this;
