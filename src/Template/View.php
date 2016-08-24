@@ -70,6 +70,8 @@ class View
     /**
      * Set the title attached to a view.
      *
+     * Requires https://codex.wordpress.org/Title_Tag support
+     *
      * @param $title
      *
      * @return \TypeRocket\Template\View
