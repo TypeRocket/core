@@ -387,7 +387,12 @@ abstract class Model
      */
     public function getProperties()
     {
-        return $this->properties;
+        $properties = [];
+        foreach ($this->properties as $name => $property ) {
+            $properties[$name] = $this->getCast($name);
+        }
+
+        return $properties;
     }
 
     /**
