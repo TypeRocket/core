@@ -121,7 +121,7 @@ function tr_resource_pages($singular, $plural = null, array $settings = [])
         $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
     }
 
-    $menu_id = 'add_resource_' . preg_replace( '/[^a-z0-9_\-]/', '', strtolower($singular) );
+    $menu_id = 'add_resource_' . \TypeRocket\Utility\Sanitize::underscore($singular);
 
     return tr_page($singular, 'index', $plural, $settings)->apply(
         tr_page($singular, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
@@ -281,7 +281,7 @@ function tr_users_field($name, $item_id = null)
         $item_id = get_current_user_id();
     }
 
-    $model = tr_get_model('Users');
+    $model = tr_get_model('User');
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
@@ -298,7 +298,7 @@ if( ! function_exists('tr_options_field') ) {
  */
 function tr_options_field($name)
 {
-    $model = tr_get_model('Options');
+    $model = tr_get_model('Option');
 
     return $model->getFieldValue($name);
 }
@@ -321,7 +321,7 @@ function tr_comments_field($name, $item_id = null)
         $item_id = $comment->comment_ID;
     }
 
-    $model = tr_get_model('Comments');
+    $model = tr_get_model('Comment');
     $model->findById($item_id);
 
     return $model->getFieldValue($name);
