@@ -4,8 +4,6 @@ class SelectTest extends PHPUnit_Framework_TestCase
 
     public function testSelectWithUppercase()
     {
-        require BASE_WP;
-
         $query = new \TypeRocket\Database\Query();
         $query->table = 'wp_posts';
         $query->idColumn = 'ID';
@@ -15,8 +13,6 @@ class SelectTest extends PHPUnit_Framework_TestCase
 
     public function testSelectReturnsResults()
     {
-        require BASE_WP;
-
         $query = new \TypeRocket\Database\Query();
         $query->table = 'wp_posts';
         $query->idColumn = 'ID';
