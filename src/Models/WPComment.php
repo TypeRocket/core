@@ -46,11 +46,11 @@ class WPComment extends Model
     /**
      * Create comment from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function create( $fields )
+    public function create( $fields = [] )
     {
         $fields  = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields( $fields );
@@ -83,11 +83,11 @@ class WPComment extends Model
     /**
      * Update comment from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function update( $fields )
+    public function update( $fields = [] )
     {
         $id = $this->getID();
         if ($id != null) {

@@ -56,11 +56,11 @@ abstract class WPTerm extends Model
      * are saved to the correct type. See the CategoriesModel
      * as example.
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function create( $fields )
+    public function create( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields($fields);
@@ -89,11 +89,11 @@ abstract class WPTerm extends Model
     /**
      * Update term from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function update( $fields )
+    public function update( $fields = [] )
     {
         $id = $this->getID();
         if($id != null) {

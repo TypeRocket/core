@@ -71,11 +71,11 @@ class WPPost extends Model
      * are saved to the correct type. See the PagesModel
      * as example.
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function create( $fields )
+    public function create( $fields = [])
     {
         $fields = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields($fields);
@@ -106,11 +106,11 @@ class WPPost extends Model
     /**
      * Update post from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function update( $fields )
+    public function update( $fields = [] )
     {
         $id = $this->getID();
         if( $id != null && ! wp_is_post_revision( $id ) ) {

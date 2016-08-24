@@ -41,11 +41,11 @@ class WPUser extends Model
     /**
      * Create users from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    function create( $fields )
+    function create( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields( $fields );
@@ -70,11 +70,11 @@ class WPUser extends Model
     /**
      * Update user from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    function update( $fields )
+    function update( $fields = [] )
     {
         $id = $this->getID();
         if ($id != null) {

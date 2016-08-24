@@ -21,11 +21,11 @@ class WPOption extends Model
     /**
      * Create options from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function create( $fields )
+    public function create( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
         $this->saveOptions( $fields );
@@ -36,11 +36,11 @@ class WPOption extends Model
     /**
      * Update options from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
      */
-    public function update( $fields )
+    public function update( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
         $this->saveOptions( $fields );
