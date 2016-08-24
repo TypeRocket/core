@@ -7,6 +7,7 @@ use TypeRocket\Core\Config;
 class View
 {
     static public $data = [];
+    static public $title = null;
     static public $page = null;
     static public $view = null;
 
@@ -64,6 +65,26 @@ class View
     public function getData()
     {
         return self::$data;
+    }
+
+    /**
+     * Set the title attached to a view.
+     *
+     * @return array
+     */
+    public function setTitle( $title )
+    {
+        return self::$title = $title;
+    }
+
+    /**
+     * Get the title attached to a view.
+     *
+     * @return array
+     */
+    public function getTitle()
+    {
+        return self::$title;
     }
 
 }

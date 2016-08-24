@@ -100,6 +100,13 @@ class Routes
      *  Load the template for the front-end without globals
      */
     private function loadView() {
+        add_filter('wp_title', function( $title ) {
+            if( View::$title ) {
+                $title = View::$title;
+            }
+            return $title;
+        }, 9);
+
         extract( View::$data );
         /** @noinspection PhpIncludeInspection */
         include ( View::$view );
