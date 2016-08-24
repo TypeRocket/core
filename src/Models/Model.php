@@ -764,7 +764,7 @@ abstract class Model
      *
      * @param $id
      *
-     * @return $this
+     * @return mixed
      */
     public function findById($id)
     {
@@ -953,7 +953,7 @@ abstract class Model
      *
      * @param $results
      *
-     * @return Model|Results|null
+     * @return Model|Results|null|object
      *
      */
     protected function getQueryResult( $results ) {
