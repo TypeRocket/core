@@ -70,11 +70,15 @@ class View
     /**
      * Set the title attached to a view.
      *
-     * @return array
+     * @param $title
+     *
+     * @return \TypeRocket\Template\View
      */
     public function setTitle( $title )
     {
-        return self::$title = $title;
+        self::$title = $title;
+
+        return $this;
     }
 
     /**

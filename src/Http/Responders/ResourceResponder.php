@@ -29,6 +29,8 @@ class ResourceResponder extends Responder
 
     public function response($returned, Response $response)
     {
+        status_header( $response->getStatus() );
+
         if( $returned && empty($_POST['_tr_ajax_request']) ) {
 
             if( $returned instanceof Redirect ) {
