@@ -10,7 +10,6 @@ class Request
     private $routerArgs = null;
     private $uri = null;
     private $path = null;
-    private $pathParts = null;
     private $host = null;
     private $fields = null;
     private $post = null;
@@ -44,7 +43,6 @@ class Request
 
         if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
             $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            $this->pathParts = explode('/', trim($this->path, '/') );
         }
     }
 
@@ -134,6 +132,16 @@ class Request
     public function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * Get the request path exploded into an array
+     *
+     * @return mixed|null
+     */
+    public function getPathExploded()
+    {
+        return explode('/', trim($this->path, '/') );
     }
 
     /**
