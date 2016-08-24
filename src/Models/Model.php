@@ -22,6 +22,7 @@ abstract class Model
     public $query;
     public $old = null;
     public $properties = [];
+    protected $propertiesUnaltered = [];
     public $explicitProperties = [];
     public $idColumn = 'id';
     public $resultsClass = Results::class;
@@ -355,7 +356,7 @@ abstract class Model
         $data = null;
 
         if (array_key_exists( $key, $this->properties )) {
-            $data = $this->getCast($key);;
+            $data = $this->getCast($key);
         }
 
         return $data;
@@ -387,6 +388,16 @@ abstract class Model
     public function getProperties()
     {
         return $this->properties;
+    }
+
+    /**
+     * Get Properties Unaltered
+     *
+     * @return array
+     */
+    public function getPropertiesUnaltered()
+    {
+        return $this->propertiesUnaltered;
     }
 
     /**
@@ -817,6 +828,12 @@ abstract class Model
             return $results;
         }
 
+        if ( is_object($results) ) {
+            $this->propertiesUnaltered = clone $results;
+        } else {
+            $this->propertiesUnaltered = $results;
+        }
+
         $this->properties = $results;
 
         return $this;
@@ -959,7 +976,7 @@ abstract class Model
             }
         }
 
-        return $value;
+        return $this->properties[$property] = $value;
     }
 
     /**
@@ -977,6 +994,12 @@ abstract class Model
 
         if( $results instanceof Results ) {
             return $results;
+        }
+
+        if ( is_object($results) ) {
+            $this->propertiesUnaltered = clone $results;
+        } else {
+            $this->propertiesUnaltered = $results;
         }
 
         $this->properties = $results;
