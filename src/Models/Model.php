@@ -8,7 +8,7 @@ use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
 use TypeRocket\Utility\Inflect;
 
-abstract class Model
+class Model
 {
     public $fillable = [];
     public $guard = ['id'];
