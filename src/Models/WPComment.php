@@ -59,7 +59,7 @@ class WPComment extends Model
              ! empty( $builtin['comment_content'] )
         ) {
             remove_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
-            $comment   = wp_new_comment( $this->caseFieldColumns( $builtin ) );
+            $comment   = wp_new_comment( $this->caseFieldColumns( wp_slash($builtin) ) );
             add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
 
             if (empty( $comment )) {
@@ -98,7 +98,7 @@ class WPComment extends Model
                 remove_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
                 $builtin['comment_id'] = $id;
                 $builtin = $this->caseFieldColumns( $builtin );
-                wp_update_comment( $builtin );
+                wp_update_comment(  wp_slash($builtin) );
                 add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
                 $this->findById($id);
             }
@@ -183,7 +183,7 @@ class WPComment extends Model
      */
     public function getBaseFieldValue( $field_name )
     {
-        if (in_array( $field_name, $this->builtin )) {
+        if (in_array($field_name, $this->builtin)) {
             switch ($field_name) {
                 case 'comment_author_ip' :
                     $data = $this->properties['comment_author_IP'];
@@ -200,10 +200,10 @@ class WPComment extends Model
             }
 
         } else {
-            $data = get_metadata( 'comment', $this->getID(), $field_name, true );
+            $data = get_metadata('comment', $this->getID(), $field_name, true);
         }
 
-        return $this->getValueOrNull( $data );
+        return $this->getValueOrNull($data);
     }
 
 }

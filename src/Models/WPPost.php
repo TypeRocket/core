@@ -81,14 +81,11 @@ class WPPost extends Model
         $builtin = $this->getFilteredBuiltinFields($fields);
 
         if ( ! empty( $builtin )) {
+            $builtin = $this->slashBuiltinFields($builtin);
             remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
             if(!empty($this->postType)) {
                 $builtin['post_type'] = $this->postType;
-            }
-
-            if(!empty($builtin['post_content'])) {
-                $builtin['post_content'] = wp_slash( $builtin['post_content'] );
             }
 
             $post      = wp_insert_post( $builtin );
@@ -122,14 +119,10 @@ class WPPost extends Model
             $builtin = $this->getFilteredBuiltinFields($fields);
 
             if ( ! empty( $builtin ) ) {
+                $builtin = $this->slashBuiltinFields($builtin);
                 remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
                 $builtin['ID'] = $id;
                 $builtin['post_type'] = $this->properties['post_type'];
-
-                if(!empty($builtin['post_content'])) {
-                    $builtin['post_content'] = wp_slash( $builtin['post_content'] );
-                }
-
                 $updated = wp_update_post( $builtin );
 
                 if ( $updated instanceof \WP_Error || $updated === 0 ) {
@@ -217,5 +210,22 @@ class WPPost extends Model
         }
 
         return $this->getValueOrNull($data);
+    }
+
+    public function slashBuiltinFields( $builtin ) {
+
+        $fields = [
+            'post_content',
+            'post_excerpt',
+            'post_title',
+        ];
+
+        foreach ($fields as $field) {
+            if(!empty($builtin[$field])) {
+                $builtin[$field] = wp_slash( $builtin[$field] );
+            }
+        }
+
+        return $builtin;
     }
 }

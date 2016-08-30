@@ -1,12 +1,12 @@
 <?php
 namespace TypeRocket\Models;
 
-abstract class WPTerm extends Model
+class WPTerm extends Model
 {
     public $idColumn = 'term_id';
     public $resource = 'terms';
 
-    public $taxonomy = null;
+    public $taxonomy = 'category';
 
     public $builtin = [
         'description',
@@ -66,6 +66,7 @@ abstract class WPTerm extends Model
         $builtin = $this->getFilteredBuiltinFields($fields);
 
         if ( ! empty( $builtin ) ) {
+            $builtin = $this->slashBuiltinFields($builtin);
             remove_action('create_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
             $name = $builtin['name'];
@@ -73,11 +74,11 @@ abstract class WPTerm extends Model
             $term = wp_insert_term( $name, $this->taxonomy, $builtin );
             add_action('create_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
-            if ( $term instanceof \WP_Error || $term === 0 ) {
+            if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
                 $default      = 'name is required';
                 $this->errors = ! empty( $term->errors ) ? $term->errors : [$default];
             } else {
-                $this->findById($term);
+                $this->findById( $term['term_id'] );
             }
         }
 
@@ -101,11 +102,12 @@ abstract class WPTerm extends Model
             $builtin = $this->getFilteredBuiltinFields($fields);
 
             if ( ! empty( $builtin ) ) {
+                $builtin = $this->slashBuiltinFields($builtin);
                 remove_action('edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
                 $term = wp_update_term( $id, $this->taxonomy, $builtin );
                 add_action('edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
-                if ( $term instanceof \WP_Error || $term === 0 ) {
+                if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
                     $default      = 'name is required';
                     $this->errors = ! empty( $term->errors ) ? $term->errors : [$default];
                 } else {
@@ -184,6 +186,22 @@ abstract class WPTerm extends Model
         }
 
         return $this->getValueOrNull($data);
+    }
+
+    public function slashBuiltinFields( $builtin ) {
+
+        $fields = [
+            'name',
+            'description'
+        ];
+
+        foreach ($fields as $field) {
+            if(!empty($builtin[$field])) {
+                $builtin[$field] = wp_slash( $builtin[$field] );
+            }
+        }
+
+        return $builtin;
     }
 
 }

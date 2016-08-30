@@ -7,10 +7,10 @@ class PostTest extends PHPUnit_Framework_TestCase
         $post = new \TypeRocket\Models\WPPost();
 
         $data = [
-            'post_title' => 'About /TypeRocket/Namespace Code',
+            'post_title' => 'About \TypeRocket\Name Code',
             'post_name' => 'about-the-code',
-            'post_excerpt' => 'About /TypeRocket/Namespace Code',
-            'post_content' => 'Content for the "main" /TypeRocket/Namespace \'not that much\' and that\'s it.',
+            'post_excerpt' => 'About \TypeRocket\Name Code',
+            'post_content' => 'Content for the "main" \TypeRocket\Name \'not that much\' and that\'s it.',
         ];
 
         $post->create($data);
@@ -32,10 +32,10 @@ class PostTest extends PHPUnit_Framework_TestCase
         $post->findById(1);
 
         $data = [
-            'post_title' => 'Update /TypeRocket/Namespace Code',
+            'post_title' => 'Update \TypeRocket\Name Code',
             'post_name' => 'about-the-code',
-            'post_excerpt' => 'Update /TypeRocket/Namespace Code',
-            'post_content' => 'Updated for the "main" /TypeRocket/Namespace \'not that much\' and that\'s it all.',
+            'post_excerpt' => 'Update \TypeRocket\Name Code',
+            'post_content' => 'Updated for the "main" \TypeRocket\Name \'not that much\' and that\'s it all.',
         ];
 
         $post->update($data);
