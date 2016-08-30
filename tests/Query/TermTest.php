@@ -1,5 +1,7 @@
 <?php
-class TermTest extends PHPUnit_Framework_TestCase
+namespace Query;
+
+class TermTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateWithSlashing()
     {

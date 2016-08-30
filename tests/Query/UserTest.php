@@ -1,5 +1,7 @@
 <?php
-class UserTest extends PHPUnit_Framework_TestCase
+namespace Query;
+
+class UserTest extends \PHPUnit_Framework_TestCase
 {
     static public $sharedUserId = 2;
 

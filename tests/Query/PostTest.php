@@ -1,5 +1,7 @@
 <?php
-class PostTest extends PHPUnit_Framework_TestCase
+namespace Query;
+
+class PostTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testCreateWithSlashing()

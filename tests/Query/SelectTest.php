@@ -1,5 +1,7 @@
 <?php
-class SelectTest extends PHPUnit_Framework_TestCase
+namespace Query;
+
+class SelectTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testSelectWithUppercase()
