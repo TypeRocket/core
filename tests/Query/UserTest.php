@@ -23,6 +23,7 @@ class UserTest extends PHPUnit_Framework_TestCase
         $url = $user->getProperty('user_url');
         $display = $user->getProperty('display_name');
 
+        // Users user_nicename and user_login can not have slashes
         $this->assertTrue($nicename == wp_unslash($data['user_nicename']));
         $this->assertTrue($login == wp_unslash($data['user_login']));
         $this->assertTrue($url == wp_unslash($data['user_url']));
@@ -48,6 +49,7 @@ class UserTest extends PHPUnit_Framework_TestCase
         $url = $user->getProperty('user_url');
         $display = $user->getProperty('display_name');
 
+        // Users user_nicename and user_login can not have slashes
         $this->assertTrue($nicename == wp_unslash($data['user_nicename']));
         $this->assertTrue($url == wp_unslash($data['user_url']));
         $this->assertTrue($display == $data['display_name']);
