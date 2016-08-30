@@ -17,7 +17,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
 
         $comment->create($data);
 
-        wp_delete_comment($comment->comment_id, true);
+        wp_delete_comment($comment->comment_ID, true);
 
         $content = $comment->getProperty('comment_content');
         $name = $comment->getProperty('comment_author');
