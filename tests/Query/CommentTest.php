@@ -11,7 +11,7 @@ class CommentTest extends \PHPUnit_Framework_TestCase
             'comment_post_id' => 1,
             'comment_content' => 'Create \\ \TypeRocket\Name \'in quotes\'',
             'comment_author' => '\TypeRocket\Name',
-            'comment_author_email' => 'updated@example.com',
+            'comment_author_email' => 'create@example.com',
             'comment_author_url' => 'http://typerocket.com',
         ];
 
