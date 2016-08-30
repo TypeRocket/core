@@ -10,12 +10,12 @@ class PostTest extends PHPUnit_Framework_TestCase
             'post_title' => 'About \TypeRocket\Name Code',
             'post_name' => 'about-the-code',
             'post_excerpt' => 'About \TypeRocket\Name Code',
-            'post_content' => 'Content for the "main" \TypeRocket\Name \'not that much\' and that\'s it.',
+            'post_content' => 'Content for \\ the "main" \TypeRocket\Name \'not that much\' and that\'s it.',
         ];
 
         $post->create($data);
 
-        wp_delete_post($post->ID, true);
+        wp_delete_post($post->getID(), true);
 
         $content = $post->getProperty('post_content');
         $title = $post->getProperty('post_title');

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Exceptions\ModelException;
+
 class WPPost extends Model
 {
     public $idColumn = 'ID';
@@ -74,6 +76,7 @@ class WPPost extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     public function create( $fields = [])
     {
@@ -88,11 +91,15 @@ class WPPost extends Model
                 $builtin['post_type'] = $this->postType;
             }
 
+            if( empty($builtin['post_title']) && empty($builtin['post_content']) ) {
+                throw new ModelException('post_title and post_content are required');
+            }
+
             $post      = wp_insert_post( $builtin );
             add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
             if ( $post instanceof \WP_Error || $post === 0 ) {
-                $default      = 'post_name (slug), post_title, post_content, and post_excerpt are required';
+                $default      = 'post_name (slug), post_title, post_content, and post_excerpt are needed.';
                 $this->errors = ! empty( $post->errors ) ? $post->errors : [$default];
             } else {
                 $this->findById($post);

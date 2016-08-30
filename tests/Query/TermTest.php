@@ -7,14 +7,14 @@ class TermTest extends PHPUnit_Framework_TestCase
 
         $data = [
             'name' => 'new \'name\' \Name',
-            'description' => 'Create \TypeRocket\Name \'in quotes\'',
+            'description' => 'Create \\ \TypeRocket\Name \'in quotes\'',
             'slug' => 'new-the-term-slug',
             'parent' => 0
         ];
 
         $term->create($data);
 
-        wp_delete_term($term->term_id, $term->taxonomy);
+        wp_delete_term($term->getID(), $term->taxonomy);
 
         $name = $term->getProperty('name');
         $description = $term->getProperty('description');

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Exceptions\ModelException;
+
 class WPUser extends Model
 {
     public $idColumn = 'ID';
@@ -51,6 +53,7 @@ class WPUser extends Model
         $builtin = $this->getFilteredBuiltinFields( $fields );
 
         if ( ! empty( $builtin )) {
+            $builtin = $this->slashBuiltinFields($builtin);
             remove_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
             $user  = wp_insert_user( $builtin );
             add_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
@@ -73,6 +76,7 @@ class WPUser extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     function update( $fields = [] )
     {
@@ -82,8 +86,14 @@ class WPUser extends Model
 
             $builtin = $this->getFilteredBuiltinFields( $fields );
             if ( ! empty( $builtin )) {
+                $builtin = $this->slashBuiltinFields($builtin);
                 remove_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
                 $builtin['ID'] = $id;
+
+                if( !empty($builtin['user_login']) ) {
+                    throw new ModelException('You can not change the user_login');
+                }
+
                 wp_update_user( $builtin );
                 add_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
                 $this->findById($id);
@@ -160,5 +170,20 @@ class WPUser extends Model
         }
 
         return $this->getValueOrNull( $data );
+    }
+
+    public function slashBuiltinFields( $builtin ) {
+
+        $fields = [
+            'display_name',
+        ];
+
+        foreach ($fields as $field) {
+            if(!empty($builtin[$field])) {
+                $builtin[$field] = wp_slash( $builtin[$field] );
+            }
+        }
+
+        return $builtin;
     }
 }

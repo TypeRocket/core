@@ -8,7 +8,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
 
         $data = [
             'comment_post_id' => 1,
-            'comment_content' => 'Create \TypeRocket\Name \'in quotes\'',
+            'comment_content' => 'Create \\ \TypeRocket\Name \'in quotes\'',
             'comment_author' => '\TypeRocket\Name',
             'comment_author_email' => 'updated@example.com',
             'comment_author_url' => 'http://typerocket.com',
@@ -16,7 +16,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
 
         $comment->create($data);
 
-        wp_delete_comment($comment->comment_ID, true);
+        wp_delete_comment($comment->getID(), true);
 
         $content = $comment->getProperty('comment_content');
         $name = $comment->getProperty('comment_author');
