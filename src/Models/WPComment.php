@@ -38,7 +38,7 @@ class WPComment extends Model
      */
     public function findById( $id )
     {
-        $this->properties = get_comment( $id, ARRAY_A );
+        $this->fetchResult( get_comment( $id, ARRAY_A ) );
 
         return $this;
     }

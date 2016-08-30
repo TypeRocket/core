@@ -21,9 +21,9 @@ class Model
     public $table = null;
     public $query;
     public $old = null;
-    public $properties = [];
+    protected $properties = [];
     protected $propertiesUnaltered = [];
-    public $explicitProperties = [];
+    protected $explicitProperties = [];
     public $idColumn = 'id';
     public $resultsClass = Results::class;
 
@@ -854,8 +854,8 @@ class Model
 
         // Cast properties
         $properties = [];
-        $this->properties = $result;
-        foreach ($result as $name => $property ) {
+        $this->properties = (array) $result;
+        foreach ($this->properties as $name => $property ) {
             $properties[$name] = $this->getCast($name);
         }
         $this->properties = $properties;

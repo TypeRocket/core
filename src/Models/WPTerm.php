@@ -45,7 +45,7 @@ abstract class WPTerm extends Model
      */
     public function findById( $id )
     {
-        $this->properties = get_term( $id, $this->taxonomy, ARRAY_A );
+        $this->fetchResult(  get_term( $id, $this->taxonomy, ARRAY_A ) );
         return $this;
     }
 

@@ -59,7 +59,7 @@ class WPPost extends Model
      * @return $this
      */
     public function findById($id) {
-        $this->properties = get_post( $id, ARRAY_A );
+        $this->fetchResult(get_post( $id, ARRAY_A ));
 
         return $this;
     }
@@ -85,6 +85,10 @@ class WPPost extends Model
 
             if(!empty($this->postType)) {
                 $builtin['post_type'] = $this->postType;
+            }
+
+            if(!empty($builtin['post_content'])) {
+                $builtin['post_content'] = wp_slash( $builtin['post_content'] );
             }
 
             $post      = wp_insert_post( $builtin );
@@ -121,9 +125,21 @@ class WPPost extends Model
                 remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
                 $builtin['ID'] = $id;
                 $builtin['post_type'] = $this->properties['post_type'];
-                wp_update_post( $builtin );
+
+                if(!empty($builtin['post_content'])) {
+                    $builtin['post_content'] = wp_slash( $builtin['post_content'] );
+                }
+
+                $updated = wp_update_post( $builtin );
+
+                if ( $updated instanceof \WP_Error || $updated === 0 ) {
+                    $default      = 'post_name (slug), post_title, post_content, and post_excerpt are required';
+                    $this->errors = ! empty( $updated->errors ) ? $updated->errors : [$default];
+                } else {
+                    $this->findById($id);
+                }
+
                 add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
-                $this->findById( $id );
             }
 
             $this->saveMeta( $fields );

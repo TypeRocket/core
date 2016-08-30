@@ -33,7 +33,7 @@ class WPUser extends Model
     public function findById( $id )
     {
         $user = get_user_by( 'id', $id );
-        $this->properties = (array) $user->data;
+        $this->fetchResult(  (array) $user->data );
 
         return $this;
     }
