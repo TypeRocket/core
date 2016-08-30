@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Exceptions\ModelException;
+
 class WPTerm extends Model
 {
     public $idColumn = 'term_id';
@@ -93,6 +95,7 @@ class WPTerm extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     public function update( $fields = [] )
     {
@@ -109,7 +112,7 @@ class WPTerm extends Model
 
                 if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
                     $default      = 'name is required';
-                    $this->errors = ! empty( $term->errors ) ? $term->errors : [$default];
+                    throw new ModelException($default);
                 } else {
                     $this->findById($id);
                 }

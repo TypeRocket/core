@@ -46,6 +46,7 @@ class WPUser extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     function create( $fields = [] )
     {
@@ -59,7 +60,7 @@ class WPUser extends Model
             add_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
 
             if ($user instanceof \WP_Error || ! is_int( $user )) {
-                $this->errors = isset( $user->errors ) ? $user->errors : [];
+                throw new ModelException('User not created');
             } else {
                 $this->findById($user);
             }

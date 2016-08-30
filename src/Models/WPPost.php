@@ -100,7 +100,7 @@ class WPPost extends Model
 
             if ( $post instanceof \WP_Error || $post === 0 ) {
                 $default      = 'post_name (slug), post_title, post_content, and post_excerpt are needed.';
-                $this->errors = ! empty( $post->errors ) ? $post->errors : [$default];
+                throw new ModelException($default);
             } else {
                 $this->findById($post);
             }

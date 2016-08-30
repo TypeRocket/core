@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Exceptions\ModelException;
+
 class WPComment extends Model
 {
 
@@ -49,6 +51,7 @@ class WPComment extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     public function create( $fields = [] )
     {
@@ -63,8 +66,7 @@ class WPComment extends Model
             add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
 
             if (empty( $comment )) {
-                $message      = 'Comment not created.';
-                $this->errors = [$message];
+                throw new ModelException('Comment not created');
             } else {
                 $this->findById($comment);
             }
