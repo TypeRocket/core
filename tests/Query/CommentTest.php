@@ -5,7 +5,6 @@ class CommentTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateWithSlashing()
     {
-        update_option('comments_notify', 0, true);
         $comment = new \TypeRocket\Models\WPComment();
 
         $data = [
@@ -35,8 +34,6 @@ class CommentTest extends \PHPUnit_Framework_TestCase
     {
         $comment = new \TypeRocket\Models\WPComment();
         $comment->findById(1);
-
-        update_option('comments_notify', 0, true);
 
         $data = [
             'comment_content' => 'Update \TypeRocket\Name \'in quotes\'',
