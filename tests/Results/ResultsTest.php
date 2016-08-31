@@ -15,18 +15,27 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
     public function testCastToResultsToModel()
     {
         $results = new \TypeRocket\Database\Results();
-        $results->prepend(['post_title' => 'New Post 1']);
-        $results->prepend(['post_title' => 'New Post 2']);
+
+        $item1 = ['post_title' => 'New Post 1'];
+        $item2 = ['post_title' => 'New Post 2'];
+
+        $results->append($item1);
+        $results->append($item2);
         $results->class = \TypeRocket\Models\WPPost::class;
         $results->castResults();
         $object1 = $results[0];
-        $object2 = $results[0];
+        $object2 = $results[1];
 
         $r1 = $object1 instanceof \TypeRocket\Models\WPPost;
         $r2 = $object2 instanceof \TypeRocket\Models\WPPost;
 
+        $title1 = $object1->post_title;
+        $title2 = $object2->post_title;
+
         $this->assertTrue( $r1 );
         $this->assertTrue( $r2 );
+        $this->assertTrue( $title1 == $item1['post_title'] );
+        $this->assertTrue( $title2 == $item2['post_title'] );
     }
 
     public function testCastResultsReturnNull()
