@@ -51,6 +51,26 @@ class Form
     }
 
     /**
+     * Set the model for the form
+     *
+     * @param $modelClass
+     *
+     * @return $this
+     */
+    public function setModel( $modelClass )
+    {
+        if(class_exists($modelClass)) {
+            $this->model = new $modelClass();
+
+            if( !empty($this->itemId) ) {
+                $this->model->findById($this->itemId);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Auto config form is no Controller etc. is set
      *
      * @return $this

@@ -78,4 +78,26 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($passing);
     }
+
+    public function testUnlockField()
+    {
+        $passing = false;
+        $model = new Model();
+
+        $model->appendFillableField('post_title');
+        $model->appendGuardField('post_excerpt');
+        $model->unlockField('post_excerpt');
+
+        $expected =  ['post_title', 'post_excerpt'];
+        $fillable = array_values( $model->getFillableFields() );
+
+        if( $fillable == $expected ) {
+            $passing = true;
+        }
+
+        $guards = $model->getGuardFields();
+
+        $this->assertTrue($passing);
+        $this->assertTrue( $guards == ['id'] );
+    }
 }
