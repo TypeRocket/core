@@ -39,7 +39,7 @@ class Results extends \ArrayObject
                 $model = (new $this->class);
 
                 if( $model instanceof Model ) {
-                    $model->properties = (array) $item;
+                    $model->setProperties( (array) $item );
                 } else {
                     $property = $this->property;
                     $model->$property = (array) $item;

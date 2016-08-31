@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Exceptions\ModelException;
+
 abstract class WPOptionController extends Controller
 {
 
@@ -15,13 +17,12 @@ abstract class WPOptionController extends Controller
     {
         /** @var \TypeRocket\Models\Model $options */
         $options = new $this->modelClass;
-        $errors  = $options->create( $this->request->getFields() )->getErrors();
-
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext( 'Options not updated', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $options->update( $this->request->getFields() );
             $this->response->flashNext( 'Updated', 'success' );
+        } catch ( ModelException $e ) {
+            $this->response->flashNext( $e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }
@@ -33,13 +34,13 @@ abstract class WPOptionController extends Controller
     {
         /** @var \TypeRocket\Models\Model $options */
         $options = new $this->modelClass;
-        $errors  = $options->create( $this->request->getFields() )->getErrors();
 
-        if ( ! empty( $errors ) ) {
-            $this->response->flashNext( 'Options not created', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $options->create( $this->request->getFields() );
             $this->response->flashNext( 'Options created', 'success' );
+        } catch ( ModelException $e ) {
+            $this->response->flashNext( $e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }

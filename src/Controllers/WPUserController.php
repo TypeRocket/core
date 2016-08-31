@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Exceptions\ModelException;
+
 abstract class WPUserController extends Controller
 {
 
@@ -15,14 +17,14 @@ abstract class WPUserController extends Controller
     {
         /** @var \TypeRocket\Models\Model $user */
         $user   = new $this->modelClass;
-        $errors = $user->findById( $id )->update( $this->request->getFields() )->getErrors();
 
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext( 'User not updated', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $user->findById( $id )->update( $this->request->getFields() );
             $this->response->flashNext( 'User updated', 'success' );
             $this->response->setData('resourceId', $user->getID());
+        } catch ( ModelException $e ) {
+            $this->response->flashNext($e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
     }
 
@@ -33,15 +35,15 @@ abstract class WPUserController extends Controller
     {
         /** @var \TypeRocket\Models\Model $user */
         $user   = new $this->modelClass;
-        $errors = $user->create( $this->request->getFields() )->getErrors();
 
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext( 'User not created', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $user->create( $this->request->getFields() );
             $this->response->flashNext( 'User created', 'success' );
             $this->response->setStatus(201);
             $this->response->setData('resourceId', $user->getID());
+        } catch ( ModelException $e ) {
+            $this->response->flashNext($e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
     }
 

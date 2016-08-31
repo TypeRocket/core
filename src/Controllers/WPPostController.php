@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Exceptions\ModelException;
+
 abstract class WPPostController extends Controller
 {
 
@@ -30,14 +32,14 @@ abstract class WPPostController extends Controller
     public function update( $id = null )
     {
         $post = $this->model->findById( $id );
-        $errors = $post->update( $this->request->getFields() )->getErrors();
 
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext($this->type . ' not updated', 'success' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $post->update( $this->request->getFields() );
             $this->response->flashNext($this->type . ' updated', 'success' );
             $this->response->setData('resourceId', $id );
+        } catch ( ModelException $e ) {
+            $this->response->flashNext($e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }
@@ -47,15 +49,14 @@ abstract class WPPostController extends Controller
      */
     public function create()
     {
-        $errors = $this->model->create( $this->request->getFields() )->getErrors();
-
-        if ( ! empty ( $errors ) ) {
-            $this->response->flashNext($this->type . ' not created', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $this->model->create( $this->request->getFields() );
             $this->response->flashNext($this->type . ' created', 'success' );
             $this->response->setStatus(201);
             $this->response->setData('resourceId', $this->model->getID());
+        } catch ( ModelException $e ) {
+            $this->response->flashNext($e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Exceptions\ModelException;
+
 abstract class WPTermController extends Controller
 {
 
@@ -29,14 +31,13 @@ abstract class WPTermController extends Controller
      */
     public function update( $id = null )
     {
-        $errors = $this->model->findById( $id )->update( $this->request->getFields() )->getErrors();
-
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext($this->type . ' not updated', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $this->model->findById( $id )->update( $this->request->getFields() );
             $this->response->flashNext($this->type . ' updated', 'success' );
-            $this->response->setData('resourceId', $this->model->getID());
+            $this->response->setData('resourceId', $id );
+        } catch ( ModelException $e ) {
+            $this->response->flashNext($e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }
@@ -46,15 +47,14 @@ abstract class WPTermController extends Controller
      */
     public function create()
     {
-        $errors = $this->model->create( $this->request->getFields() )->getErrors();
-
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext($this->type . ' not created', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $this->model->create( $this->request->getFields() );
             $this->response->flashNext($this->type . ' created', 'success' );
             $this->response->setStatus(201);
-            $this->response->setData('resourceId', $this->model->getID());
+            $this->response->setData('resourceId', $this->model->getID() );
+        } catch ( ModelException $e ) {
+            $this->response->flashNext($e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Exceptions\ModelException;
+
 abstract class WPCommentController extends Controller
 {
 
@@ -15,14 +17,14 @@ abstract class WPCommentController extends Controller
     {
         /** @var \TypeRocket\Models\Model $comments */
         $comments = new $this->$modelClass;
-        $errors   = $comments->findById( $id )->update( $this->request->getFields() )->getErrors();
 
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext( 'Comment not updated', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $comments->findById( $id )->update( $this->request->getFields() );
             $this->response->flashNext( 'Comment updated', 'success' );
             $this->response->setData('resourceId', $comments->getID() );
+        } catch( ModelException $e ) {
+            $this->response->flashNext( $e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }
@@ -34,15 +36,14 @@ abstract class WPCommentController extends Controller
     {
         /** @var \TypeRocket\Models\Model $comments */
         $comments = new $this->modelClass;
-        $errors   = $comments->create( $this->request->getFields() )->getErrors();
-
-        if ( ! empty ( $errors )) {
-            $this->response->flashNext( 'Comment not created', 'error' );
-            $this->response->setError( 'model', $errors );
-        } else {
+        try {
+            $comments->create( $this->request->getFields() );
             $this->response->flashNext( 'Comment created', 'success' );
             $this->response->setStatus(201);
             $this->response->setData('resourceId', $comments->getID() );
+        } catch( ModelException $e ) {
+            $this->response->flashNext( $e->getMessage(), 'error' );
+            $this->response->setError( 'model', $e->getMessage() );
         }
 
     }

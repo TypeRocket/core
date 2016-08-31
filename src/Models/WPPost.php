@@ -5,10 +5,11 @@ use TypeRocket\Exceptions\ModelException;
 
 class WPPost extends Model
 {
-    public $idColumn = 'ID';
-    public $resource = 'posts';
+    protected $idColumn = 'ID';
+    protected $resource = 'posts';
+    protected $postType = 'post';
 
-    public $builtin = [
+    protected $builtin = [
         'post_author',
         'post_date',
         'post_date_gmt',
@@ -34,12 +35,10 @@ class WPPost extends Model
         'id'
     ];
 
-    public $guard = [
+    protected $guard = [
         'post_type',
         'id'
     ];
-
-    public $postType = null;
 
     /**
      * Return table name in constructor
@@ -92,15 +91,16 @@ class WPPost extends Model
             }
 
             if( empty($builtin['post_title']) && empty($builtin['post_content']) ) {
-                throw new ModelException('post_title and post_content are required');
+                $error = 'WPPost not created: post_name (slug), post_title and post_content are required';
+                throw new ModelException( $error );
             }
 
             $post      = wp_insert_post( $builtin );
             add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
             if ( $post instanceof \WP_Error || $post === 0 ) {
-                $default      = 'post_name (slug), post_title, post_content, and post_excerpt are needed.';
-                throw new ModelException($default);
+                $error = 'WPPost not created: post_name (slug), post_title, and post_content are required.';
+                throw new ModelException( $error );
             } else {
                 $this->findById($post);
             }
@@ -117,6 +117,7 @@ class WPPost extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     public function update( $fields = [] )
     {
@@ -131,15 +132,15 @@ class WPPost extends Model
                 $builtin['ID'] = $id;
                 $builtin['post_type'] = $this->properties['post_type'];
                 $updated = wp_update_post( $builtin );
+                add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
                 if ( $updated instanceof \WP_Error || $updated === 0 ) {
-                    $default      = 'post_name (slug), post_title, post_content, and post_excerpt are required';
-                    $this->errors = ! empty( $updated->errors ) ? $updated->errors : [$default];
+                    $error = 'WPPost not updated: post_name (slug), post_title and post_content are required';
+                    throw new ModelException( $error );
                 } else {
                     $this->findById($id);
                 }
 
-                add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
             }
 
             $this->saveMeta( $fields );

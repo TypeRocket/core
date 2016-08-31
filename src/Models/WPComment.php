@@ -6,10 +6,10 @@ use TypeRocket\Exceptions\ModelException;
 class WPComment extends Model
 {
 
-    public $idColumn = 'comment_ID';
-    public $resource = 'comments';
+    protected $idColumn = 'comment_ID';
+    protected $resource = 'comments';
 
-    public $builtin = [
+    protected $builtin = [
         'comment_author',
         'comment_author_email',
         'comment_author_url',
@@ -27,7 +27,7 @@ class WPComment extends Model
         'comment_id'
     ];
 
-    public $guard = [
+    protected $guard = [
         'comment_id'
     ];
 
@@ -65,8 +65,8 @@ class WPComment extends Model
             $comment   = wp_new_comment( $this->caseFieldColumns( wp_slash($builtin) ) );
             add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
 
-            if (empty( $comment )) {
-                throw new ModelException('Comment not created');
+            if ( empty( $comment ) ) {
+                throw new ModelException('WPComments not created');
             } else {
                 $this->findById($comment);
             }
@@ -88,6 +88,7 @@ class WPComment extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     public function update( $fields = [] )
     {
@@ -100,8 +101,13 @@ class WPComment extends Model
                 remove_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
                 $builtin['comment_id'] = $id;
                 $builtin = $this->caseFieldColumns( $builtin );
-                wp_update_comment(  wp_slash($builtin) );
+                $comment = wp_update_comment(  wp_slash($builtin) );
                 add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
+
+                if (empty( $comment )) {
+                    throw new ModelException('WPComments not updated');
+                }
+
                 $this->findById($id);
             }
 

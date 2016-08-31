@@ -4,8 +4,8 @@ namespace TypeRocket\Models;
 class WPOption extends Model
 {
 
-    public $idColumn = 'option_id';
-    public $resource = 'options';
+    protected $idColumn = 'option_id';
+    protected $resource = 'options';
 
     /**
      * Do nothing since options are not true resources

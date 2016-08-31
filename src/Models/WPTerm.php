@@ -5,19 +5,18 @@ use TypeRocket\Exceptions\ModelException;
 
 class WPTerm extends Model
 {
-    public $idColumn = 'term_id';
-    public $resource = 'terms';
+    protected $idColumn = 'term_id';
+    protected $resource = 'terms';
+    protected $taxonomy = 'category';
 
-    public $taxonomy = 'category';
-
-    public $builtin = [
+    protected $builtin = [
         'description',
         'name',
         'slug',
         'parent'
     ];
 
-    public $guard = [
+    protected $guard = [
         'term_id',
         'term_taxonomy_id',
         'taxonomy',
@@ -61,6 +60,7 @@ class WPTerm extends Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return $this
+     * @throws \TypeRocket\Exceptions\ModelException
      */
     public function create( $fields = [] )
     {
@@ -77,8 +77,7 @@ class WPTerm extends Model
             add_action('create_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
             if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
-                $default      = 'name is required';
-                $this->errors = ! empty( $term->errors ) ? $term->errors : [$default];
+                throw new ModelException('WPTerm not created: name is required');
             } else {
                 $this->findById( $term['term_id'] );
             }
@@ -111,8 +110,7 @@ class WPTerm extends Model
                 add_action('edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
                 if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
-                    $default      = 'name is required';
-                    throw new ModelException($default);
+                    throw new ModelException('WPTerm not updated: name is required');
                 } else {
                     $this->findById($id);
                 }

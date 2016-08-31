@@ -10,22 +10,22 @@ use TypeRocket\Utility\Inflect;
 
 class Model
 {
-    public $fillable = [];
-    public $guard = ['id'];
-    public $format = [];
-    public $cast = [];
-    public $static = [];
-    public $errors = null;
-    public $builtin = [];
-    public $resource = null;
-    public $table = null;
-    public $query;
-    public $old = null;
+    protected $fillable = [];
+    protected $guard = ['id'];
+    protected $format = [];
+    protected $cast = [];
+    protected $static = [];
+    protected $builtin = [];
+    protected $resource = null;
+    protected $table = null;
+    protected $errors = null;
+    protected $query;
+    protected $old = null;
     protected $properties = [];
     protected $propertiesUnaltered = [];
     protected $explicitProperties = [];
-    public $idColumn = 'id';
-    public $resultsClass = Results::class;
+    protected $idColumn = 'id';
+    protected $resultsClass = Results::class;
 
     /**
      * Construct Model based on resource
@@ -279,6 +279,20 @@ class Model
     }
 
     /**
+     * Append Error
+     *
+     * Get any errors that have been logged
+     *
+     * @param $value
+     *
+     * @return null
+     */
+    public function appendError( $value )
+    {
+        return $this->errors[] = $value;
+    }
+
+    /**
      * Get Errors
      *
      * Get any errors that have been logged
@@ -374,6 +388,18 @@ class Model
         $this->explicitProperties[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * Set Properties
+     *
+     * @param array $properties
+     *
+     * @return array
+     */
+    public function setProperties( array $properties )
+    {
+        return $this->properties = $properties;
     }
 
     /**

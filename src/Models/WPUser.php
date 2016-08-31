@@ -5,10 +5,10 @@ use TypeRocket\Exceptions\ModelException;
 
 class WPUser extends Model
 {
-    public $idColumn = 'ID';
-    public $resource = 'users';
+    protected $idColumn = 'ID';
+    protected $resource = 'users';
 
-    public $builtin = [
+    protected $builtin = [
         'user_login',
         'user_nicename',
         'user_email',
@@ -21,7 +21,7 @@ class WPUser extends Model
         'user_pass'
     ];
 
-    public $guard = [
+    protected $guard = [
         'id'
     ];
 
@@ -60,7 +60,7 @@ class WPUser extends Model
             add_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
 
             if ($user instanceof \WP_Error || ! is_int( $user )) {
-                throw new ModelException('User not created');
+                throw new ModelException('WPUser not created');
             } else {
                 $this->findById($user);
             }
@@ -92,11 +92,15 @@ class WPUser extends Model
                 $builtin['ID'] = $id;
 
                 if( !empty($builtin['user_login']) ) {
-                    throw new ModelException('You can not change the user_login');
+                    throw new ModelException('WPUser not updated: You can not change the user_login');
                 }
 
-                wp_update_user( $builtin );
+                $user = wp_update_user( $builtin );
                 add_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
+
+                if( empty($user) ) {
+                    throw new ModelException('WPUser not updated');
+                }
                 $this->findById($id);
             }
 
