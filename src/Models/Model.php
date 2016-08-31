@@ -249,8 +249,8 @@ class Model
      */
     public function removeFormatField( $field_name )
     {
-        if ( in_array( $field_name, $this->format ) ) {
-            unset($this->format[array_search($field_name, $this->format)]);
+        if ( array_key_exists( $field_name, $this->format ) ) {
+            unset($this->format[$field_name]);
         }
 
         return $this;
