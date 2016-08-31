@@ -5,17 +5,17 @@ namespace TypeRocket\Elements\Traits;
 trait FormConnectorTrait
 {
 
-    private $resource = null;
-    private $action = null;
-    private $itemId = null;
+    protected $resource = null;
+    protected $action = null;
+    protected $itemId = null;
 
     /** @var \TypeRocket\Models\Model $model */
-    private $model = null;
+    protected $model = null;
 
-    private $populate = true;
-    private $group = null;
-    private $sub = null;
-    private $settings = [];
+    protected $populate = true;
+    protected $group = null;
+    protected $sub = null;
+    protected $settings = [];
 
     /**
      * Get controller

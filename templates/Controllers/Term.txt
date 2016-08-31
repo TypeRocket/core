@@ -6,5 +6,5 @@ use \TypeRocket\Controllers\WPTermController;
 
 class {{controller}} extends WPTermController
 {
-    public $modelClass = {{model}}::class;
+    protected $modelClass = {{model}}::class;
 }

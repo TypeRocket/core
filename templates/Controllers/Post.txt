@@ -6,5 +6,5 @@ use \TypeRocket\Controllers\WPPostController;
 
 class {{controller}} extends WPPostController
 {
-    public $modelClass = {{model}}::class;
+    protected $modelClass = {{model}}::class;
 }

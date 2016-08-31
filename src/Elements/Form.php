@@ -18,11 +18,11 @@ class Form
     use FormConnectorTrait;
 
     /** @var \TypeRocket\Elements\Fields\Field $currentField */
-    private $currentField = '';
-    private $debugStatus = null;
-    private $useAjax = null;
-    private $formUrl;
-    private $method = null;
+    protected $currentField = '';
+    protected $debugStatus = null;
+    protected $useAjax = null;
+    protected $formUrl;
+    protected $method = null;
 
     /**
      * Instance the From
@@ -75,7 +75,7 @@ class Form
      *
      * @return $this
      */
-    private function autoConfig()
+    protected function autoConfig()
     {
         if ($this->resource === 'auto') {
             global $post, $comment, $user_id, $taxonomy, $tag_ID;
@@ -339,7 +339,7 @@ class Form
      *
      * @return string
      */
-    private function getLabel()
+    protected function getLabel()
     {
         $open_html  = "<div class=\"control-label\"><span class=\"label\">";
         $close_html = '</span></div>';
@@ -365,7 +365,7 @@ class Form
      *
      * @return string
      */
-    private function getFieldHelpFunction( Fields\Field $field )
+    protected function getFieldHelpFunction( Fields\Field $field )
     {
         $helper = $field->getDebugHelperFunction();
 
@@ -406,7 +406,7 @@ class Form
      *
      * @return string
      */
-    private function getDebug()
+    protected function getDebug()
     {
         $generator = new Generator();
         $html      = '';

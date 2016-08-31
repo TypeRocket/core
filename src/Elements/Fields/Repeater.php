@@ -6,8 +6,8 @@ use \TypeRocket\Html\Generator;
 class Repeater extends Field implements ScriptField
 {
 
-    private $fields = [];
-    private $headline = null;
+    protected $fields = [];
+    protected $headline = null;
 
     /**
      * Run on construction

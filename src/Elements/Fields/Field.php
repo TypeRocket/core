@@ -10,14 +10,14 @@ abstract class Field
 {
     use FormConnectorTrait, AttributesTrait;
 
-    private $name = null;
-    private $type = null;
-    private $required = false;
+    protected $name = null;
+    protected $type = null;
+    protected $required = false;
 
     /** @var Form */
-    private $form = null;
-    private $prefix = 'tr';
-    private $label = false;
+    protected $form = null;
+    protected $prefix = 'tr';
+    protected $label = false;
 
     /**
      * When instancing a Field use reflection to connect the Form
