@@ -1,6 +1,7 @@
 <?php
+namespace Sanitize;
 
-class SanitizeTest extends PHPUnit_Framework_TestCase
+class SanitizeTest extends \PHPUnit_Framework_TestCase
 {
     public function testSanitizeDash()
     {

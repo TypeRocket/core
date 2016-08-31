@@ -1,6 +1,7 @@
 <?php
+namespace Validator;
 
-class ValidatorTest extends PHPUnit_Framework_TestCase
+class ValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testEmailFieldPasses()

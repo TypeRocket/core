@@ -1,5 +1,7 @@
 <?php
-class ResultsTest extends PHPUnit_Framework_TestCase
+namespace Results;
+
+class ResultsTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testPrependToResults()
