@@ -16,8 +16,8 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
     {
         $results = new \TypeRocket\Database\Results();
 
-        $item1 = ['post_title' => 'New Post 1'];
-        $item2 = ['post_title' => 'New Post 2'];
+        $item1 = ['post_title' => 'New Post 1', 'fillable' => 'yes'];
+        $item2 = ['post_title' => 'New Post 2', 'fillable' => 'yes'];
 
         $results->append($item1);
         $results->append($item2);
@@ -36,6 +36,7 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue( $r2 );
         $this->assertTrue( $title1 == $item1['post_title'] );
         $this->assertTrue( $title2 == $item2['post_title'] );
+        $this->assertTrue( $object2->fillable == $item2['fillable'] );
     }
 
     public function testCastResultsReturnNull()
