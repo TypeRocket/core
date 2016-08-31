@@ -100,22 +100,6 @@ class Model
     }
 
     /**
-     * Set Default Fields
-     *
-     * Fields that are write protected by default unless fillable
-     *
-     * @param array|\ArrayObject $default
-     *
-     * @return $this
-     */
-    public function setDefaultFields( $default )
-    {
-        $this->static = $default;
-
-        return $this;
-    }
-
-    /**
      * Set Fillable
      *
      * Fields that are write protected by default unless fillable
@@ -340,6 +324,18 @@ class Model
     public function getBuiltinFields()
     {
         return $this->builtin;
+    }
+
+    /**
+     * Get Format Fields
+     *
+     * Get all the fields that have been set for formatting
+     *
+     * @return array|mixed|void
+     */
+    public function getFormatFields()
+    {
+        return $this->format;
     }
 
     /**
