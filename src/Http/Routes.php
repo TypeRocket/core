@@ -58,7 +58,7 @@ class Routes
         $args = [$path, self::$request, $wilds];
         $this->vars = $wilds;
 
-        if( ! str_ends('/', self::$request->getPath() ) ) {
+        if( ! str_ends('/', self::$request->getPath() ) && self::$request->getMethod() == 'GET' ) {
             wp_redirect( self::$request->getPath() . '/' );
             die();
         }
