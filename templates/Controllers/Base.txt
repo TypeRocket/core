@@ -7,21 +7,21 @@ class {{controller}} extends Controller
 {
 
     /**
-     * The index page
+     * The index page for admin
      *
      * @return mixed
      */
-    function index()
+    public function index()
     {
         // TODO: Implement index() method.
     }
 
     /**
-     * The add page
+     * The add page for admin
      *
      * @return mixed
      */
-    function add()
+    public function add()
     {
         // TODO: Implement add() method.
     }
@@ -33,19 +33,19 @@ class {{controller}} extends Controller
      *
      * @return mixed
      */
-    function create()
+    public function create()
     {
         // TODO: Implement create() method.
     }
 
     /**
-     * The edit page
+     * The edit page for admin
      *
      * @param $id
      *
      * @return mixed
      */
-    function edit($id)
+    public function edit($id)
     {
         // TODO: Implement edit() method.
     }
@@ -59,31 +59,31 @@ class {{controller}} extends Controller
      *
      * @return mixed
      */
-    function update($id)
+    public function update($id)
     {
         // TODO: Implement update() method.
     }
 
     /**
-     * The show page
+     * The show page for admin
      *
      * @param $id
      *
      * @return mixed
      */
-    function show($id)
+    public function show($id)
     {
         // TODO: Implement show() method.
     }
 
     /**
-     * The delete page
+     * The delete page for admin
      *
      * @param $id
      *
      * @return mixed
      */
-    function delete($id)
+    public function delete($id)
     {
         // TODO: Implement delete() method.
     }
@@ -97,7 +97,7 @@ class {{controller}} extends Controller
      *
      * @return mixed
      */
-    function destroy($id)
+    public function destroy($id)
     {
         // TODO: Implement destroy() method.
     }
