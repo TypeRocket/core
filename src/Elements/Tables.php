@@ -325,8 +325,14 @@ class Tables
                 </div>
                 <div class="alignleft actions">
                     <label class="screen-reader-text" for="post-search-input">Search Pages:</label>
-                    <input type="hidden" id="post-search-input" name="page" value="<?php echo esc_attr($get_page); ?>">
-                    <input type="hidden" id="post-search-input" name="paged" value="<?php echo (int) $page; ?>">
+                    <input type="hidden" name="page" value="<?php echo esc_attr($get_page); ?>">
+                    <input type="hidden" name="paged" value="<?php echo (int) $page; ?>">
+                    <?php if (!empty($_GET['orderby'])) : ?>
+                        <input type="hidden" name="orderby" value="<?php echo esc_attr($_GET['orderby']); ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($_GET['order'])) : ?>
+                        <input type="hidden" name="order" value="<?php echo esc_attr($_GET['order']); ?>">
+                    <?php endif; ?>
                     <input type="search" id="post-search-input" name="s" value="">
                     <button id="search-submit" class="button">Search <?php echo ucfirst($item_word); ?></button>
                 </div>
