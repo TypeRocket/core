@@ -2,9 +2,11 @@
 namespace TypeRocket\Controllers;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\WPTerm;
 
 abstract class WPTermController extends Controller
 {
+    protected $modelClass = WPTerm::class;
 
     /** @var \TypeRocket\Models\WPTerm */
     protected $model = null;

@@ -2,9 +2,12 @@
 namespace TypeRocket\Controllers;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\WPOption;
 
 abstract class WPOptionController extends Controller
 {
+
+    protected $modelClass = WPOption::class;
 
     /**
      * Update option

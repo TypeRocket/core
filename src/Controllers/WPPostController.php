@@ -2,9 +2,11 @@
 namespace TypeRocket\Controllers;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\WPPost;
 
 abstract class WPPostController extends Controller
 {
+    protected $modelClass = WPPost::class;
 
     /** @var \TypeRocket\Models\WPPost */
     protected $model = null;

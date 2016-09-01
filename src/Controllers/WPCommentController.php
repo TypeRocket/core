@@ -2,9 +2,11 @@
 namespace TypeRocket\Controllers;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\WPOption;
 
 abstract class WPCommentController extends Controller
 {
+    protected $modelClass = WPOption::class;
 
     /**
      * Update comment based on ID
