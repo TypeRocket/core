@@ -339,7 +339,7 @@ class Tables
                 <div class="alignleft actions">
                     <label class="screen-reader-text" for="post-search-input">Search Pages:</label>
                     <input type="hidden" name="page" value="<?php echo esc_attr($get_page); ?>">
-                    <input type="hidden" name="paged" value="<?php echo (int) $page; ?>">
+                    <input type="hidden" name="paged" value="1">
                     <?php if (!empty($_GET['orderby'])) : ?>
                         <input type="hidden" name="orderby" value="<?php echo esc_attr($_GET['orderby']); ?>">
                     <?php endif; ?>
