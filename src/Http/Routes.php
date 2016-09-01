@@ -55,6 +55,8 @@ class Routes
      */
     private function runRoute($path = null, $handle = null, $wilds = null)
     {
+        global $wp_query;
+
         $args = [$path, self::$request, $wilds];
         $this->vars = $wilds;
 
@@ -64,6 +66,9 @@ class Routes
         }
 
         if (is_callable($handle)) {
+            $GLOBALS['error'] = '';
+            $wp_query->is_404 = false;
+
             $returned = call_user_func_array($handle, $args);
 
             if( $returned instanceof View ) {
