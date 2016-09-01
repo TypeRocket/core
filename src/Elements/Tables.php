@@ -168,9 +168,9 @@ class Tables
         $th_row->newElement('tr', ['class' => 'manage-column']);
         foreach ( $columns as $column => $data ) {
             $th = new Generator();
-            $classes = null;
+            $classes = 'manage-column';
             if($this->primary == $column) {
-                $classes = 'column-primary';
+                $classes .= ' column-primary';
             }
 
             if( ! is_string($column) ) {
@@ -179,8 +179,15 @@ class Tables
                 $label = $data['label'];
                 if( !empty($data['sort']) && $this->page ) {
                     $order_direction = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'DESC' : 'ASC';
+                    $order_direction_now = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'ASC' : 'DESC';
                     $order_link = $this->page->getUrl(['orderby' => $column, 'order' => $order_direction]);
-                    $label = "<a href=\"{$order_link}\">$label</a>";
+                    if( $column == $_GET['orderby']) {
+                        $classes .= ' sorted ' . strtolower($order_direction_now);
+                    } else {
+                        $classes .= ' sortable ' . strtolower($order_direction_now);
+                    }
+
+                    $label = "<a href=\"{$order_link}\"><span>$label</span><span class=\"sorting-indicator\"></span></a>";
                 }
 
                 $th->newElement('th', ['class' => $classes],$label);
