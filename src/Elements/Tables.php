@@ -123,7 +123,7 @@ class Tables
 
         $this->model = clone $model;
 
-        if( !empty($_GET['s']) && is_string($_GET['s']) && is_string($_GET['on'])  && is_string($_GET['condition']) ) {
+        if( $this->isValidSearch() ) {
             $condition = $_GET['condition'] == 'like' ? 'LIKE' : '=';
 
             $search = wp_unslash($_GET['s']);
@@ -183,7 +183,7 @@ class Tables
 
                     $url_params = ['orderby' => $column, 'order' => $order_direction];
 
-                    if( !empty($_GET['s']) && !empty($_GET['condition']) && !empty($_GET['on'])) {
+                    if( $this->isValidSearch() ) {
                         $url_params = array_merge($url_params, [
                             's' => wp_unslash($_GET['s']),
                             'condition' => wp_unslash($_GET['condition']),
@@ -192,7 +192,7 @@ class Tables
                     }
 
                     $order_link = $this->page->getUrl($url_params);
-                    if( $column == $_GET['orderby']) {
+                    if( !empty($_GET['orderby']) &&  $column == $_GET['orderby']) {
                         $classes .= ' sorted ' . strtolower($order_direction_now);
                     } else {
                         $classes .= ' sortable ' . strtolower($order_direction_now);
@@ -391,6 +391,23 @@ class Tables
             echo "<span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&rsaquo;</span>";
         }
         echo "</span>";
+    }
+
+    /**
+     * Is Valid Search
+     *
+     * @return bool
+     */
+    protected function isValidSearch() {
+
+        if( !empty($_GET['s']) && !empty($_GET['on'] && !empty($_GET['condition'])) ) {
+            if(is_string($_GET['s']) && is_string($_GET['on']) && is_string($_GET['condition'])) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
 }
