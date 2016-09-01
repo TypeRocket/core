@@ -2,25 +2,25 @@
 
 namespace Controllers;
 
-use TypeRocket\Controllers\WPPostController;
+use TypeRocket\Controllers\WPTermController;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
-use TypeRocket\Models\WPPost;
+use TypeRocket\Models\WPTerm;
 
-class PostTest extends \PHPUnit_Framework_TestCase
+class TermTest extends \PHPUnit_Framework_TestCase
 {
     public function testUpdateWithMetaMethod()
     {
-        $_POST['tr']['post_title'] = 'Hello World! Updated by controller!';
-        $_POST['tr']['meta_key'] = 'Hello World! Updated by controller!';
+        $_POST['tr']['meta_key'] = 'Hello World! \ / \' Updated by controller!';
+        $_POST['tr']['description'] = 'Update from controller \\ \TypeRocket\Name \'in quotes\'';
         $_POST = wp_slash($_POST);
 
         $request = new Request();
         $response = new Response();
-        $controller = new WPPostController( $request, $response );
+        $controller = new WPTermController( $request, $response );
         $controller->update( 1 );
 
-        $model = new WPPost();
+        $model = new WPTerm();
         $meta = $model->findById( $response->getData('resourceId') )->getFieldValue('meta_key');
 
         $this->assertTrue( $response->getData('resourceId') == 1 );
