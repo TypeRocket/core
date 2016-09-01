@@ -318,6 +318,8 @@ class Tables
             $prev = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_prev);
         }
 
+        $get_search_current = !empty($_GET['s']) ? wp_unslash($_GET['s']) : '';
+
         ?>
         <form action="<?php echo $current; ?>">
             <div class="tablenav top">
@@ -344,7 +346,7 @@ class Tables
                     <?php if (!empty($_GET['order'])) : ?>
                         <input type="hidden" name="order" value="<?php echo esc_attr($_GET['order']); ?>">
                     <?php endif; ?>
-                    <input type="search" id="post-search-input" name="s" value="">
+                    <input type="search" id="post-search-input" name="s" value="<?php echo esc_attr($get_search_current); ?>">
                     <button id="search-submit" class="button">Search <?php echo ucfirst($item_word); ?></button>
                 </div>
 
