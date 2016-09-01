@@ -14,6 +14,9 @@ class BaseVerify extends Middleware  {
 
     public $except = [];
 
+    /**
+     * Handle CSRF
+     */
     public function handle() {
 
         $path = $this->request->getPath();
@@ -34,6 +37,13 @@ class BaseVerify extends Middleware  {
         $this->next->handle();
     }
 
+    /**
+     * Check for excluded paths
+     *
+     * @param $path
+     *
+     * @return bool
+     */
     public function excludePath($path)
     {
         $path = trim($path, '/');
