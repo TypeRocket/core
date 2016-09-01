@@ -467,7 +467,7 @@ class Model
     {
         // Unlock fillable fields
         if( $fields instanceof Fields ) {
-            foreach ( $fields->fillable as $field_name ) {
+            foreach ( $fields->getFillable() as $field_name ) {
                 $this->unlockField($field_name);
             }
             $fields = $fields->getArrayCopy();
