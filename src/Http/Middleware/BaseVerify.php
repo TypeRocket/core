@@ -42,10 +42,12 @@ class BaseVerify extends Middleware  {
             $path = explode('/', $path);
             $excluding = true;
 
-            foreach ( $path as $index => $part ) {
-                if( $exclude[$index] != '*' && $exclude[$index] != $part ) {
-                    $excluding = false;
-                    break;
+            if( count($path) == count($exclude) ) {
+                foreach ($path as $index => $part) {
+                    if ($exclude[$index] != '*' && $exclude[$index] != $part) {
+                        $excluding = false;
+                        break;
+                    }
                 }
             }
 
