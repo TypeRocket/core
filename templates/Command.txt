@@ -20,7 +20,7 @@ class {{command}} extends Command
 
     public function exec()
     {
-        // When command runs
-        $this->success('Ran!');
+        // When command executes
+        $this->success('Execute!');
     }
 }
