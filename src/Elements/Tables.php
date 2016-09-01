@@ -6,6 +6,7 @@ use TypeRocket\Core\Config;
 use TypeRocket\Html\Generator;
 use TypeRocket\Models\Model;
 use TypeRocket\Register\Page;
+use TypeRocket\Utility\Sanitize;
 
 class Tables
 {
@@ -117,7 +118,23 @@ class Tables
      */
     public function setModel( Model $model )
     {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
         $this->model = clone $model;
+
+        if( !empty($_GET['s']) && is_string($_GET['s']) && is_string($_GET['on']) ) {
+            $condition = $_GET['condition'] == 'Contains' ? 'LIKE' : '=';
+
+            $search = wp_unslash($_GET['s']);
+            if($condition == 'LIKE') {
+                $search = '%' . $wpdb->esc_like($search) . '%';
+            } else {
+                $search = $wpdb->_real_escape($search);
+            }
+            $model->where( Sanitize::underscore($_GET['on']) , $condition, $search );
+        }
+
         $this->count = $model->findAll()->count();
         if( !empty( $_GET['order'] ) && !empty( $_GET['orderby'] ) ) {
             $this->model->orderBy($_GET['orderby'], $_GET['order']);
@@ -257,15 +274,7 @@ class Tables
         $table->appendInside('tbody', [], $body );
         $table->appendInside('tfoot', [], $foot );
 
-        echo $table;
-        $this->pagination();
-    }
-
-    /**
-     * Table pagination
-     */
-    protected function pagination()
-    {
+        // Pagination
         $pages = ceil($this->count / $this->limit);
         $item_word = 'items';
 
@@ -276,6 +285,9 @@ class Tables
         $page = $this->paged;
         $previous_page = $this->paged - 1;
         $next_page = $this->paged + 1;
+
+        $current = $this->page->getUrlWithParams(['paged' => (int) $page]);
+        $get_page = !empty($_GET['page']) ? $_GET['page']: '';
 
         if($this->page instanceof Page) {
             $next = $this->page->getUrlWithParams(['paged' => (int) $next_page]);
@@ -288,10 +300,59 @@ class Tables
             $prev = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_prev);
         }
 
-        echo "<div class=\"tablenav bottom\">";
-        echo "<div class=\"tablenav-pages\">
-        <span class=\"displaying-num\">{$this->count} {$item_word}</span>
-        <span class=\"pagination-links\">";
+        ?>
+        <form action="<?php echo $current; ?>">
+            <div class="tablenav top">
+                <div class="alignleft actions">
+                    <select class="alignleft" name="on">
+                        <?php foreach ($this->columns as $column_name => $column) : ?>
+                            <option value="<?php echo esc_attr($column_name); ?>"><?php echo $column['label']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="alignleft actions">
+                    <select class="alignleft" name="condition">
+                        <option value="like">Contains</option>
+                        <option value="equals">Is Exactly</option>
+                    </select>
+                </div>
+                <div class="alignleft actions">
+                    <label class="screen-reader-text" for="post-search-input">Search Pages:</label>
+                    <input type="hidden" id="post-search-input" name="page" value="<?php echo esc_attr($get_page); ?>">
+                    <input type="hidden" id="post-search-input" name="paged" value="<?php echo (int) $page; ?>">
+                    <input type="search" id="post-search-input" name="s" value="">
+                    <button id="search-submit" class="button">Search <?php echo ucfirst($item_word); ?></button>
+                </div>
+
+                <div class="tablenav-pages">
+                    <span class="displaying-num"><?php echo $this->count; ?> <?php echo $item_word; ?></span>
+                    <?php $this->paginationLinks($page, $prev, $next, $pages); ?>
+                </div>
+                <br class="clear">
+            </div>
+        </form>
+
+        <?php  echo $table; ?>
+
+        <div class="tablenav bottom">
+            <div class="tablenav-pages">
+                <span class="displaying-num"><?php echo $this->count; ?> <?php echo $item_word; ?></span>
+                <?php $this->paginationLinks($page, $prev, $next, $pages); ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Pagination Links
+     *
+     * @param $page
+     * @param $prev
+     * @param $next
+     * @param $pages
+     */
+    protected function paginationLinks($page, $prev, $next, $pages) {
+        echo "<span class=\"pagination-links\">";
         if( $page < 2 ) {
             echo "<span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&lsaquo;</span>";
         } else {
@@ -303,7 +364,7 @@ class Tables
         } else {
             echo "<span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&rsaquo;</span>";
         }
-        echo "</span></div></div>";
+        echo "</span>";
     }
 
 }
