@@ -157,40 +157,74 @@ class Request
     /**
      * Get the $_POST data
      *
+     * @param null $key
+     *
      * @return null
      */
-    public function getDataPost()
+    public function getDataPost( $key = null )
     {
+        if( array_key_exists($key, $this->post)) {
+            return $this->post[$key];
+        }
+
         return $this->post;
     }
 
     /**
      * Get the $_GET data
      *
+     * @param null $key
+     *
      * @return null
      */
-    public function getDataGet()
+    public function getDataGet( $key = null )
     {
+        if( array_key_exists($key, $this->get)) {
+            return $this->get[$key];
+        }
+
         return $this->get;
     }
 
     /**
-     * Get the $_POST files
+     * Get the $_FILES data
      *
      * @return null
      */
     public function getDataFiles()
     {
-        return $this->get;
+        return $this->files;
+    }
+
+    /**
+     * Get the $_COOKIE data
+     *
+     * @param null $key
+     *
+     * @return null
+     */
+    public function getDataCookies( $key = null )
+    {
+        if( array_key_exists($key, $this->cookies)) {
+            return $this->cookies[$key];
+        }
+
+        return $this->cookies;
     }
 
     /**
      * Get the fields
      *
+     * @param null $key
+     *
      * @return array|null
      */
-    public function getFields()
+    public function getFields($key = null)
     {
+        if( array_key_exists($key, $this->cookies)) {
+            return $this->fields[$key];
+        }
+
         return $this->fields;
     }
 
