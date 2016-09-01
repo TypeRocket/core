@@ -124,7 +124,7 @@ class Tables
         $this->model = clone $model;
 
         if( !empty($_GET['s']) && is_string($_GET['s']) && is_string($_GET['on']) ) {
-            $condition = $_GET['condition'] == 'Contains' ? 'LIKE' : '=';
+            $condition = $_GET['condition'] == 'like' ? 'LIKE' : '=';
 
             $search = wp_unslash($_GET['s']);
             if($condition == 'LIKE') {
