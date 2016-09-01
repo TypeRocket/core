@@ -4,7 +4,7 @@ namespace TypeRocket\Controllers;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\WPUser;
 
-abstract class WPUserController extends Controller
+class WPUserController extends Controller
 {
 
     protected $modelClass = WPUser::class;

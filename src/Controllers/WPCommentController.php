@@ -4,7 +4,7 @@ namespace TypeRocket\Controllers;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\WPOption;
 
-abstract class WPCommentController extends Controller
+class WPCommentController extends Controller
 {
     protected $modelClass = WPOption::class;
 

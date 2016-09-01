@@ -200,9 +200,15 @@ class Response {
     /**
      * Get Data
      *
+     * @param null $key
+     *
      * @return array
      */
-    public function getData() {
+    public function getData( $key = null ) {
+        if( array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        }
+
         return $this->data;
     }
 
@@ -294,7 +300,7 @@ class Response {
      */
     public function flashNext($message, $type = 'success')
     {
-        if( ! $this->blockFlash ) {
+        if( ! $this->blockFlash && ! headers_sent() ) {
             $this->flash       = true;
             $this->message     = $message;
             $this->messageType = strtolower($type);

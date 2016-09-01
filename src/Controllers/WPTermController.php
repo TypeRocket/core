@@ -4,7 +4,7 @@ namespace TypeRocket\Controllers;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\WPTerm;
 
-abstract class WPTermController extends Controller
+class WPTermController extends Controller
 {
     protected $modelClass = WPTerm::class;
 
