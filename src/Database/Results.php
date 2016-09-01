@@ -50,4 +50,13 @@ class Results extends \ArrayObject
         }
         $this->exchangeArray( $models );
     }
+
+    /**
+     * Has Results
+     *
+     * @return bool
+     */
+    public function hasResults() {
+        return $this->count() > 0 ? true : false;
+    }
 }
