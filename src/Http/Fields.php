@@ -7,9 +7,8 @@ use TypeRocket\Utility\Validator;
 class Fields extends \ArrayObject
 {
 
-    public $fillable = [];
-    public $rules = [];
-    public $fieldsArray = [];
+    protected $fillable = [];
+    protected $rules = [];
 
     /**
      * Load commands
@@ -22,7 +21,6 @@ class Fields extends \ArrayObject
             $fields = (new Request())->getFields();
         }
 
-        $this->fieldsArray = $fields;
         $this->exchangeArray( $fields );
     }
 
