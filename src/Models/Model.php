@@ -867,20 +867,8 @@ class Model
             return $result;
         }
 
-        // Create Unaltered copy
-        if ( is_object($result) ) {
-            $this->propertiesUnaltered = clone $result;
-        } else {
-            $this->propertiesUnaltered = $result;
-        }
-
-        // Cast properties
-        $properties = [];
-        $this->properties = (array) $result;
-        foreach ($this->properties as $name => $property ) {
-            $properties[$name] = $this->getCast($name);
-        }
-        $this->properties = $properties;
+        // Cast Properties
+        $this->castProperties( (array) $result );
 
         return $this;
     }
@@ -981,6 +969,29 @@ class Model
             return $this->update($fields);
         }
         return $this->create($fields);
+    }
+
+    /**
+     * Cast Properties
+     *
+     * @param $properties
+     *
+     * @return $this
+     */
+    public function castProperties( $properties )
+    {
+        // Create Unaltered copy
+        $this->propertiesUnaltered = (array) $properties;
+
+        // Cast properties
+        $cast = [];
+        $this->properties = (array) $properties;
+        foreach ($this->properties as $name => $property ) {
+            $cast[$name] = $this->getCast($name);
+        }
+        $this->properties = $cast;
+
+        return $this;
     }
 
     /**
