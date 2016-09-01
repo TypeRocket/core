@@ -149,6 +149,14 @@ class Validator
                         $this->passes[$name] = $value;
                     }
                     break;
+                case 'callback' :
+                    $callback_value = call_user_func_array($option, [ $this, $field_name, $option2 ]);
+                    if( isset($callback_value['error']) ) {
+                        $this->errors[$name] = $callback_value['error'];
+                    } else {
+                        $this->passes[$name] = $callback_value['success'];
+                    }
+                    break;
                 case 'length' :
                     if( mb_strlen($value) < $option ) {
                         $this->errors[$name] =  $field_name . " must be at least $option characters long.";

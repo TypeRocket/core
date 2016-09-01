@@ -10,7 +10,6 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
     public function testSimpleUpdatePostForm()
     {
-
         $form = new Form('post', 'update', 1);
         $form->setModel( WPPost::class );
         $title = $form->text('post_title')->getValue();
