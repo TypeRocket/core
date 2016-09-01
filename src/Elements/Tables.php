@@ -123,7 +123,7 @@ class Tables
 
         $this->model = clone $model;
 
-        if( !empty($_GET['s']) && is_string($_GET['s']) && is_string($_GET['on']) ) {
+        if( !empty($_GET['s']) && is_string($_GET['s']) && is_string($_GET['on'])  && is_string($_GET['condition']) ) {
             $condition = $_GET['condition'] == 'like' ? 'LIKE' : '=';
 
             $search = wp_unslash($_GET['s']);
@@ -180,7 +180,18 @@ class Tables
                 if( !empty($data['sort']) && $this->page ) {
                     $order_direction = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'DESC' : 'ASC';
                     $order_direction_now = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'ASC' : 'DESC';
-                    $order_link = $this->page->getUrl(['orderby' => $column, 'order' => $order_direction]);
+
+                    $url_params = ['orderby' => $column, 'order' => $order_direction];
+
+                    if( !empty($_GET['s']) && !empty($_GET['condition']) && !empty($_GET['on'])) {
+                        $url_params = array_merge($url_params, [
+                            's' => wp_unslash($_GET['s']),
+                            'condition' => wp_unslash($_GET['condition']),
+                            'on' => wp_unslash($_GET['on']),
+                        ]);
+                    }
+
+                    $order_link = $this->page->getUrl($url_params);
                     if( $column == $_GET['orderby']) {
                         $classes .= ' sorted ' . strtolower($order_direction_now);
                     } else {
