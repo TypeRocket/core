@@ -221,7 +221,7 @@ class Request
      */
     public function getFields($key = null)
     {
-        if( array_key_exists($key, $this->cookies)) {
+        if( array_key_exists($key, $this->fields)) {
             return $this->fields[$key];
         }
 
