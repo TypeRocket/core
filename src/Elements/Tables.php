@@ -20,6 +20,7 @@ class Tables
 
     /** @var null|Page  */
     public $page = null;
+    protected $searchColumns;
     public $paged = 1;
     public $limit;
     public $offset = 0;
@@ -60,6 +61,19 @@ class Tables
     public function setLimit( $limit ) {
         $this->limit = (int) $limit;
         $this->offset = ( $this->paged - 1 ) * $this->limit;
+
+        return $this;
+    }
+
+    /**
+     * Set table search columns
+     *
+     * @param array $columns
+     *
+     * @return $this
+     */
+    public function setSearchColumns( $columns ) {
+        $this->searchColumns = $columns;
 
         return $this;
     }
@@ -320,13 +334,17 @@ class Tables
 
         $get_search_current = !empty($_GET['s']) ? wp_unslash($_GET['s']) : '';
 
+        $searchColumns = $this->searchColumns ? $this->searchColumns : $this->columns;
+
         ?>
         <form action="<?php echo $current; ?>">
             <div class="tablenav top">
                 <div class="alignleft actions">
                     <select class="alignleft" name="on">
-                        <?php foreach ($this->columns as $column_name => $column) : ?>
-                            <option value="<?php echo esc_attr($column_name); ?>"><?php echo $column['label']; ?></option>
+                        <?php foreach ($searchColumns as $column_name => $column) : ?>
+                            <option value="<?php echo esc_attr($column_name); ?>">
+                                <?php echo !empty($column['label']) ? $column['label'] : $column; ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
