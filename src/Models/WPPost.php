@@ -90,8 +90,8 @@ class WPPost extends Model
                 $builtin['post_type'] = $this->postType;
             }
 
-            if( empty($builtin['post_title']) && empty($builtin['post_content']) ) {
-                $error = 'WPPost not created: post_name (slug), post_title and post_content are required';
+            if( empty($builtin['post_title']) || empty($builtin['post_content']) ) {
+                $error = 'WPPost not created: post_title and post_content are required';
                 throw new ModelException( $error );
             }
 
@@ -99,7 +99,7 @@ class WPPost extends Model
             add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
             if ( $post instanceof \WP_Error || $post === 0 ) {
-                $error = 'WPPost not created: post_name (slug), post_title, and post_content are required.';
+                $error = 'WPPost not created: An error accrued during wp_insert_post.';
                 throw new ModelException( $error );
             } else {
                 $this->findById($post);

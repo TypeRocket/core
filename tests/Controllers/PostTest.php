@@ -27,4 +27,25 @@ class PostTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue( $meta == $request->getFields('meta_key') );
     }
 
+    public function testCreateWithMetaMethod()
+    {
+        $_POST['tr']['post_title'] = 'Hello World! Created by controller!';
+        $_POST['tr']['post_content'] = 'Content created by controller!';
+        $_POST['tr']['meta_key'] = 'Meta created by controller!';
+        $_POST = wp_slash($_POST);
+
+        $request = new Request();
+        $response = new Response();
+        $controller = new WPPostController( $request, $response );
+        $controller->create();
+        $id = $response->getData('resourceId');
+        $model = new WPPost();
+        $meta = $model->findById( $id )->getFieldValue('meta_key');
+
+        wp_delete_post( $id, true);
+
+        $this->assertTrue( !empty($id) );
+        $this->assertTrue( $meta == $request->getFields('meta_key') );
+    }
+
 }
