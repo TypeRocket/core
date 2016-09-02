@@ -365,7 +365,7 @@ class Tables
                         <input type="hidden" name="order" value="<?php echo esc_attr($_GET['order']); ?>">
                     <?php endif; ?>
                     <input type="search" id="post-search-input" name="s" value="<?php echo esc_attr($get_search_current); ?>">
-                    <button id="search-submit" class="button">Search <?php echo ucfirst($item_word); ?></button>
+                    <button id="search-submit" class="button">Search</button>
                 </div>
 
                 <div class="tablenav-pages">
