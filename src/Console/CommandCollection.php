@@ -15,7 +15,8 @@ class CommandCollection extends \ArrayObject
     ];
 
     public $wordpress = [
-        Commands\FlushRewrites::class
+        Commands\FlushRewrites::class,
+        Commands\Migrate::class
     ];
 
     /**
