@@ -333,6 +333,12 @@ class Tables
         }
 
         $get_search_current = !empty($_GET['s']) ? wp_unslash($_GET['s']) : '';
+        $get_condition_current = !empty($_GET['condition']) ? wp_unslash($_GET['condition']) : '';
+        $get_on_current = !empty($_GET['on']) ? wp_unslash($_GET['on']) : '';
+        $select_condition = [
+            'like' => 'Contains',
+            'equals' => 'Is Exactly'
+        ];
 
         $searchColumns = $this->searchColumns ? $this->searchColumns : $this->columns;
 
@@ -341,8 +347,10 @@ class Tables
             <div class="tablenav top">
                 <div class="alignleft actions">
                     <select class="alignleft" name="on">
-                        <?php foreach ($searchColumns as $column_name => $column) : ?>
-                            <option value="<?php echo esc_attr($column_name); ?>">
+                        <?php foreach ($searchColumns as $column_name => $column) :
+                            $selected = $get_on_current == $column_name ? 'selected="selected"' : '';
+                            ?>
+                            <option <?php echo $selected; ?> value="<?php echo esc_attr($column_name); ?>">
                                 <?php echo !empty($column['label']) ? $column['label'] : $column; ?>
                             </option>
                         <?php endforeach; ?>
@@ -350,8 +358,13 @@ class Tables
                 </div>
                 <div class="alignleft actions">
                     <select class="alignleft" name="condition">
-                        <option value="like">Contains</option>
-                        <option value="equals">Is Exactly</option>
+                        <?php foreach ($select_condition as $column_name => $label) :
+                            $selected = $get_condition_current == $column_name ? 'selected="selected"' : '';
+                            ?>
+                            <option <?php echo $selected; ?> value="<?php echo esc_attr($column_name); ?>">
+                                <?php echo $label; ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="alignleft actions">
