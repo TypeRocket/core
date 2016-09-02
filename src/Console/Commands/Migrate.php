@@ -38,12 +38,24 @@ class Migrate extends Command
             return;
         }
 
-        $sql = file_get_contents($file_sql);
+        $queries = explode(';'.PHP_EOL, file_get_contents($file_sql) );
 
-        if ( $wpdb->query( $sql ) ) {
-            $this->success('SQL '. $name .' successfully run.');
-        } else {
-            $this->error('Query Error: SQL '. $name .' failed to run.');
+        foreach ($queries as $query) {
+
+            if( str_contains('create table', strtolower($query)) ) {
+                $result = dbDelta($query);
+            } elseif( !empty(trim($query)) ) {
+                $result = $wpdb->query( $query );
+            } else {
+                continue;
+            }
+
+            if ( $result ) {
+                $this->success('SQL '. $name .' successfully run.');
+            } else {
+                $this->error('Query Error: SQL '. $name .' failed to run.');
+            }
         }
+
     }
 }
