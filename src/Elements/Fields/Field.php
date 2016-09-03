@@ -338,6 +338,8 @@ abstract class Field
     /**
      * Make field required
      *
+     * Adds a * to the field and that is all.
+     *
      * @return $this
      */
     public function required()
