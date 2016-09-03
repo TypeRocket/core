@@ -5,6 +5,7 @@ namespace TypeRocket\Console\Commands;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use Symfony\Component\Console\Input\ArrayInput;
+use TypeRocket\Utility\Str;
 
 class UseRoot extends Command
 {
@@ -193,7 +194,7 @@ class UseRoot extends Command
 
             // Message
             $this->success('Deleting ' . $value);
-            if( str_starts( TR_PATH, $value) && file_exists( $value ) ) {
+            if( Str::starts( TR_PATH, $value) && file_exists( $value ) ) {
 
                 // Delete theme
                 ( new File($value) )->removeRecursiveDirectory();

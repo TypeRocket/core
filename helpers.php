@@ -467,7 +467,7 @@ if( ! function_exists('str_starts') ) {
  * @return bool
  */
 function str_starts( $needle, $subject ) {
-    return mb_substr($subject, 0, mb_strlen($needle) ) === $needle;
+    return \TypeRocket\Utility\Str::starts($needle, $subject);
 }
 }
 
@@ -482,12 +482,7 @@ if( ! function_exists('str_ends') ) {
  * @return bool
  */
 function str_ends( $needle, $subject ) {
-    $length = mb_strlen($needle);
-    if ($length == 0) {
-        return true;
-    }
-
-    return ( mb_substr($subject, -$length ) === $needle );
+    return \TypeRocket\Utility\Str::ends($needle, $subject);
 }
 }
 
@@ -501,6 +496,6 @@ if( ! function_exists('str_contains') ) {
  * @return bool
  */
 function str_contains( $needle, $subject ) {
-    return ( mb_strpos( $subject, $needle ) !== false );
+    return \TypeRocket\Utility\Str::contains($needle, $subject);
 }
 }

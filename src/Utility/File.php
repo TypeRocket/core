@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Utility;
 
+use TypeRocket\Utility\Str;
+
 class File
 {
 
@@ -107,7 +109,7 @@ class File
     {
         $path = $path ? $path : $this->file;
 
-        if( str_starts( TR_PATH, $path) && file_exists( $path ) ) {
+        if( Str::starts( TR_PATH, $path) && file_exists( $path ) ) {
             $path = mb_substr( $path, mb_strlen(TR_PATH) );
         }
 

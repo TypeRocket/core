@@ -4,6 +4,7 @@ namespace TypeRocket\Http;
 
 use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Template\View;
+use TypeRocket\Utility\Str;
 
 /**
  * Class Routes
@@ -60,7 +61,7 @@ class Routes
         $args = [$path, self::$request, $wilds];
         $this->vars = $wilds;
 
-        if( ! str_ends('/', self::$request->getPath() ) && self::$request->getMethod() == 'GET' ) {
+        if( ! Str::ends('/', self::$request->getPath() ) && self::$request->getMethod() == 'GET' ) {
             wp_redirect( self::$request->getPath() . '/' );
             die();
         }

@@ -7,6 +7,7 @@ use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Elements\Icons;
 use TypeRocket\Template\View;
+use TypeRocket\Utility\Str;
 
 class Page extends Registrable
 {
@@ -399,7 +400,7 @@ class Page extends Registrable
 
             if(isset($_GET)) {
                 foreach ($_GET as $name => $value) {
-                    if( str_starts('route_', $name) ) {
+                    if( Str::starts('route_', $name) ) {
                         $args[mb_substr($name, 6)] = $value;
                     }
                 }
