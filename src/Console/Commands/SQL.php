@@ -5,7 +5,7 @@ namespace TypeRocket\Console\Commands;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\Str;
 
-class Migrate extends Command
+class SQL extends Command
 {
     protected $command = [
         'wp:sql',
@@ -43,7 +43,7 @@ class Migrate extends Command
 
         foreach ($queries as $query) {
 
-            if( Str::contains('create table', strtolower($query)) ) {
+            if( Str::starts('create table', strtolower($query)) ) {
                 $result = dbDelta($query);
             } elseif( !empty(trim($query)) ) {
                 $result = $wpdb->query( $query );
