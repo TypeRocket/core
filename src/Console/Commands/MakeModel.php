@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Inflect;
@@ -18,6 +20,7 @@ class MakeModel extends Command
         $this->addArgument('type', self::REQUIRED, 'The type: base, post or term.');
         $this->addArgument('name', self::REQUIRED, 'The name of the model.');
         $this->addArgument('id', self::OPTIONAL, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
+        $this->addOption( 'controller', 'c', InputOption::VALUE_NONE, 'Make a controller as well' );
     }
 
     /**
@@ -43,6 +46,10 @@ class MakeModel extends Command
                 $this->error('Type must be: base, post or term');
                 die();
                 break;
+        }
+
+        if( ! $id ) {
+            $id = $type != 'Base' ? strtolower($name) : Inflect::pluralize( strtolower($name) );
         }
 
         $model = ucfirst($name);
@@ -78,6 +85,15 @@ class MakeModel extends Command
             $this->success('Model created: ' . $model . ' as ' . $type . '</>');
         } else {
             $this->error('TypeRocket ' . $model . ' exists.');
+        }
+
+        if ( $this->getOption('controller') ) {
+            $command = $this->getApplication()->find('make:controller');
+            $input = new ArrayInput( [
+                'type' => $this->getArgument('type'),
+                'name' => $this->getArgument('name')
+            ] );
+            $command->run($input, $this->output);
         }
 
     }

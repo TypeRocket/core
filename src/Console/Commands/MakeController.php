@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 
@@ -17,6 +19,7 @@ class MakeController extends Command
         $this->addArgument('type', self::REQUIRED, 'The type: base, post or term.');
         $this->addArgument('name', self::REQUIRED, 'The name of the resource for the controller.');
         $this->addArgument('model', self::OPTIONAL, 'The model for the post or term controller.');
+        $this->addOption( 'model', 'm', InputOption::VALUE_NONE, 'Make a model as well' );
     }
 
     /**
@@ -31,6 +34,10 @@ class MakeController extends Command
         $type = $this->getArgument('type');
         $name = $this->getArgument('name');
         $model = $this->getArgument('model');
+
+        if( ! $model ) {
+            $model = $name;
+        }
 
         switch ( strtolower($type) ) {
             case 'base' :
@@ -69,6 +76,15 @@ class MakeController extends Command
             $this->success('Controller created: ' . $controller . ' as ' . $type );
         } else {
             $this->error('TypeRocket ' . $controller . ' exists.');
+        }
+
+        if ( $this->getOption('model') ) {
+            $command = $this->getApplication()->find('make:model');
+            $input = new ArrayInput( [
+                'type' => $this->getArgument('type'),
+                'name' => $this->getArgument('name')
+            ] );
+            $command->run($input, $this->output);
         }
 
     }

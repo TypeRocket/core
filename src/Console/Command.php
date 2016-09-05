@@ -15,6 +15,7 @@ class Command extends \Symfony\Component\Console\Command\Command
 {
     const REQUIRED = 1;
     const OPTIONAL = 2;
+    const IS_ARRAY = 4;
 
     /** @var InputInterface $input */
     protected $input;
@@ -117,6 +118,17 @@ class Command extends \Symfony\Component\Console\Command\Command
      */
     protected function getArgument( $name ) {
         return $this->input->getArgument($name);
+    }
+
+    /**
+     * Get Option
+     *
+     * @param $name
+     *
+     * @return mixed
+     */
+    protected function getOption( $name ) {
+        return $this->input->getOption($name);
     }
 
 }
