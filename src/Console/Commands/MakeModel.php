@@ -17,7 +17,7 @@ class MakeModel extends Command
 
     protected function config()
     {
-        $this->addArgument('type', self::REQUIRED, 'The type: base, post or term.');
+        $this->addArgument('directive', self::REQUIRED, 'The type: base, post or term.');
         $this->addArgument('name', self::REQUIRED, 'The name of the model.');
         $this->addArgument('id', self::OPTIONAL, 'The post, base or term WP ID. eg. post, page, category, post_tag...');
         $this->addOption( 'controller', 'c', InputOption::VALUE_NONE, 'Make a controller as well' );
@@ -32,15 +32,15 @@ class MakeModel extends Command
      */
     protected function exec()
     {
-        $type = $this->getArgument('type');
+        $directive = $this->getArgument('directive');
         $name = $this->getArgument('name');
         $id = $this->getArgument('id');
 
-        switch ( strtolower($type) ) {
+        switch ( strtolower($directive) ) {
             case 'base' :
             case 'post' :
             case 'term' :
-                $type = ucfirst($type);
+                $directive = ucfirst($directive);
                 break;
             default :
                 $this->error('Type must be: base, post or term');
@@ -49,40 +49,36 @@ class MakeModel extends Command
         }
 
         if( ! $id ) {
-            $id = $type != 'Base' ? strtolower($name) : Inflect::pluralize( strtolower($name) );
+            if( $directive == 'Base') {
+                $id = strtolower(Inflect::pluralize($name));
+            } else {
+                $id = strtolower($name);
+            }
         }
 
         $model = ucfirst($name);
-        $this->makeFile($model, $type, $id);
+        $this->makeFile($model, $directive, $id);
     }
 
     /**
      * Make file
      *
      * @param $model
-     * @param $type
+     * @param $directive
      * @param $id
      */
-    private function makeFile( $model, $type, $id ) {
-
-        if( ! $id ) {
-            if( $type == 'Base') {
-                $id = strtolower(Inflect::pluralize($model));
-            } else {
-                $id = strtolower($model);
-            }
-        }
+    private function makeFile( $model, $directive, $id ) {
 
         $tags = ['{{namespace}}', '{{model}}', '{{id}}'];
         $replacements = [ TR_APP_NAMESPACE, $model, $id ];
-        $template =  __DIR__ . '/../../../templates/Models/' . $type . '.txt';
+        $template =  __DIR__ . '/../../../templates/Models/' . $directive . '.txt';
         $new = TR_PATH . '/app/Models/' . $model . ".php";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );
 
         if( $new ) {
-            $this->success('Model created: ' . $model . ' as ' . $type . '</>');
+            $this->success('Model created: ' . $model . ' as ' . $directive . '</>');
         } else {
             $this->error('TypeRocket ' . $model . ' exists.');
         }
@@ -90,7 +86,7 @@ class MakeModel extends Command
         if ( $this->getOption('controller') ) {
             $command = $this->getApplication()->find('make:controller');
             $input = new ArrayInput( [
-                'type' => $this->getArgument('type'),
+                'directive' => $this->getArgument('directive'),
                 'name' => $this->getArgument('name')
             ] );
             $command->run($input, $this->output);

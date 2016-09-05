@@ -16,7 +16,7 @@ class MakeController extends Command
 
     protected function config()
     {
-        $this->addArgument('type', self::REQUIRED, 'The type: base, post or term.');
+        $this->addArgument('directive', self::REQUIRED, 'The directive: base, post or term.');
         $this->addArgument('name', self::REQUIRED, 'The name of the resource for the controller.');
         $this->addArgument('model', self::OPTIONAL, 'The model for the post or term controller.');
         $this->addOption( 'model', 'm', InputOption::VALUE_NONE, 'Make a model as well' );
@@ -31,7 +31,7 @@ class MakeController extends Command
      */
     protected function exec()
     {
-        $type = $this->getArgument('type');
+        $directive = $this->getArgument('directive');
         $name = $this->getArgument('name');
         $model = $this->getArgument('model');
 
@@ -39,11 +39,11 @@ class MakeController extends Command
             $model = $name;
         }
 
-        switch ( strtolower($type) ) {
+        switch ( strtolower($directive) ) {
             case 'base' :
             case 'post' :
             case 'term' :
-                $type = ucfirst($type);
+                $directive = ucfirst($directive);
                 break;
             default :
                 $this->error('Type must be: base, post or term');
@@ -52,28 +52,28 @@ class MakeController extends Command
         }
 
         $controller = ucfirst($name) . 'Controller';
-        $this->makeFile($controller, $type, $model );
+        $this->makeFile($controller, $directive, $model );
     }
 
     /**
      * Make file
      *
      * @param $controller
-     * @param $type
+     * @param $directive
      * @param $model
      */
-    private function makeFile( $controller, $type, $model ) {
+    private function makeFile( $controller, $directive, $model ) {
 
         $tags = ['{{namespace}}', '{{controller}}', '{{model}}'];
         $replacements = [ TR_APP_NAMESPACE, $controller, $model ];
-        $template = __DIR__ . '/../../../templates/Controllers/' . $type . '.txt';
+        $template = __DIR__ . '/../../../templates/Controllers/' . $directive . '.txt';
         $new = TR_PATH . '/app/Controllers/' . $controller . ".php";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );
 
         if( $new ) {
-            $this->success('Controller created: ' . $controller . ' as ' . $type );
+            $this->success('Controller created: ' . $controller . ' as ' . $directive );
         } else {
             $this->error('TypeRocket ' . $controller . ' exists.');
         }
@@ -81,7 +81,7 @@ class MakeController extends Command
         if ( $this->getOption('model') ) {
             $command = $this->getApplication()->find('make:model');
             $input = new ArrayInput( [
-                'type' => $this->getArgument('type'),
+                'directive' => $this->getArgument('directive'),
                 'name' => $this->getArgument('name')
             ] );
             $command->run($input, $this->output);
