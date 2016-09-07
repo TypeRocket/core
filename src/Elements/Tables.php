@@ -425,7 +425,7 @@ class Tables
             if( (int) $page === 1 ) {
                 echo ' <span class="tablenav-pages-navspan" aria-hidden="true">&laquo;</span> ';
             } else {
-                echo " <a class=\"last-page\" href=\"{$last}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&laquo;</span></a> ";
+                echo " <a class=\"last-page\" href=\"{$first}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&laquo;</span></a> ";
             }
         }
 
