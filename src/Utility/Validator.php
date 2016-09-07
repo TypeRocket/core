@@ -172,6 +172,14 @@ class Validator
                         $this->passes[$name] = $value;
                     }
                     break;
+                case 'size' :
+                    $option = (int) $option;
+                    if( mb_strlen($value) === (int) $option ) {
+                        $this->errors[$name] =  $field_name . " must be $option characters.";
+                    } else {
+                        $this->passes[$name] = $value;
+                    }
+                    break;
                 case 'email' :
                     if( ! filter_var($value, FILTER_VALIDATE_EMAIL) ) {
                         $this->errors[$name] =  $field_name . " must be at an email address.";
