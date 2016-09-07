@@ -89,7 +89,9 @@ class Tables
      *
      */
     public function setOrder( $column, $direction = 'ASC' ) {
-        $this->model->orderBy($column, $direction);
+        if( empty( $_GET['order'] ) && empty( $_GET['orderby'] ) ) {
+            $this->model->orderBy($column, $direction);
+        }
 
         return $this;
     }
@@ -324,12 +326,18 @@ class Tables
         if($this->page instanceof Page) {
             $next = $this->page->getUrlWithParams(['paged' => (int) $next_page]);
             $prev = $this->page->getUrlWithParams(['paged' => (int) $previous_page]);
+            $last = $this->page->getUrlWithParams(['paged' => (int) $pages]);
+            $first = $this->page->getUrlWithParams(['paged' => 1]);
         } else {
             parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $query);
             $query_next = array_merge($query, ['paged' => (int) $next_page]);
             $query_prev = array_merge($query, ['paged' => (int) $previous_page]);
+            $query_last = array_merge($query, ['paged' => (int) $pages]);
+            $query_first = array_merge($query, ['paged' => (int) 1]);
             $next = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_next);
             $prev = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_prev);
+            $last = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_last);
+            $first = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_first);
         }
 
         $get_search_current = !empty($_GET['s']) ? wp_unslash($_GET['s']) : '';
@@ -383,7 +391,7 @@ class Tables
 
                 <div class="tablenav-pages">
                     <span class="displaying-num"><?php echo $this->count; ?> <?php echo $item_word; ?></span>
-                    <?php $this->paginationLinks($page, $prev, $next, $pages); ?>
+                    <?php $this->paginationLinks($page, $prev, $next, $first, $last, $pages); ?>
                 </div>
                 <br class="clear">
             </div>
@@ -394,7 +402,7 @@ class Tables
         <div class="tablenav bottom">
             <div class="tablenav-pages">
                 <span class="displaying-num"><?php echo $this->count; ?> <?php echo $item_word; ?></span>
-                <?php $this->paginationLinks($page, $prev, $next, $pages); ?>
+                <?php $this->paginationLinks($page, $prev, $next, $first, $last, $pages); ?>
             </div>
         </div>
         <?php
@@ -406,21 +414,42 @@ class Tables
      * @param $page
      * @param $prev
      * @param $next
+     * @param $first
+     * @param $last
      * @param $pages
      */
-    protected function paginationLinks($page, $prev, $next, $pages) {
+    protected function paginationLinks($page, $prev, $next, $first, $last, $pages) {
         echo "<span class=\"pagination-links\">";
+
+        if($first && $pages > 2) {
+            if( (int) $page === 1 ) {
+                echo ' <span class="tablenav-pages-navspan" aria-hidden="true">&laquo;</span> ';
+            } else {
+                echo " <a class=\"last-page\" href=\"{$last}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&laquo;</span></a> ";
+            }
+        }
+
         if( $page < 2 ) {
-            echo "<span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&lsaquo;</span>";
+            echo " <span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&lsaquo;</span> ";
         } else {
-            echo "<a class=\"prev-page\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a>";
+            echo " <a class=\"prev-page\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a> ";
         }
         echo " <span id=\"table-paging\" class=\"paging-input\">{$page} of <span class=\"total-pages\">{$pages}</span></span> ";
         if( $page < $pages ) {
-            echo "<a class=\"next-page\" href=\"{$next}\"><span class=\"screen-reader-text\">Next page</span><span aria-hidden=\"true\">&rsaquo;</span></a>";
+            echo " <a class=\"next-page\" href=\"{$next}\"><span class=\"screen-reader-text\">Next page</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
         } else {
-            echo "<span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&rsaquo;</span>";
+            echo " <span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&rsaquo;</span> ";
         }
+
+        if($last && $pages > 2) {
+            if( (int) $pages === $page  ) {
+                echo ' <span class="tablenav-pages-navspan" aria-hidden="true">&raquo;</span> ';
+            } else {
+                echo " <a class=\"last-page\" href=\"{$last}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&raquo;</span></a> ";
+            }
+
+        }
+
         echo "</span>";
     }
 
