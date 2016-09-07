@@ -157,7 +157,6 @@ class Validator
                         $this->passes[$name] = $callback_value['success'];
                     }
                     break;
-                case 'length' :
                 case 'min' :
                     if( mb_strlen($value) <= $option ) {
                         $this->errors[$name] =  $field_name . " must be at least $option characters.";
