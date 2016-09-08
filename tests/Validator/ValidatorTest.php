@@ -87,4 +87,48 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($validator->getErrors()) );
     }
 
+    public function testMinFailing()
+    {
+        $fields['person'] = 'Kevin';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'person' => 'min:6'
+        ], $fields);
+
+        $this->assertEquals(1, count($validator->getErrors()) );
+    }
+
+    public function testMaxFailing()
+    {
+        $fields['person'] = 'Kevin';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'person' => 'max:4'
+        ], $fields);
+
+        $this->assertEquals(1, count($validator->getErrors()) );
+    }
+
+    public function testMinPassing()
+    {
+        $fields['person'] = 'Kevin';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'person' => 'min:5'
+        ], $fields);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
+    public function testMaxPassing()
+    {
+        $fields['person'] = 'Kevin';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'person' => 'max:5'
+        ], $fields);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
 }
