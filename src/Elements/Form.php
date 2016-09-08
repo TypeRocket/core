@@ -288,7 +288,8 @@ class Form
         $ajax     = [];
         $defaults = [
             'action'      => $this->formUrl ? $this->formUrl : $_SERVER['REQUEST_URI'],
-            'method'      => 'POST'
+            'method'      => 'POST',
+            'accept-charset' => 'UTF-8'
         ];
 
         if ($this->useAjax === true) {
