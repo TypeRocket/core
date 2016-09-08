@@ -158,14 +158,16 @@ class Validator
                     }
                     break;
                 case 'min' :
-                    if( mb_strlen($value) <= $option ) {
+                    $option = (int) $option;
+                    if( mb_strlen($value) < $option ) {
                         $this->errors[$name] =  $field_name . " must be at least $option characters.";
                     } else {
                         $this->passes[$name] = $value;
                     }
                     break;
                 case 'max' :
-                    if( mb_strlen($value) >= $option ) {
+                    $option = (int) $option;
+                    if( mb_strlen($value) > $option ) {
                         $this->errors[$name] =  $field_name . " must be less than $option characters.";
                     } else {
                         $this->passes[$name] = $value;

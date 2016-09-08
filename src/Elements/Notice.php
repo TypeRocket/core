@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Elements;
 
+use TypeRocket\Utility\Str;
+
 class Notice
 {
     /**
@@ -15,9 +17,14 @@ class Notice
     {
         $classes = 'notice-' . $data['type'];
         if( !empty($data) ) {
+            if( Str::starts('<ul>', $data['message']) ) {
+                $message = $data['message'];
+            } else {
+                $message = "<p>" . $data['message'] . "</p>";
+            }
             ?>
             <div class="notice tr-admin-notice <?php echo $classes; ?> is-dismissible">
-                <p><?php echo $data['message']; ?></p>
+                <?php echo $message; ?>
             </div>
             <?php
         }
