@@ -36,11 +36,10 @@ class Editor extends Textarea implements ScriptField
         $this->setAttribute('name', $this->getNameAttributeString());
         $value = $this->getValue();
         $this->appendStringToAttribute('class', ' typerocket-editor ');
-        $value = esc_attr( $this->sanitize($value, 'editor') );
+        $value = $this->sanitize($value, 'editor' );
+        $max = $this->getMaxlength( wp_strip_all_tags($value), $this->getAttribute('maxlength'));
 
-        $max = $this->getMaxlength( $value,  $this->getAttribute('maxlength'));
-
-        return $generator->newElement( 'textarea', $this->getAttributes(), $value )->getString() . $max;
+        return $generator->newElement( 'textarea', $this->getAttributes(), esc_attr($value) )->getString() . $max;
     }
 
 }

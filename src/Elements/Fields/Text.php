@@ -24,11 +24,10 @@ class Text extends Field
         $input = new Generator();
         $name = $this->getNameAttributeString();
         $value = $this->getValue();
-        $value = esc_attr( $this->sanitize($value, 'raw') );
-
+        $value = $this->sanitize($value, 'raw');
         $max = $this->getMaxlength( $value, $this->getAttribute('maxlength'));
 
-        return $input->newInput($this->getType(), $name, $value, $this->getAttributes() )->getString() . $max;
+        return $input->newInput($this->getType(), $name, esc_attr($value), $this->getAttributes() )->getString() . $max;
     }
 
 }
