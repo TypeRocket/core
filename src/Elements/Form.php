@@ -6,6 +6,7 @@ use TypeRocket\Elements\Fields\Submit;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Models\WPOption;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\Model;
@@ -380,16 +381,15 @@ class Form
 
             if($this->model instanceof WPPost) {
                 $controller = 'posts';
-            }
-
-            if($this->model instanceof WPTerm) {
+            } elseif($this->model instanceof WPTerm) {
                 $controller = 'taxonomies';
                 $param = ", '{$resource}'";
                 $id = $field->getItemId() ? $field->getItemId() : '$id';
                 $param .= ', '.$id;
-            }
-
-            if($this->model instanceof Model) {
+            } elseif($this->model instanceof WPOption) {
+                $controller = 'options';
+                $param = '';
+            } elseif($this->model instanceof Model) {
                 $controller = 'resource';
                 $param = ", '{$resource}'";
                 $id = $field->getItemId() ? $field->getItemId() : '$id';
