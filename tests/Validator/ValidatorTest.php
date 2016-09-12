@@ -131,4 +131,26 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($validator->getPasses()) );
     }
 
+    public function testSizePassing()
+    {
+        $fields['number'] = '12';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'number' => 'size:2'
+        ], $fields);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
+    public function testSizeFailing()
+    {
+        $fields['number'] = '123';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'number' => 'size:2'
+        ], $fields);
+
+        $this->assertEquals(1, count($validator->getErrors()) );
+    }
+
 }

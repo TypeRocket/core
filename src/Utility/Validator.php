@@ -175,7 +175,7 @@ class Validator
                     break;
                 case 'size' :
                     $option = (int) $option;
-                    if( mb_strlen($value) === (int) $option ) {
+                    if( mb_strlen($value) !== (int) $option ) {
                         $this->errors[$name] =  $field_name . " must be $option characters.";
                     } else {
                         $this->passes[$name] = $value;
