@@ -16,7 +16,7 @@ class MakeController extends Command
 
     protected function config()
     {
-        $this->addArgument('directive', self::REQUIRED, 'The directive: base, admin, post or term.');
+        $this->addArgument('directive', self::REQUIRED, 'The directive: base, thin, post or term.');
         $this->addArgument('name', self::REQUIRED, 'The name of the resource for the controller.');
         $this->addArgument('model', self::OPTIONAL, 'The model for the post or term controller.');
         $this->addOption( 'model', 'm', InputOption::VALUE_NONE, 'Make a model as well' );
@@ -42,12 +42,12 @@ class MakeController extends Command
         switch ( strtolower($directive) ) {
             case 'base' :
             case 'post' :
-            case 'admin' :
+            case 'thin' :
             case 'term' :
                 $directive = ucfirst($directive);
                 break;
             default :
-                $this->error('Type must be: base, admin, post or term');
+                $this->error('Type must be: base, thin, post or term');
                 die();
                 break;
         }
@@ -82,7 +82,7 @@ class MakeController extends Command
         if ( $this->getOption('model') ) {
             $directive = $this->getArgument('directive');
 
-            if( $directive == 'admin' ) {
+            if( $directive == 'thin' ) {
                 $directive = 'base';
             }
 

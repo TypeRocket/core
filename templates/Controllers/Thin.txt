@@ -1,0 +1,9 @@
+<?php
+namespace {{namespace}}\Controllers;
+
+use \TypeRocket\Controllers\Controller;
+
+class {{controller}} extends Controller
+{
+
+}
