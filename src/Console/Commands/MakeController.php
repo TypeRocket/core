@@ -80,9 +80,15 @@ class MakeController extends Command
         }
 
         if ( $this->getOption('model') ) {
+            $directive = $this->getArgument('directive');
+
+            if( $directive == 'admin' ) {
+                $directive = 'base';
+            }
+
             $command = $this->getApplication()->find('make:model');
             $input = new ArrayInput( [
-                'directive' => $this->getArgument('directive'),
+                'directive' => $directive,
                 'name' => $this->getArgument('name')
             ] );
             $command->run($input, $this->output);
