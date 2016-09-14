@@ -240,8 +240,8 @@ class Tables
 
                     $text = $result->$column;
 
-                    if( !empty($data['callback']) ) {
-                        $text = call_user_func($data['callback'], $text);
+                    if( !empty($data['callback']) && is_callable($data['callback']) ) {
+                        $text = call_user_func_array($data['callback'], [$text, $result] );
                     }
 
                     if ($this->page instanceof Page && ! empty($this->page->pages)) {
@@ -279,6 +279,9 @@ class Tables
                                         $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" class=\"tr-delete-row-rest-button\" href=\"{$delete_url}\">Delete</a></span>";
                                         break;
                                     case 'view' :
+                                        if( !empty($data['view_url']) && is_callable($data['view_url']) ) {
+                                            $show_url = call_user_func_array($data['view_url'], [$show_url, $result]);
+                                        }
                                         $text .= "<span class=\"view\"><a href=\"{$show_url}\">View</a></span>";
                                 }
                             }
