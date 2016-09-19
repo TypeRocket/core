@@ -67,7 +67,7 @@ class Query
             $whereQuery['condition'] = 'WHERE';
         }
 
-        $whereQuery['column'] = $column;
+        $whereQuery['column'] = '`' . $column . '`';
         $whereQuery['operator'] = '=';
         $whereQuery['value'] = $arg1;
 
@@ -105,7 +105,7 @@ class Query
      */
     public function orderBy($column = 'id', $direction = 'ASC')
     {
-        $this->query['order_by']['column'] = $column;
+        $this->query['order_by']['column'] = '`' . $column . '`';
         $this->query['order_by']['direction'] = $direction;
 
         return $this;
@@ -305,33 +305,51 @@ class Query
         /** @var \wpdb $wpdb */
         global $wpdb;
 
+        $sql = $this->compileFullQuery();
+
+        if( array_key_exists('delete', $query) ) {
+            $result = $wpdb->query( $sql );
+        } elseif( array_key_exists('create', $query) ) {
+            $result = false;
+            if( $wpdb->query( $sql ) ) {
+                $result = $wpdb->insert_id;
+            };
+        } elseif( array_key_exists('update', $query) ) {
+            $result = $wpdb->query( $sql );
+        } elseif( array_key_exists('count', $query) ) {
+            $result = $wpdb->get_var( $sql );
+        } else {
+            $results = $wpdb->get_results( $sql, ARRAY_A );
+            if($results && $this->returnOne) {
+                $result = $results[0];
+            } elseif( $results ) {
+                $result = new $this->resultsClass;
+                foreach ($results as $object) {
+                    $result->append( (object) $object );
+                }
+            } else {
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
+
+    protected function compileFullQuery() {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
         $table = $this->table;
         $sql_select_columns = '*';
         $regex_column_name = "/[^a-zA-Z0-9\\\\_]+/";
-        $sql_where = $sql_limit = $sql_values = $sql_columns = $sql_update = $sql = $sql_order ='';
+        $sql_limit = $sql_values = $sql_columns = $sql_update = $sql = $sql_order = $join_sql = '';
 
         if( empty($query) ) {
             $query = $this->query;
         }
 
         // compile where
-        if( !empty($query['where']) ) {
-            foreach( $query['where'] as $where ) {
-
-                if( is_array($where['value']) ) {
-
-                    $where['value'] = array_map(function($value) use ($wpdb) {
-                        return $wpdb->prepare( '%s', $value );
-                    }, $where['value']);
-
-                    $where['value'] = '(' . implode(',', $where['value']) . ')';
-                } else {
-                    $where['value'] = $wpdb->prepare( '%s', $where['value'] );
-                }
-
-                $sql_where .= ' ' . implode(' ', $where);
-            }
-        }
+        $sql_where = $this->compileWhere();
 
         // compile insert
         if( !empty($query['create']) && !empty($query['data']) ) {
@@ -375,7 +393,7 @@ class Query
             $sql_select_columns = array_reduce(
                 $query['select'],
                 function( $carry = '', $value ) use ( $table, $regex_column_name ) {
-                    return $carry . ',`' . preg_replace($regex_column_name, '', $value) . '`';
+                    return $carry . ',`'.$table.'`.`' . preg_replace($regex_column_name, '', $value) . '`';
                 }
             );
 
@@ -395,37 +413,50 @@ class Query
         }
 
         if( array_key_exists('delete', $query) ) {
-            $sql = 'DELETE FROM ' . $table . $sql_where;
-            $result = $wpdb->query( $sql );
+            $sql = 'DELETE FROM `' . $table . '`' . $join_sql . $sql_where;
         } elseif( array_key_exists('create', $query) ) {
-            $sql = 'INSERT INTO ' . $table . $sql_columns . ' VALUES ' . $sql_values;
-            $result = false;
-            if( $wpdb->query( $sql ) ) {
-                $result = $wpdb->insert_id;
-            };
+            $sql = 'INSERT INTO `' . $table . '`' . $sql_columns . ' VALUES ' . $sql_values;
         } elseif( array_key_exists('update', $query) ) {
-            $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
-            $result = $wpdb->query( $sql );
+            $sql = 'UPDATE `' . $table . '` SET ' . $sql_update . $join_sql . $sql_where;
         } elseif( array_key_exists('count', $query) ) {
-            $sql = 'SELECT COUNT(*) FROM '. $table . $sql_where . $sql_order . $sql_limit;
-            $result = $wpdb->get_var( $sql );
+            $sql = 'SELECT COUNT(*) FROM `'. $table . '`' .  $join_sql . $sql_where . $sql_order . $sql_limit;
         } else {
-            $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $sql_where . $sql_order . $sql_limit;
-            $results = $wpdb->get_results( $sql, ARRAY_A );
-            if($results && $this->returnOne) {
-                $result = $results[0];
-            } elseif( $results ) {
-                $result = new $this->resultsClass;
-                foreach ($results as $object) {
-                    $result->append( (object) $object );
-                }
-            } else {
-                $result = false;
-            }
+            $sql = 'SELECT ' . $sql_select_columns .' FROM `'. $table . '`' . $join_sql . $sql_where . $sql_order . $sql_limit;
         }
 
         $this->lastCompiledSQL = $sql;
 
-        return $result;
+        return $this->lastCompiledSQL;
     }
+
+    protected function compileWhere() {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $query = $this->query;
+        $sql = '';
+        $table = $this->table;
+
+        if( !empty($query['where']) ) {
+            foreach( $query['where'] as $where ) {
+
+                if( is_array($where['value']) ) {
+
+                    $where['value'] = array_map(function($value) use ($wpdb, $table) {
+                        return $wpdb->prepare( '%s', $value );
+                    }, $where['value']);
+
+                    $where['value'] = '(' . implode(',', $where['value']) . ')';
+                } else {
+                    $where['value'] = $wpdb->prepare( '%s', $where['value'] );
+                }
+
+                $where['column'] = '`' . $table . '`.' . $where['column'];
+
+                $sql .= ' ' . implode(' ', $where);
+            }
+        }
+
+        return $sql;
+    }
+
 }
