@@ -881,7 +881,7 @@ class Model
      * @return array|false|int|null|object
      */
     public function delete( $ids = [] ) {
-        return $this->delete($ids);
+        return $this->query->delete($ids);
     }
 
     /**
