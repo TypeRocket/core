@@ -743,8 +743,12 @@ class Model
      *
      * @return $this
      */
-    public function orderBy($column = 'id', $direction = 'ASC')
+    public function orderBy($column = null, $direction = 'ASC')
     {
+        if( ! $column ) {
+            $column = $this->idColumn;
+        }
+
         $this->query->orderBy($column, $direction);
 
         return $this;
