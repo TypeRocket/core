@@ -335,7 +335,7 @@ class Query
         return $result;
     }
 
-    protected function compileFullQuery() {
+    public function compileFullQuery() {
         /** @var \wpdb $wpdb */
         global $wpdb;
 
