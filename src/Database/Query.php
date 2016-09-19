@@ -67,7 +67,7 @@ class Query
             $whereQuery['condition'] = 'WHERE';
         }
 
-        $whereQuery['column'] = '`' . $column . '`';
+        $whereQuery['column'] = $column;
         $whereQuery['operator'] = '=';
         $whereQuery['value'] = $arg1;
 
@@ -105,7 +105,7 @@ class Query
      */
     public function orderBy($column = 'id', $direction = 'ASC')
     {
-        $this->query['order_by']['column'] = '`' . $column . '`';
+        $this->query['order_by']['column'] = $column;
         $this->query['order_by']['direction'] = $direction;
 
         return $this;
@@ -355,7 +355,7 @@ class Query
         if( !empty($query['create']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = preg_replace($regex_column_name, '', $column);
+                $columns[] = '`' . $table . '`.`' . preg_replace($regex_column_name, '', $column) . '`';
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', serialize($data) );
@@ -372,7 +372,7 @@ class Query
         if( !empty($query['update']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = preg_replace($regex_column_name, '', $column);
+                $columns[] = '`' . $table . '`.`' . preg_replace($regex_column_name, '', $column) . '`';
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', serialize($data) );
@@ -409,7 +409,7 @@ class Query
         if( !empty($query['order_by']) ) {
             $order_column = preg_replace($regex_column_name, '', $query['order_by']['column']);
             $order_direction = $query['order_by']['direction'] == 'ASC' ? 'ASC' : 'DESC';
-            $sql_order .= " ORDER BY {$order_column} {$order_direction}";
+            $sql_order .= " ORDER BY `{$table}`.`{$order_column}` {$order_direction}";
         }
 
         if( array_key_exists('delete', $query) ) {
@@ -419,7 +419,7 @@ class Query
         } elseif( array_key_exists('update', $query) ) {
             $sql = 'UPDATE `' . $table . '` SET ' . $sql_update . $join_sql . $sql_where;
         } elseif( array_key_exists('count', $query) ) {
-            $sql = 'SELECT COUNT(*) FROM `'. $table . '`' .  $join_sql . $sql_where . $sql_order . $sql_limit;
+            $sql = 'SELECT COUNT(*) FROM `'. $table . '`' . $join_sql . $sql_where . $sql_order . $sql_limit;
         } else {
             $sql = 'SELECT ' . $sql_select_columns .' FROM `'. $table . '`' . $join_sql . $sql_where . $sql_order . $sql_limit;
         }
@@ -450,7 +450,7 @@ class Query
                     $where['value'] = $wpdb->prepare( '%s', $where['value'] );
                 }
 
-                $where['column'] = '`' . $table . '`.' . $where['column'];
+                $where['column'] = '`' . $table . '`.`' . $where['column'] . '`';
 
                 $sql .= ' ' . implode(' ', $where);
             }
