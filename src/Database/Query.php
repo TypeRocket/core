@@ -127,6 +127,32 @@ class Query
     }
 
     /**
+     * Group By
+     *
+     * @param $column
+     *
+     * @return $this
+     */
+    public function groupBy($column)
+    {
+        $this->query['group_by']['column'] = $column;
+
+        return $this;
+    }
+
+    /**
+     * Distinct
+     *
+     * @return $this
+     */
+    public function distinct()
+    {
+        $this->query['distinct'] = true;
+
+        return $this;
+    }
+
+    /**
      * Take only a select group
      *
      * @param $limit
@@ -425,7 +451,7 @@ class Query
         }
 
         $table = $this->query['table'];
-        $join_sql = $sql_insert_columns = $sql_insert_values = '';
+        $join_sql = $sql_insert_columns = $sql_insert_values = $distinct = '';
 
         // compilers
         $sql_where = $this->compileWhere();
@@ -435,17 +461,24 @@ class Query
         $sql_limit = $this->compileTake();
         $sql_order = $this->compileOrder();
         $sql_function = $this->compileFunction();
+        $sql_grouping = $this->compileGrouping();
+
+        if( array_key_exists('distinct', $this->query) ) {
+            $distinct = ' DISTINCT ';
+        }
+
+        $sql_select = $join_sql . $sql_where . $sql_grouping . $sql_order . $sql_limit;
 
         if( array_key_exists('delete', $this->query) ) {
-            $sql = 'DELETE FROM ' . $table  . $sql_where;
+            $sql = 'DELETE FROM ' . $table . $sql_where;
         } elseif( array_key_exists('create', $this->query) ) {
             $sql = 'INSERT INTO ' . $table . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
         } elseif( array_key_exists('update', $this->query) ) {
             $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
         } elseif( array_key_exists('function', $this->query) ) {
-            $sql = 'SELECT' . $sql_function . 'FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
+            $sql = 'SELECT' . $distinct . $sql_function . 'FROM '. $table . $sql_select;
         } else {
-            $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
+            $sql = 'SELECT ' . $distinct . $sql_select_columns .' FROM '. $table . $sql_select;
         }
 
         $this->lastCompiledSQL = $sql;
@@ -495,6 +528,25 @@ class Query
             $func = strtoupper( $key );
             $column = $this->query['function'][$key];
             $sql = ' '.$func.'('.$column.') ';
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Compile Group By
+     *
+     * @return string
+     */
+    protected function compileGrouping() {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $query = $this->query;
+        $sql = '';
+
+        if( array_key_exists('group_by', $query) ) {
+            $column = $query['group_by']['column'];
+            $sql = ' GROUP BY '.$column.' ';
         }
 
         return $sql;
