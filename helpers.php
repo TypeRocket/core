@@ -499,3 +499,14 @@ function str_contains( $needle, $subject ) {
     return \TypeRocket\Utility\Str::contains($needle, $subject);
 }
 }
+
+if( ! function_exists('tr_query') ) {
+    /**
+     * Database Query
+     *
+     * @return \TypeRocket\Database\Query
+     */
+    function tr_query() {
+        return new \TypeRocket\Database\Query();
+    }
+}
