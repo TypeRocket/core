@@ -252,11 +252,69 @@ class Query
     /**
      * Count results
      *
+     * @param string $column
+     *
      * @return array|bool|false|int|null|object
      */
-    public function count()
+    public function count( $column = '*' )
     {
-        $this->setQueryType('count');
+        $this->setQueryType('function', [ 'count' => $column]);
+
+        return $this->runQuery();
+    }
+
+    /**
+     * Sum
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function sum( $column )
+    {
+        $this->setQueryType('function', [ 'sum' => $column]);
+
+        return $this->runQuery();
+    }
+
+    /**
+     * Min
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function min( $column )
+    {
+        $this->setQueryType('function', [ 'min' => $column]);
+
+        return $this->runQuery();
+    }
+
+    /**
+     * Max
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function max( $column )
+    {
+        $this->setQueryType('function', [ 'max' => $column]);
+
+        return $this->runQuery();
+    }
+
+    /**
+     * Average
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function avg( $column )
+    {
+        $this->setQueryType('function', [ 'avg' => $column]);
 
         return $this->runQuery();
     }
@@ -273,7 +331,7 @@ class Query
     protected function setQueryType( $type = null , $args = true ) {
 
         $actions = [
-          'count', 'update', 'delete', 'create'
+          'function', 'update', 'delete', 'create'
         ];
 
         foreach ($actions as $action ) {
@@ -339,8 +397,8 @@ class Query
             };
         } elseif( array_key_exists('update', $query) ) {
             $result = $wpdb->query( $sql );
-        } elseif( array_key_exists('count', $query) ) {
-            $result = (int) $wpdb->get_var( $sql );
+        } elseif( array_key_exists('function', $query) ) {
+            $result = $wpdb->get_var( $sql );
         } else {
             $results = $wpdb->get_results( $sql, ARRAY_A );
             if($results && $this->returnOne) {
@@ -376,6 +434,7 @@ class Query
         $sql_select_columns = $this->compileSelectColumns();
         $sql_limit = $this->compileTake();
         $sql_order = $this->compileOrder();
+        $sql_function = $this->compileFunction();
 
         if( array_key_exists('delete', $this->query) ) {
             $sql = 'DELETE FROM ' . $table  . $sql_where;
@@ -383,8 +442,8 @@ class Query
             $sql = 'INSERT INTO ' . $table . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
         } elseif( array_key_exists('update', $this->query) ) {
             $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
-        } elseif( array_key_exists('count', $this->query) ) {
-            $sql = 'SELECT COUNT(*) FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
+        } elseif( array_key_exists('function', $this->query) ) {
+            $sql = 'SELECT' . $sql_function . 'FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
         } else {
             $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
         }
@@ -394,6 +453,11 @@ class Query
         return $this->lastCompiledSQL;
     }
 
+    /**
+     * Compile Select Columns
+     *
+     * @return string
+     */
     protected function compileSelectColumns() {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -415,6 +479,32 @@ class Query
         return $sql;
     }
 
+    /**
+     * Compile Function
+     *
+     * @return string
+     */
+    protected function compileFunction() {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $query = $this->query;
+        $sql = '';
+
+        if( array_key_exists('function', $query) ) {
+            $key = key($query['function']);
+            $func = strtoupper( $key );
+            $column = $this->query['function'][$key];
+            $sql = ' '.$func.'('.$column.') ';
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Compile Take
+     *
+     * @return string
+     */
     protected function compileTake() {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -428,6 +518,11 @@ class Query
         return $sql;
     }
 
+    /**
+     * Compile Order
+     *
+     * @return string
+     */
     protected function compileOrder() {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -443,6 +538,11 @@ class Query
         return $sql;
     }
 
+    /**
+     * Compile Insert
+     *
+     * @return string
+     */
     protected function compileInsert() {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -468,6 +568,11 @@ class Query
         return $sql_insert;
     }
 
+    /**
+     * Compile Update
+     *
+     * @return string
+     */
     protected function compileUpdate() {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -496,6 +601,11 @@ class Query
         return $sql;
     }
 
+    /**
+     * Compile Where
+     *
+     * @return string
+     */
     protected function compileWhere() {
         /** @var \wpdb $wpdb */
         global $wpdb;

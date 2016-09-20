@@ -61,5 +61,47 @@ class CompileTest extends \PHPUnit_Framework_TestCase
         $result = $query->count();
         $sql = "SELECT COUNT(*) FROM wp_posts";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
+        $this->assertTrue( $result > 0 );
+    }
+
+    public function testMaxPosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $result = $query->max('ID');
+        $sql = "SELECT MAX(ID) FROM wp_posts";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testMinPosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $result = $query->min('ID');
+        $sql = "SELECT MIN(ID) FROM wp_posts";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testSumPosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $result = $query->sum('ID');
+        $sql = "SELECT SUM(ID) FROM wp_posts";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testAvgPosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $result = $query->avg('ID');
+        $sql = "SELECT AVG(ID) FROM wp_posts";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+        $this->assertTrue( $result > 0 );
     }
 }
