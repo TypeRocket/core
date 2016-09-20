@@ -395,6 +395,36 @@ class Query
     }
 
     /**
+     * Left Join
+     *
+     * @param $table
+     * @param $column
+     * @param $arg1
+     * @param null $arg2
+     *
+     * @return \TypeRocket\Database\Query
+     */
+    public function leftJoin($table, $column, $arg1, $arg2 = null)
+    {
+        return $this->join($table, $column, $arg1, $arg2, 'LEFT');
+    }
+
+    /**
+     * Right Join
+     *
+     * @param $table
+     * @param $column
+     * @param $arg1
+     * @param null $arg2
+     *
+     * @return \TypeRocket\Database\Query
+     */
+    public function rightJoin($table, $column, $arg1, $arg2 = null)
+    {
+        return $this->join($table, $column, $arg1, $arg2, 'RIGHT');
+    }
+
+    /**
      * Union
      *
      * @param \TypeRocket\Database\Query $query
