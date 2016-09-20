@@ -541,7 +541,7 @@ class Query
         $sql_union = $this->compileUnion();
 
         if( array_key_exists('distinct', $this->query) ) {
-            $distinct = ' DISTINCT ';
+            $distinct = 'DISTINCT ';
         }
 
         $sql_select = $sql_join . $sql_where . $sql_grouping . $sql_order . $sql_limit . $sql_union;
@@ -553,7 +553,7 @@ class Query
         } elseif( array_key_exists('update', $this->query) ) {
             $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
         } elseif( array_key_exists('function', $this->query) ) {
-            $sql = 'SELECT' . $distinct . $sql_function . 'FROM '. $table . $sql_select;
+            $sql = 'SELECT ' . $distinct . $sql_function . 'FROM '. $table . $sql_select;
         } else {
             $sql = 'SELECT ' . $distinct . $sql_select_columns .' FROM '. $table . $sql_select;
         }
@@ -573,17 +573,9 @@ class Query
         global $wpdb;
         $query = $this->query;
         $sql = '*';
-        $pattern = $this->columnPattern;
 
         if( !empty($query['select']) && is_array($query['select']) ) {
-            $sql_select_columns = array_reduce(
-                $query['select'],
-                function( $carry = '', $value ) use ( $pattern ) {
-                    return $carry . ','. preg_replace($pattern, '', $value);
-                }
-            );
-
-            $sql = trim($sql_select_columns, ',');
+            $sql = implode(',',$query['select']);
         }
 
         return $sql;
@@ -622,7 +614,7 @@ class Query
             $key = key($query['function']);
             $func = strtoupper( $key );
             $column = $this->query['function'][$key];
-            $sql = ' '.$func.'('.$column.') ';
+            $sql = $func.'('.$column.') ';
         }
 
         return $sql;
