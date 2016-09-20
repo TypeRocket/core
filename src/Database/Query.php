@@ -371,7 +371,7 @@ class Query
 
         // compilers
         $sql_where = $this->compileWhere();
-        extract( $this->compileInset() );
+        extract( $this->compileInsert() );
         $sql_update = $this->compileUpdate();
         $sql_select_columns = $this->compileSelectColumns();
         $sql_limit = $this->compileTake();
@@ -443,7 +443,7 @@ class Query
         return $sql;
     }
 
-    protected function compileInset() {
+    protected function compileInsert() {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $query = $this->query;
