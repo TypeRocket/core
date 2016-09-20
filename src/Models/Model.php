@@ -45,7 +45,8 @@ class Model
 
         $this->query = new Query();
         $this->query->resultsClass = $this->resultsClass;
-        $this->query->table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
+        $table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
+        $this->query->table($table);
 
         $suffix  = '';
 

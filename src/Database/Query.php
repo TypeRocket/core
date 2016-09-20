@@ -3,7 +3,6 @@ namespace TypeRocket\Database;
 
 class Query
 {
-    public $table = null;
     public $idColumn = 'id';
 
     public $lastCompiledSQL = null;
@@ -21,6 +20,20 @@ class Query
     public function getDateTime()
     {
         return date('Y-m-d H:i:s', time());
+    }
+
+    /**
+     * Set table
+     *
+     * @param $name
+     *
+     * @return $this
+     */
+    public function table( $name )
+    {
+        $this->query['table'] = $name;
+
+        return $this;
     }
 
     /**
@@ -349,7 +362,11 @@ class Query
         /** @var \wpdb $wpdb */
         global $wpdb;
 
-        $table = $this->table;
+        if( empty($this->query['table']) ) {
+            throw new \Exception('Missing table');
+        }
+
+        $table = $this->query['table'];
         $join_sql = '';
 
         // compilers
@@ -361,15 +378,15 @@ class Query
         $sql_order = $this->compileOrder();
 
         if( array_key_exists('delete', $this->query) ) {
-            $sql = 'DELETE FROM `' . $table . '`' . $join_sql . $sql_where;
+            $sql = 'DELETE FROM ' . $table  . $sql_where;
         } elseif( array_key_exists('create', $this->query) ) {
-            $sql = 'INSERT INTO `' . $table . '`' . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
+            $sql = 'INSERT INTO ' . $table . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
         } elseif( array_key_exists('update', $this->query) ) {
-            $sql = 'UPDATE `' . $table . '` SET ' . $sql_update . $join_sql . $sql_where;
+            $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
         } elseif( array_key_exists('count', $this->query) ) {
-            $sql = 'SELECT COUNT(*) FROM `'. $table . '`' . $join_sql . $sql_where . $sql_order . $sql_limit;
+            $sql = 'SELECT COUNT(*) FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
         } else {
-            $sql = 'SELECT ' . $sql_select_columns .' FROM `'. $table . '`' . $join_sql . $sql_where . $sql_order . $sql_limit;
+            $sql = 'SELECT ' . $sql_select_columns .' FROM '. $table . $join_sql . $sql_where . $sql_order . $sql_limit;
         }
 
         $this->lastCompiledSQL = $sql;
@@ -382,14 +399,13 @@ class Query
         global $wpdb;
         $query = $this->query;
         $sql = '*';
-        $table = $this->table;
         $pattern = $this->columnPattern;
 
         if( !empty($query['select']) && is_array($query['select']) ) {
             $sql_select_columns = array_reduce(
                 $query['select'],
-                function( $carry = '', $value ) use ( $table, $pattern ) {
-                    return $carry . ',`'.$table.'`.`' . preg_replace($pattern, '', $value) . '`';
+                function( $carry = '', $value ) use ( $pattern ) {
+                    return $carry . ','. preg_replace($pattern, '', $value);
                 }
             );
 
@@ -417,12 +433,11 @@ class Query
         global $wpdb;
         $query = $this->query;
         $sql = '';
-        $table = $this->table;
 
         if( !empty($query['order_by']) ) {
             $order_column = preg_replace($this->columnPattern, '', $query['order_by']['column']);
             $order_direction = $query['order_by']['direction'] == 'ASC' ? 'ASC' : 'DESC';
-            $sql .= " ORDER BY `{$table}`.`{$order_column}` {$order_direction}";
+            $sql .= " ORDER BY {$order_column} {$order_direction}";
         }
 
         return $sql;
@@ -433,12 +448,11 @@ class Query
         global $wpdb;
         $query = $this->query;
         $sql_insert = [ 'sql_insert_columns' => '', 'sql_insert_values' => '' ];
-        $table = $this->table;
 
         if( !empty($query['create']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = '`' . $table . '`.`' . preg_replace($this->columnPattern, '', $column) . '`';
+                $columns[] =  preg_replace($this->columnPattern, '', $column);
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', serialize($data) );
@@ -459,12 +473,11 @@ class Query
         global $wpdb;
         $query = $this->query;
         $sql = '';
-        $table = $this->table;
 
         if( !empty($query['update']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = '`' . $table . '`.`' . preg_replace($this->columnPattern, '', $column) . '`';
+                $columns[] = preg_replace($this->columnPattern, '', $column);
 
                 if( is_array($data) ) {
                     $inserts[] = $wpdb->prepare( '%s', serialize($data) );
@@ -488,14 +501,13 @@ class Query
         global $wpdb;
         $query = $this->query;
         $sql = '';
-        $table = $this->table;
 
         if( !empty($query['where']) ) {
             foreach( $query['where'] as $where ) {
 
                 if( is_array($where['value']) ) {
 
-                    $where['value'] = array_map(function($value) use ($wpdb, $table) {
+                    $where['value'] = array_map(function($value) use ($wpdb) {
                         return $wpdb->prepare( '%s', $value );
                     }, $where['value']);
 
@@ -503,8 +515,6 @@ class Query
                 } else {
                     $where['value'] = $wpdb->prepare( '%s', $where['value'] );
                 }
-
-                $where['column'] = '`' . $table . '`.`' . $where['column'] . '`';
 
                 $sql .= ' ' . implode(' ', $where);
             }
