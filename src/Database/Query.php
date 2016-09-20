@@ -592,7 +592,7 @@ class Query
         $sql = '';
 
         if( array_key_exists('union', $query) ) {
-            $sql .= PHP_EOL . ' UNION ' . PHP_EOL;
+            $sql .= ' UNION ';
             /** @var Query $union_query */
             $union_query = $this->query['union'];
             $sql .= $union_query->compileFullQuery();
