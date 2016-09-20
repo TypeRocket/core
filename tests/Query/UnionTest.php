@@ -12,8 +12,7 @@ class UnionTest extends \PHPUnit_Framework_TestCase
         $query->select('wp_posts.post_title', 'wp_posts.ID', 'wp_postmeta.meta_key')
               ->distinct()
               ->join('wp_postmeta', 'wp_postmeta.post_id', 'wp_posts.ID')
-              ->where('wp_posts.ID', 1)
-              ->get();
+              ->where('wp_posts.ID', 1);
 
         $query2 = new \TypeRocket\Database\Query();
         $query2->table('wp_posts');
