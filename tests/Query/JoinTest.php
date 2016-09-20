@@ -8,7 +8,7 @@ class JoinTest extends \PHPUnit_Framework_TestCase
     {
         $query = new \TypeRocket\Database\Query();
         $query->table('wp_posts');
-        $query->idColumn = 'ID'; // uppercase
+        $query->setIdColumn('ID');
         $query->select('wp_posts.post_title', 'wp_posts.ID', 'wp_postmeta.meta_key')
             ->distinct()
             ->join('wp_postmeta', 'wp_postmeta.post_id', 'wp_posts.ID')
