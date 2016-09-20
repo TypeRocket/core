@@ -367,7 +367,7 @@ class Query
         }
 
         $table = $this->query['table'];
-        $join_sql = '';
+        $join_sql = $sql_insert_columns = $sql_insert_values = '';
 
         // compilers
         $sql_where = $this->compileWhere();
