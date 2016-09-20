@@ -27,4 +27,21 @@ class UnionTest extends \PHPUnit_Framework_TestCase
         $sql = "SELECT DISTINCT wp_posts.post_title,wp_posts.ID,wp_postmeta.meta_key FROM wp_posts INNER JOIN wp_postmeta ON wp_postmeta.post_id = wp_postmeta.post_id WHERE wp_posts.ID = '2' UNION SELECT DISTINCT wp_posts.post_title,wp_posts.ID,wp_postmeta.meta_key FROM wp_posts INNER JOIN wp_postmeta ON wp_postmeta.post_id = wp_postmeta.post_id WHERE wp_posts.ID = '1'";
         $this->assertTrue( $query2->lastCompiledSQL == $sql);
     }
+
+    public function testSimpleUnion()
+    {
+        $first = tr_query()->table('wp_posts')->setIdColumn('ID');
+        $first->select('post_title', 'ID')
+              ->where('ID', 1)
+              ->get();
+
+        $last = tr_query()->table('wp_posts')->setIdColumn('ID');
+        $last->select('post_title', 'ID')
+             ->where('ID', 2)
+             ->union($first) // union
+             ->get();
+
+        $sql = "SELECT post_title,ID FROM wp_posts WHERE ID = '2' UNION SELECT post_title,ID FROM wp_posts WHERE ID = '1'";
+        $this->assertTrue( $last->lastCompiledSQL == $sql);
+    }
 }

@@ -36,7 +36,7 @@ class Query
      *
      * @param $id
      *
-     * @return $this
+     * @return Query $this
      */
     public function setIdColumn($id)
     {
@@ -50,7 +50,7 @@ class Query
      *
      * @param $name
      *
-     * @return $this
+     * @return Query $this
      */
     public function table( $name )
     {
