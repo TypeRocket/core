@@ -369,7 +369,7 @@ class Query
      * @param string $table
      * @param string $column
      * @param string $arg1 column or operator
-     * @param null $arg2 column if arg1 is set to operator
+     * @param null|string $arg2 column if arg1 is set to operator
      * @param string $type INNER (default), LEFT, RIGHT
      *
      * @return $this
@@ -397,10 +397,10 @@ class Query
     /**
      * Left Join
      *
-     * @param $table
-     * @param $column
-     * @param $arg1
-     * @param null $arg2
+     * @param string $table
+     * @param string $column
+     * @param string $arg1
+     * @param null|string $arg2
      *
      * @return \TypeRocket\Database\Query
      */
@@ -412,10 +412,10 @@ class Query
     /**
      * Right Join
      *
-     * @param $table
-     * @param $column
-     * @param $arg1
-     * @param null $arg2
+     * @param string $table
+     * @param string $column
+     * @param string $arg1
+     * @param null|string $arg2
      *
      * @return \TypeRocket\Database\Query
      */
