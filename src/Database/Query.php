@@ -4,7 +4,6 @@ namespace TypeRocket\Database;
 class Query
 {
     public $idColumn = 'id';
-
     public $lastCompiledSQL = null;
     public $returnOne = false;
     public $resultsClass = Results::class;
@@ -20,6 +19,16 @@ class Query
     public function getDateTime()
     {
         return date('Y-m-d H:i:s', time());
+    }
+
+    /**
+     * Get the ID Column
+     *
+     * @return string
+     */
+    public function getIdColumn()
+    {
+        return $this->idColumn;
     }
 
     /**
