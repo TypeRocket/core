@@ -23,6 +23,20 @@ class Query
     }
 
     /**
+     * Set the ID Column
+     *
+     * @param $id
+     *
+     * @return $this
+     */
+    public function setIdColumn($id)
+    {
+        $this->idColumn = $id;
+
+        return $this;
+    }
+
+    /**
      * Set table
      *
      * @param $name
