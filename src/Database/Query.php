@@ -276,6 +276,24 @@ class Query
     }
 
     /**
+     * Select only specific columns
+     *
+     * @param $args
+     *
+     * @return $this
+     */
+    public function select($args)
+    {
+        if( is_array($args) ) {
+            $this->query['select'] = $args;
+        } else {
+            $this->query['select'] = func_get_args();
+        }
+
+        return $this;
+    }
+
+    /**
      * Count results
      *
      * @param string $column
@@ -346,6 +364,51 @@ class Query
     }
 
     /**
+     * Join
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $arg1 column or operator
+     * @param null $arg2 column if arg1 is set to operator
+     * @param string $type INNER (default), LEFT, RIGHT
+     *
+     * @return $this
+     */
+    public function join($table, $column, $arg1, $arg2 = null, $type = 'INNER')
+    {
+        $joinQuery = [];
+        $joinQuery['type'] = strtoupper($type) . ' JOIN';
+        $joinQuery['table'] = $table;
+        $joinQuery['on'] = 'ON';
+        $joinQuery['column1'] = $column;
+        $joinQuery['operator'] = '=';
+        $joinQuery['column2'] = $column;
+
+        if( isset($arg2) ) {
+            $joinQuery['operator'] = $arg1;
+            $joinQuery['column2'] = $arg2;
+        }
+
+        $this->query['joins'][] = $joinQuery;
+
+        return $this;
+    }
+
+    /**
+     * Union
+     *
+     * @param \TypeRocket\Database\Query $query
+     *
+     * @return $this
+     */
+    public function union( Query $query)
+    {
+        $this->query['union'] = $query;
+
+        return $this;
+    }
+
+    /**
      * Set Query Type
      *
      * @param string|null $type
@@ -370,24 +433,6 @@ class Query
 
         if($type) {
             $this->query[$type] = $args;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Select only specific columns
-     *
-     * @param $args
-     *
-     * @return $this
-     */
-    public function select($args)
-    {
-        if( is_array($args) ) {
-            $this->query['select'] = $args;
-        } else {
-            $this->query['select'] = func_get_args();
         }
 
         return $this;
@@ -451,7 +496,7 @@ class Query
         }
 
         $table = $this->query['table'];
-        $join_sql = $sql_insert_columns = $sql_insert_values = $distinct = '';
+        $sql_insert_columns = $sql_union = $sql_insert_values = $distinct = '';
 
         // compilers
         $sql_where = $this->compileWhere();
@@ -462,12 +507,14 @@ class Query
         $sql_order = $this->compileOrder();
         $sql_function = $this->compileFunction();
         $sql_grouping = $this->compileGrouping();
+        $sql_join = $this->compileJoins();
+        $sql_union = $this->compileUnion();
 
         if( array_key_exists('distinct', $this->query) ) {
             $distinct = ' DISTINCT ';
         }
 
-        $sql_select = $join_sql . $sql_where . $sql_grouping . $sql_order . $sql_limit;
+        $sql_select = $sql_join . $sql_where . $sql_grouping . $sql_order . $sql_limit . $sql_union;
 
         if( array_key_exists('delete', $this->query) ) {
             $sql = 'DELETE FROM ' . $table . $sql_where;
@@ -513,13 +560,31 @@ class Query
     }
 
     /**
+     * Compile Union
+     *
+     * @return string
+     */
+    protected function compileUnion()
+    {
+        $query = $this->query;
+        $sql = '';
+
+        if( array_key_exists('union', $query) ) {
+            $sql .= PHP_EOL . ' UNION ' . PHP_EOL;
+            /** @var Query $union_query */
+            $union_query = $this->query['union'];
+            $sql .= $union_query->compileFullQuery();
+        }
+
+        return $sql;
+    }
+
+    /**
      * Compile Function
      *
      * @return string
      */
     protected function compileFunction() {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
         $query = $this->query;
         $sql = '';
 
@@ -539,8 +604,6 @@ class Query
      * @return string
      */
     protected function compileGrouping() {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
         $query = $this->query;
         $sql = '';
 
@@ -576,8 +639,6 @@ class Query
      * @return string
      */
     protected function compileOrder() {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
         $query = $this->query;
         $sql = '';
 
@@ -679,6 +740,33 @@ class Query
                 }
 
                 $sql .= ' ' . implode(' ', $where);
+            }
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Compile Joins
+     *
+     * @return string
+     */
+    protected function compileJoins() {
+        $query = $this->query;
+        $sql = '';
+
+        if( !empty($query['joins']) ) {
+            foreach( $query['joins'] as $join ) {
+
+                if( is_callable($join['table']) ) {
+                    $joinQuery = new static();
+                    $joinQuery->run = false;
+                    $as = '';
+                    $join['table'] = call_user_func_array( $join['table'], [$joinQuery, &$as]);
+                    $join['table'] = trim('( ' . $joinQuery->compileFullQuery() . ' ) ' . $as);
+                }
+
+                $sql .= ' ' . implode(' ', $join);
             }
         }
 
