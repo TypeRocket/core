@@ -37,6 +37,25 @@ class WPUser extends Model
     }
 
     /**
+     * Users Posts
+     *
+     * @param $modelClass
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function posts( $modelClass )
+    {
+        if( ! $modelClass instanceof WPPost ) {
+            return null;
+        }
+
+        /** @var WPPost $post */
+        $post = new $modelClass;
+
+        return $this->hasMany( $modelClass, 'post_author' )->where('post_type', $post->postType);
+    }
+
+    /**
      * Find post by ID
      *
      * @param $id

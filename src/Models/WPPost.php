@@ -60,6 +60,15 @@ class WPPost extends Model
     }
 
     /**
+     * Author
+     *
+     * @return $this|null
+     */
+    public function author() {
+        return $this->belongsTo( WPUser::class, 'post_author' );
+    }
+
+    /**
      * Return table name in constructor
      *
      * @param \wpdb $wpdb

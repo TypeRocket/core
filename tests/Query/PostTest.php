@@ -57,7 +57,11 @@ class PostTest extends \PHPUnit_Framework_TestCase
     {
         $post = new \TypeRocket\Models\WPPost();
         $meta = $post->findById(1)->meta();
-        $result = $meta->get();
+        $results = $meta->get();
+
+        foreach ($results as $result ) {
+            $this->assertTrue( $result instanceof WPPostMeta);
+        }
 
         $this->assertTrue( $meta instanceof WPPostMeta);
     }
