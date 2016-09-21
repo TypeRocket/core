@@ -758,14 +758,14 @@ class Model
     /**
      * Take only a select group
      *
-     * @param $limit
-     *
-     * @param int $offset
+     * @param int $limit limit
+     * @param int $offset offset
+     * @param bool $returnOne if taking one return direct object
      *
      * @return $this
      */
-    public function take( $limit, $offset = 0 ) {
-        $this->query->take($limit, $offset);
+    public function take( $limit, $offset = 0, $returnOne = true ) {
+        $this->query->take($limit, $offset, $returnOne);
 
         return $this;
     }
