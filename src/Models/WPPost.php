@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Core\Config;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
 
@@ -65,7 +66,7 @@ class WPPost extends Model
      * @return $this|null
      */
     public function author() {
-        return $this->belongsTo( WPUser::class, 'post_author' );
+        return $this->belongsTo( Config::getMainUserClass(), 'post_author' );
     }
 
     /**

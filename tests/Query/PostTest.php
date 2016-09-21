@@ -2,6 +2,7 @@
 namespace Query;
 
 use TypeRocket\Models\Meta\WPPostMeta;
+use TypeRocket\Models\WPUser;
 
 class PostTest extends \PHPUnit_Framework_TestCase
 {
@@ -64,6 +65,14 @@ class PostTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertTrue( $meta instanceof WPPostMeta);
+    }
+
+    public function testRelationshipUser()
+    {
+        $post = new \TypeRocket\Models\WPPost();
+        $user = $post->findById(1)->author();
+        $user->get();
+        $this->assertTrue( $user instanceof WPUser);
     }
 
 }

@@ -178,15 +178,19 @@ class Query
     /**
      * Take only a select group
      *
-     * @param $limit
-     *
-     * @param int $offset
+     * @param int $limit limit
+     * @param int $offset offset
+     * @param bool $returnOne if taking one return direct object
      *
      * @return $this
      */
-    public function take( $limit, $offset = 0 ) {
+    public function take( $limit, $offset = 0, $returnOne = true ) {
         $this->query['take']['limit'] = (int) $limit;
         $this->query['take']['offset'] = (int) $offset;
+
+        if( $limit === 1 && $returnOne ) {
+            $this->returnOne = true;
+        }
 
         return $this;
     }

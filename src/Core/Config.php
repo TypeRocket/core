@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Core;
 
+use TypeRocket\Models\WPUser;
+
 class Config
 {
 
@@ -35,6 +37,16 @@ class Config
     static public function getTemplates()
     {
         return self::$config['app']['templates'];
+    }
+
+    /**
+     * Get Main User Class
+     *
+     * @return mixed
+     */
+    static public function getMainUserClass()
+    {
+        return !empty(self::$config['app']['user']) ? self::$config['app']['user'] : WPUser::class;
     }
 
     /**
