@@ -45,7 +45,7 @@ class Model
 
         $this->query = new Query();
         $this->query->resultsClass = $this->resultsClass;
-        $table = $this->table ? $this->table : $wpdb->prefix . $this->resource;
+        $table = $this->getTable();
         $this->query->table($table);
 
         $suffix  = '';
@@ -1059,8 +1059,8 @@ class Model
     /**
      * Has One
      *
-     * @param $modelClass
-     * @param null $id_foreign
+     * @param string $modelClass
+     * @param null|string $id_foreign
      *
      * @return mixed|null
      */
@@ -1080,6 +1080,14 @@ class Model
         return $relationship->findAll()->where( $id_foreign, $id)->take(1);
     }
 
+    /**
+     * Belongs To
+     *
+     * @param string $modelClass
+     * @param null|string $id_local
+     *
+     * @return $this|null
+     */
     public function belongsTo($modelClass, $id_local = null)
     {
         if( ! $this->getID() ) {
@@ -1100,8 +1108,8 @@ class Model
     /**
      * Has Many
      *
-     * @param $modelClass
-     * @param null $id_foreign
+     * @param string $modelClass
+     * @param null|string $id_foreign
      *
      * @return null|\TypeRocket\Models\Model
      */
@@ -1120,6 +1128,62 @@ class Model
         }
 
         return $relationship->findAll()->where( $id_foreign, $id );
+    }
+
+    /**
+     * Belongs To Many
+     *
+     * This is for Many to Many relationships.
+     *
+     * @param $modelClass
+     * @param string $join_table
+     * @param null|string $id_column
+     * @param null|string $id_foreign
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function belongsToMany( $modelClass, $join_table, $id_column = null, $id_foreign = null )
+    {
+        $id = $this->getID();
+        if( ! $id ) {
+            return null;
+        }
+
+        // Column ID
+        if( ! $id_column && $this->resource ) {
+            $id_column =  $this->resource . '_id';
+        }
+
+        /** @var Model $relationship */
+        $relationship = new $modelClass;
+
+        // Foreign ID
+        if( ! $id_foreign && $relationship->resource ) {
+            $id_foreign =  $relationship->resource . '_id';
+        }
+        $rel_table = $relationship->getTable();
+
+        // Join
+        $rel_join = $rel_table . '.' . $relationship->getIdColumn();
+        $foreign_join = $join_table . '.' . $id_foreign;
+        $where_column = $join_table.'.'.$id_column;
+        $relationship->query->join($join_table, $foreign_join, $rel_join);
+        return  $relationship->select($rel_table.'.*')
+                             ->where($where_column, $id)
+                             ->findAll();
+    }
+
+    /**
+     * Get Table
+     *
+     * @return null
+     */
+    public function getTable()
+    {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
+        return  $this->table ? $this->table : $wpdb->prefix . $this->resource;
     }
 
     /**
