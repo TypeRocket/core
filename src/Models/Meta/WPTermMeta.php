@@ -3,7 +3,6 @@
 namespace TypeRocket\Models\Meta;
 
 use TypeRocket\Models\Model;
-use TypeRocket\Models\WPTerm;
 
 class WPTermMeta extends Model
 {
