@@ -968,6 +968,16 @@ class Model
     }
 
     /**
+     * Get ID Column
+     *
+     * @return string
+     */
+    public function getIdColumn()
+    {
+        return $this->idColumn;
+    }
+
+    /**
      * Save changes directly
      *
      * @param array|\TypeRocket\Http\Fields $fields
@@ -1044,6 +1054,73 @@ class Model
         }
 
         return $this->properties[$property] = $value;
+    }
+
+    /**
+     * Has One
+     *
+     * @param $modelClass
+     * @param null $id_foreign
+     *
+     * @return mixed|null
+     */
+    public function hasOne($modelClass, $id_foreign = null)
+    {
+        if( ! $this->getID() ) {
+           return null;
+        }
+
+        if( ! $id_foreign && $this->resource ) {
+            $id_foreign = $this->resource . '_id';
+        }
+
+        /** @var Model $relationship */
+        $relationship = new $modelClass;
+        $id = $this->getProperty( $id_foreign );
+        return $relationship->where( $relationship->getIdColumn(), $id)->take(1)->findAll();
+    }
+
+    public function belongsTo($modelClass, $id_local = null)
+    {
+        $id =  $this->getID();
+        if( ! $id ) {
+            return null;
+        }
+
+        /** @var Model $relationship */
+        $relationship = new $modelClass;
+
+        if( ! $id_local && $relationship->resource ) {
+            $id_local = $relationship->resource . '_id';
+        }
+
+        $id = $this->getProperty( $id_local );
+        return $relationship->where( $this->getIdColumn(), $id)->take(1);
+    }
+
+    /**
+     * Has Many
+     *
+     * @param $modelClass
+     * @param null $id_foreign
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function hasMany($modelClass, $id_foreign = null)
+    {
+        $id = $this->getID();
+        if( ! $id ) {
+            return null;
+        }
+
+        /** @var Model $relationship */
+        $relationship = new $modelClass;
+
+        if( ! $id_foreign && $this->resource ) {
+            $id_foreign = $this->resource . '_id';
+        }
+
+        return $relationship->findAll()->where( $id_foreign, $id );
     }
 
     /**
