@@ -22,11 +22,6 @@ class WPCommentMeta extends Model
     ];
 
     public function comment( $modelClass ) {
-
-        if( ! $modelClass instanceof WPComment ) {
-            return null;
-        }
-
         return $this->belongsTo( $modelClass, 'comment_id' );
     }
 }

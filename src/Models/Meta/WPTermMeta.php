@@ -22,11 +22,6 @@ class WPTermMeta extends Model
     ];
 
     public function term( $modelClass ) {
-
-        if( ! $modelClass instanceof WPTerm ) {
-            return null;
-        }
-
         return $this->belongsTo( $modelClass, 'term_id' );
     }
 }

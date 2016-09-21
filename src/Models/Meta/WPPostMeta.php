@@ -22,11 +22,6 @@ class WPPostMeta extends Model
     ];
 
     public function post( $modelClass ) {
-
-        if( ! $modelClass instanceof WPPost ) {
-            return null;
-        }
-
         return $this->belongsTo( $modelClass, 'post_id' );
     }
 }

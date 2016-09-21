@@ -45,14 +45,10 @@ class WPUser extends Model
      */
     public function posts( $modelClass )
     {
-        if( ! $modelClass instanceof WPPost ) {
-            return null;
-        }
-
         /** @var WPPost $post */
         $post = new $modelClass;
 
-        return $this->hasMany( $modelClass, 'post_author' )->where('post_type', $post->postType);
+        return $this->hasMany( $modelClass, 'post_author' )->where('post_type', $post->getPostType());
     }
 
     /**

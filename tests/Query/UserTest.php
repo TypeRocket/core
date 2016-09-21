@@ -1,13 +1,16 @@
 <?php
 namespace Query;
 
+use TypeRocket\Models\WPPost;
+use TypeRocket\Models\WPUser;
+
 class UserTest extends \PHPUnit_Framework_TestCase
 {
     static public $sharedUserId = 2;
 
     public function testCreateWithSlashing()
     {
-        $user = new \TypeRocket\Models\WPUser();
+        $user = new WPUser();
 
         $data = [
             'user_nicename' => 'new\nice\name',
@@ -34,7 +37,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdateWithSlashing()
     {
-        $user = new \TypeRocket\Models\WPUser();
+        $user = new WPUser();
         $user->findById( self::$sharedUserId );
 
         $data = [
@@ -55,5 +58,18 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($nicename == wp_unslash($data['user_nicename']));
         $this->assertTrue($url == wp_unslash($data['user_url']));
         $this->assertTrue($display == $data['display_name']);
+    }
+
+    public function testUsersPosts()
+    {
+        $user = new WPUser();
+        $post = $user->findById(1)->posts( WPPost::class );
+        $results = $post->get();
+
+        foreach ($results as $result ) {
+            $this->assertTrue( $result instanceof WPPost);
+        }
+
+        $this->assertTrue( $post instanceof WPPost);
     }
 }

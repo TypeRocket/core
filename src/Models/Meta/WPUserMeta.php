@@ -22,11 +22,6 @@ class WPUserMeta extends Model
     ];
 
     public function user( $modelClass ) {
-
-        if( ! $modelClass instanceof WPUser ) {
-            return null;
-        }
-
         return $this->belongsTo( $modelClass, 'user_id' );
     }
 }

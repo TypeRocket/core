@@ -69,6 +69,16 @@ class WPPost extends Model
     }
 
     /**
+     * Get Post Type
+     *
+     * @return string
+     */
+    public function getPostType()
+    {
+        return $this->postType;
+    }
+
+    /**
      * Return table name in constructor
      *
      * @param \wpdb $wpdb

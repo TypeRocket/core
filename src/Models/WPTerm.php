@@ -37,6 +37,16 @@ class WPTerm extends Model
     }
 
     /**
+     * Get Taxonomy
+     *
+     * @return string
+     */
+    public function getTaxonomy()
+    {
+        return $this->taxonomy;
+    }
+
+    /**
      * Return table name in constructor
      *
      * @param \wpdb $wpdb
