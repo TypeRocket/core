@@ -1066,7 +1066,8 @@ class Model
      */
     public function hasOne($modelClass, $id_foreign = null)
     {
-        if( ! $this->getID() ) {
+        $id = $this->getID();
+        if( ! $id ) {
            return null;
         }
 
@@ -1076,14 +1077,12 @@ class Model
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
-        $id = $this->getProperty( $id_foreign );
-        return $relationship->where( $relationship->getIdColumn(), $id)->take(1)->findAll();
+        return $relationship->findAll()->where( $id_foreign, $id)->take(1);
     }
 
     public function belongsTo($modelClass, $id_local = null)
     {
-        $id =  $this->getID();
-        if( ! $id ) {
+        if( ! $this->getID() ) {
             return null;
         }
 
