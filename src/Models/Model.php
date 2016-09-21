@@ -1167,7 +1167,7 @@ class Model
         $rel_join = $rel_table . '.' . $relationship->getIdColumn();
         $foreign_join = $join_table . '.' . $id_foreign;
         $where_column = $join_table.'.'.$id_column;
-        $relationship->query->join($join_table, $foreign_join, $rel_join);
+        $relationship->getQuery()->join($join_table, $foreign_join, $rel_join);
         return  $relationship->select($rel_table.'.*')
                              ->where($where_column, $id)
                              ->findAll();
@@ -1184,6 +1184,16 @@ class Model
         global $wpdb;
 
         return  $this->table ? $this->table : $wpdb->prefix . $this->resource;
+    }
+
+    /**
+     * Get Query
+     *
+     * @return \TypeRocket\Database\Query
+     */
+    public function getQuery()
+    {
+        return $this->query;
     }
 
     /**
