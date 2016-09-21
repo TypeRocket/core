@@ -32,8 +32,7 @@ class UnionTest extends \PHPUnit_Framework_TestCase
     {
         $first = tr_query()->table('wp_posts')->setIdColumn('ID');
         $first->select('post_title', 'ID')
-              ->where('ID', 1)
-              ->get();
+              ->where('ID', 1);
 
         $last = tr_query()->table('wp_posts')->setIdColumn('ID');
         $last->select('post_title', 'ID')
