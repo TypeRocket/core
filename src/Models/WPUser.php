@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\Meta\WPUserMeta;
 
 class WPUser extends Model
 {
@@ -24,6 +25,16 @@ class WPUser extends Model
     protected $guard = [
         'id'
     ];
+
+    /**
+     * Get User Meta
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function meta()
+    {
+        return $this->hasMany( WPUserMeta::class, 'user_id' );
+    }
 
     /**
      * Find post by ID

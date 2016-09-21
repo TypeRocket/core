@@ -1,6 +1,8 @@
 <?php
 namespace Query;
 
+use TypeRocket\Models\Meta\WPPostMeta;
+
 class PostTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -49,6 +51,15 @@ class PostTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($content == $data['post_content']);
         $this->assertTrue($title == $data['post_title']);
         $this->assertTrue($excerpt == $data['post_excerpt']);
+    }
+
+    public function testRelationshipPostMeta()
+    {
+        $post = new \TypeRocket\Models\WPPost();
+        $meta = $post->findById(1)->meta();
+        $result = $meta->get();
+
+        $this->assertTrue( $meta instanceof WPPostMeta);
     }
 
 }

@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\Meta\WPCommentMeta;
 
 class WPComment extends Model
 {
@@ -30,6 +31,16 @@ class WPComment extends Model
     protected $guard = [
         'comment_id'
     ];
+
+    /**
+     * Get Comment Meta
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function meta()
+    {
+        return $this->hasMany( WPCommentMeta::class, 'comment_id' );
+    }
 
     /**
      * Get comment by ID

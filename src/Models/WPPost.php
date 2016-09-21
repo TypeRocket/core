@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\Meta\WPPostMeta;
 
 class WPPost extends Model
 {
@@ -39,6 +40,24 @@ class WPPost extends Model
         'post_type',
         'id'
     ];
+
+    /**
+     * Posts Meta Fields
+     *
+     * @param bool $withPrivate
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function meta( $withPrivate = false )
+    {
+        $meta = $this->hasMany( WPPostMeta::class, 'post_id' );
+
+        if( ! $withPrivate ) {
+            $meta->where('meta_key', 'NOT LIKE', '\_%');
+        }
+
+        return $meta;
+    }
 
     /**
      * Return table name in constructor

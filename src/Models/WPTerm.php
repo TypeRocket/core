@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Models\Meta\WPTermMeta;
 
 class WPTerm extends Model
 {
@@ -24,6 +25,16 @@ class WPTerm extends Model
         'parent',
         'count',
     ];
+
+    /**
+     * Get Term Meta
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function meta()
+    {
+        return $this->hasMany( WPTermMeta::class, 'term_id' );
+    }
 
     /**
      * Return table name in constructor
