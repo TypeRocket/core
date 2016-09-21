@@ -1187,6 +1187,20 @@ class Model
     }
 
     /**
+     * Get Last SQL Query
+     *
+     * @return null
+     */
+    public function getSuspectSQL()
+    {
+        if( ! $this->query->lastCompiledSQL ) {
+            $this->query->compileFullQuery();
+        }
+
+        return $this->query->lastCompiledSQL;
+    }
+
+    /**
      * Get the Query result
      *
      * @param $results

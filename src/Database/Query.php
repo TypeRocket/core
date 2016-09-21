@@ -409,7 +409,7 @@ class Query
         $joinQuery['on'] = 'ON';
         $joinQuery['column1'] = $column;
         $joinQuery['operator'] = '=';
-        $joinQuery['column2'] = $column;
+        $joinQuery['column2'] = $arg1;
 
         if( isset($arg2) ) {
             $joinQuery['operator'] = $arg1;
