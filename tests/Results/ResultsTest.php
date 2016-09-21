@@ -1,6 +1,8 @@
 <?php
 namespace Results;
 
+use TypeRocket\Models\WPPost;
+
 class ResultsTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -64,6 +66,15 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
         $results->castResults();
         $this->assertTrue( $results[0] instanceof \stdClass );
         $this->assertTrue( isset($results[0]->attributes) );
+    }
+
+    public function testAutoModelResults()
+    {
+        $posts = (new WPPost())->findAll()->where('post_status', 'publish')->get();
+
+        foreach ($posts as $post ) {
+            $this->assertTrue( $post instanceof WPPost );
+        }
     }
 
 }

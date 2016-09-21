@@ -869,6 +869,11 @@ class Model
 
         // Return Results
         if( $result instanceof Results ) {
+            if( $result->class == null ) {
+               $result->class = static::class;
+            }
+            $result->castResults();
+
             return $result;
         }
 
