@@ -24,7 +24,7 @@ class UnionTest extends \PHPUnit_Framework_TestCase
               ->union($query)
               ->get();
 
-        $sql = "SELECT DISTINCT wp_posts.post_title,wp_posts.ID,wp_postmeta.meta_key FROM wp_posts INNER JOIN wp_postmeta ON wp_postmeta.post_id = wp_posts.ID WHERE wp_posts.ID = '2' UNION SELECT DISTINCT wp_posts.post_title,wp_posts.ID,wp_postmeta.meta_key FROM wp_posts INNER JOIN wp_postmeta ON wp_postmeta.post_id = wp_posts.ID WHERE wp_posts.ID = '1'";
+        $sql = "SELECT DISTINCT wp_posts.post_title,wp_posts.ID,wp_postmeta.meta_key FROM wp_posts INNER JOIN wp_postmeta ON wp_postmeta.post_id = wp_posts.ID WHERE wp_posts.ID = 2 UNION SELECT DISTINCT wp_posts.post_title,wp_posts.ID,wp_postmeta.meta_key FROM wp_posts INNER JOIN wp_postmeta ON wp_postmeta.post_id = wp_posts.ID WHERE wp_posts.ID = 1";
         $this->assertTrue( $query2->lastCompiledSQL == $sql);
     }
 
@@ -40,7 +40,7 @@ class UnionTest extends \PHPUnit_Framework_TestCase
              ->union($first) // union
              ->get();
 
-        $sql = "SELECT post_title,ID FROM wp_posts WHERE ID = '2' UNION SELECT post_title,ID FROM wp_posts WHERE ID = '1'";
+        $sql = "SELECT post_title,ID FROM wp_posts WHERE ID = 2 UNION SELECT post_title,ID FROM wp_posts WHERE ID = 1";
         $this->assertTrue( $last->lastCompiledSQL == $sql);
     }
 }

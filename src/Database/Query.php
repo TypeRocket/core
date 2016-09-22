@@ -728,11 +728,7 @@ class Query
                     $inserts = [];
 
                     foreach ($multiples as $data ) {
-                        if( is_array($data) ) {
-                            $inserts[] = $wpdb->prepare( '%s', serialize($data) );
-                        } else {
-                            $inserts[] = $wpdb->prepare( '%s', $data );
-                        }
+                        $this->setupInserts($data, $inserts);
                     }
 
                     $sql_insert_values_container[] = ' ( ' . implode(',', $inserts) . ' ) ';
@@ -743,12 +739,7 @@ class Query
             } else {
                 foreach( $query['data'] as $column => $data ) {
                     $columns[] =  preg_replace($this->columnPattern, '', $column);
-
-                    if( is_array($data) ) {
-                        $inserts[] = $wpdb->prepare( '%s', serialize($data) );
-                    } else {
-                        $inserts[] = $wpdb->prepare( '%s', $data );
-                    }
+                    $this->setupInserts($data, $inserts);
                 }
 
                 $sql_insert['sql_insert_columns'] = ' (' . implode(',', $columns) . ') ';
@@ -774,12 +765,7 @@ class Query
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
                 $columns[] = preg_replace($this->columnPattern, '', $column);
-
-                if( is_array($data) ) {
-                    $inserts[] = $wpdb->prepare( '%s', serialize($data) );
-                } else {
-                    $inserts[] = $wpdb->prepare( '%s', $data );
-                }
+                $this->setupInserts($data, $inserts);
             }
 
             $sql = implode(', ', array_map(
@@ -793,13 +779,49 @@ class Query
     }
 
     /**
+     * Setup the Inserts
+     *
+     * @param $data
+     * @param $inserts
+     *
+     * @return $this
+     */
+    protected function setupInserts( $data, &$inserts ) {
+        $inserts[] = $this->prepareValue($data);
+        return $this;
+    }
+
+    /**
+     * Prepare Value
+     *
+     * @param $value
+     *
+     * @return int|null|string|void
+     */
+    protected function prepareValue( $value ) {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $prepared = null;
+
+        if( is_array($value) ) {
+            $prepared = $wpdb->prepare( '%s', serialize($value) );
+        } elseif( $value === null ) {
+            $prepared = 'NULL';
+        } elseif( is_integer($value) ) {
+            $prepared = (int) $value;
+        } else {
+            $prepared = $wpdb->prepare( '%s', $value );
+        }
+
+        return $prepared;
+    }
+
+    /**
      * Compile Where
      *
      * @return string
      */
     protected function compileWhere() {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
         $query = $this->query;
         $sql = '';
 
@@ -807,14 +829,13 @@ class Query
             foreach( $query['where'] as $where ) {
 
                 if( is_array($where['value']) ) {
-
-                    $where['value'] = array_map(function($value) use ($wpdb) {
-                        return $wpdb->prepare( '%s', $value );
-                    }, $where['value']);
+                    $where['value'] = array_map(\Closure::bind(function($value) {
+                        return $this->prepareValue($value);
+                    }, $this), $where['value']);
 
                     $where['value'] = '(' . implode(',', $where['value']) . ')';
                 } else {
-                    $where['value'] = $wpdb->prepare( '%s', $where['value'] );
+                    $where['value'] = $this->prepareValue($where['value']);
                 }
 
                 $sql .= ' ' . implode(' ', $where);

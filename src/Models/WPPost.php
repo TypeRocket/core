@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Core\Config;
+use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
 
@@ -76,7 +77,7 @@ class WPPost extends Model
      */
     public function published()
     {
-        return $this->where('post_status', 'published');
+        return $this->where('post_status', 'publish');
     }
 
     /**
@@ -111,6 +112,18 @@ class WPPost extends Model
     public function initTable( $wpdb )
     {
         return $wpdb->prefix . 'posts';
+    }
+
+    /**
+     * Init Post Type
+     *
+     * @param Query $query
+     *
+     * @return Query
+     */
+    protected function initQuery( Query $query )
+    {
+        return $query->where('post_type', $this->getPostType());
     }
 
     /**

@@ -11,7 +11,7 @@ class CompileTest extends \PHPUnit_Framework_TestCase
         $query->idColumn = 'ID';
         $query->run = false;
         $query->where('ID', 1)->update(['post_title' => 'My Title']);
-        $sql = "UPDATE wp_posts SET post_title='My Title' WHERE ID = '1'";
+        $sql = "UPDATE wp_posts SET post_title='My Title' WHERE ID = 1";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -49,7 +49,7 @@ class CompileTest extends \PHPUnit_Framework_TestCase
         $query->idColumn = 'ID';
         $query->run = false;
         $query->where('ID', 1)->delete();
-        $sql = "DELETE FROM wp_posts WHERE ID = '1'";
+        $sql = "DELETE FROM wp_posts WHERE ID = 1";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 

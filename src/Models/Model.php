@@ -45,7 +45,7 @@ class Model
             $this->resource = strtolower( Inflect::pluralize($type) );
         }
 
-        $this->query = new Query();
+        $this->query = $this->initQuery( new Query() );
         $this->query->resultsClass = $this->resultsClass;
         $table = $this->getTable();
         $this->query->table($table);
@@ -63,13 +63,24 @@ class Model
     }
 
     /**
+     * Init Query
+     *
+     * @param Query $query
+     *
+     * @return mixed
+     */
+    protected function initQuery( Query $query) {
+        return $query;
+    }
+
+    /**
      * Return table name in constructor
      *
      * @param \wpdb $wpdb
      *
      * @return null
      */
-    public function initTable($wpdb)
+    protected function initTable($wpdb)
     {
         return $this->table;
     }
