@@ -18,6 +18,7 @@ class Model
     protected $builtin = [];
     protected $resource = null;
     protected $table = null;
+    protected $junctionTable = null;
     protected $errors = null;
     protected $query;
     protected $old = null;
@@ -1141,16 +1142,23 @@ class Model
      * This is for Many to Many relationships.
      *
      * @param $modelClass
-     * @param string $join_table
+     * @param null|string $junction_table
      * @param null|string $id_column
      * @param null|string $id_foreign
      *
      * @return null|\TypeRocket\Models\Model
      */
-    public function belongsToMany( $modelClass, $join_table, $id_column = null, $id_foreign = null )
+    public function belongsToMany( $modelClass, $junction_table = null, $id_column = null, $id_foreign = null )
     {
         $id = $this->getID();
         if( ! $id ) {
+            return null;
+        }
+
+        $join_table = $this->junctionTable;
+        if( ! $join_table && $junction_table) {
+            $join_table = $this->junctionTable = $junction_table;
+        } else {
             return null;
         }
 
@@ -1162,6 +1170,7 @@ class Model
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+        $relationship->setJunctionTable( $this->junctionTable );
 
         // Foreign ID
         if( ! $id_foreign && $relationship->resource ) {
@@ -1205,7 +1214,7 @@ class Model
     /**
      * Get Related Model
      *
-     * @return null
+     * @return null|Model
      */
     public function getRelatedModel()
     {
@@ -1227,9 +1236,33 @@ class Model
     }
 
     /**
+     * Get Junction Table
+     *
+     * @return null|string
+     */
+    public function getJunctionTable()
+    {
+        return $this->junctionTable;
+    }
+
+    /**
+     * Set Junction Table
+     *
+     * @param $table
+     *
+     * @return $this
+     */
+    public function setJunctionTable($table)
+    {
+        $this->junctionTable = $table;
+
+        return $this;
+    }
+
+    /**
      * Get Last SQL Query
      *
-     * @return null
+     * @return null|string
      */
     public function getSuspectSQL()
     {

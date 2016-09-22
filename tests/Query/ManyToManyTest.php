@@ -16,6 +16,7 @@ class ManyToManyTest extends \PHPUnit_Framework_TestCase
         $sql = $terms->getSuspectSQL();
         $expected = "SELECT wp_terms.* FROM wp_terms INNER JOIN posts_terms ON posts_terms.terms_id = wp_terms.term_id WHERE posts_terms.posts_id = '1'";
         $this->assertTrue( $terms->getRelatedModel() instanceof WPPost );
+        $this->assertTrue( $terms->getJunctionTable() == 'posts_terms' );
         $this->assertTrue($sql == $expected);
     }
 
