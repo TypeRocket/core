@@ -211,13 +211,15 @@ class Query
      * resource's ID.
      *
      * @param array|\ArrayObject $fields
+     * @param array $multiple optional
      *
      * @return mixed
      */
-    public function create( $fields)
+    public function create( $fields, $multiple = [] )
     {
         $this->setQueryType('create');
         $this->query['data'] = $fields;
+        $this->query['data_values'] = $multiple;
 
         return $this->runQuery();
     }
@@ -713,18 +715,45 @@ class Query
 
         if( !empty($query['create']) && !empty($query['data']) ) {
             $inserts = $columns = [];
-            foreach( $query['data'] as $column => $data ) {
-                $columns[] =  preg_replace($this->columnPattern, '', $column);
 
-                if( is_array($data) ) {
-                    $inserts[] = $wpdb->prepare( '%s', serialize($data) );
-                } else {
-                    $inserts[] = $wpdb->prepare( '%s', $data );
+            if( !empty($query['data_values']) ) {
+                foreach( $query['data'] as $column ) {
+                    $columns[] =  preg_replace($this->columnPattern, '', $column);
                 }
-            }
 
-            $sql_insert['sql_insert_columns'] = ' (' . implode(',', $columns) . ') ';
-            $sql_insert['sql_insert_values'] .= ' ( ' . implode(',', $inserts) . ' ) ';
+                $sql_insert['sql_insert_columns'] = ' (' . implode(',', $columns) . ') ';
+                $sql_insert_values_container = [];
+
+                foreach ($query['data_values'] as $multiples ) {
+                    $inserts = [];
+
+                    foreach ($multiples as $data ) {
+                        if( is_array($data) ) {
+                            $inserts[] = $wpdb->prepare( '%s', serialize($data) );
+                        } else {
+                            $inserts[] = $wpdb->prepare( '%s', $data );
+                        }
+                    }
+
+                    $sql_insert_values_container[] = ' ( ' . implode(',', $inserts) . ' ) ';
+                }
+
+                $sql_insert['sql_insert_values'] .= implode(',', $sql_insert_values_container);
+
+            } else {
+                foreach( $query['data'] as $column => $data ) {
+                    $columns[] =  preg_replace($this->columnPattern, '', $column);
+
+                    if( is_array($data) ) {
+                        $inserts[] = $wpdb->prepare( '%s', serialize($data) );
+                    } else {
+                        $inserts[] = $wpdb->prepare( '%s', $data );
+                    }
+                }
+
+                $sql_insert['sql_insert_columns'] = ' (' . implode(',', $columns) . ') ';
+                $sql_insert['sql_insert_values'] .= ' ( ' . implode(',', $inserts) . ' ) ';
+            }
         }
 
         return $sql_insert;

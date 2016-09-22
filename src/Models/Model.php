@@ -18,7 +18,6 @@ class Model
     protected $builtin = [];
     protected $resource = null;
     protected $table = null;
-    protected $junctionTable = null;
     protected $errors = null;
     protected $query;
     protected $old = null;
@@ -28,6 +27,7 @@ class Model
     protected $idColumn = 'id';
     protected $resultsClass = Results::class;
     protected $currentRelationshipModel = null;
+    private $junction = null;
 
     /**
      * Construct Model based on resource
@@ -1142,23 +1142,16 @@ class Model
      * This is for Many to Many relationships.
      *
      * @param $modelClass
-     * @param null|string $junction_table
+     * @param string $junction_table
      * @param null|string $id_column
      * @param null|string $id_foreign
      *
      * @return null|\TypeRocket\Models\Model
      */
-    public function belongsToMany( $modelClass, $junction_table = null, $id_column = null, $id_foreign = null )
+    public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null )
     {
         $id = $this->getID();
         if( ! $id ) {
-            return null;
-        }
-
-        $join_table = $this->junctionTable;
-        if( ! $join_table && $junction_table) {
-            $join_table = $this->junctionTable = $junction_table;
-        } else {
             return null;
         }
 
@@ -1170,7 +1163,6 @@ class Model
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
-        $relationship->setJunctionTable( $this->junctionTable );
 
         // Foreign ID
         if( ! $id_foreign && $relationship->resource ) {
@@ -1178,14 +1170,89 @@ class Model
         }
         $rel_table = $relationship->getTable();
 
+        // Set Junction: `attach` and `detach` will use inverse columns
+        $relationship->setJunction( [
+            'table' => $junction_table,
+            'columns' => [$id_foreign, $id_column],
+            'id_foreign' => $id
+        ] );
+
         // Join
-        $rel_join = $rel_table . '.' . $relationship->getIdColumn();
-        $foreign_join = $join_table . '.' . $id_foreign;
+        $join_table = $junction_table;
+        $rel_join = $rel_table.'.'.$relationship->getIdColumn();
+        $foreign_join = $join_table.'.'.$id_foreign;
         $where_column = $join_table.'.'.$id_column;
-        $relationship->getQuery()->join($join_table, $foreign_join, $rel_join);
+        $relationship->getQuery()->distinct()->join($join_table, $foreign_join, $rel_join);
         return  $relationship->select($rel_table.'.*')
                              ->where($where_column, $id)
                              ->findAll();
+    }
+
+    /**
+     * Attach to Junction Table
+     *
+     * @param array $args
+     *
+     * @return array $query
+     */
+    public function attach( array $args )
+    {
+        $rows = [];
+        $query = new Query();
+        $junction = $this->getJunction();
+        $id_foreign = $junction['id_foreign'];
+
+        foreach ( $args as $id ) {
+            $rows[] = [ $id, $id_foreign ];
+        }
+
+        $result = $query->table( $junction['table'] )->create($junction['columns'], $rows);
+
+        return [$result, $query];
+    }
+
+    /**
+     * Detach from Junction Table
+     *
+     * @param array $args
+     *
+     * @return array
+     */
+    public function detach( array $args = [] )
+    {
+        $query = new Query();
+        $junction = $this->getJunction();
+        $id_foreign = $junction['id_foreign'];
+
+        list( $local_column, $foreign_column ) = $junction['columns'];
+
+        $query->where($foreign_column, '=', $id_foreign);
+
+        if( !empty($args) ) {
+            $query->where($local_column, 'IN', $args);
+        }
+
+        $result = $query->table( $junction['table'] )->delete();
+
+        return [$result, $query];
+    }
+
+    /**
+     * Sync Junction Table
+     *
+     * First detach and then attach new records.
+     *
+     * @param array $args
+     *
+     * @return array $results
+     */
+    public function sync( array $args = [] )
+    {
+        $results = [];
+        $results['detach'] = $this->detach();
+        $results['attach'] = $this->attach( $args );
+
+        return $results;
     }
 
     /**
@@ -1236,25 +1303,25 @@ class Model
     }
 
     /**
-     * Get Junction Table
+     * Get Junction
      *
      * @return null|string
      */
-    public function getJunctionTable()
+    public function getJunction()
     {
-        return $this->junctionTable;
+        return $this->junction;
     }
 
     /**
-     * Set Junction Table
+     * Set Junction
      *
-     * @param $table
+     * @param array $junction
      *
      * @return $this
      */
-    public function setJunctionTable($table)
+    public function setJunction( array $junction )
     {
-        $this->junctionTable = $table;
+        $this->junction = $junction;
 
         return $this;
     }
