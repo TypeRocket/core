@@ -70,6 +70,28 @@ class WPPost extends Model
     }
 
     /**
+     * Published
+     *
+     * @return $this
+     */
+    public function published()
+    {
+        return $this->where('post_status', 'published');
+    }
+
+    /**
+     * Status
+     *
+     * @param string $type
+     *
+     * @return $this
+     */
+    public function status($type)
+    {
+        return $this->where('post_status', $type);
+    }
+
+    /**
      * Get Post Type
      *
      * @return string
