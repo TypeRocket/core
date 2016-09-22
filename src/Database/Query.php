@@ -807,7 +807,7 @@ class Query
             $prepared = $wpdb->prepare( '%s', serialize($value) );
         } elseif( $value === null ) {
             $prepared = 'NULL';
-        } elseif( is_integer($value) ) {
+        } elseif( is_int($value) ) {
             $prepared = (int) $value;
         } else {
             $prepared = $wpdb->prepare( '%s', $value );
