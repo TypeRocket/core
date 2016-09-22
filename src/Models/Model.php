@@ -26,6 +26,7 @@ class Model
     protected $explicitProperties = [];
     protected $idColumn = 'id';
     protected $resultsClass = Results::class;
+    protected $currentRelationshipModel = null;
 
     /**
      * Construct Model based on resource
@@ -1077,6 +1078,8 @@ class Model
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
+        $relationship->setRelatedModel( $this );
+
         return $relationship->findAll()->where( $id_foreign, $id)->take(1);
     }
 
@@ -1096,6 +1099,7 @@ class Model
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
+        $relationship->setRelatedModel( $this );
 
         if( ! $id_local && $relationship->resource ) {
             $id_local = $relationship->resource . '_id';
@@ -1122,6 +1126,7 @@ class Model
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
+        $relationship->setRelatedModel( $this );
 
         if( ! $id_foreign && $this->resource ) {
             $id_foreign = $this->resource . '_id';
@@ -1156,6 +1161,7 @@ class Model
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
+        $relationship->setRelatedModel( $this );
 
         // Foreign ID
         if( ! $id_foreign && $relationship->resource ) {
@@ -1194,6 +1200,30 @@ class Model
     public function getQuery()
     {
         return $this->query;
+    }
+
+    /**
+     * Get Related Model
+     *
+     * @return null
+     */
+    public function getRelatedModel()
+    {
+        return $this->currentRelationshipModel;
+    }
+
+    /**
+     * Set Related Model
+     *
+     * @param Model $model
+     *
+     * @return Model $this
+     */
+    public function setRelatedModel( Model $model )
+    {
+        $this->currentRelationshipModel = clone $model;
+
+        return $this;
     }
 
     /**
