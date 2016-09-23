@@ -285,13 +285,15 @@ class Page extends Registrable
      */
     public function register()
     {
+        $default_capability = '';
         $menu_title = $this->args['menu'];
-        $capability = $this->args['capability'] ? $this->args['capability'] : 'administrator';
+        $capability = $this->args['capability'] ? $this->args['capability'] : $default_capability;
         $slug = $this->getSlug();
         $position = $this->args['position'];
 
         if( $this->getParent() && $this->args['inherit_capability'] && ! $this->args['capability'] ) {
-            $capability = $this->getParent()->getArgument('capability');
+            $parent_capability = $this->getParent()->getArgument('capability');
+            $capability = $parent_capability ? $parent_capability : $default_capability;
         }
 
         $callback = function() {
