@@ -285,7 +285,7 @@ class Page extends Registrable
      */
     public function register()
     {
-        $default_capability = '';
+        $default_capability = 'administrator';
         $menu_title = $this->args['menu'];
         $capability = $this->args['capability'] ? $this->args['capability'] : $default_capability;
         $slug = $this->getSlug();
