@@ -263,20 +263,26 @@ class Tables
                         if ( ! empty($data['actions'])) {
                             $text = "<strong><a href=\"{$edit_url}\">{$text}</a></strong>";
                             $text .= "<div class=\"row-actions\">";
+                            $delete_ajax = true;
+                            $delete_class = '';
+                            if( isset($data['delete_ajax']) && $data['delete_ajax'] === false ) {
+                                $delete_ajax = false;
+                            }
                             foreach ($data['actions'] as $index => $action) {
 
                                 if ($index > 0) {
                                     $text .= ' | ';
                                 }
-
                                 switch ($action) {
                                     case 'edit' :
                                         $text .= "<span class=\"edit\"><a href=\"{$edit_url}\">Edit</a></span>";
                                         break;
                                     case 'delete' :
-                                        $delete_url = wp_nonce_url($delete_url, 'form_' . Config::getSeed(),
-                                            '_tr_nonce_form');
-                                        $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" class=\"tr-delete-row-rest-button\" href=\"{$delete_url}\">Delete</a></span>";
+                                        if( $delete_ajax ) {
+                                            $delete_url = wp_nonce_url($delete_url, 'form_' . Config::getSeed(), '_tr_nonce_form');
+                                            $delete_class = 'class="tr-delete-row-rest-button"';
+                                        }
+                                        $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" {$delete_class} href=\"{$delete_url}\">Delete</a></span>";
                                         break;
                                     case 'view' :
                                         if( !empty($data['view_url']) && is_callable($data['view_url']) ) {
