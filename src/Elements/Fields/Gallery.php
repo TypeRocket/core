@@ -47,7 +47,7 @@ class Gallery extends Field implements ScriptField
                     $list .= $generator->newElement( 'li', array(
                         'class' => 'image-picker-placeholder'
                     ),
-                        '<a class="tr-icon-remove2"  title="Remove Image" href="'.$remove.'"></a>' . $image . $input )->getString();
+                        '<a class="dashicons dashicons-no-alt"  title="Remove Image" href="'.$remove.'"></a>' . $image . $input )->getString();
                 }
 
             }
