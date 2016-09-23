@@ -49,7 +49,7 @@ class Page extends Registrable
         $this->action   = Sanitize::underscore( $action );
         $this->args     = array_merge( [
             'menu' => $this->title,
-            'capability' => 'administrator',
+            'capability' => false,
             'inherit_capability' => true,
             'position' => 99,
             'view_file' => null,
@@ -286,11 +286,11 @@ class Page extends Registrable
     public function register()
     {
         $menu_title = $this->args['menu'];
-        $capability = $this->args['capability'];
+        $capability = $this->args['capability'] ? $this->args['capability'] : 'administrator';
         $slug = $this->getSlug();
         $position = $this->args['position'];
 
-        if( $this->getParent() && $this->args['inherit_capability'] ) {
+        if( $this->getParent() && $this->args['inherit_capability'] && ! $this->args['capability'] ) {
             $capability = $this->getParent()->getArgument('capability');
         }
 
