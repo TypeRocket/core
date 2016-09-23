@@ -49,7 +49,8 @@ class Page extends Registrable
         $this->action   = Sanitize::underscore( $action );
         $this->args     = array_merge( [
             'menu' => $this->title,
-            'capability' => 'read',
+            'capability' => 'administrator',
+            'inherit_capability' => true,
             'position' => 99,
             'view_file' => null,
             'slug' => $this->resource . '_' . $this->action,
@@ -289,6 +290,10 @@ class Page extends Registrable
         $slug = $this->getSlug();
         $position = $this->args['position'];
 
+        if( $this->getParent() && $this->args['inherit_capability'] ) {
+            $capability = $this->getParent()->getArgument('capability');
+        }
+
         $callback = function() {
 
             $url = $action = '';
@@ -311,6 +316,9 @@ class Page extends Registrable
             }
 
             if( $url && $this->showAddNewButton ) {
+                if( is_string($this->showAddNewButton) ) {
+                    $url = $this->showAddNewButton;
+                }
                 $action = ' <a href="'.$url.'" class="page-title-action">Add New</a>';
             }
 
