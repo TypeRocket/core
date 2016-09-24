@@ -277,6 +277,23 @@ class Page extends Registrable
     }
 
     /**
+     * Get Capability
+     *
+     * @return string
+     */
+    protected function getCapability() {
+        $default_capability = 'administrator';
+        $capability = $this->args['capability'] ? $this->args['capability'] : $default_capability;
+
+        if( $this->getParent() && $this->args['inherit_capability'] && ! $this->args['capability'] ) {
+            $parent_capability = $this->getParent()->getArgument('capability');
+            $capability = $parent_capability ? $parent_capability : $default_capability;
+        }
+
+        return $capability;
+    }
+
+    /**
      * Register with WordPress
      *
      * Override this in concrete classes
@@ -285,16 +302,10 @@ class Page extends Registrable
      */
     public function register()
     {
-        $default_capability = 'administrator';
         $menu_title = $this->args['menu'];
-        $capability = $this->args['capability'] ? $this->args['capability'] : $default_capability;
+        $capability = $this->getCapability();
         $slug = $this->getSlug();
         $position = $this->args['position'];
-
-        if( $this->getParent() && $this->args['inherit_capability'] && ! $this->args['capability'] ) {
-            $parent_capability = $this->getParent()->getArgument('capability');
-            $capability = $parent_capability ? $parent_capability : $default_capability;
-        }
 
         $callback = function() {
 
@@ -376,7 +387,7 @@ class Page extends Registrable
     public function adminBar( $id, $title = null, $parent_id = 'site-name')
     {
         add_action('admin_bar_menu', \Closure::bind(function() use ($parent_id, $title, $id) {
-            if( current_user_can( $this->args['capability'] ) ) {
+            if( current_user_can( $this->getCapability() ) ) {
                 /** @var $wp_admin_bar \WP_Admin_Bar */
                 global $wp_admin_bar;
                 $link = $this->getUrl();
