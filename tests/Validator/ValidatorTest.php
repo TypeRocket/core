@@ -57,8 +57,12 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $fields['person'][2]['email'] = 'e@example2.1@typerocket.com';
         $fields['person'][3]['email'] = 'example2.1typerocket.com';
 
-        function checkValidatorCallback($validator, $field, $option2)
+        function checkValidatorCallback($validator, $value, $field, $option2)
         {
+            if( empty($value) ) {
+               return  ['error' => $field . ' is bad'];
+            }
+
             return ['success' => $field . ' is good'];
         }
 
@@ -71,13 +75,17 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testDeepCallbackFieldFailing()
     {
-        $fields['person'][1]['email'] = 'example@typerocket';
-        $fields['person'][2]['email'] = 'e@example2.1@typerocket.com';
-        $fields['person'][3]['email'] = 'example2.1typerocket.com';
+        $fields['person'][1]['email'] = '';
+        $fields['person'][2]['email'] = '';
+        $fields['person'][3]['email'] = '';
 
-        function checkValidatorCallbackError($validator, $field, $option2)
+        function checkValidatorCallbackError($validator,  $value, $field, $option2)
         {
-            return ['error' => $field . ' is good'];
+            if( empty($value) ) {
+                return  ['error' => $field . ' is bad'];
+            }
+
+            return ['success' => $field . ' is good'];
         }
 
         $validator = new \TypeRocket\Utility\Validator([

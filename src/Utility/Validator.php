@@ -150,7 +150,7 @@ class Validator
                     }
                     break;
                 case 'callback' :
-                    $callback_value = call_user_func_array($option, [ $this, $field_name, $option2 ]);
+                    $callback_value = call_user_func_array($option, [ $this, $value, $field_name, $option2 ]);
                     if( isset($callback_value['error']) ) {
                         $this->errors[$name] = $callback_value['error'];
                     } else {
