@@ -182,6 +182,24 @@ class Form
     }
 
     /**
+     * Use a URL
+     *
+     * @param $method
+     * @param $url
+     *
+     * @return $this
+     */
+    public function useUrl($method, $url)
+    {
+        $url_parts     = explode('/', trim($url, '/') );
+        $scheme        = is_ssl() ? 'https' : 'http';
+        $this->formUrl = home_url(implode('/', $url_parts ) . '/', $scheme);
+        $this->method  = strtoupper($method);
+
+        return $this;
+    }
+
+    /**
      * Use TypeRocket Rest to submit form
      *
      * @return Form $this

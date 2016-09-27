@@ -19,4 +19,13 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('Welcome', $content );
         $this->assertInstanceOf( Form::class, $form);
     }
+
+    public function testUseURL()
+    {
+        $form = new Form('post', 'update', 1);
+        $form->useUrl('delete', '/posts/create');
+        $value = $form->open();
+        $this->assertContains( 'action="' . home_url('/posts/create/') . '', $value );
+        $this->assertContains( 'name="_method" value="DELETE"', $value );
+    }
 }
