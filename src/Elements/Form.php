@@ -34,6 +34,12 @@ class Form
      */
     public function __construct( $resource = 'auto', $action = 'update', $itemId = null )
     {
+
+        if( is_int($action) && ! $itemId ) {
+            $itemId = $action;
+            $action = 'update';
+        }
+
         $this->resource = strtolower($resource);
         $this->action = $action;
         $this->itemId = $itemId;

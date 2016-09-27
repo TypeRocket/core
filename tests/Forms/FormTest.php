@@ -28,4 +28,36 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $this->assertContains( 'action="' . home_url('/posts/create/') . '', $value );
         $this->assertContains( 'name="_method" value="DELETE"', $value );
     }
+
+    public function testQuickForm()
+    {
+        $form = new Form('post', 1);
+        $this->assertTrue($form->getAction() == 'update' );
+        $this->assertTrue($form->getItemId() == 1 );
+        $this->assertTrue($form->getResource() == 'post' );
+    }
+
+    public function testBasicCreateForm()
+    {
+        $form = new Form('post', 'create');
+        $this->assertTrue($form->getAction() == 'create' );
+        $this->assertTrue($form->getItemId() == null);
+        $this->assertTrue($form->getResource() == 'post' );
+    }
+
+    public function testBasicDeleteForm()
+    {
+        $form = new Form('post', 'delete', 33);
+        $this->assertTrue($form->getAction() == 'delete' );
+        $this->assertTrue($form->getItemId() == 33 );
+        $this->assertTrue($form->getResource() == 'post' );
+    }
+
+    public function testBasicUpdateForm()
+    {
+        $form = new Form('post', 'update', 12);
+        $this->assertTrue($form->getAction() == 'update' );
+        $this->assertTrue($form->getItemId() == 12 );
+        $this->assertTrue($form->getResource() == 'post' );
+    }
 }
