@@ -4,6 +4,7 @@ namespace TypeRocket\Http\Responders;
 use \TypeRocket\Http\Redirect;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
+use TypeRocket\Http\Routes;
 
 class ResourceResponder extends Responder
 {
@@ -49,9 +50,7 @@ class ResourceResponder extends Responder
                 die();
             }
 
-            if( is_array($returned) ) {
-                wp_send_json($returned);
-            }
+            Routes::resultsToJson( $returned );
 
         } else {
             wp_send_json( $response->getResponseArray() );

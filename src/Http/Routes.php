@@ -2,7 +2,9 @@
 
 namespace TypeRocket\Http;
 
+use TypeRocket\Database\Results;
 use TypeRocket\Http\Responders\ResourceResponder;
+use TypeRocket\Models\Model;
 use TypeRocket\Template\View;
 use TypeRocket\Utility\Str;
 
@@ -85,9 +87,7 @@ class Routes
                 die();
             }
 
-            if( is_array($returned) ) {
-                wp_send_json($returned);
-            }
+            self::resultsToJson( $returned );
 
         } else {
             list($action, $resource) = explode('@', $handle);
@@ -100,6 +100,33 @@ class Routes
         }
 
         die();
+    }
+
+    /**
+     * Results To JSON
+     *
+     * Return a model or result object as json.
+     *
+     * @param $returned
+     */
+    public static function resultsToJson($returned)
+    {
+        $result = [];
+
+        if( $returned instanceof Model ) {
+            wp_send_json( $returned->getProperties() );
+        }
+
+        if( $returned instanceof Results ) {
+            foreach ($returned as $record) {
+                $result[] = $record->getProperties();
+            }
+            wp_send_json($result);
+        }
+
+        if( is_array($returned) ) {
+            wp_send_json($returned);
+        }
     }
 
     /**
