@@ -2,6 +2,7 @@
 
 namespace TypeRocket\Utility;
 
+use TypeRocket\Database\Query;
 use TypeRocket\Http\Response;
 
 class Validator
@@ -139,7 +140,7 @@ class Validator
     private function validateField( $handle, $value, $name ) {
         $list = explode('|', $handle);
         foreach( $list as $validation) {
-            list( $type, $option, $option2 ) = array_pad(explode(':', $validation, 3), 3, null);
+            list( $type, $option, $option2, $option3 ) = array_pad(explode(':', $validation, 4), 4, null);
             $field_name = '"<strong>' . ucwords(preg_replace('/\_|\./', ' ', $name)) . '</strong>"';
             switch($type) {
                 case 'required' :
@@ -203,7 +204,9 @@ class Validator
                     }
                     break;
                 case 'unique' :
-                    if( $this->modelClass ) {
+                    $result = null;
+
+                    if( $this->modelClass && ! $option3) {
                         /** @var \TypeRocket\Models\Model $model */
                         $model = new $this->modelClass;
                         $model->where($option, $value);
@@ -213,12 +216,23 @@ class Validator
                         }
 
                         $result = $model->first();
-                        if($result) {
-                            $this->errors[$name] =  $field_name . ' is taken.';
-                        } else {
-                            $this->passes[$name] = $value;
+                    } elseif( $option3 || ( ! $this->modelClass && $option2 ) ) {
+                        list($table, $idColumn) = array_pad(explode('@', $option2, 2), 2, null);
+                        $query = (new Query())->table($table)->where($option, $value);
+
+                        if($idColumn) {
+                            $query->where($idColumn, '!=', $option3);
                         }
+
+                        $result = $query->first();
                     }
+
+                    if($result) {
+                        $this->errors[$name] =  $field_name . ' is taken.';
+                    } else {
+                        $this->passes[$name] = $value;
+                    }
+
                     break;
             }
         }

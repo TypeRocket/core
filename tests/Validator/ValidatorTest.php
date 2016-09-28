@@ -1,6 +1,9 @@
 <?php
 namespace Validator;
 
+use TypeRocket\Database\Query;
+use TypeRocket\Models\WPPost;
+
 class ValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -159,6 +162,41 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         ], $fields);
 
         $this->assertEquals(1, count($validator->getErrors()) );
+    }
+
+    public function testUniqueFieldPasses()
+    {
+        $fields['option_name'] = 'mailserver_url';
+
+        $result = (new Query())->table('wp_options')->where('option_name', $fields['option_name'])->first();
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'option_name' => 'unique:option_name:wp_options@option_id:' . $result['option_id']
+        ], $fields);
+
+        $this->assertTrue( $validator->passed() );
+    }
+
+    public function testUniqueFieldFails()
+    {
+        $fields['option_name'] = 'mailserver_url';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'option_name' => 'unique:option_name:wp_options@option_id:0'
+        ], $fields);
+
+        $this->assertTrue( ! $validator->passed() );
+    }
+
+    public function testUniqueFieldWithModelFails()
+    {
+        $fields['title'] = 'Not an existing title';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'title' => 'unique:post_title'
+        ], $fields, WPPost::class);
+
+        $this->assertTrue( $validator->passed() );
     }
 
 }
