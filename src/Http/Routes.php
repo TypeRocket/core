@@ -20,6 +20,7 @@ class Routes
     public static $routes = [];
     public $vars = [];
     public static $request;
+    public $match = [];
 
     /**
      * Routes constructor.
@@ -27,7 +28,10 @@ class Routes
     public function __construct()
     {
         self::$request = new Request();
+    }
 
+    public function initHooks()
+    {
         if( ! is_admin() ) {
             add_filter('template_include', \Closure::bind(function( $template ) {
                 $this->route();
@@ -35,6 +39,23 @@ class Routes
             }, $this) );
         }
 
+        // parse_request, posts_selection, template_redirect
+        add_action('option_rewrite_rules', \Closure::bind(function($value) {
+            $match = $this->match;
+            $add = [];
+            if( !empty($match)) {
+                $key = $this->match[0] . '/?$';
+                if( !empty($value[$key]) ) {
+                    unset($value[$key]);
+                }
+                $add[$key] = 'tr_route_var=1';
+
+                $value = array_merge($add, $value);
+            }
+            return $value;
+        }, $this));
+
+        return $this;
     }
 
     /**
@@ -102,6 +123,8 @@ class Routes
         die();
     }
 
+
+
     /**
      * Results To JSON
      *
@@ -149,9 +172,20 @@ class Routes
     }
 
     /**
-     * Route request through registered routes if these is a match
+     * Route
      */
     public function route()
+    {
+        if( !empty($this->match)) {
+            list($path, $handle, $wilds) =$this->match;
+            $this->runRoute($path, $handle, $wilds);
+        }
+    }
+
+    /**
+     * Route request through registered routes if these is a match
+     */
+    public function detectRoute()
     {
         $requestPath = trim(self::$request->getPath(), '/');
         $routesRegistered = $this->getRegisteredRoutesByMethod( self::$request->getFormMethod() );
@@ -182,12 +216,30 @@ class Routes
                 }
 
                 if ($pathsMatch || ! empty($areWilds)) {
-                    $this->runRoute($requestPath, $handle, $args);
+                    $this->foundRoute($requestPath, $handle, $args);
                     break;
                 }
 
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Save Route If Found
+     *
+     * @param $requestPath
+     * @param $handle
+     * @param $args
+     *
+     * @return $this
+     */
+    public function foundRoute($requestPath, $handle, $args)
+    {
+        $this->match = [$requestPath, $handle, $args];
+
+        return $this;
     }
 
     /**

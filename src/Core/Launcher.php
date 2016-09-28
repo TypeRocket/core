@@ -50,7 +50,7 @@ class Launcher
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
         }
-        new Routes();
+        (new Routes())->detectRoute()->initHooks();
 
         $this->initEndpoints();
 
@@ -268,6 +268,7 @@ class Launcher
             $vars[] = 'tr_builder_group';
             $vars[] = 'tr_builder_folder';
             $vars[] = 'tr_builder_type';
+            $vars[] = 'tr_route_var';
 
             return $vars;
         } );
