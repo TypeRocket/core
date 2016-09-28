@@ -998,7 +998,7 @@ class Model
      * @return mixed
      */
     public function save( $fields = [] ) {
-        if( isset( $this->properties[$this->idColumn] ) || $this->findById($this->properties[$this->idColumn]) ) {
+        if( isset( $this->properties[$this->idColumn] ) && $this->findById($this->properties[$this->idColumn]) ) {
             return $this->update($fields);
         }
         return $this->create($fields);
