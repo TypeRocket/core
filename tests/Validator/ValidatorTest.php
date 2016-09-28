@@ -177,6 +177,39 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue( $validator->passed() );
     }
 
+    public function testUniqueFieldBasicFails()
+    {
+        $fields['option_name'] = 'mailserver_url';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'option_name' => 'unique:option_name:wp_options'
+        ], $fields);
+
+        $this->assertTrue( ! $validator->passed() );
+    }
+
+    public function testUniqueFieldBasicPlusFails()
+    {
+        $fields['option_name'] = 'mailserver_url';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'option_name' => 'unique:option_name:wp_options@option_name'
+        ], $fields);
+
+        $this->assertTrue( ! $validator->passed() );
+    }
+
+    public function testUniqueFieldBasicPasses()
+    {
+        $fields['option_name'] = 'this_is_not_an_option';
+
+        $validator = new \TypeRocket\Utility\Validator([
+            'option_name' => 'unique:option_name:wp_options'
+        ], $fields);
+
+        $this->assertTrue( $validator->passed() );
+    }
+
     public function testUniqueFieldFails()
     {
         $fields['option_name'] = 'mailserver_url';

@@ -220,7 +220,7 @@ class Validator
                         list($table, $idColumn) = array_pad(explode('@', $option2, 2), 2, null);
                         $query = (new Query())->table($table)->where($option, $value);
 
-                        if($idColumn) {
+                        if($idColumn && $option3) {
                             $query->where($idColumn, '!=', $option3);
                         }
 
