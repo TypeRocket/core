@@ -39,7 +39,6 @@ class Routes
             }, $this) );
         }
 
-        // parse_request, posts_selection, template_redirect
         add_action('option_rewrite_rules', \Closure::bind(function($value) {
             return $this->spoofRewrite($value);
         }, $this));
