@@ -41,21 +41,33 @@ class Routes
 
         // parse_request, posts_selection, template_redirect
         add_action('option_rewrite_rules', \Closure::bind(function($value) {
-            $match = $this->match;
-            $add = [];
-            if( !empty($match)) {
-                $key = $this->match[0] . '/?$';
-                if( !empty($value[$key]) ) {
-                    unset($value[$key]);
-                }
-                $add[$key] = 'tr_route_var=1';
-
-                $value = array_merge($add, $value);
-            }
-            return $value;
+            return $this->spoofRewrite($value);
         }, $this));
 
         return $this;
+    }
+
+    /**
+     * Spoof Rewrite Rules
+     *
+     * @param $value
+     *
+     * @return array
+     */
+    public function spoofRewrite( $value)
+    {
+        $match = $this->match;
+        $add = [];
+        if( !empty($match)) {
+            $key = $this->match[0] . '/?$';
+            if( !empty($value[$key]) ) {
+                unset($value[$key]);
+            }
+            $add[$key] = 'tr_route_var=1';
+
+            $value = array_merge($add, $value);
+        }
+        return $value;
     }
 
     /**
