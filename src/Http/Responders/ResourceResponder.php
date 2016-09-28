@@ -30,14 +30,7 @@ class ResourceResponder extends Responder
 
     public function response($returned, Response $response)
     {
-        global $wp_query;
-
         status_header( $response->getStatus() );
-
-        if( $response->getStatus() != 404 ) {
-            $GLOBALS['error'] = '';
-            $wp_query->is_404 = false;
-        }
 
         if( $returned && empty($_POST['_tr_ajax_request']) ) {
 
