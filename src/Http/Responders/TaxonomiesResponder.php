@@ -31,12 +31,11 @@ class TaxonomiesResponder extends Responder
             $resource = 'category';
         }
 
-        $request  = new Request( $resource, 'PUT', $args, 'update' );
+        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook );
         $response = new Response();
         $response->blockFlash();
 
         $this->runKernel($request, $response);
-
     }
 
 }

@@ -17,6 +17,7 @@ class Hook {
      */
     static public function posts($id) {
         $responder = new PostsResponder();
+        $responder->hook = true;
         $responder->respond([ 'id' => $id ]);
     }
 
@@ -27,6 +28,7 @@ class Hook {
      */
     static public function comments($id) {
         $responder = new CommentsResponder();
+        $responder->hook = true;
         $responder->respond([ 'id' => $id ]);
     }
 
@@ -37,6 +39,7 @@ class Hook {
      */
     static public function users($id) {
         $responder = new UsersResponder();
+        $responder->hook = true;
         $responder->respond([ 'id' => $id ]);
     }
 
@@ -50,6 +53,7 @@ class Hook {
     static public function taxonomies($term_id, $term_taxonomy_id, $taxonomy) {
         $responder = new TaxonomiesResponder();
         $responder->taxonomy = $taxonomy;
+        $responder->hook = true;
         $responder->respond([ 'id' => $term_id ]);
     }
 

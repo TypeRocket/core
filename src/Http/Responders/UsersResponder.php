@@ -15,7 +15,7 @@ class UsersResponder extends Responder {
      */
     public function respond( $args ) {
 
-        $request = new Request('user', 'PUT', $args, 'update');
+        $request = new Request('user', 'PUT', $args, 'update', $this->hook);
         $response = new Response();
         $response->blockFlash();
 

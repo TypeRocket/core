@@ -8,6 +8,7 @@ abstract class Responder
 {
     /** @var \TypeRocket\Http\Kernel */
     public $kernel;
+    public $hook = false;
 
     /**
      * Run the Kernel

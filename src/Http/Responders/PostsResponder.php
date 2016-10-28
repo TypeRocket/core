@@ -35,7 +35,7 @@ class PostsResponder extends Responder
             $resource = 'post';
         }
 
-        $request  = new Request( $resource, 'PUT', $args, 'update' );
+        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook );
         $response = new Response();
         $response->blockFlash();
 

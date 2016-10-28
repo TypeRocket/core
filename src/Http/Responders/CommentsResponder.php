@@ -15,7 +15,7 @@ class CommentsResponder extends Responder {
      */
     public function respond( $args ) {
 
-        $request = new Request('comment', 'PUT', $args, 'update');
+        $request = new Request('comment', 'PUT', $args, 'update', $this->hook);
         $response = new Response();
         $response->blockFlash();
 

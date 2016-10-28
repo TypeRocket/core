@@ -22,7 +22,7 @@ class ResourceResponder extends Responder
      */
     public function respond( $args )
     {
-        $request  = new Request( $this->resource, null, $args, $this->action );
+        $request  = new Request( $this->resource, null, $args, $this->action, $this->hook );
         $response = new Response();
         $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod);
         $this->response( $this->kernel->router->returned , $response);
