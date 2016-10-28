@@ -6,6 +6,7 @@ class Request
 
     private $resource = null;
     private $action = null;
+    private $hook = null;
     private $method = null;
     private $routerArgs = null;
     private $uri = null;
@@ -24,14 +25,16 @@ class Request
      * @param string $method the method PUT, POST, GET, DELETE
      * @param array $args the router args
      * @param string $action
+     * @param bool $hook
      *
      * @internal param int $id the resource ID
      */
-    public function __construct( $resource = null, $method = null, $args = null, $action = 'auto' )
+    public function __construct( $resource = null, $method = null, $args = null, $action = 'auto', $hook = false )
     {
         $this->resource = $resource;
         $this->routerArgs = $args;
         $this->action = $action;
+        $this->hook = $hook;
         $this->method = $method ? $method : $this->getFormMethod();
         $this->post   = ! empty ( $_POST ) ? wp_unslash($_POST) : null;
         $this->fields = ! empty ( $this->post['tr'] ) ? $this->post['tr'] : [];
@@ -226,6 +229,16 @@ class Request
         }
 
         return $this->fields;
+    }
+
+    /**
+     * Check if request is a hook action
+     *
+     * @return bool|null
+     */
+    public function isHook()
+    {
+        return $this->hook;
     }
 
 }
