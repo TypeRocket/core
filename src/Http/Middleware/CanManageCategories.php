@@ -14,7 +14,7 @@ class CanManageCategories extends Middleware
 
     public function handle() {
 
-        if ( ! current_user_can( 'manage_categories' ) ) {
+        if ( ! current_user_can( 'manage_categories' ) && ! $this->request->isHook() ) {
             $this->response->setError( 'auth', false );
             $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
             $this->response->exitAny(401);

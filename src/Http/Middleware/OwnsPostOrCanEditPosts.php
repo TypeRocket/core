@@ -14,13 +14,15 @@ class OwnsPostOrCanEditPosts extends Middleware
 
     public function handle() {
 
-        $post  = get_post( $this->request->getRouterArg('id') );
-        $currentUser = wp_get_current_user();
+        if( ! $this->request->isHook() ) {
+            $post  = get_post( $this->request->getRouterArg('id') );
+            $currentUser = wp_get_current_user();
 
-        if ($post->post_author != $currentUser->ID && ! current_user_can( 'edit_posts' )) {
-            $this->response->setError( 'auth', false );
-            $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
-            $this->response->exitAny(401);
+            if ($post->post_author != $currentUser->ID && ! current_user_can( 'edit_posts' )) {
+                $this->response->setError( 'auth', false );
+                $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
+                $this->response->exitAny(401);
+            }
         }
 
         $this->next->handle();

@@ -14,13 +14,15 @@ class IsUserOrCanEditUsers extends Middleware
 
     public function handle() {
 
-        $currentUser = wp_get_current_user();
-        $user  = get_user_by( 'id', $this->request->getRouterArg('id') );
+        if( ! $this->request->isHook() ) {
+            $currentUser = wp_get_current_user();
+            $user  = get_user_by( 'id', $this->request->getRouterArg('id') );
 
-        if ($user->ID != $currentUser->ID && ! current_user_can( 'edit_users' )) {
-            $this->response->setError( 'auth', false );
-            $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
-            $this->response->exitAny(401);
+            if ($user->ID != $currentUser->ID && ! current_user_can( 'edit_users' )) {
+                $this->response->setError( 'auth', false );
+                $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
+                $this->response->exitAny(401);
+            }
         }
 
         $this->next->handle();
