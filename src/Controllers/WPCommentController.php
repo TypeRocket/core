@@ -18,7 +18,7 @@ class WPCommentController extends Controller
     public function update( $id = null )
     {
         /** @var \TypeRocket\Models\Model $comments */
-        $comments = new $this->$modelClass;
+        $comments = new $this->modelClass;
 
         try {
             $comments->findById( $id )->update( $this->request->getFields() );
