@@ -49,7 +49,7 @@ class WpRestApi
      *
      * @return string
      */
-    public static function posts_search( $search, &$wp_query )
+    public static function posts_search( $search, $wp_query )
     {
         global $wpdb;
         if ( ! empty( $search ) ) {
