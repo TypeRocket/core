@@ -37,7 +37,7 @@ class Items extends Field
                 $input = $generator->newInput( 'text', $name . '[]', $value )->getString();
                 $remove = '#remove';
                 $list .= $generator->newElement( 'li', ['class' => 'item'],
-                    '<div class="move tr-icon-menu"></div><a href="'.$remove.'" class="tr-icon-remove2 remove" title="Remove Item"></a>' . $input )->getString();
+                    '<div class="move"></div><a href="'.$remove.'" class="remove" title="Remove Item"></a>' . $input )->getString();
 
             }
         }
