@@ -26,7 +26,7 @@ class Image extends Field implements ScriptField
     public function getString()
     {
         $name = $this->getNameAttributeString();
-        $this->setAttribute( 'class', 'image-picker' );
+        $this->appendStringToAttribute( 'class', 'image-picker' );
         $value = esc_attr( $this->getValue() );
 
         $this->removeAttribute( 'name' );

@@ -26,7 +26,7 @@ class Gallery extends Field implements ScriptField
     public function getString()
     {
         $name = $this->getNameAttributeString();
-        $this->setAttribute('class', 'image-picker');
+        $this->appendStringToAttribute('class', 'image-picker');
         $images = $this->getValue();
         $this->removeAttribute('name');
         $generator = new Generator();

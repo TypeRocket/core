@@ -19,7 +19,7 @@ class Items extends Field
     public function getString()
     {
         $name = $this->getNameAttributeString();
-        $this->appendStringToAttribute( 'class', ' items-list' );
+        $this->appendStringToAttribute( 'class', 'items-list' );
         $items = $this->getValue();
         $this->removeAttribute('name');
         $generator = new Generator();
