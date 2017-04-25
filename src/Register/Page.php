@@ -3,6 +3,7 @@
 namespace TypeRocket\Register;
 
 use TypeRocket\Core\Config;
+use TypeRocket\Http\Request;
 use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Elements\Icons;
@@ -15,6 +16,7 @@ class Page extends Registrable
     public $title = 'Admin Page Title';
     public $resource = 'admin';
     public $action = 'index';
+    public $actionMap = [];
     public $icon = null;
     public $pages = [];
     /** @var null|Page parent page */
@@ -407,6 +409,23 @@ class Page extends Registrable
     }
 
     /**
+     * Map Action
+     *
+     * Use to page controller actions for different request methods
+     *
+     * @param string $method use the string POST, GET, UPDATE, DELETE
+     * @param string $action use the action on the controller you want to call
+     *
+     * @return $this
+     */
+    public function mapAction($method, $action)
+    {
+        $this->actionMap[strtoupper($method)] = $action;
+
+        return $this;
+    }
+
+    /**
      * Invoked if $useController is true
      */
     public function respond()
@@ -417,6 +436,13 @@ class Page extends Registrable
             $respond = new ResourceResponder();
             $respond->setResource( $this->resource );
             $respond->setAction( $this->action );
+            $form_method = (new Request())->getFormMethod();
+            $respond->setActionMethod($form_method);
+
+            if( !empty($this->actionMap[$form_method]) ) {
+                $respond->setAction($this->actionMap[$form_method]);
+            }
+
             $args = [];
 
             if(isset($_GET)) {
