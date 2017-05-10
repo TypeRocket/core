@@ -3,7 +3,6 @@ namespace TypeRocket\Register;
 
 use TypeRocket\Core\Config;
 use TypeRocket\Elements\Icons;
-use TypeRocket\Models\WPPost;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Sanitize;
 
@@ -13,8 +12,9 @@ class PostType extends Registrable
     private $title = null;
     private $form = [];
     private $taxonomies = [];
-    private $metaBoxes = [];
     private $columns = [];
+    private $metaBoxes = [];
+    private $archiveQuery = [];
     private $icon = null;
     private $resource = null;
 
@@ -291,18 +291,99 @@ class PostType extends Registrable
     }
 
     /**
+     * @param bool|string $rest_base the REST API base path
+     *
+     * @return $this
+     */
+    public function setRest( $rest_base = false )
+    {
+        $this->args['rest_base'] = $rest_base ? $rest_base : $this->id;
+        $this->args['show_in_rest'] = true;
+
+        return $this;
+    }
+
+    /**
+     * Change The Main Archive Page Query
+     *
+     * @param array $query the query modifiers
+     *
+     * @return $this
+     */
+    public function setArchiveQuery( array $query )
+    {
+        $this->archiveQuery = $query;
+
+        return $this;
+    }
+
+    /**
+     * Set Archive Query Key
+     *
+     * @param $key
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setArchiveQueryKey($key, $value)
+    {
+        $this->archiveQuery[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get Archive Query
+     *
+     * @return array
+     */
+    public function getArchiveQuery()
+    {
+        return $this->archiveQuery;
+    }
+
+    /**
+     * Remove Archive Query Key
+     *
+     * @param $key
+     *
+     * @return $this
+     */
+    public function removeArchiveQueryKey($key)
+    {
+        if (array_key_exists($key, $this->args)) {
+            unset($this->archiveQuery[$key]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Show Number Of Items On Archive Page
+     *
+     * @param int $number
+     *
+     * @return $this
+     */
+    public function setArchivePostsPerPage( $number = -1)
+    {
+        $this->archiveQuery['posts_per_page'] = $number;
+
+        return $this;
+    }
+
+    /**
      * Add Field Column To Admin Table
      *
      * @param string|null $field the name of the field
      * @param bool $sort make column sortable
      * @param string|null $label the label for the table header
      * @param callback|null $callback the function used to display the field data
-     * @param bool $string is the column a string or number
+     * @param bool $is_string is the column a string or number
+     *
+     * @return $this
      */
-    public function addFieldColumn($field, $sort = false, $label = null, $callback = null, $string = true) {
-        $pt = $this->id;
-
-        // set defaults
+    public function addFieldColumn($field, $sort = false, $label = null, $callback = null, $is_string = true) {
         if( ! $label ) { $label = $field; }
         $field = Sanitize::underscore( $field );
         if( ! $callback ) {
@@ -311,54 +392,24 @@ class PostType extends Registrable
             };
         }
 
-        add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($field, $label) {
-            $columns[$field] = $label;
-            return $columns;
-        });
+        $this->columns[] = [
+            'field' => $field,
+            'sort' => $sort,
+            'label' => $label,
+            'callback' => $callback,
+            'is_string' => $is_string
+        ];
 
-        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($field, $callback) {
-            global $post;
+        return $this;
+    }
 
-            if($column == $field) {
-                $data = [
-                    'column' => $column,
-                    'field' => $field,
-                    'post' => $post,
-                    'post_id' => $post_id
-                ];
-                $post_temp = (new WPPost());
-                $value = $post_temp->setProperty($post_temp->getIdColumn(), $post_id)->getBaseFieldValue($field);
-                call_user_func_array($callback, [$value, $data]);
-            }
-
-        }, 10, 2);
-
-        if($sort) {
-            add_filter( "manage_edit-{$pt}_sortable_columns", function() use ($field) {
-                $columns[$field] = $field;
-                return $columns;
-            } );
-
-            add_action( 'load-edit.php', function() use ($pt, $field, $string) {
-                add_filter( 'request', function( $vars ) use ($pt, $field, $string) {
-                    if ( isset( $vars['post_type'] ) && $pt == $vars['post_type'] ) {
-                        if ( isset( $vars['orderby'] ) && $field == $vars['orderby'] ) {
-                            $new_vars = [ 'orderby' => $field ];
-
-                            if( ! in_array($field, (new WPPost())->getBuiltinFields())) {
-                                $new_vars['meta_key'] = $field;
-                                if(!$string) { $new_vars['orderby'] = 'meta_value_num';  }
-                            }
-
-                            $vars = array_merge( $vars, $new_vars );
-                        }
-                    }
-
-                    return $vars;
-                });
-            } );
-        }
-
+    /**
+     * Get Admin Page Table Columns
+     *
+     * @return array
+     */
+    public function getColumns() {
+        return $this->columns;
     }
 
     /**
