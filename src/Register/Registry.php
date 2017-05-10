@@ -308,11 +308,40 @@ class Registry
                     add_filter( 'request', function( $vars ) use ($pt, $new_column) {
                         if ( isset( $vars['post_type'] ) && $pt == $vars['post_type'] ) {
                             if ( isset( $vars['orderby'] ) && $new_column['field'] == $vars['orderby'] ) {
-                                $new_vars = [ 'orderby' => $new_column['field'] ];
 
                                 if( ! in_array($new_column['field'], (new WPPost())->getBuiltinFields())) {
+                                    if(!empty($new_column['order_by'])) {
+
+                                        switch($new_column['order_by']) {
+                                            case 'number':
+                                            case 'num':
+                                            case 'int':
+                                                $new_vars['orderby'] = 'meta_value_num';
+                                                break;
+                                            case 'decimal':
+                                            case 'double':
+                                                $new_vars['orderby'] = 'meta_value_decimal';
+                                                break;
+                                            case 'date':
+                                                $new_vars['orderby'] = 'meta_value_date';
+                                                break;
+                                            case 'datetime':
+                                                $new_vars['orderby'] = 'meta_value_datetime';
+                                                break;
+                                            case 'time':
+                                                $new_vars['orderby'] = 'meta_value_time';
+                                                break;
+                                            case 'string':
+                                            case 'str':
+                                                break;
+                                            default:
+                                                $new_vars['orderby'] = $new_column['order_by'];
+                                                break;
+                                        }
+                                    }
                                     $new_vars['meta_key'] = $new_column['field'];
-                                    if(!$new_column['is_string']) { $new_vars['orderby'] = 'meta_value_num';  }
+                                } else {
+                                    $new_vars = [ 'orderby' => $new_column['field'] ];
                                 }
 
                                 $vars = array_merge( $vars, $new_vars );

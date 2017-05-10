@@ -379,11 +379,11 @@ class PostType extends Registrable
      * @param bool $sort make column sortable
      * @param string|null $label the label for the table header
      * @param callback|null $callback the function used to display the field data
-     * @param bool $is_string is the column a string or number
+     * @param string $order_by is the column a string or number
      *
      * @return $this
      */
-    public function addColumn($field, $sort = false, $label = null, $callback = null, $is_string = true) {
+    public function addColumn($field, $sort = false, $label = null, $callback = null, $order_by = '') {
         if( ! $label ) { $label = $field; }
         $field = Sanitize::underscore( $field );
         if( ! $callback ) {
@@ -397,7 +397,7 @@ class PostType extends Registrable
             'sort' => $sort,
             'label' => $label,
             'callback' => $callback,
-            'is_string' => $is_string
+            'order_by' => $order_by
         ];
 
         return $this;
