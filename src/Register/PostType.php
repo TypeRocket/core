@@ -3,6 +3,7 @@ namespace TypeRocket\Register;
 
 use TypeRocket\Core\Config;
 use TypeRocket\Elements\Icons;
+use TypeRocket\Models\WPPost;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Sanitize;
 
@@ -13,6 +14,7 @@ class PostType extends Registrable
     private $form = [];
     private $taxonomies = [];
     private $metaBoxes = [];
+    private $columns = [];
     private $icon = null;
     private $resource = null;
 
@@ -279,6 +281,87 @@ class PostType extends Registrable
     }
 
     /**
+     * Get the rewrite slug
+     *
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->args['rewrite']['slug'];
+    }
+
+    /**
+     * Add Field Column To Admin Table
+     *
+     * @param string|null $field the name of the field
+     * @param bool $sort make column sortable
+     * @param string|null $label the label for the table header
+     * @param callback|null $callback the function used to display the field data
+     * @param bool $string is the column a string or number
+     */
+    public function addFieldColumn($field, $sort = false, $label = null, $callback = null, $string = true) {
+        $pt = $this->id;
+
+        // set defaults
+        if( ! $label ) { $label = $field; }
+        $field = Sanitize::underscore( $field );
+        if( ! $callback ) {
+            $callback = function($value) {
+                echo $value;
+            };
+        }
+
+        add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($field, $label) {
+            $columns[$field] = $label;
+            return $columns;
+        });
+
+        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($field, $callback) {
+            global $post;
+
+            if($column == $field) {
+                $data = [
+                    'column' => $column,
+                    'field' => $field,
+                    'post' => $post,
+                    'post_id' => $post_id
+                ];
+                $post_temp = (new WPPost());
+                $value = $post_temp->setProperty($post_temp->getIdColumn(), $post_id)->getBaseFieldValue($field);
+                call_user_func_array($callback, [$value, $data]);
+            }
+
+        }, 10, 2);
+
+        if($sort) {
+            add_filter( "manage_edit-{$pt}_sortable_columns", function() use ($field) {
+                $columns[$field] = $field;
+                return $columns;
+            } );
+
+            add_action( 'load-edit.php', function() use ($pt, $field, $string) {
+                add_filter( 'request', function( $vars ) use ($pt, $field, $string) {
+                    if ( isset( $vars['post_type'] ) && $pt == $vars['post_type'] ) {
+                        if ( isset( $vars['orderby'] ) && $field == $vars['orderby'] ) {
+                            $new_vars = [ 'orderby' => $field ];
+
+                            if( ! in_array($field, (new WPPost())->getBuiltinFields())) {
+                                $new_vars['meta_key'] = $field;
+                                if(!$string) { $new_vars['orderby'] = 'meta_value_num';  }
+                            }
+
+                            $vars = array_merge( $vars, $new_vars );
+                        }
+                    }
+
+                    return $vars;
+                });
+            } );
+        }
+
+    }
+
+    /**
      * Set the post type to only show in WordPress Admin
      *
      * @return $this
@@ -289,16 +372,6 @@ class PostType extends Registrable
         $this->args['show_ui'] = true;
 
         return $this;
-    }
-
-    /**
-     * Get the rewrite slug
-     *
-     * @return mixed
-     */
-    public function getSlug()
-    {
-        return $this->args['rewrite']['slug'];
     }
 
     /**

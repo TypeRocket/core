@@ -294,6 +294,10 @@ class WPPost extends Model
         return $this->getValueOrNull($data);
     }
 
+    public function getBuiltinFields() {
+        return $this->builtin;
+    }
+
     public function slashBuiltinFields( $builtin ) {
 
         $fields = [
