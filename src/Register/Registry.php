@@ -310,7 +310,7 @@ class Registry
                             if ( isset( $vars['orderby'] ) && $new_column['field'] == $vars['orderby'] ) {
                                 $new_vars = [ 'orderby' => $new_column['field'] ];
 
-                                if( ! in_array($field, (new WPPost())->getBuiltinFields())) {
+                                if( ! in_array($new_column['field'], (new WPPost())->getBuiltinFields())) {
                                     $new_vars['meta_key'] = $new_column['field'];
                                     if(!$new_column['is_string']) { $new_vars['orderby'] = 'meta_value_num';  }
                                 }
