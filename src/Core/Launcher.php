@@ -218,7 +218,7 @@ class Launcher
             if ($pt != 'attachment' && $pt != 'page' && $pt != 'post') :
                 $obj      = get_post_type_object( $pt );
                 $singular = strtolower($obj->labels->singular_name);
-                $plural = strtolower($obj->labels->name);
+                $plural   = strtolower($obj->labels->name);
 
                 $bulk_messages[$pt] = array(
                     'updated'   => _n( "%s {$singular} updated.", "%s {$plural} updated.", $bulk_counts["updated"] ),

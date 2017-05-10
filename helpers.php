@@ -500,6 +500,17 @@ function str_contains( $needle, $subject ) {
 }
 }
 
+if( ! function_exists('dd') ) {
+    /**
+     * Die and Dump Vars
+     *
+     * @param $param
+     */
+    function dd($param) {
+        \TypeRocket\Utility\Debug::dd(func_get_args());
+    }
+}
+
 if( ! function_exists('tr_query') ) {
     /**
      * Database Query
