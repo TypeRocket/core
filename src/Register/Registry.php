@@ -269,8 +269,12 @@ class Registry
         $new_columns = $post_type->getColumns();
 
         add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($new_columns) {
-            foreach ($new_columns as $new_column) {
-                $columns[$new_column['field']] = $new_column['label'];
+            foreach ($new_columns as $key => $new_column) {
+                if($new_column == false && array_key_exists($key, $columns)) {
+                    unset($columns[$key]);
+                } else {
+                    $columns[$new_column['field']] = $new_column['label'];
+                }
             }
 
             return $columns;
@@ -280,7 +284,7 @@ class Registry
             global $post;
 
             foreach ($new_columns as $new_column) {
-                if($column == $new_column['field']) {
+                if(!empty($new_column['field']) && $column == $new_column['field']) {
                     $data = [
                         'column' => $column,
                         'field' => $new_column['field'],
@@ -298,7 +302,7 @@ class Registry
         }, 10, 2);
 
         foreach ($new_columns as $new_column) {
-            if($new_column['sort']) {
+            if(!empty($new_column['sort'])) {
                 add_filter( "manage_edit-{$pt}_sortable_columns", function() use ($new_column) {
                     $columns[$new_column['field']] = $new_column['field'];
                     return $columns;

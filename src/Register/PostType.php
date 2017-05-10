@@ -392,13 +392,27 @@ class PostType extends Registrable
             };
         }
 
-        $this->columns[] = [
+        $this->columns[$field] = [
             'field' => $field,
             'sort' => $sort,
             'label' => $label,
             'callback' => $callback,
             'order_by' => $order_by
         ];
+
+        return $this;
+    }
+
+    /**
+     * Remove Column
+     *
+     * @param $field
+     *
+     * @return $this
+     */
+    public function removeColumn($field)
+    {
+        $this->columns[$field] = false;
 
         return $this;
     }
