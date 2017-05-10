@@ -69,6 +69,7 @@ class Launcher
         };
 
         add_action( 'post_updated_messages', [$this, 'setMessages']);
+        add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
         add_action( 'edit_user_profile', $useContent );
         add_action( 'show_user_profile', $useContent );
         add_action( 'admin_init', [$this, 'addCss']);
@@ -199,6 +200,36 @@ class Launcher
         endif;
 
         return $messages;
+    }
+
+    /**
+     * Set custom post type bulk messages to make more since.
+     *
+     * @param $bulk_messages
+     * @param $bulk_counts
+     *
+     * @return mixed
+     */
+    public function setBulkMessages($bulk_messages, $bulk_counts)
+    {
+            global $post;
+            $pt = get_post_type( $post->ID );
+
+            if ($pt != 'attachment' && $pt != 'page' && $pt != 'post') :
+                $obj      = get_post_type_object( $pt );
+                $singular = strtolower($obj->labels->singular_name);
+                $plural = strtolower($obj->labels->name);
+
+                $bulk_messages[$pt] = array(
+                    'updated'   => _n( "%s {$singular} updated.", "%s {$plural} updated.", $bulk_counts["updated"] ),
+                    'locked'    => _n( "%s {$singular} not updated, somebody is editing it.", "%s {$plural} not updated, somebody is editing them.", $bulk_counts["locked"] ),
+                    'deleted'   => _n( "%s {$singular} permanently deleted.", "%s {$plural} permanently deleted.", $bulk_counts["deleted"] ),
+                    'trashed'   => _n( "%s {$singular} moved to the Trash.", "%s {$plural} moved to the Trash.", $bulk_counts["trashed"] ),
+                    'untrashed' => _n( "%s {$singular} restored from the Trash.", "%s {$plural} restored from the Trash.", $bulk_counts["untrashed"] ),
+                );
+            endif;
+
+            return $bulk_messages;
     }
 
     /**
