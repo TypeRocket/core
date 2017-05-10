@@ -373,7 +373,7 @@ class PostType extends Registrable
     }
 
     /**
-     * Add Field Column To Admin Table
+     * Add Column To Admin Table
      *
      * @param string|null $field the name of the field
      * @param bool $sort make column sortable
@@ -383,7 +383,7 @@ class PostType extends Registrable
      *
      * @return $this
      */
-    public function addFieldColumn($field, $sort = false, $label = null, $callback = null, $is_string = true) {
+    public function addColumn($field, $sort = false, $label = null, $callback = null, $is_string = true) {
         if( ! $label ) { $label = $field; }
         $field = Sanitize::underscore( $field );
         if( ! $callback ) {
