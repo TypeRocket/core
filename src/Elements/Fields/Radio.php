@@ -54,4 +54,16 @@ class Radio extends Field
         return $field;
     }
 
+/**
+     * Set default value
+     *
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function setDefault( $value = '' ) {
+        $this->setSetting('default', $value);
+
+        return $this;
+    }
 }
