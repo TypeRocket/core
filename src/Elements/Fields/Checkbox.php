@@ -59,4 +59,16 @@ class Checkbox extends Field
         return $this;
     }
 
+    /**
+     * Set default value
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function setDefault( $bool = '' ) {
+        $this->setSetting('default', $bool);
+
+        return $this;
+    }
 }
