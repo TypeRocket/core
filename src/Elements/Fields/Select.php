@@ -65,5 +65,16 @@ class Select extends Field
 
         return $generator->getString();
     }
+/**
+     * Set default value
+     *
+     * @param string $string
+     *
+     * @return $this
+     */
+    public function setDefault( $string = '' ) {
+        $this->setSetting('default', $string);
 
+        return $this;
+    }
 }

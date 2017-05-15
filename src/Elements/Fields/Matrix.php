@@ -305,4 +305,16 @@ class Matrix extends Field implements ScriptField {
         return $this;
     }
 
+/**
+     * Set default value
+     *
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function setDefault( $value = '' ) {
+        $this->setSetting('default', $value);
+
+        return $this;
+    }
 }
