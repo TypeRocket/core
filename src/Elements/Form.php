@@ -537,6 +537,16 @@ class Form
             if($field instanceof Field) {
                 $clone_field = clone $field;
                 $html .= (string) $clone_field->configureToForm($this);
+            } if($field instanceof FieldRow) {
+                $row = $field;
+                foreach ($row->fields as $key => $row_field) {
+                    if($row_field instanceof Field) {
+                        $row_field = clone $row_field;
+                        $row_field->configureToForm($this);
+                        $row->fields[$key] = $row_field;
+                    }
+                }
+                $html .= (string) $row;
             } elseif(is_array($field) && count($field) > 1) {
                 $function   = array_shift( $field );
                 $parameters = array_pop( $field );
