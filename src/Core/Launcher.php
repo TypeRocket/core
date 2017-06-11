@@ -213,6 +213,8 @@ class Launcher
     public function setBulkMessages($bulk_messages, $bulk_counts)
     {
             global $post;
+            if(empty($post)) { return $bulk_messages; }
+
             $pt = get_post_type( $post->ID );
 
             if ($pt != 'attachment' && $pt != 'page' && $pt != 'post') :
