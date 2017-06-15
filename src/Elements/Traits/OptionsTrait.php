@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Elements\Traits;
 
+use TypeRocket\Models\Model;
+
 trait OptionsTrait
 {
     protected $options = [];
@@ -84,6 +86,20 @@ trait OptionsTrait
     {
         if ( array_key_exists( $key, $this->options ) ) {
             unset( $this->options[ $key ] );
+        }
+
+        return $this;
+    }
+
+    public function setModelOptions(Model $model, $key_name, $value_name = null)
+    {
+        $options = clone $model->findAll()->get();
+
+        foreach ($options as $option) {
+            if(!$value_name) {
+                $value_name = $model->getIdColumn();
+            }
+            $this->options[$option->{$key_name}] = $option->{$value_name};
         }
 
         return $this;

@@ -23,7 +23,12 @@ class Select extends Field
     public function getString()
     {
         $default = $this->getSetting('default');
-        $this->setAttribute('name', $this->getNameAttributeString());
+        $name = $this->getNameAttributeString();
+        if( $this->getAttribute('multiple') ) {
+            $name = $name . '[]';
+        }
+
+        $this->setAttribute('name', $name);
         $option = $this->getValue();
         $option = ! is_null($option) ? $option : $default;
 
@@ -39,7 +44,10 @@ class Select extends Field
 
                 foreach($value as $k => $v) {
                     $attr['value'] = $v;
-                    if ( $option == $v && isset($option) ) {
+
+                    if(is_array($option) && in_array($v, $option)) {
+                        $attr['selected'] = 'selected';
+                    } elseif ( !is_array($option) && $option == $v && isset($option) ) {
                         $attr['selected'] = 'selected';
                     } else {
                         unset( $attr['selected'] );
@@ -52,7 +60,9 @@ class Select extends Field
 
             } else {
                 $attr['value'] = $value;
-                if ( $option == $value && isset($option) ) {
+                if(is_array($option) && in_array($value, $option)) {
+                    $attr['selected'] = 'selected';
+                } elseif ( !is_array($option) && $option == $value && isset($option) ) {
                     $attr['selected'] = 'selected';
                 } else {
                     unset( $attr['selected'] );
@@ -65,7 +75,8 @@ class Select extends Field
 
         return $generator->getString();
     }
-/**
+
+    /**
      * Set default value
      *
      * @param string $string
