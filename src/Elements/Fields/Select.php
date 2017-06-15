@@ -88,4 +88,14 @@ class Select extends Field
 
         return $this;
     }
+
+    /**
+     * Make select multiple
+     *
+     * @return $this
+     */
+    public function multiple()
+    {
+        return $this->setAttribute('multiple', 'multiple');
+    }
 }

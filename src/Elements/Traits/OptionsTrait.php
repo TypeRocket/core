@@ -91,6 +91,15 @@ trait OptionsTrait
         return $this;
     }
 
+    /**
+     * Set Options from Model
+     *
+     * @param \TypeRocket\Models\Model $model
+     * @param string $key_name name of the field column to use as key
+     * @param null|string $value_name name of the field column to use as value
+     *
+     * @return $this
+     */
     public function setModelOptions(Model $model, $key_name, $value_name = null)
     {
         $options = clone $model->findAll()->get();
