@@ -37,6 +37,20 @@ class Routes
                 $this->route();
                 return $template;
             }, $this) );
+
+            add_filter( 'posts_request', function($sql, $q) {
+                if ( $q->is_main_query() && !empty($q->query['tr_route_var']) ) {
+                    // disable row count
+                    $q->query_vars['no_found_rows'] = true;
+
+                    // disable cache
+                    $q->query_vars['cache_results'] = false;
+                    $q->query_vars['update_post_meta_cache'] = false;
+                    $q->query_vars['update_post_term_cache'] = false;
+                    return false;
+                }
+                return $sql;
+            }, 10, 3 );
         }
 
         add_action('option_rewrite_rules', \Closure::bind(function($value) {
@@ -58,11 +72,11 @@ class Routes
         $match = $this->match;
         $add = [];
         if( !empty($match)) {
-            $key = $this->match[0] . '/?$';
+            $key = '^' . $this->match[0] . '/?$';
             if( !empty($value[$key]) ) {
                 unset($value[$key]);
             }
-            $add[$key] = 'tr_route_var=1';
+            $add[$key] = 'index.php?tr_route_var=1';
 
             $value = array_merge($add, $value);
         }
