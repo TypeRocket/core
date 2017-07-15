@@ -8,6 +8,8 @@ class Tabs
 
     private $tabs = [];
     private $sidebar = null;
+    public $iconAppend = '<i class="tr-icon-';
+    public $iconPrepend = '"></i> ';
 
     /**
      * Gets the help tabs registered for the screen.
@@ -51,11 +53,9 @@ class Tabs
      * - string   - content  - Help tab content in plain text or HTML. Optional.
      * - callback - callback - A callback to generate the tab content. Optional.
      *
-     * @param array $content the content if settings is not an array
-     *
      * @return $this
      */
-    public function addTab( $settings, $content = null )
+    public function addTab( $settings, $content = null, $icon = false )
     {
 
         if( ! is_array($settings)) {
@@ -64,6 +64,7 @@ class Tabs
             $settings['id'] = Sanitize::underscore($args[0]);
             $settings['title'] = $args[0];
             $settings['content'] = $args[1];
+            $settings['icon'] = !empty($args[2]) ? $args[2] : false;
         }
 
         $this->addTabFromArray($settings);
@@ -81,6 +82,7 @@ class Tabs
         $defaults = [
             'title'    => false,
             'id'       => false,
+            'icon'       => false,
             'content'  => '',
             'callback' => false,
             'url'      => false
@@ -186,6 +188,26 @@ class Tabs
     }
 
     /**
+     * Get Icon HTML
+     *
+     * @param $tab
+     *
+     * @return string
+     */
+    private function getIconHtml($tab) {
+        $iconHtml = '';
+
+        if(! empty($tab['icon'])) {
+            $iconInstance = new Icons();
+            if(array_key_exists($tab['icon'], $iconInstance->icons)) {
+                $iconHtml = $this->iconAppend . $tab['icon'] . $this->iconPrepend ;
+            }
+        }
+
+        return $iconHtml;
+    }
+
+    /**
      * Tabs at the top
      */
     private function topStyleTabs()
@@ -203,12 +225,13 @@ class Tabs
                     $class = ' class="active"';
                     $tabs  = $this->getTabs();
                     foreach ($tabs as $tab) :
+                        $icon = $this->getIconHtml($tab);
                         $link_id = "tab-link-{$tab['id']}";
                         $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
                         ?>
                         <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class; ?>>
                             <a href="<?php echo esc_url( "$panel_id" ); ?>">
-                                <?php echo esc_html( $tab['title'] ); ?>
+                                <?php echo $icon . esc_html( $tab['title'] ); ?>
                             </a>
                         </li>
                         <?php
@@ -277,12 +300,13 @@ class Tabs
                             $class = ' class="active"';
                             $tabs  = $this->getTabs();
                             foreach ($tabs as $tab) :
+                                $icon = $this->getIconHtml($tab);
                                 $link_id = "tab-link-{$tab['id']}";
                                 $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
                                 ?>
                                 <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class; ?>>
                                     <a href="<?php echo esc_url( "$panel_id" ); ?>">
-                                        <?php echo esc_html( $tab['title'] ); ?>
+                                        <?php echo $icon . esc_html( $tab['title'] ); ?>
                                     </a>
                                 </li>
                                 <?php
