@@ -53,6 +53,9 @@ class Tabs
      * - string   - content  - Help tab content in plain text or HTML. Optional.
      * - callback - callback - A callback to generate the tab content. Optional.
      *
+     * @param null|string|callback $content
+     * @param bool $icon
+     *
      * @return $this
      */
     public function addTab( $settings, $content = null, $icon = false )
@@ -63,7 +66,13 @@ class Tabs
             $settings = [];
             $settings['id'] = Sanitize::underscore($args[0]);
             $settings['title'] = $args[0];
-            $settings['content'] = $args[1];
+
+            if( !is_callable($args[1]) ) {
+                $settings['content'] = $args[1];
+            } else {
+                $settings['callback'] = $args[1];
+            }
+
             $settings['icon'] = !empty($args[2]) ? $args[2] : false;
         }
 
@@ -243,7 +252,13 @@ class Tabs
 
             <?php if ($help_sidebar) : ?>
                 <div class="tabbed-sidebar">
-                    <?php echo $help_sidebar; ?>
+                    <?php
+                    if (is_callable($help_sidebar)) {
+                        call_user_func($help_sidebar);
+                    } else {
+                        echo $help_sidebar;
+                    }
+                    ?>
                 </div>
             <?php endif; ?>
 
@@ -318,7 +333,13 @@ class Tabs
 
                     <?php if ($help_sidebar) : ?>
                         <div class="contextual-help-sidebar">
-                            <?php echo $help_sidebar; ?>
+                            <?php
+                            if (is_callable($help_sidebar)) {
+                                call_user_func($help_sidebar);
+                            } else {
+                                echo $help_sidebar;
+                            }
+                            ?>
                         </div>
                     <?php endif; ?>
 

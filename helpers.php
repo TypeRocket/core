@@ -396,6 +396,16 @@ function tr_frontend()
 }
 }
 
+if( ! function_exists('tr_ssl') ) {
+    /**
+     * SSL
+     */
+    function tr_ssl()
+    {
+        return new TypeRocket\Http\SSL();
+    }
+}
+
 if( ! function_exists('tr_redirect') ) {
 /**
  * @return \TypeRocket\Http\Redirect
