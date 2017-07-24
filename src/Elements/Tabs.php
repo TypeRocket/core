@@ -11,6 +11,7 @@ class Tabs
     public $iconAppend = '<i class="tr-icon-';
     public $iconPrepend = '"></i> ';
     public $form;
+    public $bind = false;
 
     /**
      * Gets the help tabs registered for the screen.
@@ -34,7 +35,6 @@ class Tabs
     public function setTabs( $tabs )
     {
         $this->tabs = $tabs;
-
         return $this;
     }
 
@@ -48,6 +48,19 @@ class Tabs
     public function setForm( Form $form )
     {
         $this->form = $form;
+        return $this;
+    }
+
+    /**
+     * Bind Callbacks to Tabs Instance
+     *
+     * @param bool $bind
+     *
+     * @return $this
+     */
+    public function bindCallbacks($bind = true)
+    {
+        $this->bind = $bind;
         return $this;
     }
 
@@ -165,7 +178,7 @@ class Tabs
         $settings['id'] = sanitize_html_class( $settings['id'] );
 
         // Bind callback to tab
-        if($settings['callback']) {
+        if($settings['callback'] && $this->bind) {
             $settings['callback'] = \Closure::bind($settings['callback'], $this);
         }
 
