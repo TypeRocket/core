@@ -538,7 +538,7 @@ class Form
                 $clone_field = clone $field;
                 $html .= (string) $clone_field->configureToForm($this);
             } if($field instanceof FieldRow) {
-                $row = $field;
+                $row = clone $field;
                 foreach ($row->fields as $key => $row_field) {
                     if($row_field instanceof Field) {
                         $row_field = clone $row_field;
