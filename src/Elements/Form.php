@@ -537,7 +537,7 @@ class Form
             if($field instanceof Field) {
                 $clone_field = clone $field;
                 $html .= (string) $clone_field->configureToForm($this);
-            } if($field instanceof FieldRow) {
+            } elseif($field instanceof FieldRow) {
                 $row = clone $field;
                 foreach ($row->fields as $key => $row_field) {
                     if($row_field instanceof Field) {
@@ -547,7 +547,26 @@ class Form
                     }
                 }
                 $html .= (string) $row;
-            } elseif(is_array($field) && count($field) > 1) {
+            } elseif($field instanceof Tabs) {
+                $tab = clone $field;
+                $buf = tr_buffer()->startBuffer();
+                $tabs = $tab->setForm($this);
+                $_tabs = $tabs->getTabs();
+                foreach ($_tabs as $key => $tab) {
+                    if(!empty($tab['options'])) {
+                        foreach ($tab['options'] as $i_key => $option) {
+                            if($option instanceof Field) {
+                                $option_field = clone $option;
+                                $option_field->configureToForm($this);
+                                $_tabs[$key]['options'][$i_key] = $option_field;
+                            }
+                        }
+                    }
+                }
+                $tabs->setTabs($_tabs)->uidTabs()->render();
+                $html .= (string) $buf->getCurrent();
+                $buf = $field = null;
+            }  elseif(is_array($field) && count($field) > 1) {
                 $function   = array_shift( $field );
                 $parameters = array_pop( $field );
 
