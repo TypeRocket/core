@@ -10,6 +10,7 @@ class Tabs
     private $sidebar = null;
     public $iconAppend = '<i class="tr-icon-';
     public $iconPrepend = '"></i> ';
+    public $form;
 
     /**
      * Gets the help tabs registered for the screen.
@@ -21,6 +22,69 @@ class Tabs
     public function getTabs()
     {
         return $this->tabs;
+    }
+
+    /**
+     * Set Tabs
+     *
+     * @param $tabs
+     *
+     * @return $this
+     */
+    public function setTabs( $tabs )
+    {
+        $this->tabs = $tabs;
+
+        return $this;
+    }
+
+    /**
+     * Set Form
+     *
+     * @param \TypeRocket\Elements\Form $form
+     *
+     * @return $this
+     */
+    public function setForm( Form $form )
+    {
+        $this->form = $form;
+        return $this;
+    }
+
+    /**
+     * Set Tab Options
+     *
+     * Use this option to add custom fields to a tab. This is
+     * the only way to add tabs into repeaters with fields.
+     *
+     * @param $id
+     * @param array $options
+     *
+     * @return $this
+     */
+    public function setTabOptions( $id, array $options )
+    {
+        $this->tabs[Sanitize::underscore($id)]['options'] = $options;
+        return $this;
+    }
+
+    /**
+     * Update Tabs IDs
+     *
+     * If you need some tabs to share the same ID you can use
+     * this function to do so.
+     *
+     * @return $this
+     */
+    public function uidTabs()
+    {
+        foreach ($this->tabs as &$tab) {
+            $uid = uniqid();
+            $tab['id'] .= '-tab-uid-' . $uid;
+            $tab['uid'] = $uid;
+        }
+
+        return $this;
     }
 
     /**
@@ -67,9 +131,9 @@ class Tabs
             $settings['id'] = Sanitize::underscore($args[0]);
             $settings['title'] = $args[0];
 
-            if( !is_callable($args[1]) ) {
+            if(!empty($args[1]) &&  !is_callable($args[1]) ) {
                 $settings['content'] = $args[1];
-            } else {
+            } elseif(!empty($args[1]) && is_callable($args[1])) {
                 $settings['callback'] = $args[1];
             }
 
@@ -99,6 +163,11 @@ class Tabs
         $settings     = wp_parse_args( $settings, $defaults );
 
         $settings['id'] = sanitize_html_class( $settings['id'] );
+
+        // Bind callback to tab
+        if($settings['callback']) {
+            $settings['callback'] = \Closure::bind($settings['callback'], $this);
+        }
 
         // Ensure we have an ID and title.
         if ( ! $settings['id'] || ! $settings['title']) {
@@ -237,8 +306,9 @@ class Tabs
                         $icon = $this->getIconHtml($tab);
                         $link_id = "tab-link-{$tab['id']}";
                         $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
+                        $data_uid = ( ! empty( $tab['uid'] ) ) ? " data-uid=\"{$tab['uid']}\"" : '';
                         ?>
-                        <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class; ?>>
+                        <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class . $data_uid; ?>>
                             <a href="<?php echo esc_url( "$panel_id" ); ?>">
                                 <?php echo $icon . esc_html( $tab['title'] ); ?>
                             </a>
@@ -277,6 +347,13 @@ class Tabs
                         // If it exists, fire tab callback.
                         if ( ! empty( $tab['callback'] )) {
                             call_user_func_array( $tab['callback'], [$this, $tab]);
+                        }
+
+                        // Tab options
+                        if ( ! empty( $tab['options'] )) {
+                            foreach ($tab['options'] as $option) {
+                                echo $option;
+                            }
                         }
                         ?>
                     </div>
@@ -318,8 +395,9 @@ class Tabs
                                 $icon = $this->getIconHtml($tab);
                                 $link_id = "tab-link-{$tab['id']}";
                                 $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
+                                $data_uid = ( ! empty( $tab['uid'] ) ) ? " data-uid=\"{$tab['uid']}\"" : '';
                                 ?>
-                                <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class; ?>>
+                                <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class . $data_uid; ?>>
                                     <a href="<?php echo esc_url( "$panel_id" ); ?>">
                                         <?php echo $icon . esc_html( $tab['title'] ); ?>
                                     </a>
@@ -358,6 +436,13 @@ class Tabs
                                 // If it exists, fire tab callback.
                                 if ( ! empty( $tab['callback'] )) {
                                     call_user_func_array( $tab['callback'], [$this, $tab]);
+                                }
+
+                                // Tab options
+                                if ( ! empty( $tab['options'] )) {
+                                    foreach ($tab['options'] as $option) {
+                                        echo $option;
+                                    }
                                 }
                                 ?>
                             </div>
