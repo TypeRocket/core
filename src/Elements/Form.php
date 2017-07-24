@@ -553,12 +553,12 @@ class Form
                 $tabs = $tab->setForm($this);
                 $_tabs = $tabs->getTabs();
                 foreach ($_tabs as $key => $tab) {
-                    if(!empty($tab['options'])) {
-                        foreach ($tab['options'] as $i_key => $option) {
+                    if(!empty($tab['fields'])) {
+                        foreach ($tab['fields'] as $i_key => $option) {
                             if($option instanceof Field) {
                                 $option_field = clone $option;
                                 $option_field->configureToForm($this);
-                                $_tabs[$key]['options'][$i_key] = $option_field;
+                                $_tabs[$key]['fields'][$i_key] = $option_field;
                             }
                         }
                     }
