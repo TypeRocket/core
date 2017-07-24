@@ -65,19 +65,19 @@ class Tabs
     }
 
     /**
-     * Set Tab Options
+     * Set Tab Fields
      *
      * Use this option to add custom fields to a tab. This is
      * the only way to add tabs into repeaters with fields.
      *
-     * @param $id
-     * @param array $options
+     * @param string $id must be the same as the tab ID
+     * @param array $fields list of fields to be used
      *
      * @return $this
      */
-    public function setTabOptions( $id, array $options )
+    public function setTabFields( $id, array $fields )
     {
-        $this->tabs[Sanitize::underscore($id)]['options'] = $options;
+        $this->tabs[Sanitize::underscore($id)]['fields'] = $fields;
         return $this;
     }
 
@@ -362,9 +362,9 @@ class Tabs
                             call_user_func_array( $tab['callback'], [$this, $tab]);
                         }
 
-                        // Tab options
-                        if ( ! empty( $tab['options'] )) {
-                            foreach ($tab['options'] as $option) {
+                        // Tab fields
+                        if ( ! empty( $tab['fields'] )) {
+                            foreach ($tab['fields'] as $option) {
                                 echo $option;
                             }
                         }
@@ -451,9 +451,9 @@ class Tabs
                                     call_user_func_array( $tab['callback'], [$this, $tab]);
                                 }
 
-                                // Tab options
-                                if ( ! empty( $tab['options'] )) {
-                                    foreach ($tab['options'] as $option) {
+                                // Tab fields
+                                if ( ! empty( $tab['fields'] )) {
+                                    foreach ($tab['fields'] as $option) {
                                         echo $option;
                                     }
                                 }
