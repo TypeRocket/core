@@ -10,8 +10,10 @@ class Tabs
     private $sidebar = null;
     public $iconAppend = '<i class="tr-icon-';
     public $iconPrepend = '"></i> ';
-    public $form;
     public $bind = false;
+
+    /** @var \TypeRocket\Elements\Form $form */
+    public $form;
 
     /**
      * Gets the help tabs registered for the screen.
