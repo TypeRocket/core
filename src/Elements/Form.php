@@ -560,12 +560,12 @@ class Form
                                 $option_field->configureToForm($this);
                                 $_tabs[$key]['fields'][$i_key] = $option_field;
                             } elseif( $option instanceof FieldRow) {
-                                $row = clone $field;
-                                foreach ($row->fields as $key => $row_field) {
+                                $row = clone $option;
+                                foreach ($row->fields as $r_key => $row_field) {
                                     if($row_field instanceof Field) {
                                         $row_field = clone $row_field;
                                         $row_field->configureToForm($this);
-                                        $row->fields[$key] = $row_field;
+                                        $row->fields[$r_key] = $row_field;
                                     }
                                 }
                                 $_tabs[$key]['fields'][$i_key] = $row;
