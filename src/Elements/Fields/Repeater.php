@@ -47,8 +47,8 @@ class Repeater extends Field implements ScriptField
             $help = '';
         }
 
-        // add collapsed
-        if(!empty($settings['collapsed'])) {
+        // add collapsed / contracted
+        if(!empty($settings['contracted'])) {
             $fields_classes = ' tr-repeater-collapse';
         }
 
@@ -181,13 +181,13 @@ class Repeater extends Field implements ScriptField
     }
 
     /**
-     * Make repeater collapsed by default
+     * Make repeater contracted by default
      *
      * @return $this
      */
-    public function collapsed()
+    public function contracted()
     {
-        return $this->setSetting('collapsed', true);
+        return $this->setSetting('contracted', true);
     }
 
 }
