@@ -2,11 +2,14 @@
 namespace TypeRocket\Elements\Fields;
 
 use \TypeRocket\Core\Config;
+use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Html\Generator;
 use \TypeRocket\Utility\Sanitize;
 
 class Color extends Field implements ScriptField
 {
+    use DefaultSetting;
+
     /**
      * Run on construction
      */
@@ -28,7 +31,11 @@ class Color extends Field implements ScriptField
     public function getString()
     {
         $name  = $this->getNameAttributeString();
-        $value = Sanitize::hex( $this->getValue() );
+        $value = $this->getValue();
+        $default = $this->getDefault();
+        $value = !empty($value) ? $value : $default;
+        $value =  Sanitize::hex( $value );
+
         $this->removeAttribute( 'name' );
         $this->appendStringToAttribute( 'class', ' color-picker' );
         $palette = 'tr_' . uniqid() . '_color_picker';
@@ -46,7 +53,9 @@ class Color extends Field implements ScriptField
         }
 
         if ( $this->getSetting( 'palette' ) ) {
-            $this->setAttribute( 'data-default-color', $this->getSetting( 'palette' )[0] );
+            $first_color = $this->getSetting( 'palette' )[0];
+            $default_color = !empty($default) ? $default : $first_color;
+            $this->setAttribute( 'data-default-color', $default_color );
         }
 
         $input = new Generator();

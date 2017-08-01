@@ -1,10 +1,13 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Html\Generator;
 
 class Date extends Field implements ScriptField
 {
+    use DefaultSetting;
+
     /**
      * Run on construction
      */
@@ -28,6 +31,9 @@ class Date extends Field implements ScriptField
         $name  = $this->getNameAttributeString();
         $this->removeAttribute( 'name' );
         $value = $this->getValue();
+        $default = $this->getDefault();
+        $value = !empty($value) ? $value : $default;
+
         $value = esc_attr( $this->sanitize($value, 'raw') );
 
         $this->appendStringToAttribute( 'class', ' date-picker' );

@@ -1,13 +1,14 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Elements\Traits\OptionsTrait;
 use \TypeRocket\Html\Generator;
 
 class Select extends Field
 {
 
-    use OptionsTrait;
+    use OptionsTrait, DefaultSetting;
 
     /**
      * Run on construction
@@ -74,19 +75,6 @@ class Select extends Field
         }
 
         return $generator->getString();
-    }
-
-    /**
-     * Set default value
-     *
-     * @param string $string
-     *
-     * @return $this
-     */
-    public function setDefault( $string = '' ) {
-        $this->setSetting('default', $string);
-
-        return $this;
     }
 
     /**

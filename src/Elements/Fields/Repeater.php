@@ -35,7 +35,7 @@ class Repeater extends Field implements ScriptField
         $settings = $this->getSettings();
         $name     = $this->getName();
         $form->setDebugStatus( false );
-        $html     = '';
+        $html =  $fields_classes = '';
 
         $headline = $this->headline ? '<h1>' . $this->headline . '</h1>': '';
 
@@ -45,6 +45,11 @@ class Repeater extends Field implements ScriptField
             $this->removeSetting( 'help' );
         } else {
             $help = '';
+        }
+
+        // add collapsed
+        if(!empty($settings['collapsed'])) {
+            $fields_classes = ' tr-repeater-collapse';
         }
 
         // add button settings
@@ -82,7 +87,7 @@ class Repeater extends Field implements ScriptField
         $html .= '</div>';
 
         // render saved data
-        $html .= '<div class="tr-repeater-fields">'; // start tr-repeater-fields
+        $html .= '<div class="tr-repeater-fields'.$fields_classes.'">'; // start tr-repeater-fields
         $repeats = $this->getValue();
         if ( is_array( $repeats ) ) {
             foreach ($repeats as $k => $array) {
@@ -173,6 +178,16 @@ class Repeater extends Field implements ScriptField
     public function getHeadline()
     {
         return $this->headline;
+    }
+
+    /**
+     * Make repeater collapsed by default
+     *
+     * @return $this
+     */
+    public function collapsed()
+    {
+        return $this->setSetting('collapsed', true);
     }
 
 }

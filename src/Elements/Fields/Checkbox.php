@@ -1,10 +1,12 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Html\Generator;
 
 class Checkbox extends Field
 {
+    use DefaultSetting;
 
     /**
      * Run on construction
@@ -21,7 +23,7 @@ class Checkbox extends Field
     {
         $name   = $this->getNameAttributeString();
         $this->removeAttribute( 'name' );
-        $default = $this->getSetting( 'default' );
+        $default = $this->getDefault();
         $option = $this->getValue();
         $checkbox = new Generator();
         $field = new Generator();
@@ -59,16 +61,4 @@ class Checkbox extends Field
         return $this;
     }
 
-    /**
-     * Set default value
-     *
-     * @param bool $bool
-     *
-     * @return $this
-     */
-    public function setDefault( $bool = '' ) {
-        $this->setSetting('default', $bool);
-
-        return $this;
-    }
 }

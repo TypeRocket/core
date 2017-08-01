@@ -1,13 +1,14 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Elements\Traits\OptionsTrait;
 use \TypeRocket\Html;
 
 class Radio extends Field
 {
 
-    use OptionsTrait;
+    use OptionsTrait, DefaultSetting;
 
     /**
      * Run on construction
@@ -54,16 +55,4 @@ class Radio extends Field
         return $field;
     }
 
-/**
-     * Set default value
-     *
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function setDefault( $value = '' ) {
-        $this->setSetting('default', $value);
-
-        return $this;
-    }
 }

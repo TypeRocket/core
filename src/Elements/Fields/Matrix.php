@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Elements\Traits\OptionsTrait;
 use \TypeRocket\Html\Generator;
 use \TypeRocket\Core\Config;
@@ -10,7 +11,7 @@ use TypeRocket\Utility\Buffer;
 
 class Matrix extends Field implements ScriptField {
 
-    use OptionsTrait;
+    use OptionsTrait, DefaultSetting;
 
     protected $mxid = null;
     protected $componentFolder = null;
@@ -305,16 +306,4 @@ class Matrix extends Field implements ScriptField {
         return $this;
     }
 
-/**
-     * Set default value
-     *
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function setDefault( $value = '' ) {
-        $this->setSetting('default', $value);
-
-        return $this;
-    }
 }
