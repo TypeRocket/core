@@ -159,13 +159,18 @@ class Tables
         return $this;
     }
 
-    /**
-     * Render table
-     */
-    public function render()
+	/**
+	 * Render table
+	 *
+	 * @param null $action_key
+	 */
+    public function render($action_key = null)
     {
+	    $action_key = '_' . $action_key;
+	    do_action('tr_table_search_model'.$action_key, $this->model);
         $results = $this->model->findAll()->take($this->limit, $this->offset)->get();
         $columns = $this->columns;
+        $this_table = $this;
         $table = new Generator();
         $head = new Generator();
         $body = new Generator();
@@ -384,6 +389,7 @@ class Tables
                         <?php endforeach; ?>
                     </select>
                 </div>
+	            <?php do_action('tr_table_search_form'.$action_key, $this_table); ?>
                 <div class="alignleft actions">
                     <label class="screen-reader-text" for="post-search-input">Search Pages:</label>
                     <input type="hidden" name="page" value="<?php echo esc_attr($get_page); ?>">
