@@ -201,11 +201,14 @@ class Tables
 	/**
 	 * Render table
 	 *
-	 * @param null $action_key
+	 * @param string $action_key a key to customize hooks by
 	 */
-    public function render($action_key = null)
+    public function render($action_key = '')
     {
-	    $action_key = '_' . $action_key;
+        if($action_key) {
+	        $action_key = '_' . $action_key;
+        }
+
 	    do_action('tr_table_search_model'.$action_key, $this->model);
         $results = $this->model->findAll()->take($this->limit, $this->offset)->get();
         $columns = $this->columns;
