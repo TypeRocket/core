@@ -161,18 +161,38 @@ class Tables
         return $this;
     }
 
+	/**
+     * Add Checkboxes
+     *
+	 * @return $this
+	 */
 	public function addCheckbox() {
         $this->checkbox = true;
 
 		return $this;
     }
 
+	/**
+     * Remove Checkboxes
+     *
+	 * @return $this
+	 */
 	public function removeCheckbox() {
 		$this->checkbox = false;
 
 		return $this;
     }
 
+	/**
+     * Append Search From Filters
+     *
+     * Add the ability to append other input fields and HTML
+     * inside the search section of the filter table area.
+     *
+	 * @param $callback
+	 *
+	 * @return $this
+	 */
 	public function appendSearchFormFilters( $callback ) {
         $this->searchFormFilters = $callback;
         return $this;
