@@ -22,6 +22,8 @@ class Tables
     public $page = null;
     protected $searchColumns;
     public $paged = 1;
+    public $checkbox = false;
+    public $searchFormFilters = false;
     public $limit;
     public $offset = 0;
     public $settings = ['update_column' => 'id'];
@@ -159,6 +161,23 @@ class Tables
         return $this;
     }
 
+	public function addCheckbox() {
+        $this->checkbox = true;
+
+		return $this;
+    }
+
+	public function removeCheckbox() {
+		$this->checkbox = false;
+
+		return $this;
+    }
+
+	public function appendSearchFormFilters( $callback ) {
+        $this->searchFormFilters = $callback;
+        return $this;
+    }
+
 	/**
 	 * Render table
 	 *
@@ -175,6 +194,8 @@ class Tables
         $head = new Generator();
         $body = new Generator();
         $foot = new Generator();
+        $columnId = $this->model->getIdColumn();
+        $addCheckbox = $this->checkbox ? $columnId : false;
 
         if( empty($columns) ) {
             $columns = array_keys(get_object_vars($results[0]));
@@ -187,6 +208,13 @@ class Tables
 
         $th_row = new Generator();
         $th_row->newElement('tr', ['class' => 'manage-column']);
+
+	    if($addCheckbox) {
+		    $th = new Generator();
+		    $th->newElement('td', ['class' => 'manage-column column-cb check-column'], '<input type="checkbox" class="check-all" />');
+		    $th_row->appendInside($th);
+	    }
+
         foreach ( $columns as $column => $data ) {
             $th = new Generator();
             $classes = 'manage-column';
@@ -233,8 +261,16 @@ class Tables
         if( !empty($results)) {
             foreach ($results as $result) {
                 $td_row = new Generator();
-                $row_id = 'result-row-' . $result->id;
+                $columnValue = Sanitize::dash($result->getProperty($columnId));
+                $row_id = 'result-row-' . $columnValue;
                 $td_row->newElement('tr', ['class' => 'manage-column', 'id' => $row_id]);
+
+	            if($addCheckbox) {
+		            $td = new Generator();
+		            $td->newElement('th', ['class' => 'check-column'], '<input type="checkbox" name="bulk[]" value="'.$columnValue.'" />');
+		            $td_row->appendInside($td);
+	            }
+
                 foreach ($columns as $column => $data) {
                     $show_url = $edit_url = $delete_url = '';
 
@@ -367,6 +403,12 @@ class Tables
         ?>
         <form action="<?php echo $current; ?>">
             <div class="tablenav top">
+	            <?php if(is_callable($this->searchFormFilters )) {
+		            echo '<div class="alignleft actions">';
+		            call_user_func($this->searchFormFilters);
+		            echo '</div>';
+	            } ?>
+	            <?php do_action('tr_table_search_form'.$action_key, $this_table); ?>
                 <div class="alignleft actions">
                     <select class="alignleft" name="on">
                         <?php foreach ($searchColumns as $column_name => $column) :
@@ -389,7 +431,6 @@ class Tables
                         <?php endforeach; ?>
                     </select>
                 </div>
-	            <?php do_action('tr_table_search_form'.$action_key, $this_table); ?>
                 <div class="alignleft actions">
                     <label class="screen-reader-text" for="post-search-input">Search Pages:</label>
                     <input type="hidden" name="page" value="<?php echo esc_attr($get_page); ?>">
