@@ -22,7 +22,7 @@ class Tables
     public $page = null;
     protected $searchColumns;
     public $paged = 1;
-    public $checkbox = false;
+    public $checkboxes = false;
     public $searchFormFilters = false;
     public $limit;
     public $offset = 0;
@@ -166,8 +166,8 @@ class Tables
      *
 	 * @return $this
 	 */
-	public function addCheckbox() {
-        $this->checkbox = true;
+	public function addCheckboxes() {
+        $this->checkboxes = true;
 
 		return $this;
     }
@@ -177,8 +177,8 @@ class Tables
      *
 	 * @return $this
 	 */
-	public function removeCheckbox() {
-		$this->checkbox = false;
+	public function removeCheckboxes() {
+		$this->checkboxes = false;
 
 		return $this;
     }
@@ -215,7 +215,7 @@ class Tables
         $body = new Generator();
         $foot = new Generator();
         $columnId = $this->model->getIdColumn();
-        $addCheckbox = $this->checkbox ? $columnId : false;
+        $addCheckbox = $this->checkboxes ? $columnId : false;
 
         if( empty($columns) ) {
             $columns = array_keys(get_object_vars($results[0]));
