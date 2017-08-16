@@ -61,7 +61,7 @@ class Builder extends Matrix
             <div><?php echo $default_null; ?></div>
             <div class="controls">
                 <div class="select">
-                    <input type="button" value="<?php esc_attr($add_button_value); ?>" data-home="<?php esc_url( home_url('/') ); ?>" class="button tr-builder-add-button">
+                    <input type="button" value="<?php echo esc_attr($add_button_value); ?>" class="button tr-builder-add-button">
                     <?php echo $this->getSelectHtml(); ?>
                 </div>
                 <ul data-thumbnails="<?php echo $this->paths['urls']['components']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
@@ -125,6 +125,7 @@ class Builder extends Matrix
                 $attr['class'] = 'builder-select-option';
                 $attr['data-id'] = $this->mxid;
                 $attr['data-folder'] = $folder;
+                $attr['data-root'] = esc_url( home_url('/') );
                 $attr['data-group'] = $this->getName();
 
                 $img = new Generator();

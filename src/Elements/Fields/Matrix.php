@@ -110,7 +110,7 @@ class Matrix extends Field implements ScriptField {
 <div class='matrix-controls controls'>
 {$select}
 <div class=\"tr-repeater-button-add\">
-<input type=\"button\" value=\"{$controls['add']}\" data-home=\"{$home_url}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
+<input type=\"button\" value=\"{$controls['add']}\" data-root=\"{$home_url}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
 </div>
 <div class=\"button-group\">
 <input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">
