@@ -125,7 +125,7 @@ class Builder extends Matrix
                 $attr['class'] = 'builder-select-option';
                 $attr['data-id'] = $this->mxid;
                 $attr['data-folder'] = $folder;
-                $attr['data-root'] = esc_url( home_url('/') );
+                $attr['data-root'] = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
                 $attr['data-group'] = $this->getName();
 
                 $img = new Generator();

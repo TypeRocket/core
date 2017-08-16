@@ -7,6 +7,7 @@ use TypeRocket\Http\Rewrites\Matrix;
 use TypeRocket\Http\Rewrites\Rest;
 use TypeRocket\Elements\Notice;
 use TypeRocket\Http\Routes;
+use TypeRocket\Http\SSL;
 use TypeRocket\Plugin\Loader;
 use TypeRocket\Register\Registry;
 
@@ -251,7 +252,7 @@ class Launcher
     public function addCss()
     {
         $paths = Config::getPaths();
-        $assets = $paths['urls']['assets'];
+	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css' );
 
@@ -266,7 +267,7 @@ class Launcher
     public function addJs()
     {
         $paths = Config::getPaths();
-        $assets = $paths['urls']['assets'];
+        $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], '1.0' );
     }
@@ -280,7 +281,7 @@ class Launcher
     public function addBottomJs()
     {
         $paths = Config::getPaths();
-        $assets = $paths['urls']['assets'];
+	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], '1.0', true );
     }

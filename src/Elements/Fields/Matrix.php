@@ -104,7 +104,7 @@ class Matrix extends Field implements ScriptField {
 	    }, $controls);
 
         // add it all
-        $home_url = esc_url( home_url('/') );
+        $home_url = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
         $html = "
 <div class='tr-matrix control-section tr-repeater'>
 <div class='matrix-controls controls'>
