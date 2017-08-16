@@ -242,4 +242,15 @@ class Builder extends Matrix
 
     }
 
+	/**
+     * Control Add Button
+     *
+	 * @param string $value
+	 *
+	 * @return $this
+	 */
+	public function setControlAdd( $value ) {
+		return $this->setSetting('add_button', $value);
+	}
+
 }
