@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\ControlsSetting;
 use TypeRocket\Elements\Traits\DefaultSetting;
 use \TypeRocket\Elements\Traits\OptionsTrait;
 use \TypeRocket\Html\Generator;
@@ -11,7 +12,7 @@ use TypeRocket\Utility\Buffer;
 
 class Matrix extends Field implements ScriptField {
 
-    use OptionsTrait, DefaultSetting;
+    use OptionsTrait, DefaultSetting, ControlsSetting;
 
     protected $mxid = null;
     protected $componentFolder = null;
@@ -78,18 +79,42 @@ class Matrix extends Field implements ScriptField {
         $generator = new Generator();
         $default_null = $generator->newInput('hidden', $this->getAttribute('name'), null)->getString();
 
+	    // add button settings
+	    if (isset( $settings['add_button'] )) {
+		    $add_button_value = $settings['add_button'];
+	    } else {
+		    $add_button_value = "Add New";
+	    }
+
+	    $controls = [
+		    'contract' => 'Contract',
+		    'flip' => 'Flip',
+		    'clear' => 'Clear All',
+		    'add' => $add_button_value,
+	    ];
+
+	    // controls settings
+	    if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
+		    $controls = array_merge($controls, $settings['controls']);
+	    }
+
+	    // escape controls
+	    $controls = array_map(function($item) {
+		    return esc_attr($item);
+	    }, $controls);
+
         // add it all
         $html = "
 <div class='tr-matrix control-section tr-repeater'>
 <div class='matrix-controls controls'>
 {$select}
 <div class=\"tr-repeater-button-add\">
-<input type=\"button\" value=\"Add New\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
+<input type=\"button\" value=\"{$controls['add']}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
 </div>
 <div class=\"button-group\">
-<input type=\"button\" value=\"Flip\" class=\"flip button\">
-<input type=\"button\" value=\"Contract\" class=\"tr_action_collapse button\">
-<input type=\"button\" value=\"Clear All\" class=\"clear button\">
+<input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">
+<input type=\"button\" value=\"{$controls['contract']}\" class=\"tr_action_collapse button\">
+<input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\">
 </div>
 {$help}
 </div>

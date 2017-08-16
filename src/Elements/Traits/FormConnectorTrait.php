@@ -133,7 +133,7 @@ trait FormConnectorTrait
     /**
      * Set Form setting by key
      *
-     * @param $key
+     * @param string $key
      * @param $value
      *
      * @return $this
@@ -145,10 +145,28 @@ trait FormConnectorTrait
         return $this;
     }
 
+	/**
+	 * Append to Array Setting
+	 *
+	 * Append to an array setting
+	 *
+	 * @param string $setting
+	 * @param string $key
+	 * @param $value
+	 *
+	 * @return $this
+	 */
+	public function appendToArraySetting( $setting, $key, $value )
+	{
+		$this->settings[$setting][$key] = $value;
+
+		return $this;
+	}
+
     /**
      * Get From setting by key
      *
-     * @param $key
+     * @param string $key
      * @param null $default default value to return if none
      *
      * @return null

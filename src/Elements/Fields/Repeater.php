@@ -1,10 +1,13 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Elements\Traits\ControlsSetting;
 use \TypeRocket\Html\Generator;
 
 class Repeater extends Field implements ScriptField
 {
+
+	use ControlsSetting;
 
     protected $fields = [];
     protected $headline = null;
@@ -59,6 +62,23 @@ class Repeater extends Field implements ScriptField
             $add_button_value = "Add New";
         }
 
+	    $controls = [
+		    'contract' => 'Contract',
+		    'flip' => 'Flip',
+		    'clear' => 'Clear All',
+		    'add' => $add_button_value,
+	    ];
+
+	    // controls settings
+	    if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
+		    $controls = array_merge($controls, $settings['controls']);
+	    }
+
+	    // escape controls
+	    $controls = array_map(function($item) {
+	    	return esc_attr($item);
+	    }, $controls);
+
         // template for repeater groups
         $href          = '#remove';
         $openContainer = '<div class="repeater-controls"><div class="collapse"></div><div class="move"></div><a href="' . $href . '" class="remove" title="remove"></a></div><div class="repeater-inputs">';
@@ -76,7 +96,7 @@ class Repeater extends Field implements ScriptField
         $generator    = new Generator();
         $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null )->getString();
 
-        $html .= "<div class=\"controls\"><div class=\"tr-repeater-button-add\"><input type=\"button\" value=\"{$add_button_value}\" class=\"button add\" /></div><div class=\"button-group\"><input type=\"button\" value=\"Flip\" class=\"flip button\" /><input type=\"button\" value=\"Contract\" class=\"tr_action_collapse button\"><input type=\"button\" value=\"Clear All\" class=\"clear button\" /></div>{$help}<div>{$default_null}</div></div>";
+        $html .= "<div class=\"controls\"><div class=\"tr-repeater-button-add\"><input type=\"button\" value=\"{$controls['add']}\" class=\"button add\" /></div><div class=\"button-group\"><input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\" /><input type=\"button\" value=\"{$controls['contract']}\" class=\"tr_action_collapse button\"><input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\" /></div>{$help}<div>{$default_null}</div></div>";
 
         // replace name attr with data-name so fields are not saved
         $templateFields = str_replace( ' name="', ' data-name="', $this->getTemplateFields() );

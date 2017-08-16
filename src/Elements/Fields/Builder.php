@@ -44,17 +44,24 @@ class Builder extends Matrix
         $buffer = new Buffer();
         $buffer->startBuffer();
         $blocks = $this->getBuilderBlocks();
+        $settings = $this->getSettings();
         $count = 0;
         $generator = new Generator();
         $component_name = $this->getComponentFolder();
         $default_null = $generator->newInput('hidden', $this->getAttribute('name'), null)->getString();
+	    // add button settings
+	    if (isset( $settings['add_button'] )) {
+		    $add_button_value = $settings['add_button'];
+	    } else {
+		    $add_button_value = "Add New";
+	    }
         ?>
 
         <div class="tr-builder">
             <div><?php echo $default_null; ?></div>
             <div class="controls">
                 <div class="select">
-                    <input type="button" value="Add New" class="button tr-builder-add-button">
+                    <input type="button" value="<?php esc_attr($add_button_value); ?>" class="button tr-builder-add-button">
                     <?php echo $this->getSelectHtml(); ?>
                 </div>
                 <ul data-thumbnails="<?php echo $this->paths['urls']['components']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
