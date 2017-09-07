@@ -1,5 +1,6 @@
 <VirtualHost *:80>
 
+    ServerName localhost
     DocumentRoot %TRAVIS_BUILD_DIR%/wordpress
 
     <Directory "%TRAVIS_BUILD_DIR%/wordpress">
