@@ -1,16 +1,22 @@
 language: php
+dist: trusty
 sudo: required
 php:
  - '5.5'
  - '5.6'
+ - '7.0'
 
 services:
  - mysql
 
 before_script:
+ - sudo apt-get -qq update
  - composer self-update
  - chmod ugo+x bin/travis.sh
  - ./bin/travis.sh $(phpenv version-name) $(pwd)
+
+before_install:
+ - mysql -e 'SET NAMES utf8; create database IF NOT EXISTS wordpress;'
 
 install:
  - travis_retry composer install --no-interaction --prefer-source --dev
