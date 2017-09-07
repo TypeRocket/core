@@ -14,7 +14,7 @@ class Dots
      *
      * @return array|mixed|null
      */
-    public static function walk(string $dots, array $array) {
+    public static function walk($dots, array $array) {
         $traverse = explode('.', $dots);
         foreach ($traverse as $step) {
             if( ! isset($array[$step]) && ! is_string($array) ) { return null; }
@@ -34,7 +34,7 @@ class Dots
      *
      * @return array
      */
-    public static function set(string $dots, array $array, $value) : array
+    public static function set($dots, array $array, $value)
     {
         $set = &$array;
         $traverse = explode('.', $dots);
