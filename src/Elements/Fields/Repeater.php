@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Core\Config;
 use TypeRocket\Elements\Traits\ControlsSetting;
 use \TypeRocket\Html\Generator;
 
@@ -25,7 +26,8 @@ class Repeater extends Field implements ScriptField
      */
     public function enqueueScripts()
     {
-        wp_enqueue_script( 'jquery-ui-sortable', ['jquery'], '1.0', true );
+        $assetVersion = Config::locate('app.assets', '1.0');
+        wp_enqueue_script( 'jquery-ui-sortable', ['jquery'], $assetVersion, true );
     }
 
     /**

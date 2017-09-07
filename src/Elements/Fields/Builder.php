@@ -16,12 +16,13 @@ class Builder extends Matrix
      */
     public function enqueueScripts() {
         $this->paths = Config::getPaths();
+        $assetVersion = Config::locate('app.assets', '1.0');
         $assets = $this->paths['urls']['assets'];
         wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], '1.0', true );
         wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], '1.0', true );
         wp_enqueue_script( 'wp-color-picker' );
         wp_enqueue_media();
-        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/redactor.min.js', ['jquery'], '1.0', true );
+        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/redactor.min.js', ['jquery'], $assetVersion, true );
     }
 
     /**

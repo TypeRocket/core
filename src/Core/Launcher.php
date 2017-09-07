@@ -252,9 +252,10 @@ class Launcher
     public function addCss()
     {
         $paths = Config::getPaths();
+        $assetVersion = Config::locate('app.assets', '1.0');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
-        wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css' );
+        wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css', [], $assetVersion);
 
         if (is_admin()) {
             wp_enqueue_style( 'wp-color-picker' );
@@ -267,9 +268,10 @@ class Launcher
     public function addJs()
     {
         $paths = Config::getPaths();
+        $assetVersion = Config::locate('app.assets', '1.0');
         $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
-        wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], '1.0' );
+        wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], $assetVersion );
     }
 
     /**
@@ -281,9 +283,10 @@ class Launcher
     public function addBottomJs()
     {
         $paths = Config::getPaths();
+        $assetVersion = Config::locate('app.assets', '1.0');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
-        wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], '1.0', true );
+        wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], $assetVersion, true );
     }
 
     /**

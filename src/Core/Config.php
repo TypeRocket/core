@@ -126,12 +126,19 @@ class Config
      * Traverse array with dot notation.
      *
      * @param string $dots dot notation key.next.final or key.*.final
+     * @param null|mixed $default default value to return if null
      *
      * @return array|mixed|null
      */
-    public static function locate($dots)
+    public static function locate($dots, $default = null)
     {
-        return Dots::walk($dots, self::$config);
+        $value = Dots::walk($dots, self::$config);
+
+        if(is_null($value)) {
+            return $default;
+        }
+
+        return $value;
     }
 
 }
