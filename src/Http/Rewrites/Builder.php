@@ -3,6 +3,7 @@
 namespace TypeRocket\Http\Rewrites;
 
 use TypeRocket\Core\Config;
+use TypeRocket\Elements\Form;
 
 class Builder
 {
@@ -19,7 +20,12 @@ class Builder
             if($load) {
 
                 $tr_matrix_id = time(); // id for repeater
-                $form = tr_form();
+                $form = new Form();
+
+                if( $form_class = Config::locate('app.form') ) {
+                    $form = new $form_class;
+                }
+
                 $form->setPopulate(false);
                 $form->setDebugStatus(false);
 

@@ -2,6 +2,7 @@
 namespace TypeRocket\Core;
 
 use TypeRocket\Models\WPUser;
+use TypeRocket\Utility\Dots;
 
 class Config
 {
@@ -117,6 +118,20 @@ class Config
     public static function getIcons()
     {
         return new self::$config['app']['icons'];
+    }
+
+    /**
+     * Locate Config Setting
+     *
+     * Traverse array with dot notation.
+     *
+     * @param string $dots dot notation key.next.final or key.*.final
+     *
+     * @return array|mixed|null
+     */
+    public static function locate($dots)
+    {
+        return Dots::walk($dots, self::$config);
     }
 
 }
