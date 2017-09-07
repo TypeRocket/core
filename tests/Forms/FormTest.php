@@ -60,4 +60,10 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($form->getItemId() == 12 );
         $this->assertTrue($form->getResource() == 'post' );
     }
+
+    public function testHelperForm()
+    {
+        $form = tr_form();
+        $this->assertTrue($form instanceof Form);
+    }
 }

@@ -7,7 +7,7 @@ use TypeRocket\Utility\Dots;
 class Config
 {
 
-    static private $config = null;
+    static private $config = [];
     static private $frontend = false;
 
     /**

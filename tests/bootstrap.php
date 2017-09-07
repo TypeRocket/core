@@ -1,5 +1,6 @@
 <?php
 require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../helpers.php';
 date_default_timezone_set('UTC');
 
 $wp_load = __DIR__.'/../wordpress';
