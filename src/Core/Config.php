@@ -23,7 +23,7 @@ class Config
             $config = array_merge($slice['configurations'], ['app']);
         }
 
-        if (self::$config === null) {
+        if (self::$config === []) {
             foreach ($config as $type) {
                 self::$config[$type] = include TR_PATH . "/config/{$type}.php";
             }
