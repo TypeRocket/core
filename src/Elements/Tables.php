@@ -193,7 +193,7 @@ class Tables
      *
      * @return $this
      */
-    public function fromWrapTable( $wrap = true)
+    public function formWrapTable( $wrap = true)
     {
         $this->formWrapTable = $wrap;
         return $this;
