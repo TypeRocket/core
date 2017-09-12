@@ -495,7 +495,7 @@ class Tables
 
 
         <?php
-        if($this->formWrapTable == true) {
+        if($this->formWrapTable == false) {
             echo '</form>';
         }
         echo $table;
