@@ -50,6 +50,28 @@ class Route
     }
 
     /**
+     * Add Patch Route
+     *
+     * @param string $path request path rewrite to add
+     * @param string $handler the action controller call
+     */
+    public function patch($path, $handler)
+    {
+        Routes::addRoute('PATCH', $path, $handler);
+    }
+
+    /**
+     * Add Options Route
+     *
+     * @param string $path request path rewrite to add
+     * @param string $handler the action controller call
+     */
+    public function options($path, $handler)
+    {
+        Routes::addRoute('OPTIONS', $path, $handler);
+    }
+
+    /**
      * Add Any Route
      *
      * @param string $path request path rewrite to add
@@ -61,6 +83,8 @@ class Route
         Routes::addRoute('POST', $path, $handler);
         Routes::addRoute('GET', $path, $handler);
         Routes::addRoute('DELETE', $path, $handler);
+        Routes::addRoute('PATCH', $path, $handler);
+        Routes::addRoute('OPTIONS', $path, $handler);
     }
 
 }

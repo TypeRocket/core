@@ -13,7 +13,7 @@ class Launcher
         $commands = new CommandCollection();
         $commands->enableCustom();
 
-        if( file_exists( Config::getWordPressPath() ) ) {
+        if( file_exists( Config::getWordPressPath() . '/wp-load.php' ) ) {
             define('WP_USE_THEMES', true);
             global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
             require( Config::getWordPressPath() . '/wp-load.php' );

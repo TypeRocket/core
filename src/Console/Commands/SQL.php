@@ -2,11 +2,13 @@
 
 namespace TypeRocket\Console\Commands;
 
+use TypeRocket\Console\CanQueryDB;
 use TypeRocket\Console\Command;
-use TypeRocket\Utility\Str;
 
 class SQL extends Command
 {
+    use CanQueryDB;
+
     protected $command = [
         'wp:sql',
         'WordPress database SQL script',
@@ -27,36 +29,18 @@ class SQL extends Command
      */
     protected function exec()
     {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-
         $name = $this->getArgument('name');
-
         $file_sql = TR_PATH . '/sql/' . $name . '.sql';
+        $this->runQueryFile($file_sql);
+    }
 
-        if( ! file_exists( $file_sql ) ) {
-            $this->error('Not Found: SQL '. $name .' failed to run.');
-            return;
-        }
+    protected function sqlSuccess($message) {
+        $name = $this->getArgument('name');
+        $this->success('SQL '. $name .' successfully run.');
+    }
 
-        $queries = explode(';'.PHP_EOL, file_get_contents($file_sql) );
-
-        foreach ($queries as $query) {
-
-            if( Str::starts('create table', strtolower($query)) ) {
-                $result = dbDelta($query);
-            } elseif( !empty(trim($query)) ) {
-                $result = $wpdb->query( $query );
-            } else {
-                continue;
-            }
-
-            if ( $result ) {
-                $this->success('SQL '. $name .' successfully run.');
-            } else {
-                $this->error('Query Error: SQL '. $name .' failed to run.');
-            }
-        }
-
+    protected function sqlError($message) {
+        $name = $this->getArgument('name');
+        $this->error('Query Error: SQL '. $name .' failed to run.');
     }
 }
