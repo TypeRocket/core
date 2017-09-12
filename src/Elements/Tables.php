@@ -184,6 +184,15 @@ class Tables
 		return $this;
     }
 
+    /**
+     * Form Wrap Table
+     *
+     * Wrap the tables in the <form> tag
+     *
+     * @param bool $wrap
+     *
+     * @return $this
+     */
     public function fromWrapTable( $wrap = true)
     {
         $this->formWrapTable = $wrap;
