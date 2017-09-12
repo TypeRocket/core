@@ -26,6 +26,7 @@ class Tables
     public $searchFormFilters = false;
     public $limit;
     public $offset = 0;
+    public $formWrapTable = false;
     public $settings = ['update_column' => 'id'];
 
     /**
@@ -181,6 +182,12 @@ class Tables
 		$this->checkboxes = false;
 
 		return $this;
+    }
+
+    public function fromWrapTable( $wrap = true)
+    {
+        $this->formWrapTable = $wrap;
+        return $this;
     }
 
 	/**
@@ -474,9 +481,20 @@ class Tables
                 </div>
                 <br class="clear">
             </div>
-        </form>
 
-        <?php  echo $table; ?>
+
+
+
+        <?php
+        if($this->formWrapTable == true) {
+            echo '</form>';
+        }
+        echo $table;
+        if($this->formWrapTable == true) {
+            echo '</form>';
+        }
+        ?>
+
 
         <div class="tablenav bottom">
             <div class="tablenav-pages">
