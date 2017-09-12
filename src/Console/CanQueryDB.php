@@ -23,13 +23,14 @@ trait CanQueryDB
         global $wpdb;
         $prefix = $wpdb->prefix;
         $prefixed = str_replace($this->query_prefix_tag, $prefix, $sql);
-        $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ) );
+        return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ) );
     }
 
     protected function runQueryArray($queries) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $wpdb->show_errors();
+        $errors = [];
 
         foreach ($queries as $query) {
 
@@ -49,6 +50,7 @@ trait CanQueryDB
                 $this->warning('SQL Run:' );
                 $this->line($wpdb->last_query );
             } else {
+                $errors[] = $wpdb->last_query;
                 $this->sqlError('Query Error: SQL failed to run.');
                 $this->warning('SQL Run:' );
                 $this->line( $wpdb->last_query );
@@ -56,8 +58,11 @@ trait CanQueryDB
                     $this->error( $wpdb->last_error );
                     $wpdb->last_error = '';
                 }
+                return $errors;
             }
         }
+
+        return $errors;
     }
 
     protected function sqlSuccess($message) {
