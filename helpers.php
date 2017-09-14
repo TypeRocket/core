@@ -420,6 +420,20 @@ function tr_redirect()
 }
 }
 
+if( ! function_exists('tr_redirect_data') ) {
+    /**
+     * @param null $default
+     * @param bool $delete
+     *
+     * @return \TypeRocket\Http\Redirect
+     */
+    function tr_redirect_data($default = null, $delete = true)
+    {
+        $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_redirect_data', $delete);
+        return is_null($data) ? $data : $default;
+    }
+}
+
 if( ! function_exists('tr_cookie') ) {
 /**
  * @return \TypeRocket\Http\Cookie

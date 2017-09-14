@@ -35,7 +35,7 @@ class Cookie
     public function getTransient( $name, $delete = true ) {
         $data = null;
 
-        if( $_COOKIE[$name] ) {
+        if( !empty($_COOKIE[$name]) ) {
             $id   = Sanitize::underscore($_COOKIE[$name]);
             $data = get_transient($name . '_' . $id);
 
