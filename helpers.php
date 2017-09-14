@@ -434,6 +434,20 @@ if( ! function_exists('tr_redirect_data') ) {
     }
 }
 
+if( ! function_exists('tr_old_fields') ) {
+    /**
+     * @param null $default
+     * @param bool $delete
+     *
+     * @return \TypeRocket\Http\Redirect
+     */
+    function tr_old_fields($default = null, $delete = true)
+    {
+        $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', $delete);
+        return is_null($data) ? $data : $default;
+    }
+}
+
 if( ! function_exists('tr_cookie') ) {
 /**
  * @return \TypeRocket\Http\Cookie
