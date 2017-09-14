@@ -22,6 +22,7 @@ class Model
     protected $query;
     protected $old = null;
     protected $onlyOld = false;
+    protected $dataOverride = null;
     protected $properties = [];
     protected $propertiesUnaltered = [];
     protected $explicitProperties = [];
@@ -544,6 +545,8 @@ class Model
             } else {
                 $data = null;
             }
+        } elseif( !empty($this->dataOverride[$keys[0]]) ) {
+            $data = $this->dataOverride[$keys[0]];
         } elseif( !$this->onlyOld ) {
             $data = $this->getBaseFieldValue( $keys[0] );
         } else {
@@ -565,6 +568,21 @@ class Model
         }
 
         $this->onlyOld = $load_only_old;
+    }
+
+    /**
+     * Override Data
+     *
+     * Use data override over model data. Used mainly but Form class.
+     *
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function dataOverride(array $data)
+    {
+        $this->dataOverride = $data;
+        return $this;
     }
 
     /**

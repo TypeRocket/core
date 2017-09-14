@@ -255,6 +255,20 @@ class Form
     }
 
     /**
+     * Use Data
+     *
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function useData( array $data)
+    {
+        $this->model->dataOverride($data);
+
+        return $this;
+    }
+
+    /**
      * Set the current Field to process
      *
      * @param Field $field
