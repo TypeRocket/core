@@ -243,11 +243,13 @@ class Form
     /**
      * Return old data is missing
      *
+     * @param bool $load_only_old
+     *
      * @return $this
      */
-    public function useOld()
+    public function useOld($load_only_old = false)
     {
-        $this->model->oldStore();
+        $this->model->oldStore($load_only_old);
 
         return $this;
     }

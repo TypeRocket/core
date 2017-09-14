@@ -21,6 +21,7 @@ class Model
     protected $errors = null;
     protected $query;
     protected $old = null;
+    protected $onlyOld = false;
     protected $properties = [];
     protected $propertiesUnaltered = [];
     protected $explicitProperties = [];
@@ -543,8 +544,10 @@ class Model
             } else {
                 $data = null;
             }
-        } else {
+        } elseif( !$this->onlyOld ) {
             $data = $this->getBaseFieldValue( $keys[0] );
+        } else {
+            return null;
         }
 
         return $this->parseValueData( $data, $keys );
@@ -552,12 +555,16 @@ class Model
 
     /**
      * Get old stored fields
+     *
+     * @param bool $load_only_old
      */
-    public function oldStore() {
+    public function oldStore( $load_only_old = false) {
         if( !empty($_COOKIE['tr_old_fields']) ) {
             $cookie = new Cookie();
             $this->old = $cookie->getTransient('tr_old_fields');
         }
+
+        $this->onlyOld = $load_only_old;
     }
 
     /**
