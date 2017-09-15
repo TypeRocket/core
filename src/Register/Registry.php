@@ -303,7 +303,7 @@ class Registry
 
         foreach ($new_columns as $new_column) {
             if(!empty($new_column['sort'])) {
-                add_filter( "manage_edit-{$pt}_sortable_columns", function() use ($new_column) {
+                add_filter( "manage_edit-{$pt}_sortable_columns", function($columns) use ($new_column) {
                     $columns[$new_column['field']] = $new_column['field'];
                     return $columns;
                 } );
