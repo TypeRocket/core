@@ -533,7 +533,7 @@ class Model
             $field = $field->getDots();
         }
 
-        if ($this->getID() == null && ! $this->old ) {
+        if ($this->getID() == null && ! $this->old && empty($this->dataOverride) ) {
             return null;
         }
 

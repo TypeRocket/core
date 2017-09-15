@@ -269,6 +269,22 @@ class Form
     }
 
     /**
+     * Use External Resource for Data
+     *
+     * This method changes the model class used to a stub and maps the
+     * data pool to a standard array to override to fields data map.
+     *
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function useExternal($data = [])
+    {
+        $this->model = new Model();
+        return $this->useOld(true)->useData($data);
+    }
+
+    /**
      * Set the current Field to process
      *
      * @param Field $field
