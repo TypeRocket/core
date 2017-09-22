@@ -434,18 +434,79 @@ if( ! function_exists('tr_redirect_data') ) {
     }
 }
 
+if( ! function_exists('tr_nonce_field') ) {
+/**
+ * TypeRocket Nonce Field
+ */
+function tr_nonce_field() {
+    return wp_nonce_field( 'form_' .  \TypeRocket\Core\Config::getSeed() , '_tr_nonce_form', false, false );
+}
+}
+
+if( ! function_exists('tr_rest_field') ) {
+/**
+ * TypeRocket Nonce Field
+ *
+ * @param string $method GET, POST, PUT, PATCH, DELETE
+ *
+ * @return string
+ */
+function tr_rest_field($method = 'POST') {
+    return "<input type=\"hidden\" name=\"_method\" value=\"{$method}\"  />";
+}
+}
+
+if( ! function_exists('tr_hidden_form_fields') ) {
+/**
+ * TypeRocket Nonce Field
+ *
+ * @param string $method GET, POST, PUT, PATCH, DELETE
+ *
+ * @return string
+ */
+function tr_hidden_form_fields($method = 'POST') {
+    return tr_rest_field($method) . tr_nonce_field();
+}
+}
+
+if( ! function_exists('tr_old_field') ) {
+/**
+ * @param string $name the name of the field
+ * @param string $default a default value
+ * @param bool $delete should delete old data when getting the last field
+ *
+ * @return string
+ */
+function tr_old_field($name, $default = '', $delete = false)
+{
+    $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', $delete);
+    return isset($data[$name]) ? $data[$name] : $default;
+}
+}
+
 if( ! function_exists('tr_old_fields') ) {
-    /**
-     * @param null $default
-     * @param bool $delete
-     *
-     * @return \TypeRocket\Http\Redirect
-     */
-    function tr_old_fields($default = null, $delete = true)
-    {
-        $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', $delete);
-        return !is_null($data) ? $data : $default;
-    }
+/**
+ * @param null $default
+ * @param bool $delete
+ *
+ * @return string
+ */
+function tr_old_fields($default = null, $delete = true)
+{
+    $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', $delete);
+    return !is_null($data) ? $data : $default;
+}
+}
+
+if( ! function_exists('tr_old_fields_remove') ) {
+/**
+ * @return bool
+ */
+function tr_old_fields_remove()
+{
+    (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', true);
+    return ! (bool) (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields');
+}
 }
 
 if( ! function_exists('tr_cookie') ) {
