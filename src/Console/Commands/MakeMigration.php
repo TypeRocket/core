@@ -43,7 +43,7 @@ class MakeMigration extends Command
         $tags = ['{{name}}'];
         $replacements = [ $name ];
         $template = __DIR__ . '/../../../templates/Migration.txt';
-        $new = TR_PATH . '/sql/migrations/' . $name . "." . time() . ".sql";
+        $new = TR_PATH . '/sql/migrations/' . time() . '.' . $name . ".sql";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );
