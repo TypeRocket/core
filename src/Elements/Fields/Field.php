@@ -29,7 +29,7 @@ abstract class Field
      *
      * @internal A Form must be passed for the field to work
      */
-    public function __construct( $name, array $attr = [], array $settings = [], $label = true )
+    public function __construct( $name, $attr = [], $settings = [], $label = true )
     {
         $args = func_get_args();
         $this->init();
