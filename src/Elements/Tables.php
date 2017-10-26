@@ -318,7 +318,7 @@ class Tables
                         $column = $data;
                     }
 
-                    $id_column = $result->columnId();
+                    $id_column = $result->getIdColumn();
 
                     $text = $result->$column;
 
