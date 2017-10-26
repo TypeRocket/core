@@ -318,10 +318,7 @@ class Tables
                         $column = $data;
                     }
 
-                    $id_column = 'id';
-                    if (method_exists($result, 'getIDColumn')) {
-                        $id_column = $result->getIDColumn();
-                    }
+                    $id_column = $result->columnId();
 
                     $text = $result->$column;
 

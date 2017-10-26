@@ -48,6 +48,7 @@ class Model
         }
 
         $this->query = $this->initQuery( new Query() );
+        $this->query->idColumn = $this->idColumn;
         $this->query->resultsClass = $this->resultsClass;
         $table = $this->getTable();
         $this->query->table($table);
@@ -96,20 +97,7 @@ class Model
      */
     protected function init()
     {
-        $query->idColumn = $this->idColumn;
         return $this;
-    }
-
-    /**
-     * Get column name of Primary Key
-     *
-     * This method return column name of Primary Key
-     *
-     * @return string
-     */
-    public function getIDColumn()
-    {
-        return $this->idColumn;
     }
 
     /**
