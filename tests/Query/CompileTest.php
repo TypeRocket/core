@@ -11,7 +11,7 @@ class CompileTest extends \PHPUnit_Framework_TestCase
         $query->idColumn = 'ID';
         $query->run = false;
         $query->where('ID', 1)->update(['post_title' => 'My Title']);
-        $sql = "UPDATE wp_posts SET post_title='My Title' WHERE ID = 1";
+        $sql = "UPDATE wp_posts SET `post_title`='My Title' WHERE ID = 1";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -38,7 +38,7 @@ class CompileTest extends \PHPUnit_Framework_TestCase
             'post_date_gmt' => $time,
             'post_modified_gmt' => $time,
         ]);
-        $sql = "INSERT INTO wp_posts (post_title,post_content,post_content_filtered,post_mime_type,post_excerpt,post_name,guid,post_password,to_ping,pinged,post_date,post_modified,post_date_gmt,post_modified_gmt)  VALUES  ( 'My Title','My content.','','','My...','my-name','','','','','{$time}','{$time}','{$time}','{$time}' ) ";
+        $sql = "INSERT INTO wp_posts (`post_title`,`post_content`,`post_content_filtered`,`post_mime_type`,`post_excerpt`,`post_name`,`guid`,`post_password`,`to_ping`,`pinged`,`post_date`,`post_modified`,`post_date_gmt`,`post_modified_gmt`)  VALUES  ( 'My Title','My content.','','','My...','my-name','','','','','{$time}','{$time}','{$time}','{$time}' ) ";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
