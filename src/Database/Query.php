@@ -718,7 +718,7 @@ class Query
 
             if( !empty($query['data_values']) ) {
                 foreach( $query['data'] as $column ) {
-                    $columns[] =  preg_replace($this->columnPattern, '', $column);
+                    $columns[] =  '`'.preg_replace($this->columnPattern, '', $column).'`';
                 }
 
                 $sql_insert['sql_insert_columns'] = ' (' . implode(',', $columns) . ') ';
@@ -738,7 +738,7 @@ class Query
 
             } else {
                 foreach( $query['data'] as $column => $data ) {
-                    $columns[] =  preg_replace($this->columnPattern, '', $column);
+                    $columns[] =  '`'.preg_replace($this->columnPattern, '', $column).'`';
                     $this->setupInserts($data, $inserts);
                 }
 
@@ -769,7 +769,7 @@ class Query
             }
 
             $sql = implode(', ', array_map(
-                function ($v, $k) { return sprintf("%s=%s", $k, $v); },
+                function ($v, $k) { return sprintf("`%s`=%s", $k, $v); },
                 $inserts,
                 $columns
             ));
@@ -868,7 +868,6 @@ class Query
                 $sql .= ' ' . implode(' ', $join);
             }
         }
-
         return $sql;
     }
 
