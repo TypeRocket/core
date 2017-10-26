@@ -318,6 +318,11 @@ class Tables
                         $column = $data;
                     }
 
+                    $id_column = 'id';
+                    if (method_exists($result, 'getIDColumn')) {
+                        $id_column = $result->getIDColumn();
+                    }
+
                     $text = $result->$column;
 
                     if( !empty($data['callback']) && is_callable($data['callback']) ) {
@@ -328,15 +333,15 @@ class Tables
                         foreach ($this->page->pages as $page) {
                             /** @var Page $page */
                             if ($page->action == 'edit') {
-                                $edit_url = $page->getUrl(['route_id' => (int)$result->id]);
+                                $edit_url = $page->getUrl(['route_id' => (int)$result->$id_column]);
                             }
 
                             if ($page->action == 'show') {
-                                $show_url = $page->getUrl(['route_id' => (int)$result->id]);
+                                $show_url = $page->getUrl(['route_id' => (int)$result->$id_column]);
                             }
 
                             if ($page->action == 'delete') {
-                                $delete_url = $page->getUrl(['route_id' => (int)$result->id]);
+                                $delete_url = $page->getUrl(['route_id' => (int)$result->$id_column]);
                             }
                         }
 
