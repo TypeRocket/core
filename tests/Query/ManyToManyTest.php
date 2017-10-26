@@ -26,7 +26,7 @@ class ManyToManyTest extends \PHPUnit_Framework_TestCase
         $post = new WPPost();
         $terms = $post->findById(1)->belongsToMany( WPTerm::class, 'posts_terms' );
         $result = $terms->attach( [1,2,3] );
-        $expected = "INSERT INTO posts_terms (terms_id,posts_id)  VALUES  ( 1,1 ) , ( 2,1 ) , ( 3,1 ) ";
+        $expected = "INSERT INTO posts_terms (`terms_id`,`posts_id`)  VALUES  ( 1,1 ) , ( 2,1 ) , ( 3,1 ) ";
         $sql = $result[1]->lastCompiledSQL;
         $this->assertTrue($sql == $expected);
     }
