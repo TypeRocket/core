@@ -7,13 +7,13 @@ use TypeRocket\Models\WPPost;
 class Registry
 {
 
-    private static $collection = [];
-    private static $postTypes = [
+    public static $collection = [];
+    public static $postTypes = [
         'post' => ['post', 'posts'],
         'page' => ['page', 'pages']
     ];
 
-    private static $taxonomies = [
+    public static $taxonomies = [
         'category' => ['category', 'categories'],
         'post_tag' => ['tag', 'tags']
     ];
@@ -161,7 +161,7 @@ class Registry
      *
      * @param \TypeRocket\Register\Taxonomy $obj
      */
-    private static function taxonomyFormContent( Taxonomy $obj ) {
+    public static function taxonomyFormContent( Taxonomy $obj ) {
 
         $callback = function( $term, $type, $obj )
         {
@@ -199,10 +199,10 @@ class Registry
      *
      * @param PostType $obj
      */
-    private static function postTypeFormContent( PostType $obj) {
+    public static function postTypeFormContent( PostType $obj) {
 
         /**
-         * @param \WP_Post$post
+         * @param \WP_Post $post
          * @param string $type
          * @param PostType $obj
          */
