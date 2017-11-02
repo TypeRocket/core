@@ -10,6 +10,7 @@ use TypeRocket\Utility\Sanitize;
 
 class Tables
 {
+
     public $results;
     public $columns;
     public $count;
@@ -52,6 +53,8 @@ class Tables
 
         $this->paged = !empty($_GET['paged']) ? (int) $_GET['paged'] : 1;
         $this->setLimit($limit);
+
+        do_action('tr_after_table_element_init', $this);
     }
 
     /**

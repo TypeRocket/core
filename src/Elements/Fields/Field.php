@@ -3,12 +3,13 @@ namespace TypeRocket\Elements\Fields;
 
 use \TypeRocket\Elements\Form;
 use TypeRocket\Elements\Traits\AttributesTrait;
+use TypeRocket\Elements\Traits\MacroTrait;
 use \TypeRocket\Utility\Sanitize;
 use \TypeRocket\Elements\Traits\FormConnectorTrait;
 
 abstract class Field
 {
-    use FormConnectorTrait, AttributesTrait;
+    use FormConnectorTrait, AttributesTrait, MacroTrait;
 
     protected $name = null;
     protected $type = null;
@@ -43,6 +44,7 @@ abstract class Field
 
         $setup->invokeArgs( $this, $args );
         $setup->setAccessible( false );
+        do_action('tr_after_field_element_init', $this);
     }
 
     /**

@@ -3,6 +3,7 @@ namespace TypeRocket\Elements;
 
 use TypeRocket\Core\Config;
 use TypeRocket\Elements\Fields\Submit;
+use TypeRocket\Elements\Traits\MacroTrait;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
@@ -16,7 +17,7 @@ use TypeRocket\Register\Registry;
 class Form
 {
 
-    use FormConnectorTrait;
+    use FormConnectorTrait, MacroTrait;
 
     /** @var \TypeRocket\Elements\Fields\Field $currentField */
     protected $currentField = '';
@@ -34,7 +35,6 @@ class Form
      */
     public function __construct( $resource = 'auto', $action = 'update', $itemId = null )
     {
-
         if( is_int($action) && ! $itemId ) {
             $itemId = $action;
             $action = 'update';
@@ -55,6 +55,8 @@ class Form
                 $this->model->findById($this->itemId);
             }
         }
+
+        do_action('tr_after_form_element_init', $this);
     }
 
     /**
