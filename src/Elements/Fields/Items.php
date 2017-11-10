@@ -28,6 +28,10 @@ class Items extends Field
             $this->setSetting('button', 'Insert Item');
         }
 
+        if (! $this->getSetting('clear') ) {
+            $this->setSetting('clear', 'Clear');
+        }
+
         $list = '';
 
         if (is_array( $items )) {
@@ -53,7 +57,7 @@ class Items extends Field
         $html .= $generator->newElement( 'input', [
             'type'  => 'button',
             'class' => 'items-list-clear button',
-            'value' => 'Clear'
+            'value' => $this->getSetting( 'clear' )
         ])->getString();
         $html .= '</div>';
 

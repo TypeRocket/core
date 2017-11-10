@@ -36,6 +36,10 @@ class Image extends Field implements ScriptField
             $this->setSetting( 'button', 'Insert Image' );
         }
 
+        if ( ! $this->getSetting( 'clear' )) {
+            $this->setSetting( 'clear', 'Clear' );
+        }
+
         if ($value != "") {
             $image = wp_get_attachment_image( (int) $value, 'thumbnail' );
         } else {
@@ -56,7 +60,7 @@ class Image extends Field implements ScriptField
         $html .= $generator->newElement( 'input', [
             'type'  => 'button',
             'class' => 'image-picker-clear button',
-            'value' => 'Clear'
+            'value' => $this->getSetting( 'clear' )
         ])->getString();
         $html .= '</div>';
         $html .= $generator->newElement( 'div', [

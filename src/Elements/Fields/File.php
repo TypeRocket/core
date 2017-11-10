@@ -36,6 +36,10 @@ class File extends Field implements ScriptField
             $this->setSetting( 'button', 'Insert File' );
         }
 
+        if ( ! $this->getSetting( 'clear' )) {
+            $this->setSetting( 'clear', 'Clear' );
+        }
+
         if ($value != "") {
             $url  = wp_get_attachment_url( $value );
             $file = '<a target="_blank" href="' . $url . '">' . $url . '</a>';
@@ -53,7 +57,7 @@ class File extends Field implements ScriptField
         $html .= $generator->newElement( 'input', [
             'type'  => 'button',
             'class' => 'file-picker-clear button',
-            'value' => 'Clear'
+            'value' => $this->getSetting( 'clear' )
         ])->getString();
         $html .= '</div>';
         $html .= $generator->newElement( 'div', [
