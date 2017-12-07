@@ -16,6 +16,7 @@ trait FormConnectorTrait
     protected $group = null;
     protected $sub = null;
     protected $settings = [];
+    protected $prefix = 'tr';
 
     /**
      * Get controller
@@ -225,5 +226,45 @@ trait FormConnectorTrait
         }
 
         return $this->settings['render'];
+    }
+
+    /**
+     * Get Name Attribute Prefix
+     *
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * Set Name Attribute Prefix
+     *
+     * Use this mainly for Widgets. Should be used with caution
+     * as the default value `tr` is required for some fields
+     * and features to work.
+     *
+     * @param $name
+     *
+     * @return $this
+     */
+    public function setPrefix($name)
+    {
+        $this->prefix = $name;
+        return $this;
+    }
+
+    /**
+     * Set Widget Name Attribute Prefix
+     *
+     * @param \WP_Widget $widget
+     *
+     * @return $this
+     */
+    public function setWidgetPrefix(\WP_Widget $widget)
+    {
+        $this->setPrefix('widget-' . $widget->id_base . '[' . $widget->number . ']');
+        return $this;
     }
 }

@@ -17,7 +17,6 @@ abstract class Field
 
     /** @var Form */
     protected $form = null;
-    protected $prefix = 'tr';
     protected $label = false;
 
     /**
@@ -132,6 +131,7 @@ abstract class Field
         $this->action = $this->form->getAction();
         $this->model = $this->form->getModel();
         $this->setPopulate( $this->form->getPopulate() );
+        $this->prefix = $this->form->getPrefix();
 
         return $this;
     }

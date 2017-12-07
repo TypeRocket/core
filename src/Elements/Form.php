@@ -287,6 +287,19 @@ class Form
     }
 
     /**
+     * Use Form for Widget
+     *
+     * @param \WP_Widget $widget
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function useWidget(\WP_Widget $widget, $data = [])
+    {
+        return $this->setWidgetPrefix($widget)->useExternal($data);
+    }
+
+    /**
      * Set the current Field to process
      *
      * @param Field $field
