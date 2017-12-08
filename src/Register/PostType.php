@@ -8,6 +8,7 @@ use TypeRocket\Utility\Sanitize;
 
 class PostType extends Registrable
 {
+    use Resourceful;
 
     private $title = null;
     private $form = [];

@@ -4,6 +4,7 @@ namespace TypeRocket\Http\Responders;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 use \TypeRocket\Register\Registry;
+use TypeRocket\Utility\Str;
 
 class PostsResponder extends Responder
 {
@@ -26,7 +27,7 @@ class PostsResponder extends Responder
 
         $type       = get_post_type( $id );
         $resource   = Registry::getPostTypeResource( $type );
-        $prefix     = ucfirst( $resource[0] );
+        $prefix     = Str::camelize( $resource[0] );
         $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
         $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}";
         $resource = $resource[0];

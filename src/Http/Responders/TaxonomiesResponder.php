@@ -4,6 +4,7 @@ namespace TypeRocket\Http\Responders;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 use \TypeRocket\Register\Registry;
+use TypeRocket\Utility\Str;
 
 class TaxonomiesResponder extends Responder
 {
@@ -22,7 +23,7 @@ class TaxonomiesResponder extends Responder
     {
         $taxonomy   = $this->taxonomy;
         $resource   = Registry::getTaxonomyResource( $taxonomy );
-        $prefix     = ucfirst( $resource[0] );
+        $prefix     = Str::camelize( $resource[0] );
         $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
         $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}";
         $resource = $resource[0];

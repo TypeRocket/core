@@ -48,4 +48,24 @@ class Str
         return mb_substr($subject, 0, mb_strlen($needle) ) === $needle;
     }
 
+    /**
+     * Convert To Camel Case
+     *
+     * @param string $input
+     * @param string $separator specify - or _
+     * @param bool $capitalize_first_char define as false if you want camelCase over CamelCase
+     *
+     * @return mixed
+     */
+    public static function camelize($input, $separator = '_', $capitalize_first_char = true)
+    {
+        $str = str_replace($separator, '', ucwords($input, $separator));
+
+        if (!$capitalize_first_char) {
+            $str = lcfirst($str);
+        }
+
+        return $str;
+    }
+
 }

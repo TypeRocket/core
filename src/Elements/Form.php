@@ -13,6 +13,7 @@ use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\Model;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
 use TypeRocket\Register\Registry;
+use TypeRocket\Utility\Str;
 
 class Form
 {
@@ -45,7 +46,7 @@ class Form
         $this->itemId = $itemId;
         $this->autoConfig();
 
-        $Resource = ucfirst($this->resource);
+        $Resource = Str::camelize($this->resource);
         $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
 
         if(class_exists($model)) {
@@ -93,7 +94,7 @@ class Form
                 $item_id  = $post->ID;
                 $resource = Registry::getPostTypeResource($post->post_type);
 
-                $Resource = ucfirst($resource[0]);
+                $Resource = Str::camelize($resource[0]);
                 $resource = $resource[0];
                 $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
                 $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$Resource}Controller";
@@ -111,7 +112,7 @@ class Form
                 $item_id  = $tag_ID;
                 $resource = Registry::getTaxonomyResource($taxonomy);
 
-                $Resource = ucfirst($resource[0]);
+                $Resource = Str::camelize($resource[0]);
                 $resource = $resource[0];
                 $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
                 $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$Resource}Controller";

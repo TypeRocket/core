@@ -12,6 +12,8 @@ use TypeRocket\Utility\Sanitize;
 class Taxonomy extends Registrable
 {
 
+    use Resourceful;
+
     private $postTypes = [];
     private $form = [];
     private $resource = null;

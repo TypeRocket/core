@@ -4,6 +4,7 @@ namespace TypeRocket\Http;
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Resolver;
 use TypeRocket\Models\Model;
+use TypeRocket\Utility\Str;
 
 /**
  * Class Router
@@ -36,7 +37,7 @@ class Router
         $this->response = $response;
         $this->action = $this->getAction( $action_method );
         $resource = $this->request->getResource();
-        $resource = ucfirst( $resource );
+        $resource = Str::camelize( $resource );
         $controller  = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$resource}Controller";
 
         if ( class_exists( $controller ) ) {
