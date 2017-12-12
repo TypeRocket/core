@@ -1,7 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Query;
 
-class CommentTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CommentTest extends TestCase
 {
     public function testCreateWithSlashing()
     {

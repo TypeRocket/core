@@ -1,17 +1,21 @@
 <?php
+declare(strict_types=1);
+
 namespace Validator;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Database\Query;
 use TypeRocket\Models\WPPost;
+use TypeRocket\Utility\Validator;
 
-class ValidatorTest extends \PHPUnit_Framework_TestCase
+class ValidatorTest extends TestCase
 {
 
     public function testEmailFieldPasses()
     {
         $fields['email'] = 'example@typerocket.com';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'email' => 'email'
         ], $fields);
 
@@ -22,7 +26,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['person']['email'] = 'example@typerocket.com';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person.email' => 'email'
         ], $fields);
 
@@ -34,7 +38,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $fields['person'][1]['email'] = 'example@typerocket.com';
         $fields['person'][2]['email'] = 'example2.1@typerocket.com';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person.*.email' => 'email'
         ], $fields);
 
@@ -47,7 +51,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $fields['person'][2]['email'] = 'e@example2.1@typerocket.com';
         $fields['person'][3]['email'] = 'example2.1typerocket.com';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person.*.email' => 'email'
         ], $fields);
 
@@ -69,7 +73,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             return ['success' => $field . ' is good'];
         }
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person.*.email' => 'callback:\Validator\checkValidatorCallback:option'
         ], $fields);
 
@@ -91,7 +95,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             return ['success' => $field . ' is good'];
         }
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person.*.email' => 'callback:\Validator\checkValidatorCallbackError:option'
         ], $fields);
 
@@ -102,7 +106,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['person'] = 'Kevin';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person' => 'min:6'
         ], $fields);
 
@@ -113,7 +117,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['person'] = 'Kevin';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person' => 'max:4'
         ], $fields);
 
@@ -124,7 +128,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['person'] = 'Kevin';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person' => 'min:5'
         ], $fields);
 
@@ -135,7 +139,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['person'] = 'Kevin';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'person' => 'max:5'
         ], $fields);
 
@@ -146,7 +150,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['number'] = '12';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'number' => 'size:2'
         ], $fields);
 
@@ -157,7 +161,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['number'] = '123';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'number' => 'size:2'
         ], $fields);
 
@@ -170,7 +174,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
         $result = (new Query())->table('wp_options')->where('option_name', $fields['option_name'])->first();
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options@option_id:' . $result['option_id']
         ], $fields);
 
@@ -181,7 +185,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['option_name'] = 'mailserver_url';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options'
         ], $fields);
 
@@ -192,7 +196,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['option_name'] = 'mailserver_url';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options@option_name'
         ], $fields);
 
@@ -203,7 +207,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['option_name'] = 'this_is_not_an_option';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options'
         ], $fields);
 
@@ -214,7 +218,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['option_name'] = 'mailserver_url';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options@option_id:0'
         ], $fields);
 
@@ -225,7 +229,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $fields['title'] = 'Not an existing title';
 
-        $validator = new \TypeRocket\Utility\Validator([
+        $validator = new Validator([
             'title' => 'unique:post_title'
         ], $fields, WPPost::class);
 

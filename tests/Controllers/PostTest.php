@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace Controllers;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Controllers\WPPostController;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPPost;
 
-class PostTest extends \PHPUnit_Framework_TestCase
+class PostTest extends TestCase
 {
     public function testUpdateWithMetaMethod()
     {

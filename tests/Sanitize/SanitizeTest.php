@@ -1,7 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace Sanitize;
 
-class SanitizeTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SanitizeTest extends TestCase
 {
     public function testSanitizeDash()
     {

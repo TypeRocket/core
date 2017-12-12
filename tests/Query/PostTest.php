@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace Query;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Meta\WPPostMeta;
 use TypeRocket\Models\WPUser;
 
-class PostTest extends \PHPUnit_Framework_TestCase
+class PostTest extends TestCase
 {
 
     public function testCreateWithSlashing()

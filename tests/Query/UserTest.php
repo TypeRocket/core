@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace Query;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPUser;
 
-class UserTest extends \PHPUnit_Framework_TestCase
+class UserTest extends TestCase
 {
     static public $sharedUserId = 2;
 

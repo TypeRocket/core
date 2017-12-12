@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Query;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Database\Query;
 
-class InsertTest extends \PHPUnit_Framework_TestCase
+class InsertTest extends TestCase
 {
 
     public function testMultipleInsert()

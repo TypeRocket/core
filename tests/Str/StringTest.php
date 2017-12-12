@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Str;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Utility\Str;
 
-class StringTest extends \PHPUnit_Framework_TestCase
+class StringTest extends TestCase
 {
     public function testStarts()
     {

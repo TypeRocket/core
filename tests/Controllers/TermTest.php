@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace Controllers;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Controllers\WPTermController;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPTerm;
 
-class TermTest extends \PHPUnit_Framework_TestCase
+class TermTest extends TestCase
 {
     public function testUpdateWithMetaMethod()
     {
