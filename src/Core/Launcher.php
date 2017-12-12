@@ -250,7 +250,7 @@ class Launcher
     public function addCss()
     {
         $paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $assetVersion = Config::locate('app.assets');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css', [], $assetVersion);
@@ -266,7 +266,7 @@ class Launcher
     public function addJs()
     {
         $paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $assetVersion = Config::locate('app.assets');
         $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], $assetVersion );
@@ -281,7 +281,7 @@ class Launcher
     public function addBottomJs()
     {
         $paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $assetVersion = Config::locate('app.assets');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], $assetVersion, true );

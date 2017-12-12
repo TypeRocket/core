@@ -25,9 +25,9 @@ class View
             self::$page = $dots;
             self::$view = $dots;
         } else {
-            $dots = explode('.', $dots);
-            self::$page = Config::locate('paths')['pages'] . '/' . implode('/', $dots) . '.php';
-            self::$view =  Config::locate('paths')['views'] . '/' . implode('/', $dots) . '.php';
+            $location = implode('/', explode('.', $dots) );
+            self::$page = Config::locate('paths.pages') . '/' . $location . '.php';
+            self::$view =  Config::locate('paths.views') . '/' . $location . '.php';
         }
 
         if( !empty( $data ) ) {

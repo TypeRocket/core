@@ -26,7 +26,7 @@ class Repeater extends Field implements ScriptField
      */
     public function enqueueScripts()
     {
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $assetVersion = Config::locate('app.assets');
         wp_enqueue_script( 'jquery-ui-sortable', ['jquery'], $assetVersion, true );
     }
 

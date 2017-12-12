@@ -16,7 +16,7 @@ class Builder extends Matrix
      */
     public function enqueueScripts() {
         $this->paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $assetVersion = Config::locate('app.assets');
         $assets = $this->paths['urls']['assets'];
         wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );
         wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], $assetVersion, true );

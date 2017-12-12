@@ -22,7 +22,7 @@ class Editor extends Textarea implements ScriptField
      */
     public function enqueueScripts() {
         $paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $assetVersion = Config::locate('app.assets');
         $assets = $paths['urls']['assets'];
         wp_enqueue_media();
         wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/redactor.min.js', ['jquery'], $assetVersion, true );
