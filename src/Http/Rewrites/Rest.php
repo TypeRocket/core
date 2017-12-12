@@ -10,7 +10,7 @@ class Rest
 
     public function __construct()
     {
-        if ( defined( 'TR_START' ) ) {
+        if ( defined( 'TR_PATH' ) ) {
             $tr_resource = get_query_var( 'tr_json_controller', null );
             $tr_item_id  = get_query_var( 'tr_json_item', null );
 

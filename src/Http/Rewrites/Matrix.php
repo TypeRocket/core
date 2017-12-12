@@ -10,7 +10,7 @@ class Matrix
 
     public function __construct()
     {
-        if( defined('TR_START') ) {
+        if( defined('TR_PATH') ) {
             $group = get_query_var('tr_matrix_group', null);
             $type = get_query_var('tr_matrix_type', null);
             $folder = get_query_var('tr_matrix_folder', null);

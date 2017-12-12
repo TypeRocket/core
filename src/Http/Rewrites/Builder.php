@@ -10,7 +10,7 @@ class Builder
 
     public function __construct()
     {
-        if( defined('TR_START') ) {
+        if( defined('TR_PATH') ) {
             $group = get_query_var('tr_builder_group', null);
             $type = get_query_var('tr_builder_type', null);
             $folder = get_query_var('tr_builder_folder', null);

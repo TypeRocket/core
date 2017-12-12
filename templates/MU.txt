@@ -7,7 +7,6 @@ Version: 3.0.0
 Author URI: http://typerocket.com
 */
 if( defined('TR_PATH') ) {
-    define( 'TR_START', microtime( true ) );
     $typerocket_config = require TR_PATH . '/config/app.php';
     new \TypeRocket\Core\Config( $typerocket_config );
 
@@ -17,6 +16,4 @@ if( defined('TR_PATH') ) {
     if( \TypeRocket\Core\Config::getTemplates() ) {
         $typerocket_core->overrideTemplates();
     }
-
-    define( 'TR_END', microtime( true ) );
 }
