@@ -18,7 +18,7 @@ before_install:
  - mysql -e 'SET NAMES utf8; create database IF NOT EXISTS wordpress;'
 
 install:
- - travis_retry composer install --no-interaction --prefer-source --dev
+ - travis_retry composer install --no-interaction --prefer-source
 
 notifications:
  on_success: never
