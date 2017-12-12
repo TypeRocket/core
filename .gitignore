@@ -44,14 +44,11 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# Eclipse files #
-#################
+# IDE files #
+#############
 
 .settings
 .project
 .build
-
-#PHPStorm files #
-#################
-
 .idea
+.vscode
