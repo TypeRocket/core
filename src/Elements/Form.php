@@ -382,7 +382,7 @@ class Form
         }
 
         $r .= $generator->newInput( 'hidden', '_method', $this->method )->getString();
-        $r .= wp_nonce_field( 'form_' .  Config::getSeed() , '_tr_nonce_form', false, false );
+        $r .= wp_nonce_field( 'form_' .  Config::locate('app.seed') , '_tr_nonce_form', false, false );
 
         return $r;
     }

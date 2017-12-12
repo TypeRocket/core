@@ -22,7 +22,7 @@ class Builder
                 $tr_matrix_id = time(); // id for repeater
                 $form = new Form();
 
-                if( $form_class = Config::locate('app.form') ) {
+                if( $form_class = Config::locate('app.class.form') ) {
                     $form = new $form_class;
                 }
 

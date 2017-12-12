@@ -362,7 +362,7 @@ class Tables
                                         break;
                                     case 'delete' :
                                         if( $delete_ajax ) {
-                                            $delete_url = wp_nonce_url($delete_url, 'form_' . Config::getSeed(), '_tr_nonce_form');
+                                            $delete_url = wp_nonce_url($delete_url, 'form_' . Config::locate('app.seed'), '_tr_nonce_form');
                                             $delete_class = 'class="tr-delete-row-rest-button"';
                                         }
                                         $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" {$delete_class} href=\"{$delete_url}\">Delete</a></span>";

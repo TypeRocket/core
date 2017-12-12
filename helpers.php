@@ -171,11 +171,8 @@ if( ! function_exists('tr_form') ) {
  */
 function tr_form($resource = 'auto', $action = 'update', $item_id = null)
 {
-    if( $form = \TypeRocket\Core\Config::locate('app.form') ) {
-        return new $form($resource, $action, $item_id);
-    }
-
-    return new \TypeRocket\Elements\Form($resource, $action, $item_id);
+    $form = \TypeRocket\Core\Config::locate('app.class.form');
+    return new $form($resource, $action, $item_id);
 }
 }
 
