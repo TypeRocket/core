@@ -45,7 +45,7 @@ class Launcher
         | Load TypeRocket Router
         |
         */
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $routeFile = $paths['base'] . '/routes.php';
         if( file_exists($routeFile) ) {
             /** @noinspection PhpIncludeInspection */
@@ -81,32 +81,30 @@ class Launcher
 
     public function overrideTemplates()
     {
-        $paths = Config::getPaths();
-        $templates = Config::getTemplates();
-
-        define( 'WP_DEFAULT_THEME', Config::getTemplates() );
+        $paths = Config::locate('paths');
+        define( 'WP_DEFAULT_THEME', Config::locate('app.root.theme') );
         register_theme_directory( $paths['themes'] );
 
         // Set Directories
-        add_filter('template_directory', function() use ( $paths, $templates ) {
-            return $paths['themes'] . '/' . $templates;
+        add_filter('template_directory', function() use ( $paths ) {
+            return $paths['themes'] . '/' . WP_DEFAULT_THEME;
         } );
 
-        add_filter('stylesheet_directory', function() use ( $paths, $templates ) {
-            return $paths['themes'] . '/' . $templates;
+        add_filter('stylesheet_directory', function() use ( $paths ) {
+            return $paths['themes'] . '/' . WP_DEFAULT_THEME;
         } );
 
         // Set URIs
-        add_filter('template_directory_uri', function() use ( $paths, $templates ) {
-            return $paths['urls']['assets'] . '/' . $templates;
+        add_filter('template_directory_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/' . WP_DEFAULT_THEME;
         });
 
-        add_filter('stylesheet_directory_uri', function() use ( $paths, $templates ) {
-            return $paths['urls']['assets'] . '/' . $templates;
+        add_filter('stylesheet_directory_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/' . WP_DEFAULT_THEME;
         });
 
-        add_filter('stylesheet_uri', function() use ( $paths, $templates ) {
-            return $paths['urls']['assets'] . '/' . $templates . '/css/theme.css';
+        add_filter('stylesheet_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/' . WP_DEFAULT_THEME . '/css/theme.css';
         });
 
         add_filter('theme_root_uri', function() use ( $paths ) {
@@ -119,7 +117,7 @@ class Launcher
      */
     public function initFrontEnd()
     {
-        Config::enableFrontend();
+        Config::typerocket('frontend', true);
         add_action( 'wp_enqueue_scripts', [ $this, 'addCss' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
         add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
@@ -130,8 +128,8 @@ class Launcher
      */
     public function loadPlugins()
     {
-        if (Config::getPlugins()) {
-            $loader = new Loader( Config::getPlugins() );
+        if ( $plugins = Config::locate('app.plugins') ) {
+            $loader = new Loader( $plugins );
             $loader->load();
         }
     }
@@ -251,7 +249,7 @@ class Launcher
      */
     public function addCss()
     {
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $assetVersion = Config::locate('app.assets', '1.0');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
@@ -267,7 +265,7 @@ class Launcher
      */
     public function addJs()
     {
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $assetVersion = Config::locate('app.assets', '1.0');
         $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
@@ -282,7 +280,7 @@ class Launcher
      */
     public function addBottomJs()
     {
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $assetVersion = Config::locate('app.assets', '1.0');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 

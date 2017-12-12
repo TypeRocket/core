@@ -15,7 +15,7 @@ class Builder extends Matrix
      * Get the scripts
      */
     public function enqueueScripts() {
-        $this->paths = Config::getPaths();
+        $this->paths = Config::locate('paths');
         $assetVersion = Config::locate('app.assets', '1.0');
         $assets = $this->paths['urls']['assets'];
         wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );

@@ -48,13 +48,13 @@ class UseTemplates extends Command
 
             try {
                 $file = new File(TR_PATH . '/config/app.php');
-                $enabled = "'templates' => 'templates',";
-                $found = $file->replaceOnLine("'templates' => false,", $enabled );
+                $enabled = "'use_root' => true,";
+                $found = $file->replaceOnLine("'use_root' => false,", $enabled );
 
                 if($found) {
                     $this->success('Enabled templates in config/app.php' );
                 } else {
-                    $this->error('Manually set templates in config/app.php to: \'templates\'');
+                    $this->error('Manually set use_root in config/app.php to: true');
                 }
 
             } catch ( \Exception $e ) {

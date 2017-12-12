@@ -3,6 +3,7 @@
 namespace TypeRocket\Console;
 
 use Symfony\Component\Console\Application;
+use TypeRocket\Core\Config;
 
 class Launcher
 {
@@ -12,12 +13,13 @@ class Launcher
         $application = new Application();
         $commands = new CommandCollection();
         $commands->enableCustom();
+        $wp_root = Config::locate('galaxy.wordpress');
 
-        if( file_exists( Config::getWordPressPath() . '/wp-load.php' ) ) {
+        if( is_file( $wp_root . '/wp-load.php' ) ) {
             define('WP_USE_THEMES', true);
             global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
-            require( Config::getWordPressPath() . '/wp-load.php' );
-            require( Config::getWordPressPath() . '/wp-admin/includes/upgrade.php' );
+            require( $wp_root . '/wp-load.php' );
+            require( $wp_root . '/wp-admin/includes/upgrade.php' );
 
             $commands->enableWordPress();
         }

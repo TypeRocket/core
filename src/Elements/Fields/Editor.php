@@ -21,7 +21,7 @@ class Editor extends Textarea implements ScriptField
      * Get the scripts
      */
     public function enqueueScripts() {
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $assetVersion = Config::locate('app.assets', '1.0');
         $assets = $paths['urls']['assets'];
         wp_enqueue_media();

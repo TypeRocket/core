@@ -33,7 +33,7 @@ class Builder
                     $formGroup .= '.';
                 }
 
-                $paths = Config::getPaths();
+                $paths = Config::locate('paths');
 
                 $form->setGroup($formGroup . "{$group}.{$tr_matrix_id}.{$type}");
                 $file = $paths['components'] . "/{$folder}/{$type}.php";

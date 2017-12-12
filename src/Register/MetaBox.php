@@ -151,7 +151,7 @@ class MetaBox extends Registrable
                         call_user_func_array( $callback, [$obj]);
                     elseif (function_exists( $func )) :
                         $func( $obj );
-                    elseif ( Config::getDebugStatus() == true) :
+                    elseif ( Config::locate('app.debug') == true) :
                         echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                     endif;
                     echo '</div>';

@@ -72,11 +72,8 @@ class Page extends Registrable
     public function setIcon( $name )
     {
         $name       = strtolower( $name );
-        $icons      = Config::getIcons();
-
-        if( ! $icons instanceof Icons ) {
-            $icons = new Icons();
-        }
+        $icons      = Config::locate('app.class.icons');
+        $icons      = new $icons;
 
         $this->icon = !empty($icons[$name]) ? $icons[$name] : null;
         if( ! $this->icon ) {
@@ -348,7 +345,7 @@ class Page extends Registrable
                 include( $this->args['view_file'] );
             } elseif (file_exists( View::$page )) {
                 $this->loadView();
-            } elseif( Config::getDebugStatus() == true ) {
+            } elseif( Config::locate('app.debug') == true ) {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by creating or setting a view.</div>";
             }
             echo '</div></div>';

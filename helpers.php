@@ -9,7 +9,7 @@ if( ! function_exists('tr_get_model') ) {
  */
 function tr_get_model($resource)
 {
-    $Resource = ucfirst($resource);
+    $Resource = TypeRocket\Utility\Str::camelize($resource);
     $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
     $object   = null;
 
@@ -32,11 +32,7 @@ if( ! function_exists('tr_taxonomy') ) {
  *
  * @return \TypeRocket\Register\Taxonomy
  */
-function tr_taxonomy(
-    $singular,
-    $plural = null,
-    $settings = []
-) {
+function tr_taxonomy( $singular, $plural = null, $settings = [] ) {
     $obj = new \TypeRocket\Register\Taxonomy($singular, $plural, $settings);
     $obj->addToRegistry();
 
@@ -54,11 +50,7 @@ if( ! function_exists('tr_post_type') ) {
  *
  * @return \TypeRocket\Register\PostType
  */
-function tr_post_type(
-    $singular,
-    $plural = null,
-    $settings = []
-) {
+function tr_post_type( $singular, $plural = null, $settings = []) {
     $obj = new \TypeRocket\Register\PostType($singular, $plural, $settings);
     $obj->addToRegistry();
 
@@ -76,11 +68,7 @@ if( ! function_exists('tr_meta_box') ) {
  *
  * @return \TypeRocket\Register\MetaBox
  */
-function tr_meta_box(
-    $name = null,
-    $screen = null,
-    $settings = []
-) {
+function tr_meta_box( $name = null, $screen = null, $settings = [] ) {
     $obj = new \TypeRocket\Register\MetaBox($name, $screen, $settings);
     $obj->addToRegistry();
 
@@ -246,7 +234,7 @@ function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\M
         foreach ($builder_data as $data) {
             $key       = key($data);
             $component = strtolower(key($data));
-            $paths = \TypeRocket\Core\Config::getPaths();
+            $paths = \TypeRocket\Core\Config::locate('paths');
             $file  = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
             if( file_exists($file) ) {
                 $fn = function( $file, $data, $name, $item_id, $model) {
@@ -439,7 +427,7 @@ if( ! function_exists('tr_nonce_field') ) {
  * TypeRocket Nonce Field
  */
 function tr_nonce_field() {
-    return wp_nonce_field( 'form_' .  \TypeRocket\Core\Config::getSeed() , '_tr_nonce_form', false, false );
+    return wp_nonce_field( 'form_' .  \TypeRocket\Core\Config::locate('app.seed') , '_tr_nonce_form', false, false );
 }
 }
 

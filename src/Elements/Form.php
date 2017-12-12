@@ -532,7 +532,7 @@ class Form
      */
     public function getDebugStatus()
     {
-        return ( $this->debugStatus === false ) ? $this->debugStatus : Config::getDebugStatus();
+        return ( $this->debugStatus === false ) ? $this->debugStatus : Config::locate('app.debug');
     }
 
     /**

@@ -21,16 +21,7 @@ class Loader
      */
     public function __construct( $plugins)
     {
-        $this->setPlugins($plugins);
-    }
-
-    /**
-     * Set the plugins
-     *
-     * @param array $collection
-     */
-    private function setPlugins( $collection) {
-        $this->plugins = apply_filters('tr_set_plugins', $collection);
+        $this->plugins = apply_filters('tr_set_plugins', $plugins);
     }
 
     /**
@@ -39,7 +30,7 @@ class Loader
     public function load()
     {
         $plugins_list = $this->plugins;
-	    $paths = Config::getPaths();
+	    $paths = Config::locate('paths');
 
         foreach ($plugins_list as $plugin) {
             $folder = $paths['plugins'] . '/' . $plugin . '/';

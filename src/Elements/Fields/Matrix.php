@@ -45,7 +45,7 @@ class Matrix extends Field implements ScriptField {
      * Get the scripts
      */
     public function enqueueScripts() {
-        $this->paths = Config::getPaths();
+        $this->paths = Config::locate('paths');
         $assetVersion = Config::locate('app.assets', '1.0');
         $assets = $this->paths['urls']['assets'];
         wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );
@@ -193,7 +193,7 @@ class Matrix extends Field implements ScriptField {
      * @return $this
      */
     public function setOptionsFromFolder() {
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $folder = $this->getComponentFolder();
         $dir = $paths['components'] . '/' . $folder;
 
@@ -239,7 +239,7 @@ class Matrix extends Field implements ScriptField {
         $utility = new Buffer();
         $blocks = '';
         $form = $this->getForm();
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $folder = $this->getComponentFolder();
 
         if (is_array( $val )) {
@@ -323,7 +323,7 @@ class Matrix extends Field implements ScriptField {
      */
     public function setComponentFolder($folder_name = '') {
 
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $dir = $paths['components'] . '/' . $folder_name;
 
         if(file_exists($dir)) {

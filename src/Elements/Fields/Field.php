@@ -64,6 +64,17 @@ abstract class Field
     }
 
     /**
+     * Print Field to Screen
+     *
+     * @return $this
+     */
+    public function echo()
+    {
+        echo $this;
+        return $this;
+    }
+
+    /**
      * Require Form
      *
      * @param $args

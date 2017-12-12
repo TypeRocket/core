@@ -4,20 +4,22 @@ namespace TypeRocket\Utility;
 
 class Dots
 {
+
     /**
      * Dots Walk
      *
      * Traverse array with dot notation.
      *
-     * @param string $dots dot notation key.next.final or key.*.final
+     * @param string $dots dot notation key.next.final
      * @param array $array an array to traverse
+     * @param null $default
      *
      * @return array|mixed|null
      */
-    public static function walk($dots, array $array) {
+    public static function walk($dots, array $array, $default = null) {
         $traverse = explode('.', $dots);
         foreach ($traverse as $step) {
-            if( ! isset($array[$step]) && ! is_string($array) ) { return null; }
+            if( ! isset($array[$step]) && ! is_string($array) ) { return $default; }
             $array = $array[$step];
         }
         return $array;
