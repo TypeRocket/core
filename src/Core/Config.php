@@ -17,7 +17,9 @@ class Config
     public function __construct( $root )
     {
         self::$root = $root;
-        self::$config['app'] = require( $root . '/app.php' );
+        if(is_file($root . '/app.php')) {
+            self::$config['app'] = require( $root . '/app.php' );
+        }
         self::$config['typerocket'] = [
             'frontend' => false
         ];

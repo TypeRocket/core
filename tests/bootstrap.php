@@ -9,6 +9,7 @@ if( ! file_exists($wp_load) ) {
     echo 'PHP Unit: WordPress Not Connected at ' . $wp_load . PHP_EOL;
 } else {
     define('WP_USE_THEMES', false);
+    new \TypeRocket\Core\Config( __DIR__ . '/config');
 
     // Disable email
     function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) { return true; }
