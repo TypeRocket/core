@@ -1,8 +1,6 @@
 <?php
 namespace TypeRocket\Core;
 
-use TypeRocket\Utility\Dots;
-
 class Config
 {
 
@@ -53,7 +51,7 @@ class Config
                 return self::$config[$root];
             }
 
-            return Dots::walk($rest, self::$config[$root], $default);
+            return dots_walk($rest, self::$config[$root], $default);
         }
 
         return null;
@@ -71,7 +69,7 @@ class Config
      */
     public static function locate($dots, $default = null)
     {
-        $value = Dots::walk($dots, self::$config);
+        $value = dots_walk($dots, self::$config);
         if( isset($dots) && is_null($value) ) {
             return self::jitLocate($dots, $default);
         }
@@ -89,7 +87,7 @@ class Config
      */
     public static function typerocket($dots, $value)
     {
-        return Dots::set($dots, self::$config['typerocket'], $value);
+        return dots_set($dots, self::$config['typerocket'], $value);
     }
 
 }

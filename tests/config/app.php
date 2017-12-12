@@ -45,7 +45,7 @@ return [
     */
     'class' => [
         'icons' => \TypeRocket\Elements\Icons::class,
-        'user' => \App\Models\User::class,
+        'user' => \TypeRocket\Models\WPUser::class,
         'form' => \TypeRocket\Elements\Form::class
     ],
 

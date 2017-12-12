@@ -24,7 +24,8 @@
     },
     "autoload": {
         "files": [
-            "helpers.php"
+            "functions/functions.php",
+            "functions/helpers.php"
         ],
         "psr-4": {
             "TypeRocket\\": "src/"
