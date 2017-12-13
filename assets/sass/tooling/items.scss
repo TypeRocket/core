@@ -1,0 +1,48 @@
+@import 'vars.scss';
+
+/* Item List Field
+----------------------------------------------------------------------- */
+.tr-items-list li {
+    display: block;
+    position: relative;
+    padding: 10px 40px;
+    border: solid 1px #e5e5e5;
+    margin: -1px 0 0;
+    background: #fff;
+}
+
+.tr-items-list .remove,
+.tr-items-list .move {
+    font: normal 20px/1 'dashicons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    position: absolute;
+    z-index: 10;
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    color: #9B9B9B;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.tr-items-list .remove {
+    right: 12px;
+    top: 17px;
+}
+
+.tr-items-list .move {
+    left: 12px;
+    top: 17px;
+    cursor: move;
+}
+
+.tr-items-list .remove:before {
+    content: "\f335";
+}
+
+.tr-items-list .move:before {
+    content: "\f333";
+}

@@ -1,0 +1,70 @@
+/* Main Container
+----------------------------------------------------------------------- */
+.typerocket-container {
+    box-sizing: border-box;
+    clear: both;
+
+    &:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+}
+
+#post-body-content .typerocket-container {
+    margin-bottom: 30px;
+}
+
+#titlediv + .typerocket-container,
+#postdivrich + .typerocket-container {
+    margin-top: 20px;
+}
+
+#addtag .typerocket-container {
+    margin-bottom: 20px;
+}
+
+#wpwrap .tr-repeater-group .control-section {
+    padding-right: 0;
+}
+
+#wpwrap .tr-repeater-group .control-section:after,
+#wpwrap .tr-repeater-group .control-section:before {
+    padding: 0 10px 0 10px;
+}
+
+.typerocket-container .contextual-help-tabs-wrap .help-tab-content {
+    padding-bottom: 20px;
+}
+
+/* Admin Page
+----------------------------------------------------------------------- */
+#screen-meta + .tr-admin-notice {
+    display: none;
+}
+
+.wrap {
+    .tr-admin-page-title {
+        margin-bottom: 10px;
+        font-size: 23px;
+        font-weight: 400;
+        padding: 9px 15px 4px 0;
+        line-height: 29px;
+    }
+}
+
+/* Helpers
+----------------------------------------------------------------------- */
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+.cf {
+    *zoom: 1;
+}

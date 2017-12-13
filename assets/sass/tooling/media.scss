@@ -1,0 +1,78 @@
+@import 'vars.scss';
+
+/* Images and Files
+----------------------------------------------------------------------- */
+.typerocket-container .data-full,
+.typerocket-container .data-full li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.typerocket-container .image-picker-placeholder img,
+.typerocket-container .file-picker-placeholder a {
+    padding: 10px;
+    border: solid #DFDFDF 1px;
+    background: #fff;
+    margin-top: 10px;
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    overflow: hidden;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Gallery
+----------------------------------------------------------------------- */
+.typerocket-container .tr-gallery-list {
+    .image-picker-placeholder img {
+        cursor: move;
+    }
+
+    .ui-sortable-helper a {
+        display: none;
+    }
+
+    li {
+        margin: 5px;
+        position: relative;
+        list-style: none;
+        padding: 0;
+        display: inline-block;
+        vertical-align: top;
+
+        img {
+            margin: 0;
+            display: block;
+        }
+    }
+}
+
+.tr-gallery-list {
+    margin: 5px -5px 0;
+
+    li:hover a {
+        display: block;
+    }
+
+    a {
+        color: $delete;
+        position: absolute;
+        right: -8px;
+        top: -8px;
+        z-index: 5;
+        text-decoration: none;
+        border: solid #DFDFDF 1px;
+        padding: 6px;
+        border-radius: 25px;
+        background: #fff;
+        display: none;
+
+        &:hover {
+            color: $delete_hover;
+            cursor: pointer;
+        }
+    }
+}
