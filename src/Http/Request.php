@@ -8,7 +8,7 @@ class Request
     private $action = null;
     private $hook = null;
     private $method = null;
-    private $routerArgs = null;
+    private $routerArgs = [];
     private $uri = null;
     private $path = null;
     private $host = null;
