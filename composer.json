@@ -2,7 +2,7 @@
     "name": "typerocket/core",
     "description": "The TypeRocket WordPress Framework.",
     "keywords": ["framework", "typerocket"],
-    "license": "GPL",
+    "license": "GPL-3.0-or-later",
     "homepage": "http://typerocket.com",
     "authors": [
         {
