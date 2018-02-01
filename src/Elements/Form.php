@@ -415,8 +415,10 @@ class Form
      */
     protected function getLabel()
     {
-        $open_html  = "<div class=\"control-label\"><span class=\"label\">";
-        $close_html = '</span></div>';
+        $label_tag = $this->currentField->getLabelTag();
+        $label_for = $this->currentField->getInputId();
+        $open_html  = "<div class=\"control-label\"><{$label_tag} for=\"{$label_for}\" class=\"label\">";
+        $close_html = "</{$label_tag}></div>";
         $debug      = $this->getDebug();
         $html       = '';
         $label      = $this->currentField->getLabelOption();

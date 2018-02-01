@@ -8,16 +8,18 @@ use TypeRocket\Http\Rewrites\Rest;
 use TypeRocket\Elements\Notice;
 use TypeRocket\Http\Routes;
 use TypeRocket\Http\SSL;
-use TypeRocket\Plugin\Loader;
 use TypeRocket\Register\Registry;
 
 class Launcher
 {
+    public $typerocket = [];
+
     /**
      * Core Init
      */
     public function initCore()
     {
+        $this->typerocket = Config::locate('typerocket');
         $this->initHooks();
         $this->loadPlugins();
         $this->loadResponders();
@@ -45,8 +47,8 @@ class Launcher
         | Load TypeRocket Router
         |
         */
-        $paths = Config::locate('paths');
-        $routeFile = $paths['base'] . '/routes.php';
+        $base_dir = Config::locate('paths.base');
+        $routeFile = $base_dir . '/routes.php';
         if( file_exists($routeFile) ) {
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
@@ -69,8 +71,11 @@ class Launcher
             echo '</div>';
         };
 
-        add_action( 'post_updated_messages', [$this, 'setMessages']);
-        add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
+        if($this->typerocket['post_messages']) {
+            add_action( 'post_updated_messages', [$this, 'setMessages']);
+            add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
+        }
+
         add_action( 'edit_user_profile', $useContent );
         add_action( 'show_user_profile', $useContent );
         add_action( 'admin_init', [$this, 'addCss']);
@@ -129,8 +134,17 @@ class Launcher
     public function loadPlugins()
     {
         if ( $plugins = Config::locate('app.plugins') ) {
-            $loader = new Loader( $plugins );
-            $loader->load();
+            $plugins_list = apply_filters('tr_set_plugins', $plugins);
+            $plugin_dir = Config::locate('paths.plugins');
+
+            foreach ($plugins_list as $plugin) {
+                $folder = $plugin_dir . '/' . $plugin . '/';
+
+                if (file_exists($folder . 'init.php')) {
+                    /** @noinspection PhpIncludeInspection */
+                    include $folder . 'init.php';
+                }
+            }
         }
     }
 
@@ -155,7 +169,7 @@ class Launcher
     }
 
     /**
-     * Set custom post type messages to make more since.
+     * Set custom post type messages
      *
      * @param $messages
      *

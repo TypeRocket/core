@@ -18,6 +18,7 @@ abstract class Field
     /** @var Form */
     protected $form = null;
     protected $label = false;
+    protected $labelTag = 'span';
 
     /**
      * When instancing a Field use reflection to connect the Form
@@ -299,6 +300,40 @@ abstract class Field
     function getLabelOption()
     {
         return $this->label;
+    }
+
+    /**
+     * Tag to use for Label Element
+     *
+     * @return string
+     */
+    public function getLabelTag() {
+        return $this->labelTag ?? 'span';
+    }
+
+    /**
+     * Get Input ID
+     *
+     * @return mixed|string
+     */
+    public function getInputId()
+    {
+        $default = 'tr_field_' . Sanitize::underscore($this->getDots());
+        return $this->getAttribute('id', $default );
+    }
+
+    /**
+     * Set Input ID
+     *
+     * @return $this
+     */
+    public function setupInputId()
+    {
+        $default = $this->getInputId();
+        $id = $this->getAttribute('id', $default);
+        $this->setAttribute('id', $id);
+
+        return $this;
     }
 
     /**

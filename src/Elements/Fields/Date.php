@@ -8,6 +8,8 @@ class Date extends Field implements ScriptField
 {
     use DefaultSetting;
 
+    protected $labelTag = 'label';
+
     /**
      * Run on construction
      */

@@ -19,7 +19,8 @@ class Config
             self::$config['app'] = require( $root . '/app.php' );
         }
         self::$config['typerocket'] = [
-            'frontend' => false
+            'frontend' => false,
+            'post_messages' => true
         ];
     }
 
