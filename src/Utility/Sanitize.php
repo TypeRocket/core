@@ -161,6 +161,7 @@ class Sanitize
     public static function dash( $name )
     {
         if (is_string( $name )) {
+            $name = preg_replace( '/[\.]+/', '_', $name );
             $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
             $name = preg_replace( '/[_\\s]+/', '-', $name );
             $name = preg_replace( '/-+/', '-', $name );
