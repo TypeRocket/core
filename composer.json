@@ -2,8 +2,8 @@
     "name": "typerocket/core",
     "description": "The TypeRocket WordPress Framework.",
     "keywords": ["framework", "typerocket", "wordpress"],
-    "license": "GPL",
-    "homepage": "https://typerocket.com",
+    "license": "GPL-3.0-or-later",
+    "homepage": "http://typerocket.com",
     "authors": [
         {
             "name": "Kevin Dees",

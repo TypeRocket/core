@@ -78,7 +78,11 @@ class Routes
             }
             $add[$key] = 'index.php?tr_route_var=1';
 
-            $value = array_merge($add, $value);
+            if(is_array($value)) {
+                $value = array_merge($add, $value);
+            } else {
+                $value = $add;
+            }
         }
         return $value;
     }
