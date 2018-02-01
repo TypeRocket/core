@@ -329,9 +329,7 @@ abstract class Field
      */
     public function setupInputId()
     {
-        $default = $this->getInputId();
-        $id = $this->getAttribute('id', $default);
-        $this->setAttribute('id', $id);
+        $this->setAttribute('id', $this->getInputId() );
 
         return $this;
     }
