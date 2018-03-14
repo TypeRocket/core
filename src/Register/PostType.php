@@ -10,14 +10,14 @@ class PostType extends Registrable
 {
     use Resourceful;
 
-    private $title = null;
-    private $form = [];
-    private $taxonomies = [];
-    private $columns = [];
-    private $metaBoxes = [];
-    private $archiveQuery = [];
-    private $icon = null;
-    private $resource = null;
+    protected $title = null;
+    protected $form = [];
+    protected $taxonomies = [];
+    protected $columns = [];
+    protected $metaBoxes = [];
+    protected $archiveQuery = [];
+    protected $icon = null;
+    protected $resource = null;
 
     /**
      * Make Post Type. Do not use before init hook.

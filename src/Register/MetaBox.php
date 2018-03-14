@@ -7,11 +7,11 @@ use TypeRocket\Utility\Sanitize;
 class MetaBox extends Registrable
 {
 
-    private $label = null;
-    private $callback = null;
-    private $context = null;
-    private $priority = null;
-    private $screens = [];
+    protected $label = null;
+    protected $callback = null;
+    protected $context = null;
+    protected $priority = null;
+    protected $screens = [];
 
     /**
      * Make Meta Box

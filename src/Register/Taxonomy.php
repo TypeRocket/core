@@ -14,9 +14,9 @@ class Taxonomy extends Registrable
 
     use Resourceful;
 
-    private $postTypes = [];
-    private $form = [];
-    private $resource = null;
+    protected $postTypes = [];
+    protected $form = [];
+    protected $resource = null;
 
     /**
      * Make Taxonomy. Do not use before init.
