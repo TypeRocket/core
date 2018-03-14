@@ -181,6 +181,57 @@ if ( ! function_exists('tr_form')) {
     }
 }
 
+if ( ! function_exists('tr_modify_model_value')) {
+    /**
+     * Modify Model Value
+     *
+     * @param \TypeRocket\Models\Model $name use dot notation
+     * @param null $arg
+     *
+     * @return array|mixed|null|string
+     */
+    function tr_modify_model_value($model, $args)
+    {
+        if(!empty($args[0]) && $args[0] != ':' && !is_array($args)) {
+            return $model->getFieldValue($args);
+        }
+
+        if(is_array($args)) {
+            $value = $model->getFieldValue($args['name']);
+            $callback_args = array_merge([$value], $args['args']);
+            return call_user_func_array($args['callback'], $callback_args);
+        }
+
+        list($modifier, $arg1, $arg2) = array_pad(explode(':', ltrim($args, ':'), 3), 3, null);
+        $name = $arg2 ? $arg2 : $arg1 ;
+        $value = $model->getFieldValue($name);
+
+        switch($modifier) {
+            case 'img';
+                $size = $arg2 ? $arg1 : 'thumbnail' ;
+                $modified = wp_get_attachment_image( (int) $value, $size);
+                break;
+            case 'img_src';
+                $size = $arg2 ? $arg1 : 'thumbnail' ;
+                $modified = wp_get_attachment_image_src( (int) $value, $size);
+                break;
+            case 'post';
+                $modified = get_post( (int) $value);
+                break;
+            case 'term';
+                $taxonomy = $arg2 ? $arg1 : 'category' ;
+                $modified = get_term($value, $taxonomy);
+                break;
+            default:
+                $callback_args = $arg2 ? [$arg1] : [];
+                $modified = call_user_func_array($modifier, $callback_args);
+                break;
+        }
+
+        return $modified;
+    }
+}
+
 if ( ! function_exists('tr_posts_field')) {
     /**
      * Get the posts field
@@ -201,7 +252,7 @@ if ( ! function_exists('tr_posts_field')) {
         $model = new \TypeRocket\Models\WPPost();
         $model->findById($item_id);
 
-        return $model->getFieldValue($name);
+        return tr_modify_model_value($model, $name);
     }
 }
 
@@ -327,7 +378,7 @@ if ( ! function_exists('tr_users_field')) {
         $model = tr_get_model('User');
         $model->findById($item_id);
 
-        return $model->getFieldValue($name);
+        return tr_modify_model_value($model, $name);
     }
 }
 
@@ -343,7 +394,7 @@ if ( ! function_exists('tr_options_field')) {
     {
         $model = tr_get_model('Option');
 
-        return $model->getFieldValue($name);
+        return tr_modify_model_value($model, $name);
     }
 }
 
@@ -367,7 +418,7 @@ if ( ! function_exists('tr_comments_field')) {
         $model = tr_get_model('Comment');
         $model->findById($item_id);
 
-        return $model->getFieldValue($name);
+        return tr_modify_model_value($model, $name);
     }
 }
 
@@ -387,7 +438,7 @@ if ( ! function_exists('tr_taxonomies_field')) {
         $model = tr_get_model($taxonomy);
         $model->findById($item_id);
 
-        return $model->getFieldValue($name);
+        return tr_modify_model_value($model, $name);
     }
 }
 
@@ -407,7 +458,7 @@ if ( ! function_exists('tr_resource_field')) {
         $model = tr_get_model($resource);
         $model->findById($item_id);
 
-        return $model->getFieldValue($name);
+        return tr_modify_model_value($model, $name);
     }
 }
 
@@ -446,6 +497,16 @@ if ( ! function_exists('tr_ssl')) {
     function tr_ssl()
     {
         return new TypeRocket\Http\SSL();
+    }
+}
+
+if ( ! function_exists('tr_image_sizing')) {
+    /**
+     * SSL
+     */
+    function tr_image_sizing()
+    {
+        return new \TypeRocket\Utility\ImageSizer();
     }
 }
 

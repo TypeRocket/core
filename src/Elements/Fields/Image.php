@@ -14,6 +14,16 @@ class Image extends Field implements ScriptField
     }
 
     /**
+     * Define debug function
+     *
+     * @return string
+     */
+    public function getDebugHelperFunctionModifier()
+    {
+        return ":img:full:";
+    }
+
+    /**
      * Get the scripts
      */
     public function enqueueScripts() {

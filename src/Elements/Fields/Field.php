@@ -465,6 +465,16 @@ abstract class Field
     }
 
     /**
+     * Add Modifyer To Helper Function
+     *
+     * @return string
+     */
+    public function getDebugHelperFunctionModifier()
+    {
+        return '';
+    }
+
+    /**
      * Configure in all concrete Field classes
      *
      * @return string

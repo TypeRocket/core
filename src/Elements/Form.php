@@ -444,6 +444,7 @@ class Form
     protected function getFieldHelpFunction( Fields\Field $field )
     {
         $helper = $field->getDebugHelperFunction();
+        $mod = $field->getDebugHelperFunctionModifier() ?? '';
 
         if($helper) {
             $function = $helper;
@@ -470,7 +471,7 @@ class Form
                 $param .= ', '.$id;
             }
 
-            $function   = "tr_{$controller}_field('{$dots}'{$param});";
+            $function   = "tr_{$controller}_field('{$mod}{$dots}'{$param});";
         }
 
         return $function;
