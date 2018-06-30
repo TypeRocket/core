@@ -34,7 +34,7 @@ class Color extends Field implements ScriptField
         $value = $this->getValue();
         $default = $this->getDefault();
         $value = !empty($value) ? $value : $default;
-        $value =  Sanitize::hex( $value );
+        $value = !empty($value) ? Sanitize::hex( $value ) : null;
 
         $this->removeAttribute( 'name' );
         $this->appendStringToAttribute( 'class', ' color-picker' );
@@ -48,7 +48,7 @@ class Color extends Field implements ScriptField
 
         add_action('admin_footer', $callback, 999999999999 );
 
-        if( Config::getFrontend() ) {
+        if ( tr_is_frontend() && Config::locate('typerocket.frontend.assets') ) {
             add_action('wp_footer', $callback, 999999999999 );
         }
 

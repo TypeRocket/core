@@ -23,6 +23,7 @@ class Launcher
         $this->initHooks();
         $this->loadPlugins();
         $this->loadResponders();
+        $this->initFrontEnd();
 
         /*
         |--------------------------------------------------------------------------
@@ -122,7 +123,10 @@ class Launcher
      */
     public function initFrontEnd()
     {
-        Config::typerocket('frontend', true);
+        if ( !tr_is_frontend() || !Config::locate('typerocket.frontend.assets') ) {
+            return;
+        }
+
         add_action( 'wp_enqueue_scripts', [ $this, 'addCss' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
         add_action( 'wp_footer', [ $this, 'addBottomJs' ] );

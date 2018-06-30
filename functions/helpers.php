@@ -479,14 +479,13 @@ if ( ! function_exists('tr_is_json')) {
     }
 }
 
-if ( ! function_exists('tr_frontend')) {
+if ( ! function_exists('tr_is_frontend')) {
     /**
-     * Enable TypeRocket on the front end of the website
+     * Check if the frontend is being used
      */
-    function tr_frontend()
+    function tr_is_frontend()
     {
-        $core = new TypeRocket\Core\Launcher();
-        $core->initFrontEnd();
+        return !is_admin();
     }
 }
 

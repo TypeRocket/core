@@ -18,10 +18,6 @@ class Config
         if(is_file($root . '/app.php')) {
             self::$config['app'] = require( $root . '/app.php' );
         }
-        self::$config['typerocket'] = [
-            'frontend' => false,
-            'post_messages' => true
-        ];
     }
 
     /**
@@ -77,18 +73,4 @@ class Config
 
         return $value;
     }
-
-    /**
-     * Set Live TypeRocket Configs
-     *
-     * @param string $dots dot notation key.next.final
-     * @param mixed $value
-     *
-     * @return array
-     */
-    public static function typerocket($dots, $value)
-    {
-        return dots_set($dots, self::$config['typerocket'], $value);
-    }
-
 }
