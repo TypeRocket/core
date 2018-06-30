@@ -3,17 +3,14 @@
 Plugin Name: TypeRocket
 Description: The WordPress Framework Designed for Developers.
 Author: TypeRocket
-Version: 3.0.0
+Version: 4.0.0
 Author URI: http://typerocket.com
 */
 if( defined('TR_PATH') ) {
-    $typerocket_config = require TR_PATH . '/config/app.php';
-    new \TypeRocket\Core\Config( $typerocket_config );
-
     $typerocket_core = new \TypeRocket\Core\Launcher();
     $typerocket_core->initCore();
 
-    if( \TypeRocket\Core\Config::getTemplates() ) {
+    if( \TypeRocket\Core\Config::locate('app.root.use_root') ) {
         $typerocket_core->overrideTemplates();
     }
 }
