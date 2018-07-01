@@ -34,7 +34,7 @@ class Color extends Field implements ScriptField
         $value = $this->getValue();
         $default = $this->getDefault();
         $value = !empty($value) ? $value : $default;
-        $value =  Sanitize::hex( $value );
+        $value = !empty($value) ? Sanitize::hex( $value ) : null;
 
         $this->removeAttribute( 'name' );
         $this->appendStringToAttribute( 'class', ' color-picker' );
