@@ -132,6 +132,27 @@ class Form
 
         return $this;
     }
+    
+    /**
+     * Set Form method
+     *
+     * @return Form $this
+     */
+    public function setMethod($method)
+    {
+        $this->method = strtoupper($method);
+        return $this;
+    }
+    
+    /**
+     * Get Form method
+     *
+     * @return Form $this
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
 
     /**
      * Disable Ajax
