@@ -100,6 +100,9 @@ class Routes
     /**
      * Run route if there is a callback
      *
+     * If the callback is not a controller pass in the Response
+     * object as the argument $response
+     *
      * @param null $path
      * @param null $handle
      * @param null $wilds
@@ -115,8 +118,11 @@ class Routes
         }
 
         if (is_callable($handle->do)) {
+            $response = new Response();
+            $response->setStatus(300);
+            $args[2]['response'] = $response;
             $map = resolve_method_args($handle->do, $args[2]);
-            tr_http_response(resolve_method_map($map));
+            tr_http_response(resolve_method_map($map), $args[2]['response']);
         } else {
             list($action, $resource) = explode('@', $handle->do);
             $respond = new ResourceResponder();

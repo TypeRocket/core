@@ -712,6 +712,9 @@ if ( ! function_exists('tr_http_response')) {
 
         } elseif(!empty($response)) {
             wp_send_json( $response->getResponseArray() );
+        } else {
+            echo 'Typerocket Response Object required';
+            die();
         }
     }
 }

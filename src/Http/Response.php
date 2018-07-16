@@ -16,14 +16,14 @@ use TypeRocket\Elements\Notice;
  */
 class Response {
 
-    private $message = 'No Message Set';
-    private $messageType = 'success';
-    private $redirect = false;
-    private $status = 200;
-    private $flash = true;
-    private $blockFlash = false;
-    private $errors = [];
-    private $data = [];
+    protected $message = '';
+    protected $messageType = 'success';
+    protected $redirect = false;
+    protected $status = 200;
+    protected $flash = true;
+    protected $blockFlash = false;
+    protected $errors = [];
+    protected $data = [];
 
     /**
      * Set HTTP status code
@@ -344,7 +344,8 @@ class Response {
      *
      * @param int $code
      */
-    public function exitAny( $code = 500 ) {
+    public function exitAny( $code = null ) {
+        $code = $code ?? $this->status;
         if( ! empty($_POST['_tr_ajax_request']) ) {
             $this->exitJson($code);
         } else {
@@ -357,8 +358,9 @@ class Response {
      *
      * @param int $code
      */
-    public function exitJson( $code = 500 )
+    public function exitJson( $code = null )
     {
+        $code = $code ?? $this->status;
         $this->setStatus($code);
         wp_send_json( $this->getResponseArray() );
         die();
@@ -369,8 +371,9 @@ class Response {
      *
      * @param int $code
      */
-    public function exitMessage( $code = 500 )
+    public function exitMessage( $code = null )
     {
+        $code = $code ?? $this->status;
         $this->setStatus($code);
         wp_die($this->message);
     }
