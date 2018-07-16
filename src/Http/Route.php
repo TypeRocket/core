@@ -11,7 +11,7 @@ class Route
 
     public function match($regex, $map = [])
     {
-        $this->match = [$regex, $map, $this];
+        $this->match = [ltrim($regex, '/'), $map, $this];
         return $this;
     }
 
