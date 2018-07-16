@@ -25,7 +25,7 @@ class ResourceResponder extends Responder
     {
         $request  = new Request( $this->resource, null, $args, $this->action, $this->hook );
         $response = new Response();
-        $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod);
+        $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod, $this->route);
         tr_http_response($this->kernel->router->returned, $response);
     }
 

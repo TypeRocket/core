@@ -17,10 +17,11 @@ abstract class Responder
      * @param Response $response
      * @param string $type
      * @param null $action_method
+     * @param null|\TypeRocket\Http\Route $route
      */
-    public function runKernel(Request $request, Response $response, $type = 'hookGlobal', $action_method = null )
+    public function runKernel(Request $request, Response $response, $type = 'hookGlobal', $action_method = null, $route = null )
     {
         $Kernel = "\\" . TR_APP_NAMESPACE . "\\Http\\Kernel";
-        $this->kernel = new $Kernel( $request, $response, $type, $action_method);
+        $this->kernel = new $Kernel( $request, $response, $type, $action_method, $route);
     }
 }

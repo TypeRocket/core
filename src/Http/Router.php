@@ -38,13 +38,13 @@ class Router
         $this->action = $this->getAction( $action_method );
         $resource = $this->request->getResource();
         $resource = Str::camelize( $resource );
-        $controller  = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$resource}Controller";
+        $controllerName  = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$resource}Controller";
 
-        if ( class_exists( $controller ) ) {
-            $this->controller = $controller = new $controller( $this->request, $this->response);
+        if ( class_exists( $controllerName ) ) {
+            $this->controller = $controller = new $controllerName( $this->request, $this->response);
 
             if ( ! $controller instanceof Controller || ! method_exists( $controller, $this->action ) ) {
-                $this->response->setMessage('Something went wrong');
+                $this->response->setMessage("The controller or the action of the controller you are trying to access does not exist: <strong>{$this->action}@$resource</strong>");
                 $this->response->exitAny(405);
             }
 
@@ -52,7 +52,7 @@ class Router
             $this->middleware = $this->controller->getMiddleware();
 
         } else {
-            wp_die('Missing controller: ' . $controller );
+            wp_die('Missing controller: ' . $controllerName );
         }
     }
 
@@ -141,7 +141,7 @@ class Router
         $request = $this->request;
 
         $method = $request->getMethod();
-        $action = null;
+        $action = 'tr_xxx_reserved';
         switch ( $request->getAction() ) {
             case 'add' :
                 if( $method == 'POST' ) {
@@ -185,10 +185,15 @@ class Router
                 }
                 break;
             default :
+                $action = null;
                 if($action_method == $method ) {
                     $action = $request->getAction();
                 }
                 break;
+        }
+
+        if($action == 'tr_xxx_reserved') {
+            wp_die('You are using a reserved action: add, create, edit, update, delete, index, or show. Be sure you map these actions to the correct HTTP methods.' );
         }
 
         return $action;
