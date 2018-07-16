@@ -90,13 +90,11 @@ class Routes
     /**
      * Add Route
      *
-     * @param $method
-     * @param $path
-     * @param $handler
+     * @param \TypeRocket\Http\Route $route
      */
-    public static function addRoute( $method, $path, $handler )
+    public static function addRoute( $route )
     {
-        self::$routes[$method][$path] = $handler;
+        self::$routes[] = $route;
     }
 
     /**
@@ -116,29 +114,15 @@ class Routes
             die();
         }
 
-        if (is_callable($handle)) {
-            $returned = call_user_func_array($handle, $args);
-
-            if( $returned instanceof View ) {
-                $this->loadView();
-            }
-
-            if( $returned instanceof Redirect ) {
-                $returned->now();
-            }
-
-            if( is_string($returned) ) {
-                echo $returned;
-                die();
-            }
-
-            self::resultsToJson( $returned );
-
+        if (is_callable($handle->do)) {
+            $map = resolve_method_args($handle->do, $args[2]);
+            tr_http_response(resolve_method_map($map));
         } else {
-            list($action, $resource) = explode('@', $handle);
+            list($action, $resource) = explode('@', $handle->do);
             $respond = new ResourceResponder();
             $respond->setResource( ucfirst($resource) );
             $respond->setAction( $action );
+            $respond->setRoute( $handle );
             $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
             $respond->respond( $this->vars );
             $this->loadView();
@@ -146,8 +130,6 @@ class Routes
 
         die();
     }
-
-
 
     /**
      * Results To JSON
@@ -177,31 +159,12 @@ class Routes
     }
 
     /**
-     *  Load the template for the front-end without globals
-     */
-    private function loadView() {
-        add_filter('document_title_parts', function( $title ) {
-            if( is_string(View::$title) ) {
-                $title = [];
-                $title['title'] = View::$title;
-            } elseif ( is_array(View::$title) ) {
-                $title = View::$title;
-            }
-            return $title;
-        });
-
-        extract( View::$data );
-        /** @noinspection PhpIncludeInspection */
-        include ( View::$view );
-    }
-
-    /**
      * Route
      */
     public function route()
     {
         if( !empty($this->match)) {
-            list($path, $handle, $wilds) =$this->match;
+            list($path, $handle, $wilds) = $this->match;
             $this->runRoute($path, $handle, $wilds);
         }
     }
@@ -212,58 +175,42 @@ class Routes
     public function detectRoute()
     {
         $requestPath = trim(self::$request->getPath(), '/');
-        $routesRegistered = $this->getRegisteredRoutesByMethod( self::$request->getFormMethod() );
-        $segmentsFromRequest = $this->getPathSegments( $requestPath );
-        $args = null;
-        $handle = null;
+        $routesRegistered = $this->getRegisteredRoutes();
 
-        foreach ($routesRegistered as $registeredPath => $handle) {
+        list($match, $args) = $this->matchRoute($requestPath, $routesRegistered);
 
-            $segmentsRegistered = $this->getPathSegments( trim($registeredPath, '/') );
-            $pathsMatch = (count($segmentsRegistered) == count($segmentsFromRequest));
-
-            if ($pathsMatch && ! empty($segmentsRegistered) ) {
-
-                foreach ($segmentsFromRequest as $key => $segment) {
-                    $pathsMatch = ($segmentsFromRequest[$key] == $segmentsRegistered[$key]);
-                    $areWilds = preg_match_all("/^\\{(.*)\\}$/U", $segmentsRegistered[$key], $wildMatches);
-
-                    if ( ! empty($areWilds)) {
-                        $wildKey = preg_replace("/\\W/", '', $wildMatches[1][0]);
-                        $args[$wildKey] = $segmentsFromRequest[$key];
-                    }
-
-                    if ( ! $pathsMatch && empty($areWilds)) {
-                        break;
-                    }
-
-                }
-
-                if ($pathsMatch || ! empty($areWilds)) {
-                    $this->foundRoute($requestPath, $handle, $args);
-                    break;
-                }
-
-            }
+        if($match) {
+            $this->match = [$requestPath, $match[2], $args];
         }
 
         return $this;
     }
 
     /**
-     * Save Route If Found
+     * @param $uri path to match
+     * @param array $routes list of routes
      *
-     * @param $requestPath
-     * @param $handle
-     * @param $args
-     *
-     * @return $this
+     * @return array
      */
-    public function foundRoute($requestPath, $handle, $args)
-    {
-        $this->match = [$requestPath, $handle, $args];
+    public function matchRoute($uri, $routes) {
 
-        return $this;
+        if(empty($routes)) { return [null, null];}
+
+        $regex = ['#^(?'];
+        foreach ($routes as $i => $route) {
+            $regex[] = $route[0] . '(*MARK:'.$i.')';
+        }
+        $regex = implode('|', $regex) . ')$#x';
+        preg_match($regex, $uri, $m);
+        $r = $routes[$m['MARK']];
+        $args = [];
+
+        if(empty($r)) { return [null, null];}
+
+        foreach ($r[1] as $i => $arg) {
+            $args[$arg] = $m[$i + 1];
+        }
+        return [$r, $args];
     }
 
     /**
@@ -271,26 +218,19 @@ class Routes
      *
      * @return array
      */
-    public function getRegisteredRoutesByMethod($method)
+    public function getRegisteredRoutes()
     {
-        $method = strtoupper($method);
+        $method = strtoupper(self::$request->getFormMethod());
         $routesRegistered = [];
 
-        if (isset(self::$routes[$method])) {
-            $routesRegistered = self::$routes[$method];
+        /** @var \TypeRocket\Http\Route $route */
+        foreach (self::$routes as $route) {
+            if (in_array($method, $route->methods)) {
+                $routesRegistered[] = $route->match;
+            }
         }
 
         return $routesRegistered;
-    }
-
-    /**
-     * @param $path
-     *
-     * @return mixed
-     */
-    private function getPathSegments($path)
-    {
-        return explode('/', $path);
     }
 
 }

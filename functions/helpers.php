@@ -677,3 +677,41 @@ if ( ! function_exists('tr_query')) {
         return new \TypeRocket\Database\Query();
     }
 }
+
+if ( ! function_exists('tr_http_response')) {
+    /**
+     * Http Response
+     *
+     * @param string $name the constant variable name
+     * @param null|mixed $default The default value
+     *
+     * @return mixed
+     */
+    function tr_http_response($returned, $response = null) {
+
+        if($response) {
+            status_header( $response->getStatus() );
+        }
+
+        if( $returned && empty($_POST['_tr_ajax_request']) ) {
+
+            if( $returned instanceof \TypeRocket\Http\Redirect ) {
+                $returned->now();
+            }
+
+            if( $returned instanceof \TypeRocket\Template\View ) {
+                \TypeRocket\Template\View::load();
+            }
+
+            if( is_string($returned) ) {
+                echo $returned;
+                die();
+            }
+
+            \TypeRocket\Http\Routes::resultsToJson( $returned );
+
+        } elseif(!empty($response)) {
+            wp_send_json( $response->getResponseArray() );
+        }
+    }
+}

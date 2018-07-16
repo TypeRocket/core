@@ -173,24 +173,6 @@ class Form
     }
 
     /**
-     * Use a TypeRocket route
-     *
-     * @param $method
-     * @param $dots
-     *
-     * @return \TypeRocket\Elements\Form $this
-     */
-    public function useRoute($method, $dots)
-    {
-        $dots          = explode('.', $dots);
-        $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url(implode('/', $dots ) . '/', $scheme);
-        $this->method  = strtoupper($method);
-
-        return $this;
-    }
-
-    /**
      * Use a URL
      *
      * @param $method

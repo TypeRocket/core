@@ -93,4 +93,23 @@ class View
         return self::$title;
     }
 
+    /**
+     *  Load the template for the front-end without globals
+     */
+    public static function load() {
+        add_filter('document_title_parts', function( $title ) {
+            if( is_string(self::$title) ) {
+                $title = [];
+                $title['title'] = self::$title;
+            } elseif ( is_array(self::$title) ) {
+                $title = self::$title;
+            }
+            return $title;
+        });
+
+        extract( self::$data );
+        /** @noinspection PhpIncludeInspection */
+        include ( self::$view );
+    }
+
 }

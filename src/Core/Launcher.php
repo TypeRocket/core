@@ -72,7 +72,7 @@ class Launcher
             echo '</div>';
         };
 
-        if($this->typerocket['post_messages']) {
+        if(!empty($this->typerocket['admin']['post_messages'])) {
             add_action( 'post_updated_messages', [$this, 'setMessages']);
             add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
         }
