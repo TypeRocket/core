@@ -104,6 +104,15 @@ class Matrix extends Field implements ScriptField {
 		    return esc_attr($item);
 	    }, $controls);
 
+        // add collapsed / contracted
+        $expanded = 'tr-repeater-expanded';
+        $expand_label = $controls['contract'];
+        if(!empty($settings['contracted'])) {
+            $fields_classes = ' tr-repeater-collapse';
+            $expanded = 'tr-repeater-contacted';
+            $expand_label = $controls['expand'];
+        }
+
         // add it all
         $home_url = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
         $html = "
@@ -115,7 +124,7 @@ class Matrix extends Field implements ScriptField {
 </div>
 <div class=\"button-group\">
 <input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">
-<input type=\"button\" value=\"{$controls['contract']}\" class=\"tr_action_collapse button\">
+<input type=\"button\" value=\"{$expand_label}\" data-contract=\"{$controls['contract']}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\">
 <input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\">
 </div>
 {$help}

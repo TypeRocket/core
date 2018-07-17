@@ -192,13 +192,17 @@ jQuery(document).ready(function($) {
             $(document).on('click', '.tr-repeater .controls .tr_action_collapse', function(e) {
                 var $collapse, $groups_group;
                 $groups_group = $(this).parent().parent().next().next();
-                if ($(this).val() === 'Contract') {
-                    $(this).val('Expand');
+                if ($(this).hasClass('tr-repeater-expanded')) {
+                    $(this).val($(this).data('expand'));
+                    $(this).addClass('tr-repeater-contacted');
+                    $(this).removeClass('tr-repeater-expanded');
                     $groups_group.find('> .tr-repeater-group').animate({
                         height: '90px'
                     }, 200);
                 } else {
-                    $(this).val('Contract');
+                    $(this).val($(this).data('contract'));
+                    $(this).addClass('tr-repeater-expanded');
+                    $(this).removeClass('tr-repeater-contacted');
                     $groups_group.find('> .tr-repeater-group').attr('style', '');
                 }
                 $collapse = $(this).parent().parent().next().next();
