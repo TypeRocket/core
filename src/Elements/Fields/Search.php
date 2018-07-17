@@ -59,7 +59,7 @@ class Search extends Field
         $field = $input->newInput($this->getType(), null, null,  $search_attributes)->getString();
         $field .= $input->newInput( 'hidden', $name, $value, $this->getAttributes() )->getString();
         $field .= '<div class="tr-link-search-page">'.$title.'</div>';
-        $field .= '<ul class="tr-link-search-results"></ul>';
+        $field .= '<div class="tr-link-search-results"></div>';
 
         return $field;
     }

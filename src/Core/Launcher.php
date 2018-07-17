@@ -82,6 +82,7 @@ class Launcher
         add_action( 'admin_init', [$this, 'addCss']);
         add_action( 'admin_init', [$this, 'addJs']);
         add_action( 'admin_footer', [$this, 'addBottomJs']);
+        add_action( 'admin_head', [$this, 'addTopJs']);
         add_action( 'admin_notices', [$this, 'setFlash']);
     }
 
@@ -130,6 +131,7 @@ class Launcher
         add_action( 'wp_enqueue_scripts', [ $this, 'addCss' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
         add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
+        add_action( 'wp_head', [ $this, 'addTopJs' ] );
     }
 
     /**
@@ -303,6 +305,14 @@ class Launcher
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], $assetVersion, true );
+    }
+
+    public function addTopJs()
+    {
+        ?>
+        <script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url());?>"}</script>
+        <?php
+        wp_localize_script( 'typerocket-scripts', 'trHelpers', [ 'site_uri' => home_url() ] );
     }
 
     /**

@@ -14,11 +14,12 @@ jQuery.fn.TypeRocketLink = function(type, taxonomy) {
     if (taxonomy) {
         param += '&taxonomy=' + taxonomy;
     }
-    jQuery.getJSON('/wp-json/typerocket/v1/search?' + param, function(data) {
-        var i, id, item, len, post_status, results, title;
+    jQuery.getJSON(trHelpers.site_uri+'/wp-json/typerocket/v1/search?' + param, function(data) {
+        var i, id, item, len, post_status, results, title, link;
         if (data) {
-            that.next().next().next().html('');
-            that.next().next().next().append('<li class="tr-link-search-result-title">Results');
+            var linkList = that.next().next().next();
+            linkList.html('');
+            linkList.append('<div class="tr-link-search-result-title">Results</div>');
             results = [];
             for (i = 0, len = data.length; i < len; i++) {
                 item = data[i];
@@ -34,7 +35,28 @@ jQuery.fn.TypeRocketLink = function(type, taxonomy) {
                     title = item.name;
                     id = item.term_id;
                 }
-                results.push(that.next().next().next().append('<li class="tr-link-search-result" data-id="' + id + '" >' + title));
+                link = $('<a tabindex="0" class="tr-link-search-result" data-id="' + id + '" >' + title + '</a>');
+                link = link.on('click keyup', function(e) {
+                    e.preventDefault();
+                    var keying = false;
+                    var enterKey = false;
+                    if(event.keyCode) {
+                        keying = true;
+                        enterKey = event.keyCode == 13;
+                    }
+
+                    if( !keying || enterKey) {
+                        var id, title;
+                        id = $(this).data('id');
+                        title = $(this).text();
+                        $(this).parent().prev().html('Selection: <b>' + title + '</b>');
+                        that.next().val(id);
+                        that.focus().val('');
+                        return $(this).parent().html('');
+                    }
+                })
+                linkList.append(link);
+                results.push(link);
             }
             return results;
         }
@@ -60,14 +82,5 @@ jQuery(document).ready(function($) {
         return tr_delay((function() {
             that.TypeRocketLink(type, taxonomy);
         }), 250);
-    });
-    return $('.typerocket-container').on('click', '.tr-link-search-result', function() {
-        var id, title;
-        id = $(this).data('id');
-        title = $(this).text();
-        $(this).parent().prev().html('Selection: <b>' + title + '</b>');
-        $(this).parent().prev().prev().val(id);
-        $(this).parent().prev().prev().prev().focus().val('');
-        return $(this).parent().html('');
     });
 });
