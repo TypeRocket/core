@@ -47,15 +47,7 @@ class Form
         $this->autoConfig();
 
         $Resource = Str::camelize($this->resource);
-        $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
-
-        if(class_exists($model)) {
-            $this->model = new $model();
-
-            if( !empty($this->itemId) ) {
-                $this->model->findById($this->itemId);
-            }
-        }
+        $this->setModel("\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}");
 
         do_action('tr_after_form_element_init', $this);
     }
@@ -166,8 +158,7 @@ class Form
             $this->useAjax();
         }
 
-        $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url('/', $scheme ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
+        $this->formUrl = home_url('/', get_http_protocall() ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
 
         return $this;
     }
@@ -183,8 +174,7 @@ class Form
     public function useUrl($method, $url)
     {
         $url_parts     = explode('/', trim($url, '/') );
-        $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url(implode('/', $url_parts ) . '/', $scheme);
+        $this->formUrl = home_url(implode('/', $url_parts ) . '/', get_http_protocall() );
         $this->method  = strtoupper($method);
 
         return $this;
@@ -226,7 +216,7 @@ class Form
     }
 
     /**
-     * Return old data is missing
+     * Return old data if missing
      *
      * @param bool $load_only_old
      *
@@ -531,21 +521,22 @@ class Form
     {
         $this->setCurrentField( $field );
         $label     = $this->getLabel();
-        $field     = $field->getString();
-        $id        = $this->getCurrentField()->getSetting( 'id' );
-        $help      = $this->getCurrentField()->getSetting( 'help' );
-        $section_class = $this->getCurrentField()->getSetting( 'classes', '' );
-        $fieldHtml = $this->getCurrentField()->getSetting( 'render' );
+
+        $id        = $field->getSetting( 'id' );
+        $help      = $field->getSetting( 'help' );
+        $section_class = $field->getSetting( 'classes', '' );
+        $fieldHtml = $field->getSetting( 'render' );
         $formHtml  = $this->getSetting( 'render' );
+        $fieldString     = $field->getString();
 
         $id   = $id ? "id=\"{$id}\"" : '';
         $help = $help ? "<div class=\"help\"><p>{$help}</p></div>" : '';
 
         if ($fieldHtml == 'raw' || $formHtml == 'raw') {
-            $html = $field;
+            $html = apply_filters( 'tr_from_field_html_raw', $fieldString, $field );
         } else {
-            $type = strtolower( str_ireplace( '\\', '-', get_class( $this->getCurrentField() ) ) );
-            $html = "<div class=\"control-section {$section_class} {$type}\" {$id}>{$label}<div class=\"control\">{$field}{$help}</div></div>";
+            $type = strtolower( str_ireplace( '\\', '-', get_class( $field ) ) );
+            $html = "<div class=\"control-section {$section_class} {$type}\" {$id}>{$label}<div class=\"control\">{$fieldString}{$help}</div></div>";
         }
 
         $html = apply_filters( 'tr_from_field_html', $html, $this );

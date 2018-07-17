@@ -219,3 +219,16 @@ if ( ! function_exists('resolve_method_map')) {
         }
     }
 }
+
+if ( ! function_exists('get_http_protocall')) {
+
+    /**
+     * Get the HTTP Protocall
+     *
+     * @return string
+     */
+    function get_http_protocall()
+    {
+        return is_ssl() ? 'https' : 'http';
+    }
+}

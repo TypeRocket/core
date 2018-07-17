@@ -34,8 +34,8 @@ class Response {
      */
     public function setStatus( $status )
     {
-        status_header( (int) $status );
         $this->status = (int) $status;
+        status_header( $this->status );
 
         return $this;
     }

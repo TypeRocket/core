@@ -171,6 +171,10 @@
         border-bottom-color: #fff !important;
     }
 
+    .tabbed-sections .tr-tabs li > a:focus {
+        border-top-color: #00a0d2 !important;
+    }
+
     .tabbed-sections .tr-tabs li {
         float: left;
         padding: 0;
