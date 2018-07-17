@@ -12,7 +12,7 @@
             type = $select.val();
             callbacks = TypeRocket.repeaterCallbacks;
             $that.attr('disabled', 'disabled').val('Adding...');
-            url = '/tr_matrix_api/v1/' + group + '/' + type + '/' + folder;
+            url = trHelpers.site_uri+'/tr_matrix_api/v1/' + group + '/' + type + '/' + folder;
             form_group = $select.data('group');
             $.ajax({
                 url: url,

@@ -129,7 +129,7 @@ export default function trBuilder() {
                     $select = $('ul[data-mxid="' + mxid + '"]');
                     type = $that.data('value');
                     $that.addClass('disabled');
-                    url = '/tr_builder_api/v1/' + group + '/' + type + '/' + folder;
+                    url = trHelpers.site_uri+'/tr_builder_api/v1/' + group + '/' + type + '/' + folder;
                     form_group = $select.data('group');
                     $.ajax({
                         url: url,
