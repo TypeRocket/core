@@ -14,18 +14,32 @@
 
     .tr-links-selected {
         list-style: none;
-        border-top: solid #ddd 1px;
 
         > li {
+
+            &:first-child {
+                border-top: solid #ddd 1px;
+            }
+
+            position: relative;
             color: #0073aa;
             cursor: pointer;
             font-size: 14px;
-            padding: 8px;
+            padding: 8px 20px 8px 8px;
             margin: 0;
             border: solid #ddd 1px;
             border-top: none;
             background: #eee;
             display: block;
+
+            &.tr-link-chosen-item.ui-sortable-helper {
+                border-top: solid #ddd 1px;
+            }
+
+            &.ui-sortable-placeholder {
+
+            }
+
         }
     }
 
@@ -34,4 +48,34 @@
         display: block;
         clear: both;
     }
+}
+
+.tr-link-chosen-item-remove {
+    font: normal 20px/1 'dashicons';
+    speak: none;
+    color: $delete;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    position: absolute;
+    z-index: 10;
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    color: #9B9B9B;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    &:hover, &:focus, &:active {
+        color: $delete_hover;
+    }
+}
+
+.tr-link-chosen-item-remove {
+    right: 2px;
+    top: 7px;
+}
+
+.tr-link-chosen-item-remove:before {
+    content: "\f335";
 }

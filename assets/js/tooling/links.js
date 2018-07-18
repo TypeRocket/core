@@ -46,7 +46,7 @@
                             var id, title;
                             id = $(this).data('id');
                             title = $(this).text();
-                            linkItem = jQuery('<li class="tr-link-chosen-item"><input name="'+inputName+'[]" value="'+id+'" type="hidden" />' + title + '</li>');
+                            linkItem = jQuery('<li class="tr-link-chosen-item"><input name="'+inputName+'[]" value="'+id+'" type="hidden" />' + title + '<a title="remove" class="tr-link-chosen-item-remove"></a></li>');
                             selectedList.append(linkItem)
                             that.focus().val('');
                             return $(this).parent().html('');
@@ -61,9 +61,9 @@
         return this;
     };
 
-    $('.typerocket-container').on('click', '.tr-link-chosen-item', function(e) {
+    $('.typerocket-container').on('click', '.tr-link-chosen-item-remove', function(e) {
         e.preventDefault()
-        $(this).remove();
+        $(this).parent().remove();
     });
 
     $('.typerocket-container').on('keyup', '.tr-link-links-input', function() {

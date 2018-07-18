@@ -50,13 +50,13 @@ class Links extends Field
 
                     $selection = new Generator();
                     $selection->newInput('hidden', $name . '[]', $value, $this->getAttributes() )->getString();
-                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $post->post_title . ' (' . $status . $post->post_type . ')</li>';
+                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $post->post_title . ' (' . $status . $post->post_type . ')<a title="remove" class="tr-link-chosen-item-remove"></a></li>';
 
                 } elseif( $value ) {
                     $term = get_term( $value, $taxonomy );
                     $selection = new Generator();
                     $selection->newInput('hidden', $name . '[]', $value, $this->getAttributes() )->getString();
-                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $term->name . ' (' . $taxonomy . ')</li>';
+                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $term->name . ' (' . $taxonomy . ')<a title="remove" class="tr-link-chosen-item-remove"></a></li>';
                 }
             }
         }

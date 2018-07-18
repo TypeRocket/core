@@ -575,11 +575,12 @@
 body .tr-builder .controls .tr-components li,
 .tr-repeater-fields .tr-repeater-group,
 .tr-gallery-list li,
-.tr-items-list li{
+.tr-items-list li,
+.tr-link-chosen-item {
     &.ui-sortable-placeholder {
-        border: dashed 1px #bbb;
+        border: dashed 1px #bbb !important;
         visibility: visible !important;
-        background: none;
+        background: none !important;
         z-index: 1;
         box-shadow: none;
     }
