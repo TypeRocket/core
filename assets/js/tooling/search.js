@@ -1,6 +1,5 @@
-;var tr_delay;
-
-jQuery.fn.TypeRocketLink = function(type, taxonomy) {
+;(function( $ ) {
+    $.fn.TypeRocketSearch = function(type, taxonomy) {
     var param, search, that;
     if (type == null) {
         type = 'any';
@@ -9,7 +8,7 @@ jQuery.fn.TypeRocketLink = function(type, taxonomy) {
         taxonomy = '';
     }
     that = this;
-    search = encodeURI(this.val());
+    search = encodeURI(this.val().trim());
     param = 'post_type=' + type + '&s=' + search;
     if (taxonomy) {
         param += '&taxonomy=' + taxonomy;
@@ -35,7 +34,7 @@ jQuery.fn.TypeRocketLink = function(type, taxonomy) {
                     title = item.name;
                     id = item.term_id;
                 }
-                link = $('<a tabindex="0" class="tr-link-search-result" data-id="' + id + '" >' + title + '</a>');
+                link = jQuery('<a tabindex="0" class="tr-link-search-result" data-id="' + id + '" >' + title + '</a>');
                 link = link.on('click keyup', function(e) {
                     e.preventDefault();
                     var keying = false;
@@ -64,23 +63,14 @@ jQuery.fn.TypeRocketLink = function(type, taxonomy) {
     return this;
 };
 
-tr_delay = (function() {
-    var timer;
-    timer = 0;
-    return function(callback, ms) {
-        clearTimeout(timer);
-        timer = setTimeout(callback, ms);
-    };
-})();
-
-jQuery(document).ready(function($) {
-    $('.typerocket-container').on('keyup', '.tr-link-search-input', function() {
-        var taxonomy, that, type;
-        that = $(this);
-        type = $(this).data('posttype');
-        taxonomy = $(this).data('taxonomy');
-        return tr_delay((function() {
-            that.TypeRocketLink(type, taxonomy);
-        }), 250);
-    });
+$('.typerocket-container').on('keyup', '.tr-link-search-input', function() {
+    var taxonomy, that, type;
+    that = $(this);
+    type = $(this).data('posttype');
+    taxonomy = $(this).data('taxonomy');
+    return window.trUtil.delay((function() {
+        that.TypeRocketSearch(type, taxonomy);
+    }), 250);
 });
+
+}( jQuery ));

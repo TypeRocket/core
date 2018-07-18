@@ -16,10 +16,14 @@ jQuery(document).ready(function($) {
         var $items_list, $repeater_fields, $sortables;
         if ($.isFunction($.fn.sortable)) {
             $sortables = $(obj).find('.tr-gallery-list');
+            $sortableLinks = $(obj).find('.tr-links-selected');
             $items_list = $(obj).find('.tr-items-list');
             $repeater_fields = $(obj).find('.tr-repeater-fields');
             if ($sortables.length > 0) {
                 $sortables.sortable();
+            }
+            if ($sortableLinks.length > 0) {
+                $sortableLinks.sortable();
             }
             if ($repeater_fields.length > 0) {
                 $repeater_fields.sortable({
@@ -143,12 +147,18 @@ jQuery(document).ready(function($) {
                 replacement_id = $group_template.data('id');
                 dev_notes = $group_template.find('.dev .field span');
                 data_name = $group_template.find('[data-name]');
+                data_input = $group_template.find('[data-input]');
                 data_name_filtered = $group_template.find('.tr-repeater-group-template [data-name]');
                 $(data_name).each(function() {
                     var name;
                     name = obj.nameParse($(this).data('name'), hash, replacement_id);
                     $(this).attr('name', name);
                     $(this).attr('data-name', null);
+                });
+                $(data_input).each(function() {
+                    var name;
+                    name = obj.nameParse($(this).data('input'), hash, replacement_id);
+                    $(this).attr('data-input', name);
                 });
                 $(dev_notes).each(function() {
                     var name;

@@ -890,6 +890,21 @@ class Form
     }
 
     /**
+     * Links Input
+     *
+     * @param string $name
+     * @param array $attr
+     * @param array $settings
+     * @param bool|true $label
+     *
+     * @return Fields\Search
+     */
+    public function links( $name, array $attr = [], array $settings = [], $label = true )
+    {
+        return new Fields\Links( $name, $attr, $settings, $label, $this );
+    }
+
+    /**
      * Gallery Input
      *
      * @param string $name
