@@ -1,0 +1,50 @@
+/* Conrol Icons
+----------------------------------------------------------------------- */
+.tr-control-icon {
+    -webkit-font-smoothing: antialiased;
+    font-family: dashicons;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    font-size: 16px;
+    line-height: 16px;
+    position: absolute;
+    cursor: pointer;
+    left: 0;
+    z-index: 10;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    color: #9B9B9B;
+    width: 100%;
+    padding: 9px 0;
+    text-align: center;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    &:hover {
+        color: #333;
+    }
+}
+
+.tr-control-icon-remove:before {
+    content: "\f335";
+}
+
+.tr-control-icon-remove:hover {
+    color: $delete_hover;
+}
+
+.tr-control-icon-move:before {
+    content: "\f333";
+    cursor: move;
+}
+
+.tr-control-icon-collapse:before {
+    content: '\f142';
+}
+
+.tr-control-icon-collapse-up:before {
+    content: '\f140';
+}

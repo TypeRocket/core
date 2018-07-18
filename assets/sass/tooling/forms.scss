@@ -1,31 +1,5 @@
 @import 'vars.scss';
 
-/* Matrix
------------------------------------------------------------------------ */
-.matrix-controls {
-    margin-bottom: 20px;
-}
-
-.matrix-controls select {
-    display: inline-block;
-    width: auto;
-    margin: 0 10px 0 0;
-}
-
-.matrix-disabled {
-    opacity: 0.8;
-}
-
-/* Tabs In Repeaters
------------------------------------------------------------------------ */
-.tr-repeater-group .repeater-inputs > .tr-tabbed-top:not(:only-of-type) {
-    padding-bottom: 15px;
-}
-
-.tr-repeater-group .repeater-inputs > .tr-tabbed-top:only-child {
-    padding-bottom: 0;
-}
-
 /* Frames, Meta Boxes and Repeaters
 ----------------------------------------------------------------------- */
 .tr-frame-fields,

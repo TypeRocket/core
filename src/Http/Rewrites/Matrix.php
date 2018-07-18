@@ -41,9 +41,9 @@ class Matrix
                 ?>
                 <div class="matrix-field-group tr-repeater-group matrix-type-<?php echo $type; ?> matrix-group-<?php echo $group; ?>">
                     <div class="repeater-controls">
-                        <div class="collapse"></div>
-                        <div class="move"></div>
-                        <a href="#remove" class="remove" title="remove"></a>
+                        <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
+                        <div class="move tr-control-icon tr-control-icon-move"></div>
+                        <a href="#remove" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>
                     </div>
                     <div class="repeater-inputs">
                         <?php

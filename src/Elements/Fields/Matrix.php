@@ -89,6 +89,7 @@ class Matrix extends Field implements ScriptField {
 
 	    $controls = [
 		    'contract' => 'Contract',
+		    'expand' => 'Expand',
 		    'flip' => 'Flip',
 		    'clear' => 'Clear All',
 		    'add' => $add_button_value,
@@ -119,7 +120,7 @@ class Matrix extends Field implements ScriptField {
 <div class='tr-matrix tr-repeater'>
 <div class='matrix-controls controls'>
 {$select}
-<div class=\"tr-repeater-button-add\">
+<div class=\"tr-mr-10 tr-d-inline\">
 <input type=\"button\" value=\"{$controls['add']}\" data-root=\"{$home_url}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
 </div>
 <div class=\"button-group\">
@@ -168,7 +169,7 @@ class Matrix extends Field implements ScriptField {
             $formGroup = $this->getGroup();
             $generator->newElement( 'select', [
                 'data-mxid' => $this->mxid,
-                'class' => "matrix-select-{$name}",
+                'class' => "tr-mr-10 tr-d-inline matrix-select-{$name}",
                 'data-group' => $formGroup
             ]);
             $default = $this->getSetting('default');
@@ -275,9 +276,9 @@ class Matrix extends Field implements ScriptField {
                     ?>
                     <div class="<?php echo $classes; ?>">
                         <div class="repeater-controls">
-                            <div class="collapse"></div>
-                            <div class="move"></div>
-                            <a href="<?php echo $remove; ?>" class="remove" title="remove"></a>
+                            <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
+                            <div class="move tr-control-icon tr-control-icon-move"></div>
+                            <a href="<?php echo $remove; ?>" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>
                         </div>
                         <div class="repeater-inputs">
                             <?php
