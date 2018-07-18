@@ -1,5 +1,7 @@
 @import 'vars.scss';
 
+@import "icons/icons";
+
 @import "utility/layout";
 @import "utility/contextual";
 @import "utility/sort";
@@ -8,20 +10,21 @@
 @import "utility/repeater";
 @import "utility/matrix";
 @import "utility/builder";
+@import "utility/links";
+@import "utility/headings";
+@import "utility/items";
+@import "utility/alert";
+@import "utility/search";
+@import "utility/image";
+@import "utility/gallery";
+@import "utility/dev";
 
-@import "tooling/alert";
-@import "tooling/builder";
-@import "tooling/dev";
-@import "tooling/forms";
-@import "tooling/icon-vars";
-@import "tooling/icons";
-@import "tooling/items";
-@import "tooling/media";
-@import "tooling/redactor";
-@import "tooling/search";
-@import "tooling/links";
-@import "tooling/seo";
 @import "tooling/style-guide";
 @import "tooling/tabs";
-@import "tooling/typerocket";
-@import "tooling/ui-datepicker";
+
+@import "lib/redactor";
+@import "lib/ui-datepicker";
+
+@import "plugins/seo";
+@import "plugins/dev";
+@import "plugins/page-builder";

@@ -207,6 +207,9 @@ class Routes
         }
         $regex = implode('|', $regex) . ')$#x';
         preg_match($regex, $uri, $m);
+
+        if(empty($m)) { return [null, null];}
+
         $r = $routes[$m['MARK']];
         $args = [];
 

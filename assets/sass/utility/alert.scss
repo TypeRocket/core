@@ -1,5 +1,3 @@
-@import 'vars.scss';
-
 /* AJAX Alerts
 ----------------------------------------------------------------------- */
 .typerocket-ajax-alert {
@@ -19,18 +17,18 @@
     box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
     border-left: solid 4px;
     border-color: $success;
-}
 
-.typerocket-ajax-alert.tr-alert-error {
-    border-color: $error;
-}
+    &.tr-alert-error {
+        border-color: $error;
+    }
 
-.typerocket-ajax-alert.tr-alert-warning {
-    border-color: $warn;
-}
+    &.tr-alert-warning {
+        border-color: $warn;
+    }
 
-.typerocket-ajax-alert.tr-alert-info {
-    border-color: $info;
+    &.tr-alert-info {
+        border-color: $info;
+    }
 }
 
 /* Mobile */

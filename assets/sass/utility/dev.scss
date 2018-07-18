@@ -1,0 +1,82 @@
+/* Function  Helper
+----------------------------------------------------------------------- */
+.tr-dev-alert-helper {
+    padding: 15px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid $blue;
+    color: #23282d;
+    margin: 10px auto;
+
+    code {
+        background: rgba(238, 238, 238, 0.35);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125);
+        color: $blue;
+        padding: 4px;
+        display: inline-block;
+        border-radius: 4px;
+    }
+}
+
+/* Input Helper
+----------------------------------------------------------------------- */
+.typerocket-container {
+    .dev {
+        font-weight: normal;
+        display: inline-block;
+        position: relative;
+        top: 1px;
+        color: #999999;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+
+        &:hover .nav .field {
+            color: $blue;
+        }
+
+        .nav .field {
+            margin-left: 5px;
+        }
+    }
+
+    .tr-repeater .tr-repeater .dev {
+        display: none;
+    }
+
+    .tr-matrix > .dev, .tr-repeater > .dev {
+        margin-bottom: 10px;
+    }
+
+    .control-section .dev:hover > i,
+    .tr-repeater-group .control-section .dev:hover > i {
+        color: $dark;
+    }
+
+    .control-section:hover .dev .nav,
+    .tr-repeater-group .control-section .dev:hover .nav {
+        opacity: 1;
+    }
+
+    .dev .nav,
+    .tr-repeater-group .control-section .dev .nav {
+        display: inline-block;
+        -webkit-transition: opacity 0.5s ease-out;
+        opacity: 0;
+        max-width: 350px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        line-height: 1em;
+    }
+}
+
+/* Mobile
+----------------------------------------------------------------------- */
+@media screen and (max-width: 782px) {
+    #wpbody .control-label .dev {
+        display: none;
+    }
+}

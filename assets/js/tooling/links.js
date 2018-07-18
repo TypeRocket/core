@@ -46,7 +46,7 @@
                             var id, title;
                             id = $(this).data('id');
                             title = $(this).text();
-                            linkItem = jQuery('<li class="tr-link-chosen-item"><input name="'+inputName+'[]" value="'+id+'" type="hidden" />' + title + '<a title="remove" class="tr-link-chosen-item-remove"></a></li>');
+                            linkItem = jQuery('<li class="tr-link-chosen-item"><input name="'+inputName+'[]" value="'+id+'" type="hidden" />' + title + '<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>');
                             selectedList.append(linkItem)
                             that.focus().val('');
                             return $(this).parent().html('');

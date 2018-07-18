@@ -103,3 +103,45 @@
     color: $blue;
     font-weight: bold;
 }
+
+/* Frames, Meta Boxes and Repeaters
+----------------------------------------------------------------------- */
+.tr-frame-fields,
+.repeater-inputs,
+.postbox-container .typerocket-container {
+    .control-section + .tr-tabbed-top  {
+        margin-top: 9px;
+        padding-top: 0;
+
+        &:after {
+            padding: 0 10px;
+            margin: 0px -5px;
+        }
+    }
+
+    [class^=control-row] + .tr-tabbed-top  {
+        margin-top: 9px;
+        padding-top: 1px;
+
+        &:after {
+            padding: 0 10px;
+            margin: 0px -5px;
+        }
+    }
+
+    .tr-tabbed-top + .control-section {
+        padding-top: 12px;
+
+        &:after {
+            margin: 0px -5px;
+        }
+    }
+
+    .tr-tabbed-top + [class^=control-row] {
+        padding-top: 9px;
+
+        &:after {
+            margin: 0px -5px;
+        }
+    }
+}

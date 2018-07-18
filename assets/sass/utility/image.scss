@@ -1,0 +1,25 @@
+/* Images and Files
+----------------------------------------------------------------------- */
+.typerocket-container {
+    .data-full,
+    .data-full li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .image-picker-placeholder img,
+    .file-picker-placeholder a {
+        padding: 10px;
+        border: solid #DFDFDF 1px;
+        background: #fff;
+        margin-top: 10px;
+        display: inline-block;
+        max-width: 100%;
+        height: auto;
+        overflow: hidden;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+}
