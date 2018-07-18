@@ -46,7 +46,7 @@ class Repeater extends Field implements ScriptField
 
         // add controls
         if (isset( $settings['help'] )) {
-            $help = "<div class=\"help\"> <p>{$settings['help']}</p> </div>";
+            $help = "<div class=\"tr-form-field-help\"> <p>{$settings['help']}</p> </div>";
             $this->removeSetting( 'help' );
         } else {
             $help = '';
@@ -91,7 +91,7 @@ class Repeater extends Field implements ScriptField
         $openContainer = '<div class="repeater-controls"><div class="collapse"></div><div class="move"></div><a href="' . $href . '" class="remove" title="remove"></a></div><div class="repeater-inputs">';
         $endContainer  = '</div>';
 
-        $html .= '<div class="control-section tr-repeater">'; // start tr-repeater
+        $html .= '<div class="tr-repeater">'; // start tr-repeater
 
         // setup repeater
         $cache_group = $form->getGroup();

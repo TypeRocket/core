@@ -551,7 +551,7 @@ class Form
         $fieldString     = $field->getString();
 
         $id   = $id ? "id=\"{$id}\"" : '';
-        $help = $help ? "<div class=\"help\"><p>{$help}</p></div>" : '';
+        $help = $help ? "<div class=\"tr-form-field-help\"><p>{$help}</p></div>" : '';
 
         if ($fieldHtml == 'raw' || $formHtml == 'raw') {
             $html = apply_filters( 'tr_from_field_html_raw', $fieldString, $field );

@@ -42,7 +42,7 @@
 }
 
 .tr-tabbed-box .help-tab-content {
-    padding-top: 17px;
+    padding-top: 7px;
 }
 
 .tr-tabbed-box .contextual-help-tabs {
@@ -71,7 +71,7 @@
 }
 
 .tr-tabbed-box .contextual-help-tabs-wrap {
-    padding: 0 20px;
+    padding: 0 10px;
     overflow: auto;
 }
 
@@ -128,15 +128,12 @@
 
 #wpbody #poststuff .postbox-container {
     .tr-tabbed-top {
-        margin: -6px -10px -8px -10px;
-        padding: 0 8px 10px;
         background: #fff;
         position: relative;
         border-radius: 0 0 3px 3px;
     }
 
     .tabbed-sections {
-        margin: 0 -10px 15px;
         padding-bottom: 0;
     }
 }

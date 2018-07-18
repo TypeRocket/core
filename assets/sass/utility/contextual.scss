@@ -1,0 +1,22 @@
+#wpwrap .postbox {
+    .typerocket-container {
+        margin: -6px -12px;
+    }
+}
+
+#post-body-content .typerocket-container {
+    margin-bottom: 30px;
+}
+
+#titlediv + .typerocket-container,
+#postdivrich + .typerocket-container {
+    margin-top: 20px;
+}
+
+#addtag .typerocket-container {
+    margin-bottom: 20px;
+}
+
+#screen-meta + .tr-admin-notice {
+    display: none;
+}

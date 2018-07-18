@@ -1,78 +1,7 @@
 @import 'vars.scss';
 
-/* Inputs
------------------------------------------------------------------------ */
-.typerocket-container input[type="text"],
-.typerocket-container input[type="email"],
-.typerocket-container input[type="password"],
-.typerocket-container input[type="number"],
-.typerocket-container textarea {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 6px;
-    margin: 0;
-}
-
-.typerocket-container select {
-    margin: 0 0 5px;
-    padding: 3px;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.typerocket-container textarea {
-    min-height: 120px;
-}
-
-.typerocket-container .help p {
-    color: #666;
-    font-style: italic;
-    margin: 4px 0 0;
-    font-size: 13px;
-}
-
 /* Rows
 ----------------------------------------------------------------------- */
-.control-section + [class^=control-row],
-[class^=control-row] + .control-section,
-[class^=control-row] + [class^=control-row] {
-    margin-top: 12px;
-}
-
-[class^=control-row] .control-section {
-    display: inline-block;
-    padding: 5px !important;
-    box-sizing: border-box;
-    margin-top: 0 !important;
-    vertical-align: top;
-}
-
-[class^=control-row] {
-    margin-left: -5px;
-    margin-right: -5px;
-    position: relative;
-}
-
-.control-row-2 .control-section {
-    width: 50%;
-}
-
-.control-row-3 .control-section {
-    width: 33.32%;
-}
-
-.control-row-4 .control-section {
-    width: 25%;
-}
-
-.control-row-5 .control-section {
-    width: 20%;
-}
-
-.control-row-6 .control-section {
-    width: 16.62%;
-}
-
 .postbox-container .typerocket-container [class^=control-row],
 .repeater-inputs [class^=control-row],
 .tr-frame-fields [class^=control-row]
@@ -84,62 +13,11 @@
     padding-top: 0;
 }
 
-/* Control Sections
------------------------------------------------------------------------ */
-.typerocket-container .control-section + .control-section {
-    margin-top: 12px;
-    padding-top: 14px;
-}
-
-.typerocket-container .control-section {
-    position: relative;
-}
-
 /* Labels
 ----------------------------------------------------------------------- */
-.typerocket-container .control-label {
-    color: #333;
-    display: block;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    height: auto;
-    width: auto;
-    padding-left: 1px;
-    padding-bottom: 4px;
-}
-
-.inside .typerocket-container .control-section:first-child .control-label {
-    margin-top: 10px;
-}
-
-.typerocket-container .control-section .control-label {
-    margin-top: -4px;
-}
-
 .typerocket-container .repeater-inputs .control-label,
 .postbox-container .typerocket-container .control-label {
     font-size: 12px;
-}
-
-/* Section Top Bar
------------------------------------------------------------------------ */
-.postbox-container .typerocket-container .control-section + .control-section:after,
-.repeater-inputs .control-section + .control-section:after,
-.tr-frame-fields .control-section + .control-section:after {
-    content: '';
-    display: block;
-    width: 100%;
-    border-top: 1px solid #DFDFDF;
-    border-bottom: 1px solid #fff;
-    position: absolute;
-    padding: 0 10px;
-    left: -10px;
-    top: 0;
-}
-
-.tr-frame-fields .control-section + .control-section:after {
-    padding: 0 10px 0;
 }
 
 /* Matrix
@@ -156,31 +34,6 @@
 
 .matrix-disabled {
     opacity: 0.8;
-}
-
-/* Repeater Headlines
------------------------------------------------------------------------ */
-.tr-repeater-group .repeater-inputs {
-    padding-left: 40px;
-    position: relative;
-
-    > *:first-child {
-        margin-top: 0;
-        padding-top: 0;
-    }
-
-    > h1, > h2, > h3, > h4, > h5, > h6 {
-        &:first-child {
-            margin: 0 -10px 5px;
-            padding: 0 12px 8px;
-            box-shadow: 0 1px 1px rgba(0,0,0,.04);
-            border-bottom: 1px solid #e5e5e5;
-            font-weight: bold;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-    }
-
 }
 
 /* Repeater
@@ -216,7 +69,7 @@
     height: 100%;
     width: 100%;
     top: 0;
-    left: 30px;
+    left: 40px;
 }
 
 .tr-repeater-collapse > .tr-repeater-group-expanded > .repeater-inputs:after {
@@ -229,16 +82,6 @@
 
 .tr-repeater-group-template {
     display: none;
-}
-
-.tr-repeater-fields > .tr-repeater-group {
-    display: block;
-    position: relative;
-    padding: 10px;
-    border: solid 1px #e5e5e5;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-    margin: 0 0 10px;
-    background: #fff;
 }
 
 /* Repeater Controls
@@ -363,40 +206,9 @@
 
 /* Frames, Meta Boxes and Repeaters
 ----------------------------------------------------------------------- */
-.tr-frame-fields, .repeater-inputs {
-    h1, h2, h3, h4, h5, h6 {
-        + [class^=control-row] {
-            padding-top: 0;
-
-            .control-section {
-                padding-top: 0 !important;
-            }
-        }
-    }
-}
-
 .tr-frame-fields,
 .repeater-inputs,
 .postbox-container .typerocket-container {
-    .control-section + [class^=control-row]:after,
-    [class^=control-row] + [class^=control-row]:after,
-    [class^=control-row] + .control-section:after,
-    .tr-tabbed-top + .control-section:after,
-    .tr-tabbed-top + [class^=control-row]:after,
-    [class^=control-row] + .tr-tabbed-top:after,
-    .control-section + .tr-tabbed-top:after
-    {
-        content: '';
-        display: block;
-        width: 100%;
-        border-top: 1px solid #DFDFDF;
-        border-bottom: 1px solid #fff;
-        position: absolute;
-        padding: 0 5px;
-        left: -5px;
-        top: 0;
-    }
-
     .control-section + .tr-tabbed-top  {
         margin-top: 9px;
         padding-top: 0;
@@ -436,18 +248,6 @@
 
 .postbox-container .typerocket-container
 {
-    [class^=control-row] + [class^=control-row]:after,
-    .control-section + [class^=control-row]:after,
-    [class^=control-row] + .control-section:after {
-        padding: 0 7px;
-        left: -7px;
-    }
-
-    [class^=control-row] + .control-section:after {
-        padding: 0 12px;
-        left: -12px;
-    }
-
     [class^=control-row] + [class^=control-row],
     .control-section + [class^=control-row] {
         padding-top: 9px;
@@ -464,41 +264,6 @@
 .builder-inputs .tr-tabbed-top:first-child .tabbed-sections .tr-tabs
 {
     padding-top: 0;
-}
-
-.builder-inputs, .tr-repeater-group {
-    .tr-tabbed-top:first-child,
-    h1:first-child + .tr-tabbed-top {
-        .tabbed-sections .tr-tabs {
-            padding-top: 0;
-        }
-    }
-
-    h1:first-child + {
-        .control-section, [class^=control-row] {
-            margin-top: 15px;
-        }
-    }
-}
-
-.builder-inputs > .tr-tabbed-top + {
-    .control-section {
-        &:after {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-    }
-
-    [class^=control-row] {
-        &:after {
-            left: 0;
-            margin-left: -5px;
-            margin-right: -5px;
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-    }
-
 }
 
 .repeater-inputs

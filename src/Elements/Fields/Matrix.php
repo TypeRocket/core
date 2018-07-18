@@ -71,7 +71,7 @@ class Matrix extends Field implements ScriptField {
 
         // add controls
         if (isset( $settings['help'] )) {
-            $help = "<div class=\"help\"> <p>{$settings['help']}</p> </div>";
+            $help = "<div class=\"tr-form-field-help\"> <p>{$settings['help']}</p> </div>";
             $this->removeSetting('help');
         } else {
             $help = '';
@@ -116,7 +116,7 @@ class Matrix extends Field implements ScriptField {
         // add it all
         $home_url = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
         $html = "
-<div class='tr-matrix control-section tr-repeater'>
+<div class='tr-matrix tr-repeater'>
 <div class='matrix-controls controls'>
 {$select}
 <div class=\"tr-repeater-button-add\">
