@@ -1,0 +1,44 @@
+/* Main Container
+----------------------------------------------------------------------- */
+.typerocket-container .contextual-help-tabs-wrap .help-tab-content {
+    padding-bottom: 20px;
+}
+
+.typerocket-container {
+    box-sizing: border-box;
+    clear: both;
+
+    &:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+}
+
+/* Helpers
+----------------------------------------------------------------------- */
+.tr-mr-10 { margin-right: 10px; }
+.tr-ml-10 { margin-left: 10px; }
+.tr-mb-10 { margin-bottom: 10px; }
+.tr-mt-10 { margin-top: 10px; }
+.tr-m-10 { margin: 10px; }
+.tr-my-10 { margin-top: 10px; margin-bottom: 10px; }
+.tr-mx-10 { margin-left: 10px; margin-right: 10px; }
+
+.tr-d-inline { display: inline; }
+.tr-d-inline-block { display: inline-block; }
+.tr-d-block { display: block; }
+
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+.cf {
+    *zoom: 1;
+}

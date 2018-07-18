@@ -88,7 +88,7 @@ class Repeater extends Field implements ScriptField
 
         // template for repeater groups
         $href          = '#remove';
-        $openContainer = '<div class="repeater-controls"><div class="collapse"></div><div class="move"></div><a href="' . $href . '" class="remove" title="remove"></a></div><div class="repeater-inputs">';
+        $openContainer = '<div class="repeater-controls"><div class="collapse tr-control-icon tr-control-icon-collapse"></div><div class="move tr-control-icon tr-control-icon-move"></div><a href="' . $href . '" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a></div><div class="repeater-inputs">';
         $endContainer  = '</div>';
 
         $html .= '<div class="tr-repeater">'; // start tr-repeater
@@ -103,7 +103,7 @@ class Repeater extends Field implements ScriptField
         $generator    = new Generator();
         $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null )->getString();
 
-        $html .= "<div class=\"controls\"><div class=\"tr-repeater-button-add\"><input type=\"button\" value=\"{$controls['add']}\" class=\"button add\" /></div><div class=\"button-group\"><input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\" /><input type=\"button\" data-contract=\"{$controls['contract']}\" value=\"{$expand_label}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\"><input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\" /></div>{$help}<div>{$default_null}</div></div>";
+        $html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\"><input type=\"button\" value=\"{$controls['add']}\" class=\"button add\" /></div><div class=\"button-group\"><input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\" /><input type=\"button\" data-contract=\"{$controls['contract']}\" value=\"{$expand_label}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\"><input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\" /></div>{$help}<div>{$default_null}</div></div>";
 
         // replace name attr with data-name so fields are not saved
         $templateFields = str_replace( ' name="', ' data-name="', $this->getTemplateFields() );

@@ -1,7 +1,11 @@
 @import 'vars.scss';
 
+@import "utility/layout";
 @import "utility/contextual";
+@import "utility/sort";
 @import "utility/form";
+@import "utility/repeater";
+@import "utility/builder";
 
 @import "tooling/alert";
 @import "tooling/builder";

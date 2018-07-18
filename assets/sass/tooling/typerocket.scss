@@ -1,20 +1,3 @@
-/* Main Container
------------------------------------------------------------------------ */
-.typerocket-container .contextual-help-tabs-wrap .help-tab-content {
-    padding-bottom: 20px;
-}
-
-.typerocket-container {
-    box-sizing: border-box;
-    clear: both;
-
-    &:after {
-        content: '';
-        display: block;
-        clear: both;
-    }
-}
-
 /* Admin Page
 ----------------------------------------------------------------------- */
 .wrap {
@@ -25,20 +8,4 @@
         padding: 9px 15px 4px 0;
         line-height: 29px;
     }
-}
-
-/* Helpers
------------------------------------------------------------------------ */
-.cf:before,
-.cf:after {
-    content: " "; /* 1 */
-    display: table; /* 2 */
-}
-
-.cf:after {
-    clear: both;
-}
-
-.cf {
-    *zoom: 1;
 }

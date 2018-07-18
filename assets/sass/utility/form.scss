@@ -66,7 +66,9 @@
             padding: 5px;
             flex: 1;
             box-sizing: border-box;
+            padding: 0 5px;
 
+            &:after { display: none !important; }
             &:first-child { padding-left: 0 }
             &:last-child { padding-right: 0 }
         }
@@ -82,72 +84,22 @@
         width: auto;
         padding-left: 1px;
         padding-bottom: 4px;
+        font-size: 12px;
     }
 }
 
-/* Repeaters
+/* Maxlength
 ----------------------------------------------------------------------- */
-.tr-repeater-fields {
-    position: relative;
-    clear: both;
+.tr-maxlength {
+    margin-top: 3px;
+    margin-bottom: 6px;
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: italic;
 }
 
-.tr-repeater-group {
-    display: block;
-    position: relative;
-    border: solid 1px #e5e5e5;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-    margin: 0 0 10px;
-    background: #fff;
-}
-
-.repeater-inputs {
-    padding-left: 40px;
-    position: relative;
-
-    > {
-        h1, h2, h3, h4, h5, h6 {
-            &:first-child {
-                padding: 10px;
-                box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-                border-bottom: 1px solid #e5e5e5;
-                font-weight: bold;
-                font-size: 14px;
-                line-height: 1.4;
-            }
-        }
-    }
-}
-
-/* Builder
------------------------------------------------------------------------ */
-.builder-inputs {
-    background: #fff;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
-    border: 1px solid #e5e5e5;
-    float: left;
-    width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-
-    &:after {
-        content:'';
-        display: block;
-        clear: both;
-        height: 0;
-    }
-
-    > {
-        h1, h2, h3, h4, h5, h6 {
-            &:first-child {
-                padding: 10px;
-                box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-                border-bottom: 1px solid #e5e5e5;
-                font-weight: bold;
-                font-size: 14px;
-                line-height: 1.4;
-            }
-        }
-    }
+.tr-maxlength span {
+    color: $blue;
+    font-weight: bold;
 }

@@ -13,28 +13,38 @@ jQuery(document).ready(function($) {
     };
     editorHeight();
     add_sorting = function(obj) {
-        var $items_list, $repeater_fields, $sortables;
+        var $items_list, $repeater_fields, $gallerySort;
         if ($.isFunction($.fn.sortable)) {
-            $sortables = $(obj).find('.tr-gallery-list');
+            $gallerySort = $(obj).find('.tr-gallery-list');
             $sortableLinks = $(obj).find('.tr-links-selected');
             $items_list = $(obj).find('.tr-items-list');
             $repeater_fields = $(obj).find('.tr-repeater-fields');
-            if ($sortables.length > 0) {
-                $sortables.sortable();
+            if ($gallerySort.length > 0) {
+                $gallerySort.sortable({
+                    placeholder: "tr-sortable-placeholder",
+                    forcePlaceholderSize: true
+                });
             }
             if ($sortableLinks.length > 0) {
-                $sortableLinks.sortable();
+                $sortableLinks.sortable({
+                    placeholder: "tr-sortable-placeholder",
+                    forcePlaceholderSize: true
+                });
             }
             if ($repeater_fields.length > 0) {
                 $repeater_fields.sortable({
                     connectWith: '.tr-repeater-group',
-                    handle: '.repeater-controls'
+                    handle: '.repeater-controls',
+                    placeholder: "tr-sortable-placeholder",
+                    forcePlaceholderSize: true
                 });
             }
             if ($items_list.length > 0) {
                 $items_list.sortable({
                     connectWith: '.item',
-                    handle: '.move'
+                    handle: '.move',
+                    placeholder: "tr-sortable-placeholder",
+                    forcePlaceholderSize: true
                 });
             }
         }

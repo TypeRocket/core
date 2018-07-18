@@ -1,0 +1,17 @@
+/* Sort Helper
+----------------------------------------------------------------------- */
+.typerocket-container .ui-sortable-helper {
+    opacity: 0.8;
+    cursor: move;
+    overflow: hidden;
+    z-index: 100000000 !important;
+}
+
+.tr-sortable-placeholder {
+    border: dashed 1px #bbb !important;
+    visibility: visible !important;
+    background: none !important;
+    z-index: 1;
+    box-shadow: none;
+    max-height: 300px !important;
+}
