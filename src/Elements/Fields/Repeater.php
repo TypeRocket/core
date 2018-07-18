@@ -4,6 +4,7 @@ namespace TypeRocket\Elements\Fields;
 use TypeRocket\Core\Config;
 use TypeRocket\Elements\Traits\ControlsSetting;
 use \TypeRocket\Html\Generator;
+use TypeRocket\Html\Tag;
 
 class Repeater extends Field implements ScriptField
 {
@@ -87,8 +88,17 @@ class Repeater extends Field implements ScriptField
         }
 
         // template for repeater groups
-        $href          = '#remove';
-        $openContainer = '<div class="repeater-controls"><div class="collapse tr-control-icon tr-control-icon-collapse"></div><div class="move tr-control-icon tr-control-icon-move"></div><a href="' . $href . '" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a></div><div class="repeater-inputs">';
+        $contol_list = [
+            ['class' => 'collapse tr-control-icon tr-control-icon-collapse'],
+            ['class' => 'move tr-control-icon tr-control-icon-move'],
+            ['class' => 'remove tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove')],
+        ];
+
+        $controls_html = array_reduce($contol_list, function($carry, $item) {
+            return $carry . Tag::make('a', $item);
+        });
+
+        $openContainer = '<div class="repeater-controls">'.$controls_html.'</div><div class="repeater-inputs">';
         $endContainer  = '</div>';
 
         $html .= '<div class="tr-repeater">'; // start tr-repeater
@@ -103,7 +113,20 @@ class Repeater extends Field implements ScriptField
         $generator    = new Generator();
         $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null )->getString();
 
-        $html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\"><input type=\"button\" value=\"{$controls['add']}\" class=\"button add\" /></div><div class=\"button-group\"><input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\" /><input type=\"button\" data-contract=\"{$controls['contract']}\" value=\"{$expand_label}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\"><input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\" /></div>{$help}<div>{$default_null}</div></div>";
+        // main controls
+        $contol_list = [
+            ['class' => 'flip button', 'value' => $controls['flip'] ],
+            ['class' => "tr_action_collapse button {$expanded}", 'value' => $expand_label, 'data-contract' => $controls['contract'], 'data-expand' => $controls['expand']],
+            ['class' => 'clear button', 'value' => $controls['clear'] ],
+        ];
+
+        $controls_html = array_reduce($contol_list, function($carry, $item) {
+            return $carry . Tag::make('input', array_merge(['type' => 'button'], $item));
+        });
+
+        $add_button = Tag::make('input', ['type' => 'button', 'value' => $controls['add'], 'class' => 'button add']);
+
+        $html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\">{$add_button}</div><div class=\"button-group\">{$controls_html}</div>{$help}<div>{$default_null}</div></div>";
 
         // replace name attr with data-name so fields are not saved
         $templateFields = str_replace( ' name="', ' data-name="', $this->getTemplateFields() );

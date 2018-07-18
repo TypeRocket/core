@@ -15,7 +15,7 @@
             $ul.data('name', name);
         }
         name = $ul.data('name');
-        $ul.prepend($('<li class="item"><div class="move tr-icon-menu"></div><a href="#remove" class="tr-icon-remove2 remove" title="Remove Item"></a><input type="text" name="' + name + '[]" /></li>').hide().delay(10).slideDown(150).scrollTop('100%'));
+        $ul.prepend($('<li class="item"><a class="move tr-control-icon tr-control-icon-move"></a><a href="#remove" class="remove tr-control-icon tr-control-icon-remove" title="Remove Item"></a><input type="text" name="' + name + '[]" /></li>').hide().delay(10).slideDown(150).scrollTop('100%'));
     });
     $(document).on('click', '.items-list-clear', function() {
         var field;

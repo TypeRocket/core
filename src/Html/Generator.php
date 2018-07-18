@@ -13,6 +13,16 @@ class Generator
     }
 
     /**
+     * Make New Generator
+     *
+     * @return \TypeRocket\Html\Generator
+     */
+    public static function make()
+    {
+        return new self();
+    }
+
+    /**
      * Create new Tag
      *
      * @param $tag

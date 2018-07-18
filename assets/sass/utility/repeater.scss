@@ -30,6 +30,11 @@
     }
 }
 
+.tr-repeater-fields > .tr-sortable-placeholder {
+    margin-bottom: 10px;
+    &:last-child { margin-bottom: 0px;}
+}
+
 .repeater-controls {
     border-right: solid 1px #ddd;
     position: absolute;
@@ -41,6 +46,12 @@
     color: #333;
     background: #f5f5f5;
     cursor: move;
+
+    [class*="tr-control-icon"] {
+        padding: 9px 0;
+        width: 100%;
+        left: 0;
+    }
 
     .tr-control-icon-remove {
         bottom: 0;

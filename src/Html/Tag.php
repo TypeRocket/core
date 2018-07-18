@@ -15,6 +15,21 @@ class Tag
 
 
     /**
+     * Make New Tag
+     *
+     * @param $tag
+     * @param $attributes
+     * @param string $text
+     *
+     * @return \TypeRocket\Html\Tag
+     */
+    public static function make($tag, $attributes, $text = '')
+    {
+        return new self($tag, $attributes, $text);
+    }
+
+
+    /**
      * Html constructor.
      *
      * @param $tag
