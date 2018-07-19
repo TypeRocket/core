@@ -126,13 +126,3 @@
 .tr-repeater-collapse > .tr-repeater-group-expanded {
     height: 100%;
 }
-
-/* Tabs In Repeaters
------------------------------------------------------------------------ */
-.tr-repeater-group .repeater-inputs > .tr-tabbed-top:not(:only-of-type) {
-    padding-bottom: 15px;
-}
-
-.tr-repeater-group .repeater-inputs > .tr-tabbed-top:only-child {
-    padding-bottom: 0;
-}

@@ -39,7 +39,7 @@ abstract class Kernel
             $resourceMiddleware = $this->middleware['noResource'];
         }
 
-        if($route->middleware) {
+        if(!empty($route) && $route->middleware) {
             $resourceMiddleware = array_merge($resourceMiddleware, $route->middleware);
         }
 
