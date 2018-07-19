@@ -50,7 +50,7 @@
         position: relative;
 
         &.active a {
-            border-bottom-color: #00a0d2;
+            border-bottom-color: #444;
         }
 
         a {
@@ -61,7 +61,7 @@
             border-bottom: 4px solid transparent;
 
             &:active, &:focus {
-                border-top-color: #00a0d2 !important;
+                border-bottom-color: #00a0d2 !important;
                 outline: none;
                 box-shadow: none;
             }
