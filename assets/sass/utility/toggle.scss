@@ -23,6 +23,12 @@
         display: block;
         border-radius: 100px;
         position: relative;
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 3px rgba(0,115,170,.8);
+            border-color: #008dbe;
+        }
     }
 
     label:after {
@@ -40,7 +46,6 @@
     input:checked + label {
         border-color: transparent;
         background: #008dbe;
-        box-shadow: 0 0 0 2px #bfe7f3;
 
         &:after {
             background: #fff;

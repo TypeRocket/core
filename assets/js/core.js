@@ -14,4 +14,5 @@ require('./tooling/links');
 require('./tooling/matrix');
 require('./tooling/media');
 require('./tooling/seo');
+require('./tooling/toggle');
 trBuilder();
