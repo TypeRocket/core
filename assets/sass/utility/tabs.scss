@@ -50,6 +50,8 @@
         position: relative;
 
         &.active a {
+            font-weight: bold;
+            color: #191e23;
             border-bottom-color: #444;
         }
 

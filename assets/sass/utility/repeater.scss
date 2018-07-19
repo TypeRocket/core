@@ -72,6 +72,7 @@
         h1, h2, h3, h4, h5, h6 {
             &:first-child {
                 padding: 10px;
+                margin: 0;
                 box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
                 border-bottom: 1px solid #e5e5e5;
                 font-weight: bold;

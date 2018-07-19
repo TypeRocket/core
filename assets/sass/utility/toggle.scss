@@ -12,14 +12,14 @@
     }
 
     .tr-toggle-box-text {
-        margin: 6px 12px 0;
+        margin: 4px 12px 0;
     }
 
     label {
         cursor: pointer;
-        width: 65px;
-        height: 32px;
-        background: grey;
+        width: 50px;
+        height: 24px;
+        border: 3px solid #6c7781;
         display: block;
         border-radius: 100px;
         position: relative;
@@ -30,15 +30,21 @@
         position: absolute;
         top: 2px;
         left: 2px;
-        width: 28px;
-        height: 28px;
-        background: #fff;
+        width: 20px;
+        height: 20px;
+        background: #6c7781;
         border-radius: 14px;
         transition: 0.3s;
     }
 
     input:checked + label {
-        background: #0085ba;
+        border-color: transparent;
+        background: #008dbe;
+        box-shadow: 0 0 0 2px #bfe7f3;
+
+        &:after {
+            background: #fff;
+        }
     }
 
     input:checked + label:after {

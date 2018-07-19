@@ -1,20 +1,24 @@
 /* Item List Field
 ----------------------------------------------------------------------- */
-.tr-items-list li {
-    display: block;
-    position: relative;
-    padding: 10px 40px;
-    border: solid 1px #e5e5e5;
-    margin: -1px 0 0;
-    background: #fff;
+.tr-items-list {
+    margin: 10px 0 0 0;
 
-    .remove {
-        right: 12px;
-        top: 17px;
-    }
+    li {
+        display: block;
+        position: relative;
+        padding: 10px 40px;
+        border: solid 1px #e5e5e5;
+        margin: -1px 0 0;
+        background: #fff;
 
-    .move {
-        left: 12px;
-        top: 17px;
+        .remove {
+            right: 12px;
+            top: 17px;
+        }
+
+        .move {
+            left: 12px;
+            top: 17px;
+        }
     }
 }
