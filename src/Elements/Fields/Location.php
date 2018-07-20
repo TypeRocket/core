@@ -11,6 +11,8 @@ class Location extends Field
 {
 
     protected $useGoogle = false;
+    protected $useCountry = false;
+    protected $locationLabels = [];
 
     /**
      * Init is normally used to setup initial configuration like a
@@ -50,14 +52,34 @@ class Location extends Field
         $values = $this->getValue();
         $name = $this->getNameAttributeString();
         $html = '<div class="tr_field_location_fields">';
+
+        $labels = $this->locationLabels = array_merge([
+            'city' => __('City'),
+            'state' => __('State'),
+            'zip' => __('Zip Code'),
+            'country' => __('Country'),
+            'address1' => __('Address'),
+            'address2' => __('Address Line 2'),
+            'lat' => __('Lat'),
+            'lng' => __('Lng'),
+            'generate' => __('Get Address Lat/Lng'),
+            'clear' => __('Clear Address Lat/Lng'),
+        ], $this->locationLabels);
+
+        $cszc = ['city' => $labels['city'], 'state' => $labels['state'], 'zip' => $labels['zip']];
+
+        if($this->useCountry) {
+            $cszc['country'] = $labels['country'];
+        }
+
         $field_groups = [
-            ['address1' => __('Address')],
-            ['address2' => __('Address Line 2')],
-            ['city' => __('City'), 'state' => __('State'), 'zip' => __('Zip'), 'country' => __('Country')]
+            ['address1' => $labels['address1']],
+            ['address2' => $labels['address2']],
+            $cszc
         ];
 
         if($this->useGoogle) {
-            $field_groups[] = ['lat' => __('Lat'), 'lng' => __('Lng')];
+            $field_groups[] = ['lat' => $labels['lat'], 'lng' => $labels['lng']];
         }
 
         foreach ($field_groups as $group) {
@@ -78,8 +100,8 @@ class Location extends Field
 
         if($this->useGoogle) {
             $html .= '<div class="tr_field_location_load_lat_lng_section button-group">
-                <a class="button tr_field_location_load_lat_lng" type="button">Generate Lat/Lng From Address</a>
-                <a class="button tr_field_location_clear_lat_lng" type="button">Clear Lat/Lng</a>
+                <a class="button tr_field_location_load_lat_lng" type="button">'.$labels['generate'].'</a>
+                <a class="button tr_field_location_clear_lat_lng" type="button">'.$labels['clear'].'</a>
                 </div>
                 <div class="tr_field_location_google_map"></div>';
         }
@@ -87,6 +109,42 @@ class Location extends Field
         $html .= '</div>';
 
         return $html;
+    }
+
+    /**
+     * Set labels
+     *
+     * @param $labels
+     *
+     * @return $this
+     */
+    public function setLocationLabels(array $labels)
+    {
+        $this->locationLabels = $labels;
+        return $this;
+    }
+
+    /**
+     * Get labels
+     *
+     * @param $labels
+     *
+     * @return $this
+     */
+    public function getLocationLabels()
+    {
+        return $this->locationLabels;
+    }
+
+    /**
+     * Disable Country
+     *
+     * @return $this
+     */
+    public function enableCountry()
+    {
+        $this->useCountry = true;
+        return $this;
     }
 
 
