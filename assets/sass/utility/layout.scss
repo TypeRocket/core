@@ -15,6 +15,27 @@
     }
 }
 
+/* Grid
+----------------------------------------------------------------------- */
+.tr-flex-list {
+    display: flex;
+    box-sizing: border-box;
+
+    > * {
+        flex: 1;
+        box-sizing: border-box;
+        padding: 0 5px;
+    }
+
+    > :first-child {
+        padding-left: 0;
+    }
+
+    > :last-child {
+        padding-right: 0;
+    }
+}
+
 /* Helpers
 ----------------------------------------------------------------------- */
 .tr-mr-10 { margin-right: 10px; }

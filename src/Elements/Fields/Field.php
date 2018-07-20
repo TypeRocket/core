@@ -54,6 +54,7 @@ abstract class Field
      */
     public function __toString()
     {
+        $this->beforeEcho();
         $form = $this->getForm();
         if($form instanceof Form) {
             $string = $this->getForm()->getFromFieldString($this);
@@ -126,6 +127,14 @@ abstract class Field
      * @return mixed
      */
     abstract protected function init();
+
+    /**
+     * Optional for running code just before the field is printed
+     * to the screen.
+     *
+     * @return mixed
+     */
+     protected function beforeEcho() {}
 
     /**
      * Setup to use with a Form.

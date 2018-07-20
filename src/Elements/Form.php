@@ -921,6 +921,21 @@ class Form
     }
 
     /**
+     * Location Inputs
+     *
+     * @param string $name
+     * @param array $attr
+     * @param array $settings
+     * @param bool|true $label
+     *
+     * @return Fields\Search
+     */
+    public function location( $name, array $attr = [], array $settings = [], $label = true )
+    {
+        return new Fields\Location( $name, $attr, $settings, $label, $this );
+    }
+
+    /**
      * Gallery Input
      *
      * @param string $name
