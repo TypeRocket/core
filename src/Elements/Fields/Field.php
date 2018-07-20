@@ -323,12 +323,26 @@ abstract class Field
     }
 
     /**
+     * Get Input Spoof ID
+     *
+     * Required for repeaters to work.
+     *
+     * @return mixed|string
+     */
+    public function getSpoofInputId()
+    {
+        return $this->getAttribute('data-trid', 'tr_field_' . $this->getDots());
+    }
+
+    /**
      * Set Input ID
      *
      * @return $this
      */
     public function setupInputId()
     {
+        $dots = $this->getDots();
+        $this->setAttribute('data-trid', 'tr_field_' . $dots);
         $this->setAttribute('id', $this->getInputId() );
 
         return $this;

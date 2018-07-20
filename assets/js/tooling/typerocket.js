@@ -158,6 +158,8 @@ jQuery(document).ready(function($) {
                 dev_notes = $group_template.find('.dev .field span');
                 data_name = $group_template.find('[data-name]');
                 data_input = $group_template.find('[data-input]');
+                data_trid = $group_template.find('[data-trid]');
+                data_trfor = $group_template.find('[data-trfor]');
                 data_name_filtered = $group_template.find('.tr-repeater-group-template [data-name]');
                 $(data_name).each(function() {
                     var name;
@@ -169,6 +171,16 @@ jQuery(document).ready(function($) {
                     var name;
                     name = obj.nameParse($(this).data('input'), hash, replacement_id);
                     $(this).attr('data-input', name);
+                });
+                $(data_trid).each(function() {
+                    var name;
+                    name = obj.nameParse($(this).data('trid'), hash, replacement_id);
+                    $(this).attr('id', name.split('.').join('_'));
+                });
+                $(data_trfor).each(function() {
+                    var name;
+                    name = obj.nameParse($(this).data('trfor'), hash, replacement_id);
+                    $(this).attr('for', name.split('.').join('_'));
                 });
                 $(dev_notes).each(function() {
                     var name;

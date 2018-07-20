@@ -410,7 +410,8 @@ class Form
     {
         $label_tag = $this->currentField->getLabelTag();
         $label_for = $this->currentField->getInputId();
-        $open_html  = "<div class=\"control-label\"><{$label_tag} for=\"{$label_for}\" class=\"label\">";
+        $label_for_spoof = $this->currentField->getSpoofInputId();
+        $open_html  = "<div class=\"control-label\"><{$label_tag} data-trfor=\"{$label_for_spoof}\" for=\"{$label_for}\" class=\"label\">";
         $close_html = "</{$label_tag}></div>";
         $debug      = $this->getDebug();
         $html       = '';

@@ -42,7 +42,12 @@ class Toggle extends Field
 
         $field->newElement('div', ['class' => 'tr-toggle-box'])
               ->appendInside( $checkbox )
-              ->appendInside( 'label', ['tabindex' => '0', 'for' => $this->getInputId(), 'class' => 'tr-toggle-box-label'] );
+              ->appendInside( 'label', [
+                  'tabindex' => '0',
+                  'for' => $this->getInputId(),
+                  'data-trfor' => $this->getAttribute('data-trid'),
+                  'class' => 'tr-toggle-box-label'
+              ]);
 
         if($text = $this->getSetting( 'text' )) {
             $field->appendInside('p', ['class' => 'tr-toggle-box-text'], $text);
