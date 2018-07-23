@@ -29,6 +29,7 @@ class Location extends Field
     protected function beforeEcho()
     {
         $api = Config::locate('app.api_keys.google_maps');
+        $api = apply_filters('tr_field_location_google_api', $api);
         if($this->useGoogle && $api) {
             $this->paths = Config::locate('paths');
             $assetVersion = Config::locate('app.assets');
