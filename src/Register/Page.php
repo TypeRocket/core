@@ -500,7 +500,7 @@ class Page extends Registrable
 
     protected function loadView() {
         $GLOBALS['_tr_page'] = $this;
-        $class = '\\' . TR_APP_NAMESPACE . '\\Models\\' . ucfirst($this->resource);
+        $class = '\\' . TR_APP_NAMESPACE . '\\Models\\' . Str::camelize($this->resource);
         if( class_exists( $class ) ) {
             $GLOBALS['_tr_resource'] = new $class;
         }
