@@ -106,13 +106,14 @@ jQuery(document).ready(function($){
             if(addr != false) {
                 url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(addr) + '&sensor=false';
                 $.get(url, function(data) {
+
                     lat = data.results[0].geometry.location.lat;
                     lng = data.results[0].geometry.location.lng;
 
                     if(that.testLatLng(loc_el) == false) {
-                        $($(loc_el).find('.tr_field_location_lat')[0]).val(lat);
-                        $($(loc_el).find('.tr_field_location_lng')[0]).val(lng);
-                        $(loc_el).addClass('tr_field_location_opened')
+                        $lo = $(loc_el);
+                        $($lo.find('.tr_field_location_lat')[0]).val(lat);
+                        $($lo.find('.tr_field_location_lng')[0]).val(lng);
                     }
 
                     var latLng = new google.maps.LatLng(lat, lng);

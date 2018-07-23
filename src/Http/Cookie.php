@@ -97,4 +97,17 @@ class Cookie
 
         return $data;
     }
+
+    /**
+     * Get old stored fields
+     *
+     * @param bool $load_only_old
+     */
+    public function oldFields() {
+        if( !empty($_COOKIE['tr_old_fields']) ) {
+            return (new Cookie())->getTransient('tr_old_fields');
+        }
+
+        return null;
+    }
 }
