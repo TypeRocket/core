@@ -106,6 +106,10 @@ jQuery(document).ready(function($){
             if(addr != false) {
                 url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(addr) + '&sensor=false';
                 $.get(url, function(data) {
+                    if(typeof data.error_message != 'undefined') {
+                        alert(data.error_message);
+                        return;
+                    }
 
                     lat = data.results[0].geometry.location.lat;
                     lng = data.results[0].geometry.location.lng;
