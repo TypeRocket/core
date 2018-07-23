@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Forms;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Elements\Fields\Text;
 use TypeRocket\Elements\Form;
 
-class FieldTest extends \PHPUnit_Framework_TestCase
+class FieldTest extends TestCase
 {
 
     public function testFieldMacro()

@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Query;
 
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 
-class ManyToManyTest extends \PHPUnit_Framework_TestCase
+class ManyToManyTest extends TestCase
 {
 
     public function testManyToMany()

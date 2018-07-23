@@ -1,0 +1,24 @@
+/* Item List Field
+----------------------------------------------------------------------- */
+.tr-items-list {
+    margin: 10px 0 0 0;
+
+    li {
+        display: block;
+        position: relative;
+        padding: 10px 40px;
+        border: solid 1px #e5e5e5;
+        margin: -1px 0 0;
+        background: #fff;
+
+        .remove {
+            right: 12px;
+            top: 17px;
+        }
+
+        .move {
+            left: 12px;
+            top: 17px;
+        }
+    }
+}

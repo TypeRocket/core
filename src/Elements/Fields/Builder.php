@@ -15,14 +15,14 @@ class Builder extends Matrix
      * Get the scripts
      */
     public function enqueueScripts() {
-        $this->paths = Config::getPaths();
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $this->paths = Config::locate('paths');
+        $assetVersion = Config::locate('app.assets');
         $assets = $this->paths['urls']['assets'];
         wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );
         wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], $assetVersion, true );
         wp_enqueue_script( 'wp-color-picker' );
         wp_enqueue_media();
-        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/redactor.min.js', ['jquery'], $assetVersion, true );
+        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/lib/redactor.min.js', ['jquery'], $assetVersion, true );
     }
 
     /**

@@ -11,6 +11,7 @@ class ResourceResponder extends Responder
 
     private $resource = null;
     private $action = null;
+    private $route = null;
     private $actionMethod = null;
 
     /**
@@ -24,30 +25,8 @@ class ResourceResponder extends Responder
     {
         $request  = new Request( $this->resource, null, $args, $this->action, $this->hook );
         $response = new Response();
-        $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod);
-        $this->response( $this->kernel->router->returned , $response);
-    }
-
-    public function response($returned, Response $response)
-    {
-        status_header( $response->getStatus() );
-
-        if( $returned && empty($_POST['_tr_ajax_request']) ) {
-
-            if( $returned instanceof Redirect ) {
-                $returned->now();
-            }
-
-            if( is_string($returned) ) {
-                echo $returned;
-                die();
-            }
-
-            Routes::resultsToJson( $returned );
-
-        } else {
-            wp_send_json( $response->getResponseArray() );
-        }
+        $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod, $this->route);
+        tr_http_response($this->kernel->router->returned, $response);
     }
 
     /**
@@ -73,6 +52,19 @@ class ResourceResponder extends Responder
      */
     public function setAction( $action ) {
         $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * Set the action
+     *
+     * @param $action
+     *
+     * @return $this
+     */
+    public function setRoute( $route ) {
+        $this->route = $route;
 
         return $this;
     }

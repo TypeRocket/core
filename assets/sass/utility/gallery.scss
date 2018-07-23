@@ -1,0 +1,50 @@
+/* Gallery
+----------------------------------------------------------------------- */
+.tr-gallery-list {
+    margin: 5px -5px 0;
+
+    .image-picker-placeholder img {
+        cursor: move;
+    }
+
+    .ui-sortable-helper a {
+        display: none;
+    }
+
+    li {
+        margin: 5px;
+        position: relative;
+        list-style: none;
+        padding: 0;
+        display: inline-block;
+        vertical-align: top;
+
+        img {
+            margin: 0;
+            display: block;
+        }
+
+        &:hover a {
+            display: block;
+        }
+    }
+
+    a {
+        color: $delete;
+        position: absolute;
+        right: -8px;
+        top: -8px;
+        z-index: 5;
+        text-decoration: none;
+        border: solid #DFDFDF 1px;
+        padding: 6px;
+        border-radius: 25px;
+        background: #fff;
+        display: none;
+
+        &:hover {
+            color: $delete_hover;
+            cursor: pointer;
+        }
+    }
+}

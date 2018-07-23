@@ -1,7 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace Query;
 
-class SelectTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SelectTest extends TestCase
 {
 
     public function testSelectWithUppercaseIdColumn()

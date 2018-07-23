@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace Results;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\WPPost;
 
-class ResultsTest extends \PHPUnit_Framework_TestCase
+class ResultsTest extends TestCase
 {
 
     public function testPrependToResults()

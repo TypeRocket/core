@@ -9,6 +9,8 @@ class Textarea extends Field
 {
     use MaxlengthTrait, DefaultSetting;
 
+    protected $labelTag = 'label';
+
     /**
      * Run on construction
      */
@@ -26,6 +28,7 @@ class Textarea extends Field
         $this->setAttribute('name', $this->getNameAttributeString());
         $value = $this->getValue();
         $default = $this->getDefault();
+        $this->setupInputId();
         $value = !empty($value) ? $value : $default;
         $value = $this->sanitize($value, 'textarea');
         $max = $this->getMaxlength( $value,  $this->getAttribute('maxlength'));

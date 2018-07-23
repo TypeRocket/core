@@ -18,6 +18,7 @@ abstract class Field
     /** @var Form */
     protected $form = null;
     protected $label = false;
+    protected $labelTag = 'span';
 
     /**
      * When instancing a Field use reflection to connect the Form
@@ -53,6 +54,7 @@ abstract class Field
      */
     public function __toString()
     {
+        $this->beforeEcho();
         $form = $this->getForm();
         if($form instanceof Form) {
             $string = $this->getForm()->getFromFieldString($this);
@@ -61,6 +63,17 @@ abstract class Field
         }
 
         return $string;
+    }
+
+    /**
+     * Print Field to Screen
+     *
+     * @return $this
+     */
+    public function echo()
+    {
+        echo $this;
+        return $this;
     }
 
     /**
@@ -114,6 +127,14 @@ abstract class Field
      * @return mixed
      */
     abstract protected function init();
+
+    /**
+     * Optional for running code just before the field is printed
+     * to the screen.
+     *
+     * @return mixed
+     */
+     protected function beforeEcho() {}
 
     /**
      * Setup to use with a Form.
@@ -291,6 +312,52 @@ abstract class Field
     }
 
     /**
+     * Tag to use for Label Element
+     *
+     * @return string
+     */
+    public function getLabelTag() {
+        return $this->labelTag ?? 'span';
+    }
+
+    /**
+     * Get Input ID
+     *
+     * @return mixed|string
+     */
+    public function getInputId()
+    {
+        $default = 'tr_field_' . Sanitize::underscore($this->getDots());
+        return $this->getAttribute('id', $default );
+    }
+
+    /**
+     * Get Input Spoof ID
+     *
+     * Required for repeaters to work.
+     *
+     * @return mixed|string
+     */
+    public function getSpoofInputId()
+    {
+        return $this->getAttribute('data-trid', 'tr_field_' . $this->getDots());
+    }
+
+    /**
+     * Set Input ID
+     *
+     * @return $this
+     */
+    public function setupInputId()
+    {
+        $dots = $this->getDots();
+        $this->setAttribute('data-trid', 'tr_field_' . $dots);
+        $this->setAttribute('id', $this->getInputId() );
+
+        return $this;
+    }
+
+    /**
      * Get the prefix
      *
      * @return null
@@ -418,6 +485,16 @@ abstract class Field
      */
     public function getDebugHelperFunction() {
         return $this->debugHelperFunction();
+    }
+
+    /**
+     * Add Modifyer To Helper Function
+     *
+     * @return string
+     */
+    public function getDebugHelperFunctionModifier()
+    {
+        return '';
     }
 
     /**

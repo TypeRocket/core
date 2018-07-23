@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Query;
 
-class JoinTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class JoinTest extends TestCase
 {
     public function testBasicJoin()
     {

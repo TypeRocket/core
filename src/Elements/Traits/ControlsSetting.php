@@ -48,6 +48,17 @@ trait ControlsSetting {
 		return $this->appendToArraySetting('controls', 'contract', $value);
 	}
 
+    /**
+     * Set Control Contract
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
+    public function setControlExpand( $value ) {
+        return $this->appendToArraySetting('controls', 'expand', $value);
+    }
+
 	/**
 	 * Set Control Clear
 	 *

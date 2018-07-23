@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Query;
 
-class UnionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UnionTest extends TestCase
 {
     public function testBasicJoinUnion()
     {

@@ -4,87 +4,95 @@ namespace TypeRocket\Http;
 
 class Route
 {
+    public $match;
+    public $do;
+    public $middleware;
+    public $methods;
+
+    public function match($regex, $map = [])
+    {
+        $this->match = [ltrim($regex, '/'), $map, $this];
+        return $this;
+    }
+
+    public function middleware(array $middleware)
+    {
+        $this->middleware = $middleware;
+        return $this;
+    }
+
+    public function do($handle)
+    {
+        $this->do = $handle;
+        $this->registerRoute();
+        return $this;
+    }
 
     /**
      * Add Get Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the call that handles the request
      */
-    public function get($path, $handler)
+    public function get()
     {
-        Routes::addRoute('GET', $path, $handler);
+        $this->methods[] = 'GET';
+        return $this;
     }
 
     /**
      * Add Post Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the action controller call
      */
-    public function post($path, $handler)
+    public function post()
     {
-        Routes::addRoute('POST', $path, $handler);
+        $this->methods[] = 'POST';
+        return $this;
     }
 
     /**
      * Add Put Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the action controller call
      */
-    public function put($path, $handler)
+    public function put()
     {
-        Routes::addRoute('PUT', $path, $handler);
+        $this->methods[] = 'PUT';
+        return $this;
     }
 
     /**
      * Add Delete Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the action controller call
      */
-    public function delete($path, $handler)
+    public function delete()
     {
-        Routes::addRoute('DELETE', $path, $handler);
+        $this->methods[] = 'DELETE';
+        return $this;
     }
 
     /**
      * Add Patch Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the action controller call
      */
-    public function patch($path, $handler)
+    public function patch()
     {
-        Routes::addRoute('PATCH', $path, $handler);
+        $this->methods[] = 'PATCH';
+        return $this;
     }
 
     /**
      * Add Options Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the action controller call
      */
-    public function options($path, $handler)
+    public function options()
     {
-        Routes::addRoute('OPTIONS', $path, $handler);
+        $this->methods[] = 'OPTIONS';
+        return $this;
     }
 
     /**
      * Add Any Route
-     *
-     * @param string $path request path rewrite to add
-     * @param string $handler the action controller call
      */
-    public function any($path, $handler)
+    public function any()
     {
-        Routes::addRoute('PUT', $path, $handler);
-        Routes::addRoute('POST', $path, $handler);
-        Routes::addRoute('GET', $path, $handler);
-        Routes::addRoute('DELETE', $path, $handler);
-        Routes::addRoute('PATCH', $path, $handler);
-        Routes::addRoute('OPTIONS', $path, $handler);
+        $this->methods = ['PUT', 'POST', 'GET', 'DELETE', 'PATCH', 'OPTIONS'];
+        return $this;
+    }
+
+    protected function registerRoute() {
+        Routes::addRoute($this);
     }
 
 }

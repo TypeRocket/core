@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Query;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Model;
 
-class ModelTest extends \PHPUnit_Framework_TestCase
+class ModelTest extends TestCase
 {
 
     public function testFillableMethods()

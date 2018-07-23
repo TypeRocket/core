@@ -8,19 +8,22 @@ use TypeRocket\Http\Rewrites\Rest;
 use TypeRocket\Elements\Notice;
 use TypeRocket\Http\Routes;
 use TypeRocket\Http\SSL;
-use TypeRocket\Plugin\Loader;
 use TypeRocket\Register\Registry;
 
 class Launcher
 {
+    public $typerocket = [];
+
     /**
      * Core Init
      */
     public function initCore()
     {
+        $this->typerocket = Config::locate('typerocket');
         $this->initHooks();
         $this->loadPlugins();
         $this->loadResponders();
+        $this->initFrontEnd();
 
         /*
         |--------------------------------------------------------------------------
@@ -45,8 +48,8 @@ class Launcher
         | Load TypeRocket Router
         |
         */
-        $paths = Config::getPaths();
-        $routeFile = $paths['base'] . '/routes.php';
+        $base_dir = Config::locate('paths.base');
+        $routeFile = $base_dir . '/routes.php';
         if( file_exists($routeFile) ) {
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
@@ -69,44 +72,46 @@ class Launcher
             echo '</div>';
         };
 
-        add_action( 'post_updated_messages', [$this, 'setMessages']);
-        add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
+        if(!empty($this->typerocket['admin']['post_messages'])) {
+            add_action( 'post_updated_messages', [$this, 'setMessages']);
+            add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
+        }
+
         add_action( 'edit_user_profile', $useContent );
         add_action( 'show_user_profile', $useContent );
         add_action( 'admin_init', [$this, 'addCss']);
         add_action( 'admin_init', [$this, 'addJs']);
         add_action( 'admin_footer', [$this, 'addBottomJs']);
+        add_action( 'admin_head', [$this, 'addTopJs']);
         add_action( 'admin_notices', [$this, 'setFlash']);
     }
 
     public function overrideTemplates()
     {
-        $paths = Config::getPaths();
-        $templates = Config::getTemplates();
-
-        define( 'WP_DEFAULT_THEME', Config::getTemplates() );
+        $paths = Config::locate('paths');
+        define( 'WP_DEFAULT_THEME', Config::locate('app.root.theme') );
         register_theme_directory( $paths['themes'] );
 
         // Set Directories
-        add_filter('template_directory', function() use ( $paths, $templates ) {
-            return $paths['themes'] . '/' . $templates;
+        add_filter('template_directory', function() use ( $paths ) {
+            return $paths['themes'] . '/' . WP_DEFAULT_THEME;
         } );
 
-        add_filter('stylesheet_directory', function() use ( $paths, $templates ) {
-            return $paths['themes'] . '/' . $templates;
+        add_filter('stylesheet_directory', function() use ( $paths ) {
+            return $paths['themes'] . '/' . WP_DEFAULT_THEME;
         } );
 
         // Set URIs
-        add_filter('template_directory_uri', function() use ( $paths, $templates ) {
-            return $paths['urls']['assets'] . '/' . $templates;
+        add_filter('template_directory_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/' . WP_DEFAULT_THEME;
         });
 
-        add_filter('stylesheet_directory_uri', function() use ( $paths, $templates ) {
-            return $paths['urls']['assets'] . '/' . $templates;
+        add_filter('stylesheet_directory_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/' . WP_DEFAULT_THEME;
         });
 
-        add_filter('stylesheet_uri', function() use ( $paths, $templates ) {
-            return $paths['urls']['assets'] . '/' . $templates . '/css/theme.css';
+        add_filter('stylesheet_uri', function() use ( $paths ) {
+            return $paths['urls']['assets'] . '/' . WP_DEFAULT_THEME . '/css/theme.css';
         });
 
         add_filter('theme_root_uri', function() use ( $paths ) {
@@ -119,10 +124,14 @@ class Launcher
      */
     public function initFrontEnd()
     {
-        Config::enableFrontend();
+        if ( !tr_is_frontend() || !Config::locate('typerocket.frontend.assets') ) {
+            return;
+        }
+
         add_action( 'wp_enqueue_scripts', [ $this, 'addCss' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
         add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
+        add_action( 'wp_head', [ $this, 'addTopJs' ] );
     }
 
     /**
@@ -130,9 +139,18 @@ class Launcher
      */
     public function loadPlugins()
     {
-        if (Config::getPlugins()) {
-            $loader = new Loader( Config::getPlugins() );
-            $loader->load();
+        if ( $plugins = Config::locate('app.plugins') ) {
+            $plugins_list = apply_filters('tr_set_plugins', $plugins);
+            $plugin_dir = Config::locate('paths.plugins');
+
+            foreach ($plugins_list as $plugin) {
+                $folder = $plugin_dir . '/' . $plugin . '/';
+
+                if (file_exists($folder . 'init.php')) {
+                    /** @noinspection PhpIncludeInspection */
+                    include $folder . 'init.php';
+                }
+            }
         }
     }
 
@@ -157,7 +175,7 @@ class Launcher
     }
 
     /**
-     * Set custom post type messages to make more since.
+     * Set custom post type messages
      *
      * @param $messages
      *
@@ -251,8 +269,8 @@ class Launcher
      */
     public function addCss()
     {
-        $paths = Config::getPaths();
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $paths = Config::locate('paths');
+        $assetVersion = Config::locate('app.assets');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css', [], $assetVersion);
@@ -267,8 +285,8 @@ class Launcher
      */
     public function addJs()
     {
-        $paths = Config::getPaths();
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $paths = Config::locate('paths');
+        $assetVersion = Config::locate('app.assets');
         $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], $assetVersion );
@@ -282,11 +300,19 @@ class Launcher
      */
     public function addBottomJs()
     {
-        $paths = Config::getPaths();
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $paths = Config::locate('paths');
+        $assetVersion = Config::locate('app.assets');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], $assetVersion, true );
+    }
+
+    public function addTopJs()
+    {
+        ?>
+        <script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url());?>"}</script>
+        <?php
+        wp_localize_script( 'typerocket-scripts', 'trHelpers', [ 'site_uri' => home_url() ] );
     }
 
     /**

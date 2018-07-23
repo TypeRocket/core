@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace Query;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Database\Results;
 use TypeRocket\Models\WPPost;
 
-class WPPostTest extends \PHPUnit_Framework_TestCase
+class WPPostTest extends TestCase
 {
     public function testBasicPostTypeSelect()
     {

@@ -8,6 +8,8 @@ class Date extends Field implements ScriptField
 {
     use DefaultSetting;
 
+    protected $labelTag = 'label';
+
     /**
      * Run on construction
      */
@@ -32,6 +34,7 @@ class Date extends Field implements ScriptField
         $this->removeAttribute( 'name' );
         $value = $this->getValue();
         $default = $this->getDefault();
+        $this->setupInputId();
         $value = !empty($value) ? $value : $default;
 
         $value = esc_attr( $this->sanitize($value, 'raw') );

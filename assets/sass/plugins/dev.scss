@@ -1,0 +1,34 @@
+/* Dev Page
+----------------------------------------------------------------------- */
+#dev-icon-search {
+    width: 100%;
+    padding: 8px 12px;
+}
+
+#debug-icon-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    margin: 20px 0 0;
+    padding: 0;
+
+    strong, em {
+        margin: 6px 0;
+        display: block;
+    }
+
+    li {
+        list-style: none;
+        border: solid #999999 1px;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 12px;
+        padding: 10px;
+
+        &:before {
+            font-size: 42px;
+            display: block;
+        }
+    }
+}

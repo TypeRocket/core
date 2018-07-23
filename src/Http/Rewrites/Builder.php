@@ -10,7 +10,7 @@ class Builder
 
     public function __construct()
     {
-        if( defined('TR_START') ) {
+        if( defined('TR_PATH') ) {
             $group = get_query_var('tr_builder_group', null);
             $type = get_query_var('tr_builder_type', null);
             $folder = get_query_var('tr_builder_folder', null);
@@ -22,7 +22,7 @@ class Builder
                 $tr_matrix_id = time(); // id for repeater
                 $form = new Form();
 
-                if( $form_class = Config::locate('app.form') ) {
+                if( $form_class = Config::locate('app.class.form') ) {
                     $form = new $form_class;
                 }
 
@@ -33,11 +33,10 @@ class Builder
                     $formGroup .= '.';
                 }
 
-                $paths = Config::getPaths();
+                $paths = Config::locate('paths');
 
                 $form->setGroup($formGroup . "{$group}.{$tr_matrix_id}.{$type}");
                 $file = $paths['components'] . "/{$folder}/{$type}.php";
-
                 ?>
                 <div class="builder-field-group builder-type-<?php echo $type; ?> builder-group-<?php echo $group; ?>">
                     <div class="builder-inputs">

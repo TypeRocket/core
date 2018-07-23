@@ -34,7 +34,7 @@ class ImageSizer
 
             $wanted_width = $_wp_additional_image_sizes[ $size ]['width'];
             $wanted_height = $_wp_additional_image_sizes[ $size ]['height'];
-            $wanted_crop = isset($_wp_additional_image_sizes[ $size ]['crop']) ? $_wp_additional_image_sizes[ $size ]['crop'] :  false;
+            $wanted_crop = $_wp_additional_image_sizes[ $size ]['crop'] ?? false;
 
         } elseif ( in_array( $size, [ 'thumbnail', 'medium', 'large' ] ) ) {
 

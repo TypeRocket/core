@@ -41,7 +41,7 @@ class FieldRow
     public function __toString()
     {
         $fieldsHtml = '';
-        $class = "control-row-{$this->size}";
+        $class = "control-row";
 
         foreach( $this->fields as $field) {
             if( $field instanceof Field ) {

@@ -22,7 +22,7 @@ class Items extends Field
         $this->appendStringToAttribute( 'class', 'items-list' );
         $items = $this->getValue();
         $this->removeAttribute('name');
-        $generator = new Generator();
+        $generator = Generator::make();
 
         if (! $this->getSetting('button') ) {
             $this->setSetting('button', 'Insert Item');
@@ -41,7 +41,7 @@ class Items extends Field
                 $input = $generator->newInput( 'text', $name . '[]', $value )->getString();
                 $remove = '#remove';
                 $list .= $generator->newElement( 'li', ['class' => 'item'],
-                    '<div class="move"></div><a href="'.$remove.'" class="remove" title="Remove Item"></a>' . $input )->getString();
+                    '<a class="move tr-control-icon tr-control-icon-move"></a><a href="'.$remove.'" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>' . $input )->getString();
 
             }
         }

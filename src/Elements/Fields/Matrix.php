@@ -45,14 +45,14 @@ class Matrix extends Field implements ScriptField {
      * Get the scripts
      */
     public function enqueueScripts() {
-        $this->paths = Config::getPaths();
-        $assetVersion = Config::locate('app.assets', '1.0');
+        $this->paths = Config::locate('paths');
+        $assetVersion = Config::locate('app.assets');
         $assets = $this->paths['urls']['assets'];
         wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );
         wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], $assetVersion, true );
         wp_enqueue_script( 'wp-color-picker' );
         wp_enqueue_media();
-        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/redactor.min.js', ['jquery'], $assetVersion, true );
+        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/lib/redactor.min.js', ['jquery'], $assetVersion, true );
     }
 
     /**
@@ -71,7 +71,7 @@ class Matrix extends Field implements ScriptField {
 
         // add controls
         if (isset( $settings['help'] )) {
-            $help = "<div class=\"help\"> <p>{$settings['help']}</p> </div>";
+            $help = "<div class=\"tr-form-field-help\"> <p>{$settings['help']}</p> </div>";
             $this->removeSetting('help');
         } else {
             $help = '';
@@ -89,6 +89,7 @@ class Matrix extends Field implements ScriptField {
 
 	    $controls = [
 		    'contract' => 'Contract',
+		    'expand' => 'Expand',
 		    'flip' => 'Flip',
 		    'clear' => 'Clear All',
 		    'add' => $add_button_value,
@@ -104,18 +105,27 @@ class Matrix extends Field implements ScriptField {
 		    return esc_attr($item);
 	    }, $controls);
 
+        // add collapsed / contracted
+        $expanded = 'tr-repeater-expanded';
+        $expand_label = $controls['contract'];
+        if(!empty($settings['contracted'])) {
+            $fields_classes = ' tr-repeater-collapse';
+            $expanded = 'tr-repeater-contacted';
+            $expand_label = $controls['expand'];
+        }
+
         // add it all
         $home_url = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
         $html = "
-<div class='tr-matrix control-section tr-repeater'>
+<div class='tr-matrix tr-repeater'>
 <div class='matrix-controls controls'>
 {$select}
-<div class=\"tr-repeater-button-add\">
+<div class=\"tr-mr-10 tr-d-inline\">
 <input type=\"button\" value=\"{$controls['add']}\" data-root=\"{$home_url}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
 </div>
 <div class=\"button-group\">
 <input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">
-<input type=\"button\" value=\"{$controls['contract']}\" class=\"tr_action_collapse button\">
+<input type=\"button\" value=\"{$expand_label}\" data-contract=\"{$controls['contract']}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\">
 <input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\">
 </div>
 {$help}
@@ -159,7 +169,7 @@ class Matrix extends Field implements ScriptField {
             $formGroup = $this->getGroup();
             $generator->newElement( 'select', [
                 'data-mxid' => $this->mxid,
-                'class' => "matrix-select-{$name}",
+                'class' => "tr-mr-10 tr-d-inline matrix-select-{$name}",
                 'data-group' => $formGroup
             ]);
             $default = $this->getSetting('default');
@@ -193,7 +203,7 @@ class Matrix extends Field implements ScriptField {
      * @return $this
      */
     public function setOptionsFromFolder() {
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $folder = $this->getComponentFolder();
         $dir = $paths['components'] . '/' . $folder;
 
@@ -239,7 +249,7 @@ class Matrix extends Field implements ScriptField {
         $utility = new Buffer();
         $blocks = '';
         $form = $this->getForm();
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $folder = $this->getComponentFolder();
 
         if (is_array( $val )) {
@@ -266,9 +276,9 @@ class Matrix extends Field implements ScriptField {
                     ?>
                     <div class="<?php echo $classes; ?>">
                         <div class="repeater-controls">
-                            <div class="collapse"></div>
-                            <div class="move"></div>
-                            <a href="<?php echo $remove; ?>" class="remove" title="remove"></a>
+                            <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
+                            <div class="move tr-control-icon tr-control-icon-move"></div>
+                            <a href="<?php echo $remove; ?>" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>
                         </div>
                         <div class="repeater-inputs">
                             <?php
@@ -323,7 +333,7 @@ class Matrix extends Field implements ScriptField {
      */
     public function setComponentFolder($folder_name = '') {
 
-        $paths = Config::getPaths();
+        $paths = Config::locate('paths');
         $dir = $paths['components'] . '/' . $folder_name;
 
         if(file_exists($dir)) {

@@ -4,19 +4,20 @@ namespace TypeRocket\Http;
 class Request
 {
 
-    private $resource = null;
-    private $action = null;
-    private $hook = null;
-    private $method = null;
-    private $routerArgs = [];
-    private $uri = null;
-    private $path = null;
-    private $host = null;
-    private $fields = null;
-    private $post = null;
-    private $get = null;
-    private $files = null;
-    private $cookies = null;
+    protected $resource = null;
+    protected $action = null;
+    protected $hook = null;
+    protected $method = null;
+    protected $routerArgs = [];
+    protected $uri = null;
+    protected $path = null;
+    protected $host = null;
+    protected $fields = null;
+    protected $post = null;
+    protected $get = null;
+    protected $files = null;
+    protected $cookies = null;
+    protected $protocall = 'http';
 
     /**
      * Construct the request
@@ -36,6 +37,7 @@ class Request
         $this->action = $action;
         $this->hook = $hook;
         $this->method = $method ? $method : $this->getFormMethod();
+        $this->protocall = get_http_protocall();
         $this->post   = ! empty ( $_POST ) ? wp_unslash($_POST) : null;
         $this->fields = ! empty ( $this->post['tr'] ) ? $this->post['tr'] : [];
         $this->get    = ! empty ( $_GET ) ? wp_unslash($_GET) : null;
@@ -50,13 +52,23 @@ class Request
     }
 
     /**
-     * Set the method
+     * Get the action
      *
      * @return string
      */
     public function getAction()
     {
         return $this->action;
+    }
+
+    /**
+     * Get the HTTP protocall
+     *
+     * @return string
+     */
+    public function getProtocall()
+    {
+        return $this->protocall;
     }
 
     /**

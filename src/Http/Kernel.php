@@ -10,8 +10,7 @@ abstract class Kernel
     /** @var Router */
     public $router;
     public $group;
-
-    protected $middleware = [];
+    public $middleware = [];
 
     /**
      * Handle Middleware
@@ -24,8 +23,9 @@ abstract class Kernel
      * @param Response $response
      * @param string $group selected middleware group
      * @param string $action_method
+     * @param null|\TypeRocket\Http\Route $route
      */
-    public function __construct(Request $request, Response $response, $group = 'hookGlobal', $action_method = 'GET' ) {
+    public function __construct(Request $request, Response $response, $group = 'hookGlobal', $action_method = 'GET', $route = null ) {
 
         $this->response = $response;
         $this->request = $request;
@@ -39,15 +39,14 @@ abstract class Kernel
             $resourceMiddleware = $this->middleware['noResource'];
         }
 
+        if(!empty($route) && $route->middleware) {
+            $resourceMiddleware = array_merge($resourceMiddleware, $route->middleware);
+        }
+
         $client = $this->router = new Router($request, $response, $action_method);
         $middleware = $this->compileMiddleware($resourceMiddleware);
 
-        foreach($middleware as $class) {
-            $client = new $class($request, $response, $client);
-        }
-
-        $client->handle();
-
+        (new Stack($middleware))->handle($request, $response, $client);
     }
 
     /**

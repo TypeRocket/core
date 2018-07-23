@@ -10,6 +10,8 @@ class Select extends Field
 
     use OptionsTrait, DefaultSetting;
 
+    protected $labelTag = 'label';
+
     /**
      * Run on construction
      */
@@ -25,6 +27,7 @@ class Select extends Field
     {
         $default = $this->getSetting('default');
         $name = $this->getNameAttributeString();
+        $this->setupInputId();
         if( $this->getAttribute('multiple') ) {
             $name = $name . '[]';
         }

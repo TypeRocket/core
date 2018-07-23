@@ -21,6 +21,7 @@ class WordPressEditor extends Field implements ScriptField
      * Get the scripts
      */
     public function enqueueScripts() {
+        wp_enqueue_editor();
         wp_enqueue_media();
     }
 
@@ -44,15 +45,15 @@ class WordPressEditor extends Field implements ScriptField
         $value    = Sanitize::editor( $this->getValue() );
         $settings = $this->getSetting('options', []);
 
-        $override = array(
+        $override = [
             'textarea_name' => $this->getAttribute('name')
-        );
+        ];
 
-        $defaults = array(
+        $defaults = [
             'textarea_rows' => 10,
             'teeny'         => true,
             'tinymce'       => ['plugins' => 'wordpress']
-        );
+        ];
 
         $settings = array_merge( $defaults, $settings, $override );
         $increment = '';
@@ -62,7 +63,7 @@ class WordPressEditor extends Field implements ScriptField
         }
 
         ob_start();
-        wp_editor( $value, 'wp_editor_' . $increment . $this->getName(), $settings );
+        wp_editor( $value, 'wp_editor_' . wp_generate_uuid4() . '_' . $this->getName(), $settings );
         $html = ob_get_clean();
 
         return $html;

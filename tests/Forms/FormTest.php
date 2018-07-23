@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace Forms;
 
+use PHPUnit\Framework\TestCase;
 use TypeRocket\Elements\Form;
 use TypeRocket\Models\WPPost;
 
-class FormTest extends \PHPUnit_Framework_TestCase
+class FormTest extends TestCase
 {
 
     public function testSimpleUpdatePostForm()

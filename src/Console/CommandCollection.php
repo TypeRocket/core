@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Console;
 
+use TypeRocket\Core\Config;
+
 class CommandCollection extends \ArrayObject
 {
     public $commands = [
@@ -43,13 +45,12 @@ class CommandCollection extends \ArrayObject
      */
     public function enableCustom()
     {
-        $commands = Config::getCommands();
+        $commands = Config::locate('galaxy.commands');
         if( $commands) {
             foreach ( $commands as $command ) {
                 $this->append($command);
             }
         }
-
     }
 
 }

@@ -48,7 +48,7 @@ class Color extends Field implements ScriptField
 
         add_action('admin_footer', $callback, 999999999999 );
 
-        if( Config::getFrontend() ) {
+        if ( tr_is_frontend() && Config::locate('typerocket.frontend.assets') ) {
             add_action('wp_footer', $callback, 999999999999 );
         }
 

@@ -9,6 +9,8 @@ class Text extends Field
 {
     use MaxlengthTrait, DefaultSetting;
 
+    protected $labelTag = 'label';
+
     /**
      * Run on construction
      */
@@ -26,6 +28,8 @@ class Text extends Field
         $name = $this->getNameAttributeString();
         $value = $this->getValue();
         $default = $this->getDefault();
+        $this->setupInputId();
+
         $value = !empty($value) ? $value : $default;
         $value = $this->sanitize($value, 'raw');
         $max = $this->getMaxlength( $value, $this->getAttribute('maxlength'));

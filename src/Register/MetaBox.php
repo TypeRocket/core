@@ -7,11 +7,11 @@ use TypeRocket\Utility\Sanitize;
 class MetaBox extends Registrable
 {
 
-    private $label = null;
-    private $callback = null;
-    private $context = null;
-    private $priority = null;
-    private $screens = [];
+    protected $label = null;
+    protected $callback = null;
+    protected $context = null;
+    protected $priority = null;
+    protected $screens = [];
 
     /**
      * Make Meta Box
@@ -151,7 +151,7 @@ class MetaBox extends Registrable
                         call_user_func_array( $callback, [$obj]);
                     elseif (function_exists( $func )) :
                         $func( $obj );
-                    elseif ( Config::getDebugStatus() == true) :
+                    elseif ( Config::locate('app.debug') == true) :
                         echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                     endif;
                     echo '</div>';

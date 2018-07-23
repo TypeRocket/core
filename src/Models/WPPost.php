@@ -67,7 +67,7 @@ class WPPost extends Model
      * @return $this|null
      */
     public function author() {
-        return $this->belongsTo( Config::getMainUserClass(), 'post_author' );
+        return $this->belongsTo( Config::locate('app.class.user'), 'post_author' );
     }
 
     /**

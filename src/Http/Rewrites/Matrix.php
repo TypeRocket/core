@@ -10,7 +10,7 @@ class Matrix
 
     public function __construct()
     {
-        if( defined('TR_START') ) {
+        if( defined('TR_PATH') ) {
             $group = get_query_var('tr_matrix_group', null);
             $type = get_query_var('tr_matrix_type', null);
             $folder = get_query_var('tr_matrix_folder', null);
@@ -33,7 +33,7 @@ class Matrix
                     $formGroup .= '.';
                 }
 
-                $paths = Config::getPaths();
+                $paths = Config::locate('paths');
 
                 $form->setGroup($formGroup . "{$group}.{$tr_matrix_id}.{$type}");
                 $file = $paths['components'] . "/{$folder}/{$type}.php";
@@ -41,9 +41,9 @@ class Matrix
                 ?>
                 <div class="matrix-field-group tr-repeater-group matrix-type-<?php echo $type; ?> matrix-group-<?php echo $group; ?>">
                     <div class="repeater-controls">
-                        <div class="collapse"></div>
-                        <div class="move"></div>
-                        <a href="#remove" class="remove" title="remove"></a>
+                        <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
+                        <div class="move tr-control-icon tr-control-icon-move"></div>
+                        <a href="#remove" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>
                     </div>
                     <div class="repeater-inputs">
                         <?php

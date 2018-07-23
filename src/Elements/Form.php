@@ -47,15 +47,7 @@ class Form
         $this->autoConfig();
 
         $Resource = Str::camelize($this->resource);
-        $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
-
-        if(class_exists($model)) {
-            $this->model = new $model();
-
-            if( !empty($this->itemId) ) {
-                $this->model->findById($this->itemId);
-            }
-        }
+        $this->setModel("\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}");
 
         do_action('tr_after_form_element_init', $this);
     }
@@ -187,26 +179,7 @@ class Form
             $this->useAjax();
         }
 
-        $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url('/', $scheme ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
-
-        return $this;
-    }
-
-    /**
-     * Use a TypeRocket route
-     *
-     * @param $method
-     * @param $dots
-     *
-     * @return \TypeRocket\Elements\Form $this
-     */
-    public function useRoute($method, $dots)
-    {
-        $dots          = explode('.', $dots);
-        $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url(implode('/', $dots ) . '/', $scheme);
-        $this->method  = strtoupper($method);
+        $this->formUrl = home_url('/', get_http_protocall() ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
 
         return $this;
     }
@@ -222,8 +195,7 @@ class Form
     public function useUrl($method, $url)
     {
         $url_parts     = explode('/', trim($url, '/') );
-        $scheme        = is_ssl() ? 'https' : 'http';
-        $this->formUrl = home_url(implode('/', $url_parts ) . '/', $scheme);
+        $this->formUrl = home_url(implode('/', $url_parts ) . '/', get_http_protocall() );
         $this->method  = strtoupper($method);
 
         return $this;
@@ -265,7 +237,7 @@ class Form
     }
 
     /**
-     * Return old data is missing
+     * Return old data if missing
      *
      * @param bool $load_only_old
      *
@@ -403,7 +375,7 @@ class Form
         }
 
         $r .= $generator->newInput( 'hidden', '_method', $this->method )->getString();
-        $r .= wp_nonce_field( 'form_' .  Config::getSeed() , '_tr_nonce_form', false, false );
+        $r .= wp_nonce_field( 'form_' .  Config::locate('app.seed') , '_tr_nonce_form', false, false );
 
         return $r;
     }
@@ -436,8 +408,11 @@ class Form
      */
     protected function getLabel()
     {
-        $open_html  = "<div class=\"control-label\"><span class=\"label\">";
-        $close_html = '</span></div>';
+        $label_tag = $this->currentField->getLabelTag();
+        $label_for = $this->currentField->getInputId();
+        $label_for_spoof = $this->currentField->getSpoofInputId();
+        $open_html  = "<div class=\"control-label\"><{$label_tag} data-trfor=\"{$label_for_spoof}\" for=\"{$label_for}\" class=\"label\">";
+        $close_html = "</{$label_tag}></div>";
         $debug      = $this->getDebug();
         $html       = '';
         $label      = $this->currentField->getLabelOption();
@@ -463,6 +438,7 @@ class Form
     protected function getFieldHelpFunction( Fields\Field $field )
     {
         $helper = $field->getDebugHelperFunction();
+        $mod = $field->getDebugHelperFunctionModifier() ?? '';
 
         if($helper) {
             $function = $helper;
@@ -489,7 +465,7 @@ class Form
                 $param .= ', '.$id;
             }
 
-            $function   = "tr_{$controller}_field('{$dots}'{$param});";
+            $function   = "tr_{$controller}_field('{$mod}{$dots}'{$param});";
         }
 
         return $function;
@@ -553,7 +529,7 @@ class Form
      */
     public function getDebugStatus()
     {
-        return ( $this->debugStatus === false ) ? $this->debugStatus : Config::getDebugStatus();
+        return ( $this->debugStatus === false ) ? $this->debugStatus : Config::locate('app.debug');
     }
 
     /**
@@ -567,21 +543,22 @@ class Form
     {
         $this->setCurrentField( $field );
         $label     = $this->getLabel();
-        $field     = $field->getString();
-        $id        = $this->getCurrentField()->getSetting( 'id' );
-        $help      = $this->getCurrentField()->getSetting( 'help' );
-        $section_class = $this->getCurrentField()->getSetting( 'classes', '' );
-        $fieldHtml = $this->getCurrentField()->getSetting( 'render' );
+
+        $id        = $field->getSetting( 'id' );
+        $help      = $field->getSetting( 'help' );
+        $section_class = $field->getSetting( 'classes', '' );
+        $fieldHtml = $field->getSetting( 'render' );
         $formHtml  = $this->getSetting( 'render' );
+        $fieldString     = $field->getString();
 
         $id   = $id ? "id=\"{$id}\"" : '';
-        $help = $help ? "<div class=\"help\"><p>{$help}</p></div>" : '';
+        $help = $help ? "<div class=\"tr-form-field-help\"><p>{$help}</p></div>" : '';
 
         if ($fieldHtml == 'raw' || $formHtml == 'raw') {
-            $html = $field;
+            $html = apply_filters( 'tr_from_field_html_raw', $fieldString, $field );
         } else {
-            $type = strtolower( str_ireplace( '\\', '-', get_class( $this->getCurrentField() ) ) );
-            $html = "<div class=\"control-section {$section_class} {$type}\" {$id}>{$label}<div class=\"control\">{$field}{$help}</div></div>";
+            $type = strtolower( str_ireplace( '\\', '-', get_class( $field ) ) );
+            $html = "<div class=\"control-section {$section_class} {$type}\" {$id}>{$label}<div class=\"control\">{$fieldString}{$help}</div></div>";
         }
 
         $html = apply_filters( 'tr_from_field_html', $html, $this );
@@ -911,6 +888,51 @@ class Form
     public function search( $name, array $attr = [], array $settings = [], $label = true )
     {
         return new Fields\Search( $name, $attr, $settings, $label, $this );
+    }
+
+    /**
+     * Links Input
+     *
+     * @param string $name
+     * @param array $attr
+     * @param array $settings
+     * @param bool|true $label
+     *
+     * @return Fields\Search
+     */
+    public function links( $name, array $attr = [], array $settings = [], $label = true )
+    {
+        return new Fields\Links( $name, $attr, $settings, $label, $this );
+    }
+
+    /**
+     * Toggle Input
+     *
+     * @param string $name
+     * @param array $attr
+     * @param array $settings
+     * @param bool|true $label
+     *
+     * @return Fields\Search
+     */
+    public function toggle( $name, array $attr = [], array $settings = [], $label = true )
+    {
+        return new Fields\Toggle( $name, $attr, $settings, $label, $this );
+    }
+
+    /**
+     * Location Inputs
+     *
+     * @param string $name
+     * @param array $attr
+     * @param array $settings
+     * @param bool|true $label
+     *
+     * @return Fields\Search
+     */
+    public function location( $name, array $attr = [], array $settings = [], $label = true )
+    {
+        return new Fields\Location( $name, $attr, $settings, $label, $this );
     }
 
     /**
