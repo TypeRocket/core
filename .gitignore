@@ -41,7 +41,6 @@ wp-cli.phar
 ######################
 .DS_Store*
 ehthumbs.db
-Icon?
 Thumbs.db
 
 # IDE files #
