@@ -898,7 +898,7 @@ class Form
      * @param array $settings
      * @param bool|true $label
      *
-     * @return Fields\Search
+     * @return Fields\Links
      */
     public function links( $name, array $attr = [], array $settings = [], $label = true )
     {
@@ -913,7 +913,7 @@ class Form
      * @param array $settings
      * @param bool|true $label
      *
-     * @return Fields\Search
+     * @return Fields\Toggle
      */
     public function toggle( $name, array $attr = [], array $settings = [], $label = true )
     {
@@ -928,7 +928,7 @@ class Form
      * @param array $settings
      * @param bool|true $label
      *
-     * @return Fields\Search
+     * @return Fields\Location
      */
     public function location( $name, array $attr = [], array $settings = [], $label = true )
     {
@@ -987,7 +987,7 @@ class Form
      * @param array $settings
      * @param bool|true $label
      *
-     * @return Fields\Matrix
+     * @return Fields\Builder
      */
     public function builder( $name, array $attr = [], array $settings = [], $label = true )
     {
