@@ -7,14 +7,12 @@ use TypeRocket\Elements\Traits\AttributesTrait;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 
-class FieldRow
+class FieldColumn
 {
     use AttributesTrait;
 
     public $fields = [];
     public $size = [];
-    public $hasColumns = false;
-    public $hasColumnsWithTitle = false;
     public $title = '';
 
     /**
@@ -44,8 +42,8 @@ class FieldRow
      */
     public function __toString()
     {
-        $fieldsHtml = '';
-        $class = "control-row";
+        $fieldsHtml = $title = '';
+        $class = "control-row-column";
 
         if($this->title) {
             $fieldsHtml .= (string) Tag::make('h4', ['class' => 'form-control-title'], $this->title);
@@ -54,27 +52,11 @@ class FieldRow
         foreach( $this->fields as $field) {
             if( $field instanceof Field ) {
                 $fieldsHtml .= (string) $field;
-            } elseif( $field instanceof FieldColumn ) {
-                $this->hasColumns = true;
-
-                if($field->title) {
-                    $this->hasColumnsWithTitle = true;
-                }
-
-                $fieldsHtml .= (string) $field;
             }
         }
 
-        if($this->hasColumns) {
-            $class .= " control-row-has-columns";
-        }
-
-        if($this->hasColumnsWithTitle) {
-            $class .= " control-row-has-columns-with-titles";
-        }
-
         if($this->title) {
-            $class .= ' control-row-has-title';
+            $class .= ' control-row-column-has-title';
         }
 
         $this->appendStringToAttribute('class', $class);
@@ -88,7 +70,7 @@ class FieldRow
      *
      * @param string $title
      *
-     * @return FieldRow $this
+     * @return FieldColumn $this
      */
     public function setTitle($title)
     {
@@ -96,5 +78,4 @@ class FieldRow
 
         return $this;
     }
-
 }

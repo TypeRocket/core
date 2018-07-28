@@ -577,22 +577,44 @@ class Form
     public function getFromFieldsString( $fields = [] )
     {
         $html = '';
+        $obj = $this;
+
+        $config_field = function($field) use ($obj) {
+            $clone_field = clone $field;
+            $clone_field->configureToForm($obj);
+            return $clone_field;
+        };
+
+        $config_column = function($column) use ($config_field) {
+            $clone_column = clone $column;
+            foreach ($clone_column->fields as $key => $field) {
+                if($field instanceof Field) {
+                    $clone_column->fields[$key] = $config_field($field);
+                }
+            }
+
+            return $clone_column;
+        };
+
+        $config_row = function($row) use ($config_field, $config_column) {
+            $clone_row = clone $row;
+            foreach ($clone_row->fields as $key => $field) {
+                if($field instanceof Field) {
+                    $clone_row->fields[$key] = $config_field($field);
+                } elseif($field instanceof FieldColumn) {
+                    $clone_row->fields[$key] = $config_column($field);
+                }
+            }
+
+            return $clone_row;
+        };
 
         foreach ($fields as $field) {
 
             if($field instanceof Field) {
-                $clone_field = clone $field;
-                $html .= (string) $clone_field->configureToForm($this);
+                $html .= (string) $config_field($field);
             } elseif($field instanceof FieldRow) {
-                $row = clone $field;
-                foreach ($row->fields as $key => $row_field) {
-                    if($row_field instanceof Field) {
-                        $row_field = clone $row_field;
-                        $row_field->configureToForm($this);
-                        $row->fields[$key] = $row_field;
-                    }
-                }
-                $html .= (string) $row;
+                $html .= (string) $config_row($field);
             } elseif($field instanceof Tabs) {
                 $tab = clone $field;
                 $buf = tr_buffer()->startBuffer();
@@ -602,19 +624,9 @@ class Form
                     if(!empty($tab['fields'])) {
                         foreach ($tab['fields'] as $i_key => $option) {
                             if($option instanceof Field) {
-                                $option_field = clone $option;
-                                $option_field->configureToForm($this);
-                                $_tabs[$key]['fields'][$i_key] = $option_field;
+                                $_tabs[$key]['fields'][$i_key] = $config_field($option);
                             } elseif( $option instanceof FieldRow) {
-                                $row = clone $option;
-                                foreach ($row->fields as $r_key => $row_field) {
-                                    if($row_field instanceof Field) {
-                                        $row_field = clone $row_field;
-                                        $row_field->configureToForm($this);
-                                        $row->fields[$r_key] = $row_field;
-                                    }
-                                }
-                                $_tabs[$key]['fields'][$i_key] = $row;
+                                $_tabs[$key]['fields'][$i_key] = $config_row($option);
                             }
                         }
                     }
@@ -622,15 +634,7 @@ class Form
                 $tabs->setTabs($_tabs)->uidTabs()->render();
                 $html .= (string) $buf->getCurrent();
                 $buf = $field = null;
-            }  elseif(is_array($field) && count($field) > 1) {
-                $function   = array_shift( $field );
-                $parameters = array_pop( $field );
-
-                if (method_exists( $this, $function ) && is_array( $parameters )) {
-                    $html .= (string) call_user_func_array( [ $this, $function ], $parameters );
-                }
             }
-
         }
 
         return $html;
@@ -641,7 +645,7 @@ class Form
      *
      * Array of fields or args of fields
      *
-     * @param array|Field $fields
+     * @param array|Field|\TypeRocket\Elements\FieldColumn $fields
      *
      * @return FieldRow
      */
@@ -651,6 +655,23 @@ class Form
         }
 
         return new FieldRow( $fields );
+    }
+
+    /**
+     * Get fields as row
+     *
+     * Array of fields or args of fields
+     *
+     * @param array|Field $fields
+     *
+     * @return FieldColumn
+     */
+    public function column( $fields ) {
+        if( ! is_array( $fields) ) {
+            $fields = func_get_args();
+        }
+
+        return new FieldColumn( $fields );
     }
 
     /**
