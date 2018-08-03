@@ -58,7 +58,7 @@ class WordPressEditor extends Field implements ScriptField
         $increment = '';
 
         if($this->incremental) {
-            $increment = (WordPressEditor::$count++) . '_';
+            $increment = uniqid() . '_';
         }
 
         ob_start();
