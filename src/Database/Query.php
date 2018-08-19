@@ -813,6 +813,8 @@ class Query
             $prepared = $wpdb->prepare( '%s', $value );
         }
 
+        $prepared = $wpdb->remove_placeholder_escape($prepared);
+
         return $prepared;
     }
 
