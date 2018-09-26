@@ -60,6 +60,12 @@ class Matrix extends Field implements ScriptField {
      */
     public function getString()
     {
+
+        // enqueue tinymce
+        echo '<div style="display: none; visibility: hidden;">';
+        wp_editor('', 'tr_dummy_editor');
+        echo '</div>';
+
         $this->setAttribute('name', $this->getNameAttributeString());
 
         // setup select list of files

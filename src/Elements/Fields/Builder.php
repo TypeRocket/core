@@ -41,6 +41,11 @@ class Builder extends Matrix
      */
     public function getString()
     {
+        // enqueue tinymce
+        echo '<div style="display: none; visibility: hidden;">';
+        wp_editor('', 'tr_dummy_editor');
+        echo '</div>';
+
         $this->setAttribute('name', $this->getNameAttributeString() );
         $buffer = new Buffer();
         $buffer->startBuffer();
