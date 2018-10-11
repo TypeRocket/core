@@ -130,7 +130,6 @@ class Routes
             $respond->setRoute( $handle );
             $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
             $respond->respond( $this->vars );
-            $this->loadView();
         }
 
         die();
