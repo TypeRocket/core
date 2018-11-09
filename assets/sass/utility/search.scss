@@ -22,6 +22,14 @@
         }
     }
 
+    .tr-link-search-remove-selection {
+        color: $delete;
+
+        &:hover, &:active, &:focus {
+            color: $delete_hover;
+        }
+    }
+
     .tr-link-search-results {
         margin: 0;
         background: #fff;

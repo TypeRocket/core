@@ -50,10 +50,10 @@ class Search extends Field
                 $status = 'draft ';
             }
 
-            $title = 'Selection: <b>' . $post->post_title . ' (' . $status . $post->post_type . ')</b>';
+            $title = 'Selection: <b>' . $post->post_title . ' (' . $status . $post->post_type . ')</b> <a class="tr-link-search-remove-selection" href="#remove-selection">remove</a>';
         } elseif( $value ) {
             $term = get_term( $value, $taxonomy );
-            $title = 'Selection: <b>' . $term->name . '</b>';
+            $title = 'Selection: <b>' . $term->name . '</b> <a class="tr-link-search-remove-selection" href="#remove-selection">remove</a>';
         }
 
         $field = $input->newInput($this->getType(), null, null,  $search_attributes)->getString();

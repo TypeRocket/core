@@ -48,7 +48,7 @@
                         var id, title;
                         id = $(this).data('id');
                         title = $(this).text();
-                        $(this).parent().prev().html('Selection: <b>' + title + '</b>');
+                        $(this).parent().prev().html('Selection: <b>' + title + '</b> <a class="tr-link-search-remove-selection" href="#remove-selection">remove</a>');
                         that.next().val(id);
                         that.focus().val('');
                         return $(this).parent().html('');
@@ -71,6 +71,15 @@ $('.typerocket-container').on('keyup', '.tr-link-search-input', function() {
     return window.trUtil.delay((function() {
         that.TypeRocketSearch(type, taxonomy);
     }), 250);
+});
+
+$('.typerocket-container').on('click', '.tr-link-search-remove-selection', function(e) {
+    var parent;
+    e.preventDefault();
+    parent = $(this).parent();
+    parent.prev().val('');
+    parent.prev().prev().focus();
+    parent.text('No selection... Search and click on a result');
 });
 
 }( jQuery ));
