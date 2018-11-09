@@ -274,6 +274,7 @@ class Launcher
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_style( 'typerocket-styles', $assets . '/typerocket/css/core.css', [], $assetVersion);
+        wp_enqueue_style( 'typerocket-styles-redactor', $assets . '/typerocket/css/redactor.css', [], $assetVersion);
 
         if (is_admin()) {
             wp_enqueue_style( 'wp-color-picker' );
