@@ -108,8 +108,14 @@ class View
         });
 
         extract( self::$data );
-        /** @noinspection PhpIncludeInspection */
-        include ( self::$view );
+
+        if(is_admin()) {
+            // not yet
+            return;
+        } else {
+            /** @noinspection PhpIncludeInspection */
+            include ( self::$view );
+        }
     }
 
 }
