@@ -9,7 +9,7 @@
         search = encodeURI(this.val().trim());
         param = 'post_type=' + type + '&s=' + search;
         if (taxonomy) { param += '&taxonomy=' + taxonomy; }
-        if (model) { param += '&table=' + model; }
+        if (model) { param += '&model=' + model; }
 
         jQuery.getJSON(trHelpers.site_uri+'/wp-json/typerocket/v1/search?' + param, function(data) {
             var i, id, item, len, post_status, results, title, link;

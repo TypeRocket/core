@@ -34,7 +34,7 @@ class Links extends Field
 
         if(!empty($taxonomy)) {
             $search_attributes['data-taxonomy'] = $taxonomy;
-        } elseif(!empty($table)) {
+        } elseif(!empty($model)) {
             $search_attributes['data-model'] = $model;
         } else {
             $search_attributes['data-posttype'] = $type;
@@ -50,23 +50,22 @@ class Links extends Field
                     $selection->newInput('hidden', $name . '[]', $value, $this->getAttributes() )->getString();
                 }
 
-                if( empty($taxonomy) && $value ) {
-                    $post = get_post($value);
-                    $status = '';
-                    if( $post->post_status == 'draft' ) { $status = 'draft '; }
-
-                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $post->post_title . ' (' . $status . $post->post_type . ')<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
-
+                if( !empty($taxonomy) && $value ) {
+                    $term = get_term( $value, $taxonomy );
+                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $term->name . ' (' . $taxonomy . ')<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
                 }
-                elseif ($value && $model ) {
+                elseif ($value && !empty($model) ) {
                     /** @var \TypeRocket\Models\Model $db */
                     $db = new $model;
                     $item = $db->findById($value)->getSearchResult();
                     $links[] = '<li class="tr-link-chosen-item">' . $selection . $item['title'] . '<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
                 }
                 elseif( $value ) {
-                    $term = get_term( $value, $taxonomy );
-                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $term->name . ' (' . $taxonomy . ')<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
+                    $post = get_post($value);
+                    $status = '';
+                    if( $post->post_status == 'draft' ) { $status = 'draft '; }
+
+                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $post->post_title . ' (' . $status . $post->post_type . ')<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
                 }
             }
         }

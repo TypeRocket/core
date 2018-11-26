@@ -41,13 +41,13 @@ trait Searchable
     public function getSearchResult() {
         if($this instanceof WPPost) {
             return [
-                'title' => $result->post_title,
-                'id' => $result->{$this->getIdColumn()}
+                'title' => $this->post_title,
+                'id' => $this->{$this->getIdColumn()}
             ];
         } else {
             return [
-                'title' => $result->{$this->getIdColumn()},
-                'id' => $result->{$this->getIdColumn()}
+                'title' => $this->{$this->getIdColumn()},
+                'id' => $this->{$this->getIdColumn()}
             ];
         }
     }
