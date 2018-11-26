@@ -24,6 +24,7 @@ class Links extends Field
         $data = $this->getValue() ?? [];
         $type = $this->getSetting('post_type', 'any');
         $taxonomy = $this->getSetting('taxonomy', '');
+        $model = $this->getSetting('model', '');
         $field = '';
 
         $search_attributes = [
@@ -31,32 +32,40 @@ class Links extends Field
             'class' => 'tr-link-links-input'
         ];
 
-        if( empty($taxonomy) ) {
-            $search_attributes['data-posttype'] = $type;
-        } else {
+        if(!empty($taxonomy)) {
             $search_attributes['data-taxonomy'] = $taxonomy;
+        } elseif(!empty($table)) {
+            $search_attributes['data-model'] = $model;
+        } else {
+            $search_attributes['data-posttype'] = $type;
         }
 
         $links = [];
         if(is_array($data)) {
             $values = array_map('intval', $data);
             foreach ($values as $value) {
+
+                if($value) {
+                    $selection = new Generator();
+                    $selection->newInput('hidden', $name . '[]', $value, $this->getAttributes() )->getString();
+                }
+
                 if( empty($taxonomy) && $value ) {
                     $post = get_post($value);
                     $status = '';
+                    if( $post->post_status == 'draft' ) { $status = 'draft '; }
 
-                    if( $post->post_status == 'draft' ) {
-                        $status = 'draft ';
-                    }
-
-                    $selection = new Generator();
-                    $selection->newInput('hidden', $name . '[]', $value, $this->getAttributes() )->getString();
                     $links[] = '<li class="tr-link-chosen-item">' . $selection . $post->post_title . ' (' . $status . $post->post_type . ')<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
 
-                } elseif( $value ) {
+                }
+                elseif ($value && $model ) {
+                    /** @var \TypeRocket\Models\Model $db */
+                    $db = new $model;
+                    $item = $db->findById($value)->getSearchResult();
+                    $links[] = '<li class="tr-link-chosen-item">' . $selection . $item['title'] . '<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
+                }
+                elseif( $value ) {
                     $term = get_term( $value, $taxonomy );
-                    $selection = new Generator();
-                    $selection->newInput('hidden', $name . '[]', $value, $this->getAttributes() )->getString();
                     $links[] = '<li class="tr-link-chosen-item">' . $selection . $term->name . ' (' . $taxonomy . ')<a title="remove" class="tr-control-icon tr-control-icon-remove tr-link-chosen-item-remove"></a></li>';
                 }
             }
@@ -110,4 +119,17 @@ class Links extends Field
         return $this;
     }
 
+    /**
+     * Search by model only
+     *
+     * @param string $model clas as string
+     *
+     * @return $this
+     */
+    public function setModel($model)
+    {
+        $this->setSetting('model', $model);
+
+        return $this;
+    }
 }

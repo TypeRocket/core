@@ -1,13 +1,15 @@
 ;(function( $ ) {
-    $.fn.TypeRocketLinks = function(type, taxonomy) {
+    $.fn.TypeRocketLinks = function(type, taxonomy, model) {
         var param, search, that;
         if (type == null) { type = 'any'; }
         if (taxonomy == null) { taxonomy = ''; }
+        if (model == null) { model = ''; }
 
         that = this;
         search = encodeURI(this.val().trim());
         param = 'post_type=' + type + '&s=' + search;
         if (taxonomy) { param += '&taxonomy=' + taxonomy; }
+        if (model) { param += '&table=' + model; }
 
         jQuery.getJSON(trHelpers.site_uri+'/wp-json/typerocket/v1/search?' + param, function(data) {
             var i, id, item, len, post_status, results, title, link;
@@ -28,10 +30,14 @@
                         }
                         title = item.post_title + ' (' + post_status + item.post_type + ')';
                         id = item.ID;
-                    } else {
+                    } else if(item.term_id) {
                         title = item.name;
                         id = item.term_id;
+                    } else {
+                        title = item.title;
+                        id = item.id;
                     }
+
                     link = jQuery('<a tabindex="0" class="tr-link-search-result" data-id="' + id + '" >' + title + '</a>');
                     link = link.on('click keyup', function(e) {
                         e.preventDefault();
@@ -67,12 +73,13 @@
     });
 
     $('.typerocket-container').on('keyup', '.tr-link-links-input', function() {
-        var taxonomy, that, type;
+        var taxonomy, that, type, model;
         that = $(this);
         type = $(this).data('posttype');
         taxonomy = $(this).data('taxonomy');
+        model = $(this).data('model');
         window.trUtil.delay((function() {
-            that.TypeRocketLinks(type, taxonomy);
+            that.TypeRocketLinks(type, taxonomy, model);
         }), 250);
     });
 

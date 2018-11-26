@@ -12,7 +12,7 @@ class WpRestApi
      *
      * @return array|int|null|\WP_Error
      */
-    public static function search(  \WP_REST_Request $request ) {
+    public static function search( \WP_REST_Request $request ) {
         $limit = 10;
         $params = $request->get_params();
         $results = null;
@@ -24,6 +24,10 @@ class WpRestApi
                 'search' =>  $params['s'],
                 'number' => $limit
             ] );
+        } elseif (array_key_exists('model', $params)) {
+            /** @var \TypeRocket\Models\Model $db */
+            $db = new $params['model'];
+            $results = $db->take($limit)->where($db->getSearchColumn(), 'like', '%' . $params['s'] . '%' )->getSearchResults();
         } else {
             add_filter( 'posts_search', '\TypeRocket\Http\Rewrites\WpRestApi::posts_search', 500, 2 );
             $query = new \WP_Query( [

@@ -19,6 +19,7 @@ class Model
     protected $resource = null;
     protected $table = null;
     protected $errors = null;
+    /** @var mixed|Query  */
     protected $query;
     protected $old = null;
     protected $onlyOld = false;
