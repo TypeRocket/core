@@ -331,26 +331,30 @@ if ( ! function_exists('tr_components')) {
         $model->findById($item_id);
 
         $builder_data = $model->getFieldValue($name);
-
-        if (is_array($builder_data)) {
-            foreach ($builder_data as $data) {
-                $key       = key($data);
-                $component = strtolower(key($data));
-                $paths     = \TypeRocket\Core\Config::locate('paths');
-                $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
-                if (file_exists($file)) {
-                    $fn = function ($file, $data, $name, $item_id, $model) {
-                        /** @noinspection PhpIncludeInspection */
-                        include($file);
-                    };
-                    $fn($file, $data[$key], $name, $item_id, $model);
-                } else {
-                    echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
-                }
-            }
-        }
+        tr_components_loop($builder_data, compact('name', 'item_id', 'model'));
 
         return $builder_data;
+    }
+}
+
+if( ! function_exists('tr_components_loop')) {
+    function tr_components_loop($builder_data, $other = []) {
+        extract($other);
+        foreach ($builder_data as $data) {
+            $key       = key($data);
+            $component = strtolower(key($data));
+            $paths     = \TypeRocket\Core\Config::locate('paths');
+            $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
+            if (file_exists($file)) {
+                $fn = function ($file, $data, $name, $item_id, $model) {
+                    /** @noinspection PhpIncludeInspection */
+                    include($file);
+                };
+                $fn($file, $data[$key], $name, $item_id, $model);
+            } else {
+                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
+            }
+        }
     }
 }
 
