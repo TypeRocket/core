@@ -338,6 +338,12 @@ if ( ! function_exists('tr_components')) {
 }
 
 if( ! function_exists('tr_components_loop')) {
+    /**
+     * Loop Components
+     *
+     * @param array $builder_data
+     * @param array $other be sure to pass $name, $item_is, $model
+     */
     function tr_components_loop($builder_data, $other = []) {
         extract($other);
         foreach ($builder_data as $data) {
