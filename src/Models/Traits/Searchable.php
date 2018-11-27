@@ -14,7 +14,7 @@ trait Searchable
         $return = [];
         foreach($results as $result) {
             $return[] = [
-                'title' => $result->getSearchColumn(),
+                'title' => $result->{$this->getSearchColumn()},
                 'id' => $result->{$this->getIdColumn()}
             ];
         }
@@ -33,7 +33,7 @@ trait Searchable
 
     public function getSearchResult() {
         return [
-            'title' => $this->getSearchColumn(),
+            'title' => $this->{$this->getSearchColumn()},
             'id' => $this->{$this->getIdColumn()}
         ];
     }
