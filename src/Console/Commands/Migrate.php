@@ -4,6 +4,7 @@ namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\CanQueryDB;
 use TypeRocket\Console\Command;
+use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 
 class Migrate extends Command
@@ -53,8 +54,9 @@ class Migrate extends Command
     protected function sqlMigrationDirectory($type, $steps = 1) {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $migrations_folder = TR_PATH . '/sql/migrations/';
-        $migrations_run_folder = TR_PATH . '/sql/run/';
+        $root = Config::locate('paths.migrate');
+        $migrations_folder = $root['migrations'];
+        $migrations_run_folder = $root['run'];
 
         if( ! file_exists( $migrations_folder ) ) {
             $this->error('No migrations found at: ' . $migrations_folder);
@@ -63,7 +65,9 @@ class Migrate extends Command
 
         // Make directories if needed
         if( ! file_exists( $migrations_run_folder ) ) {
+            $this->warning('TypeRocket trying to locate ' . $root . ' for migrations to run.');
             mkdir($migrations_run_folder, 0755, true);
+            $this->success('Location created...');
         }
 
         $migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
@@ -83,7 +87,7 @@ class Migrate extends Command
         $query_strings = [];
         $count = 0;
         foreach ($to_run as $file ) {
-            $file_full = $migrations_folder . $file;
+            $file_full = $migrations_folder . '/' . $file;
             if( strpos($file, '.sql', -0) && is_file($file_full) ) {
                 $f = fopen($file_full, 'r');
                 $line = fgets($f);
@@ -129,13 +133,14 @@ class Migrate extends Command
                 break 1;
             }
             $time = time();
+            $run_file = $migrations_run_folder . '/' . $file;
 
             if( $type == 'up') {
                 $template = __DIR__ . '/../../../templates/MigrationRun.txt';
                 $file_obj = new File( $template );
-                $new = $file_obj->copyTemplateFile( $migrations_run_folder . $file, ['{{time}}'], [$time] );
-            } elseif(file_exists($migrations_run_folder . $file)) {
-                unlink($migrations_run_folder . $file);
+                $new = $file_obj->copyTemplateFile($run_file, ['{{time}}'], [$time] );
+            } elseif(file_exists($run_file)) {
+                unlink($run_file);
             }
 
             $this->success('Migration Finished at ' . $time);

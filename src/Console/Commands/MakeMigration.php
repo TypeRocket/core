@@ -3,6 +3,7 @@
 namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\Command;
+use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Sanitize;
 
@@ -29,21 +30,20 @@ class MakeMigration extends Command
     protected function exec()
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
+        $root = Config::locate('paths.migrate.migrations');
 
         // Make directories if needed
-        if( ! file_exists( TR_PATH . '/sql' ) ) {
-            mkdir(TR_PATH . '/sql', 0755, true);
-        }
-
-        if( ! file_exists( TR_PATH . '/sql/migrations' ) ) {
-            mkdir(TR_PATH . '/sql/migrations', 0755, true);
+        if( ! file_exists($root) ) {
+            $this->warning('TypeRocket trying to locate ' . $root . ' for migrations.');
+            mkdir($root, 0755, true);
+            $this->success('Location created...');
         }
 
         // Make migration file
         $tags = ['{{name}}'];
         $replacements = [ $name ];
         $template = __DIR__ . '/../../../templates/Migration.txt';
-        $new = TR_PATH . '/sql/migrations/' . time() . '.' . $name . ".sql";
+        $new = $root . '/' . time() . '.' . $name . ".sql";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );
