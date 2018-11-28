@@ -4,6 +4,7 @@ namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\CanQueryDB;
 use TypeRocket\Console\Command;
+use TypeRocket\Utility\File;
 
 class Migrate extends Command
 {
@@ -48,21 +49,27 @@ class Migrate extends Command
         /** @var \wpdb $wpdb */
         global $wpdb;
         $migrations_folder = TR_PATH . '/sql/migrations/';
+        $migrations_run_folder = TR_PATH . '/sql/run/';
 
         if( ! file_exists( $migrations_folder ) ) {
             $this->error('No migrations found at: ' . $migrations_folder);
             return;
         }
 
+        // Make directories if needed
+        if( ! file_exists( $migrations_run_folder ) ) {
+            mkdir($migrations_run_folder, 0755, true);
+        }
+
         $migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
-        $match_ran = '/--\s+(.*:)\s+([0-9]*)/';
+        $migrations_run = array_diff(scandir($migrations_run_folder), ['..', '.'] );
 
         if($type == 'up') {
-            $has_run = false;
+            $to_run = array_diff($migrations, $migrations_run);
             $match_go = '/--\s+\>\>\>\s+Up\s+\>\>\>/';
             $match_stop = '/--\s+\>\>\>\s+Down\s+\>\>\>/';
         } else {
-            $has_run = true;
+            $to_run = array_reverse($migrations_run);
             $match_go = '/--\s+\>\>\>\s+Down\s+\>\>\>/';
             $match_stop = '/--\s+\>\>\>\s+Up\s+\>\>\>/';
         }
@@ -70,14 +77,13 @@ class Migrate extends Command
 
         $query_strings = [];
         $count = 0;
-        foreach ($migrations as $file ) {
+        foreach ($to_run as $file ) {
             $file_full = $migrations_folder . $file;
             if( strpos($file, '.sql', -0) && is_file($file_full) ) {
                 $f = fopen($file_full, 'r');
                 $line = fgets($f);
-                preg_match($match_ran, $line, $matches_ran);
 
-                if( $has_run == !empty($matches_ran[2]) && $steps > $count) {
+                if($steps > $count) {
                     $count++;
                     $query = '';
                     $look = $stop = '';
@@ -96,7 +102,7 @@ class Migrate extends Command
                         }
                     }
                     $look = $stop = '';
-                    $query_strings[$file_full] = $query;
+                    $query_strings[$file] = $query;
                 }
                 fclose($f);
             }
@@ -109,7 +115,8 @@ class Migrate extends Command
                 $this->warning('No migrations to rollback');
             }
         }
-        foreach ($query_strings as $file_loc => $query) {
+
+        foreach ($query_strings as $file => $query) {
             $errors = $this->runQueryString($query);
 
             if(!empty($errors)) {
@@ -119,17 +126,13 @@ class Migrate extends Command
             $time = time();
 
             if( $type == 'up') {
-                $run = '-- Run At: ' . $time . PHP_EOL;
-            } else {
-                $run = '-- Run At: Rolled Back' . PHP_EOL;
+                $template = __DIR__ . '/../../../templates/MigrationRun.txt';
+                $file_obj = new File( $template );
+                $new = $file_obj->copyTemplateFile( $migrations_run_folder . $file, ['{{time}}'], [$time] );
+            } elseif(file_exists($migrations_run_folder . $file)) {
+                unlink($migrations_run_folder . $file);
             }
 
-            $lines = file($file_loc);
-            foreach ($lines as $index => $line) {
-                preg_match($match_ran, $line, $matches_ran);
-                if(!empty($matches_ran)) { $lines[$index] = $run; break; }
-            }
-            file_put_contents($file_loc, implode($lines));
             $this->success('Migration Finished at ' . $time);
         }
     }
