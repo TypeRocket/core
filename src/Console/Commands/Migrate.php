@@ -18,7 +18,7 @@ class Migrate extends Command
 
     protected function config()
     {
-        $this->addArgument('type', self::REQUIRED, 'The type of migration to run (up|down).');
+        $this->addArgument('type', self::REQUIRED, 'The type of migration to run (up|down|reset).');
         $this->addArgument('steps', self::OPTIONAL, 'The limit of migrations to run as int.');
     }
 
@@ -40,6 +40,11 @@ class Migrate extends Command
 
         if(!$steps) {
             $steps = 1;
+        }
+
+        if($type == 'reset') {
+            $type = 'down';
+            $steps = 99999999999999;
         }
 
         $this->sqlMigrationDirectory($type, $steps);
