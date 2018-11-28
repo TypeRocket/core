@@ -66,6 +66,7 @@ class Launcher
      */
     private function initHooks()
     {
+        $features = Config::locate('app.features');
         $useContent = function($user) {
             echo '<div class="typerocket-container typerocket-wp-style-guide">';
             do_action( 'tr_user_profile', $user );
@@ -75,6 +76,24 @@ class Launcher
         if(!empty($this->typerocket['admin']['post_messages'])) {
             add_action( 'post_updated_messages', [$this, 'setMessages']);
             add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
+        }
+
+        if(isset($features['gutenberg']) && !$features['gutenberg']) {
+            add_filter( 'gutenberg_can_edit_post_type', '__return_false' );
+        }
+
+        if(isset($features['comments']) && !$features['comments']) {
+            include __DIR__ . '/../../features/disable-comments.php';
+        }
+
+        if(isset($features['posts_menu']) && !$features['posts_menu']) {
+            add_action( 'admin_menu', function() {
+                remove_menu_page( 'edit.php' );
+            });
+            add_action( 'admin_bar_menu', function() {
+                global $wp_admin_bar;
+                $wp_admin_bar->remove_node( 'new-post' );
+            }, 999 );
         }
 
         add_action( 'edit_user_profile', $useContent );

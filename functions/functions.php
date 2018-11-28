@@ -232,3 +232,42 @@ if ( ! function_exists('get_http_protocall')) {
         return is_ssl() ? 'https' : 'http';
     }
 }
+
+if ( ! function_exists('array_reduce_allowed_str')) {
+
+    /**
+     * HTML class names helper
+     *
+     * @return string
+     */
+    function array_reduce_allowed_str($array) {
+        $reduced = '';
+        array_walk($array, function($val, $key) use(&$reduced) {
+            $reduced .= $val ? " $key" : '';
+        });
+        $cleaned = implode(' ', array_unique(array_map('trim', explode(' ', trim($reduced)))));
+        return $cleaned;
+    }
+}
+
+if ( ! function_exists('class_names')) {
+
+    /**
+     * HTML class names helper
+     *
+     * @return string
+     */
+    function class_names($defaults, $classes = null, $failed = '') {
+        if(!$result = array_reduce_allowed_str(is_array($defaults) ? $defaults : $classes)) {
+            $result = !is_array($classes) ? $classes : $failed;
+        }
+
+        $defaults = !is_array($defaults) ? $defaults : '';
+
+        return $defaults . ' ' . $result;
+    }
+}
+
+
+
+
