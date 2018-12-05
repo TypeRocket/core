@@ -8,6 +8,7 @@ use TypeRocket\Http\Response;
 class Validator
 {
     public $errors = [];
+    public $errorMessages = [];
     public $passes = [];
     public $rules = [];
     public $fields = [];
@@ -51,6 +52,18 @@ class Validator
     }
 
     /**
+     * Set Error Messages
+     *
+     * @param array $messages
+     * @return $this
+     */
+    public function setErrorMessages(array $messages)
+    {
+        $this->errorMessages = $messages;
+        return $this;
+    }
+
+    /**
      * Check if passes
      *
      * @return bool
@@ -79,8 +92,6 @@ class Validator
 
     /**
      * Map fields to validators
-     *
-     * @return array
      */
     private function mapFieldsToValidation() {
         foreach ($this->rules as $path => $handle) {
@@ -131,13 +142,29 @@ class Validator
     }
 
     /**
+     * Set Error Message
+     *
+     * Pulls message override from $errorMessages
+     *
+     * @param $name
+     * @param $type
+     * @param $default
+     */
+    protected function setErrorMessage($name, $type, $default) {
+        $this->errors[$name] = $default;
+        if(!empty($this->errorMessages[$name.':'.$type])) {
+            $this->errors[$name] = $this->errorMessages[$name.':'.$type];
+        }
+    }
+
+    /**
      * Validate the Field
      *
      * @param $handle
      * @param $value
      * @param $name
      */
-    private function validateField( $handle, $value, $name ) {
+    protected function validateField( $handle, $value, $name ) {
         $list = explode('|', $handle);
         foreach( $list as $validation) {
             list( $type, $option, $option2, $option3 ) = array_pad(explode(':', $validation, 4), 4, null);
@@ -145,7 +172,7 @@ class Validator
             switch($type) {
                 case 'required' :
                     if( empty( $value ) ) {
-                        $this->errors[$name] =  $field_name . ' is required.';
+                        $this->setErrorMessage($name, $type, $field_name . ' is required.');
                     } else {
                         $this->passes[$name] = $value;
                     }
@@ -153,7 +180,7 @@ class Validator
                 case 'callback' :
                     $callback_value = call_user_func_array($option, [ $this, $value, $field_name, $option2 ]);
                     if( isset($callback_value['error']) ) {
-                        $this->errors[$name] = $callback_value['error'];
+                        $this->setErrorMessage($name, $type, $callback_value['error']);
                     } else {
                         $this->passes[$name] = $callback_value['success'];
                     }
@@ -161,7 +188,7 @@ class Validator
                 case 'min' :
                     $option = (int) $option;
                     if( mb_strlen($value) < $option ) {
-                        $this->errors[$name] =  $field_name . " must be at least $option characters.";
+                        $this->setErrorMessage($name, $type, $field_name . " must be at least $option characters.");
                     } else {
                         $this->passes[$name] = $value;
                     }
@@ -169,7 +196,7 @@ class Validator
                 case 'max' :
                     $option = (int) $option;
                     if( mb_strlen($value) > $option ) {
-                        $this->errors[$name] =  $field_name . " must be less than $option characters.";
+                        $this->setErrorMessage($name, $type, $field_name . " must be less than $option characters.");
                     } else {
                         $this->passes[$name] = $value;
                     }
@@ -177,28 +204,28 @@ class Validator
                 case 'size' :
                     $option = (int) $option;
                     if( mb_strlen($value) !== (int) $option ) {
-                        $this->errors[$name] =  $field_name . " must be $option characters.";
+                        $this->setErrorMessage($name, $type, $field_name . " must be $option characters.");
                     } else {
                         $this->passes[$name] = $value;
                     }
                     break;
                 case 'email' :
                     if( ! filter_var($value, FILTER_VALIDATE_EMAIL) ) {
-                        $this->errors[$name] =  $field_name . " must be at an email address.";
+                        $this->setErrorMessage($name, $type, $field_name . " must be at an email address.");
                     } else {
                         $this->passes[$name] = $value;
                     }
                     break;
                 case 'numeric' :
                     if( ! is_numeric($value) ) {
-                        $this->errors[$name] =  $field_name . " must be a numeric value.";
+                        $this->setErrorMessage($name, $type, $field_name . " must be a numeric value.");
                     } else {
                         $this->passes[$name] = $value;
                     }
                     break;
                 case 'url' :
                     if( ! filter_var($value, FILTER_VALIDATE_URL) ) {
-                        $this->errors[$name] =  $field_name . " must be at a URL.";
+                        $this->setErrorMessage($name, $type, $field_name . " must be at a URL.");
                     } else {
                         $this->passes[$name] = $value;
                     }
@@ -228,7 +255,7 @@ class Validator
                     }
 
                     if($result) {
-                        $this->errors[$name] =  $field_name . ' is taken.';
+                        $this->setErrorMessage($name, $type, $field_name . ' is taken.');
                     } else {
                         $this->passes[$name] = $value;
                     }
