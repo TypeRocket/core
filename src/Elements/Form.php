@@ -55,18 +55,20 @@ class Form
     /**
      * Set the model for the form
      *
-     * @param $modelClass
+     * @param Model|string $model
      *
      * @return $this
      */
-    public function setModel( $modelClass )
+    public function setModel( $model )
     {
-        if(class_exists($modelClass)) {
-            $this->model = new $modelClass();
+        if(class_exists($model)) {
+            $this->model = new $model();
 
             if( !empty($this->itemId) ) {
                 $this->model->findById($this->itemId);
             }
+        } elseif ( $model instanceof Model) {
+            $this->model = $model;
         }
 
         return $this;
