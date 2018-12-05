@@ -61,14 +61,14 @@ class Form
      */
     public function setModel( $model )
     {
-        if(class_exists($model)) {
+        if ( !is_string($model) && $model instanceof Model) {
+            $this->model = $model;
+        } elseif(class_exists($model)) {
             $this->model = new $model();
 
             if( !empty($this->itemId) ) {
                 $this->model->findById($this->itemId);
             }
-        } elseif ( $model instanceof Model) {
-            $this->model = $model;
         }
 
         return $this;
