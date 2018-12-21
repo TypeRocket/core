@@ -18,6 +18,7 @@ class UserTest extends TestCase
         $data = [
             'user_nicename' => 'new\nice\name',
             'user_login' => 'new\nice\name',
+            'user_pass' => 'password',
             'user_url' => 'http://typerocket.com/ok\\that',
             'display_name' => 'new \\is \'me\' \ok',
         ];

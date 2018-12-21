@@ -27,7 +27,8 @@ class FormTest extends TestCase
         $form = new Form('post', 'update', 1);
         $form->useUrl('delete', '/posts/create');
         $value = $form->open();
-        $this->assertContains( 'action="' . home_url('/posts/create/') . '', $value );
+        $needle = 'action="' . home_url('/posts/create/');
+        $this->assertContains( $needle, $value );
         $this->assertContains( 'name="_method" value="DELETE"', $value );
     }
 

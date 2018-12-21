@@ -18,6 +18,7 @@ class CommentTest extends TestCase
             'comment_author' => '\TypeRocket\Name',
             'comment_author_email' => 'create@example.com',
             'comment_author_url' => 'http://typerocket.com',
+            'comment_type' => '',
         ];
 
         $comment->create($data);

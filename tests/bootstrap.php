@@ -2,6 +2,9 @@
 require __DIR__.'/../vendor/autoload.php';
 date_default_timezone_set('UTC');
 
+$_SERVER['SERVER_PROTOCOL'] = $_SERVER['SERVER_PROTOCOL'] ?? null;
+$_SERVER['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+
 function getWordpressPath()
 {
     $fileToCheck = 'wp-settings.php';
