@@ -119,6 +119,19 @@ jQuery(document).ready(function($) {
     TypeRocket.repeaterCallbacks.push(add_color_picker);
     TypeRocket.repeaterCallbacks.push(add_editor);
     TypeRocket.repeaterCallbacks.push(add_tabs);
+
+    /*
+    ==========================================================================
+    init tinymce on builder/repeater add
+    ==========================================================================
+    */
+    TypeRocket.repeaterCallbacks.push(function($template) {
+      var $tinymce = $template.find('.wp-editor-area');
+      $tinymce.each(function() {
+        tinyMCE.execCommand('mceAddEditor', false, $(this).attr('id'));
+      });
+    });
+
     $trContainer.on('input keyup', '.redactor-editor', function () {
         var $textarea = $(this).siblings('textarea');
         $textarea.trigger('change');
