@@ -157,7 +157,7 @@ class Tables
             $model->where( Sanitize::underscore($_GET['on']) , $condition, $search );
         }
 
-        $this->count = $model->findAll()->count();
+        $this->count = null;
         if( !empty( $_GET['order'] ) && !empty( $_GET['orderby'] ) ) {
             $this->model->orderBy($_GET['orderby'], $_GET['order']);
         }
@@ -228,8 +228,9 @@ class Tables
 	        $action_key = '_' . $action_key;
         }
 
-	    do_action('tr_table_search_model'.$action_key, $this->model);
-        $results = $this->model->findAll()->take($this->limit, $this->offset)->get();
+	    do_action('tr_table_search_model'.$action_key, $this->model, $this);
+        $results = $this->results = $this->model->findAll()->useResultsClass()->take($this->limit, $this->offset)->get();
+        $count = $this->count = $this->model->count();
         $columns = $this->columns;
         $this_table = $this;
         $table = new Generator();
@@ -401,10 +402,10 @@ class Tables
         $table->appendInside('tfoot', [], $foot );
 
         // Pagination
-        $pages = ceil($this->count / $this->limit);
+        $pages = ceil($count / $this->limit);
         $item_word = 'items';
 
-        if($this->count < 2) {
+        if($count < 2) {
             $item_word = 'item';
         }
 
@@ -488,7 +489,7 @@ class Tables
                 </div>
 
                 <div class="tablenav-pages">
-                    <span class="displaying-num"><?php echo $this->count; ?> <?php echo $item_word; ?></span>
+                    <span class="displaying-num"><?php echo $count; ?> <?php echo $item_word; ?></span>
                     <?php $this->paginationLinks($page, $prev, $next, $first, $last, $pages); ?>
                 </div>
                 <br class="clear">
@@ -510,7 +511,7 @@ class Tables
 
         <div class="tablenav bottom">
             <div class="tablenav-pages">
-                <span class="displaying-num"><?php echo $this->count; ?> <?php echo $item_word; ?></span>
+                <span class="displaying-num"><?php echo $count; ?> <?php echo $item_word; ?></span>
                 <?php $this->paginationLinks($page, $prev, $next, $first, $last, $pages); ?>
             </div>
         </div>

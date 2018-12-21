@@ -6,6 +6,7 @@ class Query
     public $idColumn = 'id';
     public $lastCompiledSQL = null;
     public $returnOne = false;
+    public $useResultsClass = false;
     public $resultsClass = Results::class;
     public $run = true;
     protected $columnPattern = "/[^a-zA-Z0-9\\\\_]+/";
@@ -202,6 +203,17 @@ class Query
         $this->returnOne = true;
         $this->take(1);
         return $this->get();
+    }
+
+    /**
+     * Always Wrap In Results Class
+     *
+     * @return $this
+     */
+    public function useResultsClass()
+    {
+        $this->useResultsClass = true;
+        return $this;
     }
 
     /**
@@ -531,7 +543,7 @@ class Query
             $result = $wpdb->get_var( $sql );
         } else {
             $results = $wpdb->get_results( $sql, ARRAY_A );
-            if($results && $this->returnOne) {
+            if($results && $this->returnOne && !$this->useResultsClass) {
                 $result = $results[0];
             } elseif( $results ) {
                 $result = new $this->resultsClass;

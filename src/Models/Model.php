@@ -810,6 +810,17 @@ class Model
     }
 
     /**
+     * Always Wrap In Results Class
+     *
+     * @return $this
+     */
+    public function useResultsClass()
+    {
+        $this->query->useResultsClass();
+        return $this;
+    }
+
+    /**
      * Find the first record and set properties
      *
      * @return array|bool|false|int|null|object
