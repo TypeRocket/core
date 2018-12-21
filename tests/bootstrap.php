@@ -2,7 +2,25 @@
 require __DIR__.'/../vendor/autoload.php';
 date_default_timezone_set('UTC');
 
+function getWordpressPath()
+{
+    $fileToCheck = 'wp-settings.php';
+    $paths = [];
+
+    foreach (range(1, 8) as $level) {
+        $nested = str_repeat('/..', $level);
+        array_push($paths, __DIR__ . "$nested/wordpress/$fileToCheck", __DIR__ . "$nested/$fileToCheck");
+    }
+
+    $filtered = array_filter($paths, function ($path) {
+        return file_exists($path);
+    });
+
+    return str_replace("/$fileToCheck", '', array_shift($filtered));
+}
+
 $wp_load = getWordpressPath();
+
 if( ! file_exists($wp_load) ) {
     echo 'PHP Unit: WordPress Not Connected at ' . $wp_load . PHP_EOL;
 } else {
@@ -24,21 +42,4 @@ if( ! file_exists($wp_load) ) {
   `posts_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
-}
-
-function getWordpressPath()
-{
-    $fileToCheck = 'wp-settings.php';
-    $paths = [];
-
-    foreach (range(1, 8) as $level) {
-        $nested = str_repeat('/..', $level);
-        array_push($paths, __DIR__ . "$nested/wordpress/$fileToCheck", __DIR__ . "$nested/$fileToCheck");
-    }
-
-    $filtered = array_filter($paths, function ($path) {
-        return file_exists($path);
-    });
-
-    return str_replace("/$fileToCheck", '', array_shift($filtered));
 }
