@@ -13,8 +13,14 @@
          verbose="true"
 >
     <testsuites>
-        <testsuite name="TypeRocket Core Test Suite">
+
+        <testsuite name="All">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
+
+        <testsuite name="Query">
+            <directory suffix="Test.php">./tests/Query</directory>
+        </testsuite>
+
     </testsuites>
 </phpunit>
