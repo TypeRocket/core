@@ -68,4 +68,26 @@ class Str
         return $str;
     }
 
+    /**
+     * Convert to Title Case
+     *
+     * 1. Call WP `sanitize_title`.
+     * 2. Replace dash and underscore with space.
+     * 3. Call `ucwords`.
+     *
+     * @param $string
+     *
+     * @return string
+     */
+     public static function title( $string )
+     {
+         return ucwords(
+             str_replace(
+                 ['-', '_'],
+                 ' ',
+                 sanitize_title( $string )
+             )
+         );
+     }
+
 }

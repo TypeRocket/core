@@ -664,6 +664,38 @@ if ( ! function_exists('tr_validator')) {
     }
 }
 
+if ( ! function_exists('tr_valid_compcount')) {
+    /**
+     * validate component count
+     * @param  \TypeRocket\Utility\Validator  $validator
+     * @param  array      $value      Component/builder field value array.
+     * @param  string     $field      Name of field.
+     * @param  array      $options    Validation options.
+     * @return array                  Error message.
+     */
+    function tr_valid_compcount( $validator, $value, $field, $options )
+    {
+      $rule = new \TypeRocket\Utility\ValidationRule( 'compcount', $value, $field, $options );
+      if( $rule->conditionMet() ) return ['error' => $rule->getMessage()];
+    }
+}
+
+if ( ! function_exists('tr_valid_repcount')) {
+    /**
+     * validate repeater row count
+     * @param  \TypeRocket\Utility\Validator  $validator
+     * @param  array      $value      Repeater field value array.
+     * @param  string     $field      Name of field.
+     * @param  array      $options    Validation options.
+     * @return array                  Error message.
+     */
+    function tr_valid_repcount( $validator, $value, $field, $options )
+    {
+      $rule = new \TypeRocket\Utility\ValidationRule( 'repcount', $value, $field, $options );
+      if( $rule->conditionMet() ) return ['error' => $rule->getMessage()];
+    }
+}
+
 if ( ! function_exists('tr_route')) {
     /**
      * Route
