@@ -27,6 +27,7 @@ class Checkbox extends Field
         $option = $this->getValue();
         $checkbox = new Generator();
         $field = new Generator();
+        $this->setAttribute( 'value', '1' );
 
         if ($option == '1' || ! is_null($option) && $option == $this->getAttribute('value')) {
             $this->setAttribute( 'checked', 'checked' );
