@@ -41,7 +41,7 @@ class Config
     private static function jitLocate($dots, $default)
     {
         list($root, $rest) = array_pad(explode('.', $dots, 2), 2, null);
-        if(!isset(self::$config[$root])) {
+        if(!isset(self::$config[$root]) && is_file(self::$root . '/' . $root . '.php')) {
             self::$config[$root] = require( self::$root . '/' . $root . '.php' );
 
             if(!$rest) {
