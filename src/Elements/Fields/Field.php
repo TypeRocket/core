@@ -386,6 +386,28 @@ abstract class Field
     }
 
     /**
+     * Add conditional logic.
+     * @param array $conditions Array of conditional logic arguments.
+     *                          [
+     *                            [
+     *                              'field' => 'field_name',
+     *                              'operator' => '=',
+     *                              'value' => 'Show this field'
+     *                            ]
+     *                          ]
+     *                          Will show the current field object
+     *                          if conditions are met.
+     * @return $this
+     */
+    public function setConditions($conditions)
+    {
+        $conditions = json_encode($conditions);
+        $conditions = str_replace('"', '\'', $conditions);
+        $this->setAttribute('data-conditions', $conditions);
+        return $this;
+    }
+
+    /**
      * Sanitize field value
      *
      * @param $value
