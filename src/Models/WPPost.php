@@ -164,8 +164,8 @@ class WPPost extends Model
                 $builtin['post_type'] = $this->postType;
             }
 
-            if( empty($builtin['post_title']) || empty($builtin['post_content']) ) {
-                $error = 'WPPost not created: post_title and post_content are required';
+            if( empty($builtin['post_title']) ) {
+                $error = 'WPPost not created: post_title is required';
                 throw new ModelException( $error );
             }
 
