@@ -15,6 +15,7 @@
             },
             multiple: false
         });
+        temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
             var attachment, url;
             attachment = temp_frame.state().get('selection').first().toJSON();
@@ -32,11 +33,11 @@
         return false;
     };
     set_file_uploader = function(button, field) {
-        var btnTitle, temp_frame, title, typeInput;
+        var btnTitle, temp_frame, title, typeInput, options;
         title = 'Select a File';
         btnTitle = 'Use File';
-        typeInput = '';
-        temp_frame = wp.media({
+        typeInput = button.data('type'); // https://codex.wordpress.org/Function_Reference/get_allowed_mime_types
+        options = {
             title: title,
             button: {
                 text: btnTitle
@@ -45,7 +46,11 @@
                 type: typeInput
             },
             multiple: false
-        });
+        };
+        temp_frame = wp.media(options);
+        if(options.library.type) {
+          temp_frame.uploader.options.uploader.params.allowed_mime_types = options.library.type;
+        }
         temp_frame.on('select', function() {
             var attachment, link;
             attachment = temp_frame.state().get('selection').first().toJSON();
@@ -76,6 +81,7 @@
             },
             multiple: 'toggle'
         });
+        temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
             var attachment, field, i, item, l, use_url;
             attachment = temp_frame.state().get('selection').toJSON();

@@ -52,7 +52,8 @@ class File extends Field implements ScriptField
         $html .= $generator->newElement( 'input', [
             'type'  => 'button',
             'class' => 'file-picker-button button',
-            'value' => $this->getSetting( 'button' )
+            'value' => $this->getSetting( 'button' ),
+            'data-type' => $this->getSetting( 'type' ) ?: '' // https://codex.wordpress.org/Function_Reference/get_allowed_mime_types
         ])->getString();
         $html .= $generator->newElement( 'input', [
             'type'  => 'button',

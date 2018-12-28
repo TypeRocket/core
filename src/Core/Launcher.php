@@ -103,6 +103,7 @@ class Launcher
         add_action( 'show_user_profile', $useContent );
         add_action( 'admin_init', [$this, 'addCss']);
         add_action( 'admin_init', [$this, 'addJs']);
+        add_action( 'admin_init', [$this, 'restrictUploadMimeTypes'] );
         add_action( 'admin_footer', [$this, 'addBottomJs']);
         add_action( 'admin_head', [$this, 'addTopJs']);
         add_action( 'admin_notices', [$this, 'setFlash']);
@@ -313,6 +314,32 @@ class Launcher
         $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
         wp_enqueue_script( 'typerocket-scripts-global', $assets . '/typerocket/js/global.js', [], $assetVersion );
+    }
+
+    /**
+     * restrict upload mime types
+     * https://wordpress.stackexchange.com/a/97025
+     * https://wordpress.stackexchange.com/a/174805
+     */
+    public function restrictUploadMimeTypes() {
+        add_filter( 'wp_handle_upload_prefilter', function ( $file ) {
+            if ( empty( $_POST['allowed_mime_types'] ) || empty( $file['type'] ) ) {
+                return $file;
+            }
+            $allowed_mime_types = explode( ',', $_POST['allowed_mime_types'] );
+            if ( in_array( $file['type'], $allowed_mime_types ) ) {
+                return $file;
+            }
+            // Cater for "group" allowed mime types eg "image", "audio" etc. to match
+            // files of type "image/png", "audio/mp3" etc.
+            if ( ( $slash_pos = strpos( $file['type'], '/' ) ) > 0 ) {
+                if ( in_array( substr( $file['type'], 0, $slash_pos ), $allowed_mime_types ) ) {
+                    return $file;
+                }
+            }
+            $file['error'] = __( 'Sorry, you cannot upload this file type for this field.' );
+            return $file;
+        } );
     }
 
     /**
