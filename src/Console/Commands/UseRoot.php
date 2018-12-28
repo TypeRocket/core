@@ -169,8 +169,8 @@ class UseRoot extends Command
         // Update file
         $file = new File(TR_PATH . '/config/paths.php');
         $paths = [
-            "'assets' => get_template_directory_uri() . '/typerocket/wordpress/assets'",
-            "'components' => get_template_directory_uri() . '/typerocket/wordpress/assets/components'"
+            "'assets' => get_theme_file_uri( '/typerocket/wordpress/assets' )",
+            "'components' => get_theme_file_uri( '/typerocket/wordpress/assets/components' )"
         ];
 
         $replacements = [
