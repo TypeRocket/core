@@ -45,4 +45,17 @@ class Date extends Field implements ScriptField
         return $input->newInput( 'text', $name, $value, $this->getAttributes() )->getString();
     }
 
+    /**
+     * Set Format
+     *
+     * @param $format
+     * @return $this
+     */
+    public function setFormat($format)
+    {
+        $this->setAttribute('data-format', $format);
+
+        return $this;
+    }
+
 }

@@ -52,10 +52,15 @@ jQuery(document).ready(function($) {
     add_date_picker = function(obj) {
         if ($.isFunction($.fn.datepicker)) {
             $(obj).find('.date-picker[name]').each(function() {
+                let date_format = $(this).data('format');
+                let date_format_picker = 'dd/mm/yy';
+                if (date_format) { date_format_picker = date_format; }
+
                 $(this).datepicker({
                     beforeShow: function(input, inst) {
                         $('#ui-datepicker-div').addClass('typerocket-datepicker');
-                    }
+                    },
+                    dateFormat: date_format_picker
                 });
             });
         }
