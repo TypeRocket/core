@@ -1,9 +1,10 @@
 <?php
 namespace {{namespace}}\Controllers;
 
+use {{namespace}}\Models\{{model}};
 use \TypeRocket\Controllers\Controller;
 
 class {{controller}} extends Controller
 {
-
+    protected $modelClass = {{model}}::class;
 }

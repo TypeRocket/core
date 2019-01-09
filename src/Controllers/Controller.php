@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use \TypeRocket\Models\Model;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 
@@ -21,9 +22,10 @@ class Controller
     /** @var \TypeRocket\Http\Request */
     protected $request = null;
 
-    protected $middleware = [];
     protected $fields = [];
-    protected $modelClass = null;
+    protected $middleware = [];
+    protected $model = null;
+    protected $modelClass = Model::class;
     protected $validation = [];
 
     /*
@@ -34,6 +36,7 @@ class Controller
         $this->response = $response;
         $this->request  = $request;
         $this->fields = $this->request->getFields();
+        $this->model = new $this->modelClass;
         $this->init();
         $this->routing();
     }
