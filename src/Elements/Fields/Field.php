@@ -391,7 +391,6 @@ abstract class Field
      *                          [
      *                            [
      *                              'field' => 'field_name',
-     *                              'operator' => '=',
      *                              'value' => 'Show this field'
      *                            ]
      *                          ]
