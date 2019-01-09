@@ -22,7 +22,9 @@ class Controller
     protected $request = null;
 
     protected $middleware = [];
+    protected $fields = [];
     protected $modelClass = null;
+    protected $validation = [];
 
     /*
      * Construct Controller
@@ -31,6 +33,7 @@ class Controller
     {
         $this->response = $response;
         $this->request  = $request;
+        $this->fields = $this->request->getFields();
         $this->init();
         $this->routing();
     }
@@ -83,6 +86,20 @@ class Controller
         $this->middleware[] = $middleware;
 
         return $this;
+    }
+
+    /**
+     * invalid
+     * if($this->invalid()) return tr_redirect()
+     * @return bool whether validation is passed
+     */
+    protected function invalid()
+    {
+        $validator = tr_validator($this->validation, $this->fields);
+        if($validator->getErrors()) {
+            $validator->flashErrors($this->response);
+            return true;
+        }
     }
 
 }
