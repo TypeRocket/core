@@ -199,7 +199,7 @@ jQuery.fn.extend({
     return $(this).parents('[class*="typerocket-elements-fields"]').first()
   },
   getOuterWrapper: function() {
-    return $(this).parents('.tr-repeater-group, [id*="tab-panel"], .builder-field-group, .postbox-container').first()
+    return $(this).parents('.tr-repeater-group, [id*="tab-panel"], .builder-field-group, .postbox-container, #wpbody').first()
   }
 })
 
