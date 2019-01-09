@@ -79,7 +79,10 @@ class Launcher
         }
 
         if(isset($features['gutenberg']) && !$features['gutenberg']) {
-            add_filter( 'gutenberg_can_edit_post_type', '__return_false' );
+            add_filter( 'use_block_editor_for_post_type', '__return_false' );
+            add_action( 'wp_enqueue_scripts', function() {
+                wp_dequeue_style( 'wp-block-library' );
+            }, 100 );
         }
 
         if(isset($features['comments']) && !$features['comments']) {
