@@ -421,7 +421,7 @@ class Form
         $required   = $this->currentField->getRequired() ? '<span class="tr-required">*</span>' : '';
 
         if ($label) {
-            $label = $this->currentField->getSetting( 'label' );
+            $label = __( $this->currentField->getSetting( 'label' ) );
             $html  = "{$open_html}{$label} {$required} {$debug}{$close_html}";
         } elseif ($debug !== '') {
             $html = "{$open_html}{$debug}{$close_html}";

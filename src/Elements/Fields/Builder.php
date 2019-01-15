@@ -138,7 +138,7 @@ class Builder extends Matrix
                 $img->newImage($attr['data-thumbnail']);
 
                 $li = new Generator();
-                $li->newElement('li', $attr, '<span>' . $name . '</span>')->appendInside( $img );
+                $li->newElement('li', $attr, '<span>' . __($name) . '</span>')->appendInside( $img );
 
                 $generator->appendInside( $li );
             }
