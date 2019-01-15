@@ -137,7 +137,7 @@ class Query
     /**
      * Order by
      *
-     * @param string|array $column name of column
+     * @param string $column name of column
      * @param string $direction default ASC other DESC
      *
      * @return $this
