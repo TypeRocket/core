@@ -137,15 +137,14 @@ class Query
     /**
      * Order by
      *
-     * @param string $column name of column
+     * @param string|array $column name of column
      * @param string $direction default ASC other DESC
      *
      * @return $this
      */
     public function orderBy($column = 'id', $direction = 'ASC')
     {
-        $this->query['order_by']['column'] = $column;
-        $this->query['order_by']['direction'] = $direction;
+        $this->query['order_by'][] = [ 'column' => $column, 'direction' => $direction];
 
         return $this;
     }
@@ -706,9 +705,15 @@ class Query
         $sql = '';
 
         if( !empty($query['order_by']) ) {
-            $order_column = preg_replace($this->columnPattern, '', $query['order_by']['column']);
-            $order_direction = $query['order_by']['direction'] == 'ASC' ? 'ASC' : 'DESC';
-            $sql .= " ORDER BY {$order_column} {$order_direction}";
+            $sql .= " ORDER BY ";
+
+            $order = array_map(function($ordering) {
+                $order_column = preg_replace($this->columnPattern, '', $ordering['column']);
+                $order_direction = $ordering['direction'] == 'ASC' ? 'ASC' : 'DESC';
+                return "{$order_column} {$order_direction}";
+            }, $query['order_by']);
+
+            $sql .= implode(' , ', $order);
         }
 
         return $sql;

@@ -56,6 +56,36 @@ class CompileTest extends TestCase
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
+    public function testOrderByDescPosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $query->orderBy('ID', 'DESC')->get();
+        $sql = "SELECT * FROM wp_posts ORDER BY ID DESC";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testOrderByAscPosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $query->orderBy('ID')->get();
+        $sql = "SELECT * FROM wp_posts ORDER BY ID ASC";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testOrderByMultiplePosts()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $result = $query->orderBy('post_content')->orderBy('post_title', 'DESC')->get();
+        $sql = "SELECT * FROM wp_posts ORDER BY post_content ASC , post_title DESC";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
     public function testCountPosts()
     {
         $query = new \TypeRocket\Database\Query();

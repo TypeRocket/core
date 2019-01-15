@@ -26,6 +26,7 @@ class Form
     protected $useAjax = null;
     protected $formUrl;
     protected $method = null;
+    protected $translateLabelDomain = null;
 
     /**
      * Instance the From
@@ -403,6 +404,7 @@ class Form
         return $html;
     }
 
+
     /**
      * Get the Form Field Label
      *
@@ -422,13 +424,43 @@ class Form
 
         if ($label) {
             $label = $this->currentField->getSetting( 'label' );
-            $label = __($label);
+
+            $label_translate = $this->getLabelTranslationDomain();
+            if($label_translate) {
+                $label = __($label, $label_translate);
+            } else {
+                $label = __($label);
+            }
+
             $html  = "{$open_html}{$label} {$required} {$debug}{$close_html}";
         } elseif ($debug !== '') {
             $html = "{$open_html}{$debug}{$close_html}";
         }
 
         return $html;
+    }
+
+    /**
+     * Get Translate Label Domain
+     *
+     * @return bool
+     */
+    public function getLabelTranslationDomain()
+    {
+        return $this->translateLabelDomain;
+    }
+
+    /**
+     * Set Translate Label Domain
+     *
+     * @param string $string
+     * @return $this
+     */
+    public function setLabelTranslationDomain($string)
+    {
+        $this->translateLabelDomain = (bool) $string;
+
+        return $this;
     }
 
     /**
