@@ -101,6 +101,20 @@ class Taxonomy extends Registrable
 
         return $this;
     }
+    
+    /**
+     * Set the resource
+     *
+     * @param $resource
+     *
+     * @return $this
+     */
+    public function setResource( array $resource )
+    {
+        $this->resource = $resource;
+
+        return $this;
+    }
 
     /**
      * Get the form hook value by key
