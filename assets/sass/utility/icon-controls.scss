@@ -28,6 +28,10 @@
     content: "\f335";
 }
 
+.tr-control-icon-restore:before {
+    content: "\f317";
+}
+
 .tr-control-icon-remove:hover {
     color: $delete_hover;
 }

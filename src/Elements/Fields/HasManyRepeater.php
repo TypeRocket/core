@@ -140,32 +140,29 @@ class HasManyRepeater extends Repeater {
 	/**
 	 * Covert Repeater to HTML string
 	 */
-	public function getString() {
+	public function getString()
+	{
 		$this->setAttribute( 'name', $this->getNameAttributeString() );
-		$form     = $this->getForm();
+		$form = $this->getForm();
 		$settings = $this->getSettings();
-		$name     = $this->relatedResource;
+		$name     = $this->getName();
 		$form->setDebugStatus( false );
-		$html         = $fields_classes = '';
 		$group_prefix = 'hasmany';
+		$html =  '';
+		$fields_classes = ' ' . $group_prefix;
 
-		$headline = $this->headline ? '<h1>' . $this->headline . '</h1>' : '';
+		$headline = $this->headline ? '<h1>' . $this->headline . '</h1>': '';
 
 		// add controls
-		if ( isset( $settings['help'] ) ) {
-			$help = "<div class=\"help\"> <p>{$settings['help']}</p> </div>";
+		if (isset( $settings['help'] )) {
+			$help = "<div class=\"tr-form-field-help\"> <p>{$settings['help']}</p> </div>";
 			$this->removeSetting( 'help' );
 		} else {
 			$help = '';
 		}
 
-		// add collapsed / contracted
-		if ( ! empty( $settings['contracted'] ) ) {
-			$fields_classes = ' tr-repeater-collapse';
-		}
-
 		// add button settings
-		if ( isset( $settings['add_button'] ) ) {
+		if (isset( $settings['add_button'] )) {
 			$add_button_value = $settings['add_button'];
 		} else {
 			$add_button_value = "Add New";
@@ -173,29 +170,47 @@ class HasManyRepeater extends Repeater {
 
 		$controls = [
 			'contract' => 'Contract',
-			'flip'     => 'Flip',
-			'clear'    => 'Clear All',
-			'add'      => $add_button_value,
+			'expand' => 'Expand',
+			'flip' => 'Flip',
+			'add' => $add_button_value,
 		];
 
 		// controls settings
-		if ( isset( $settings['controls'] ) && is_array( $settings['controls'] ) ) {
-			$controls = array_merge( $controls, $settings['controls'] );
+		if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
+			$controls = array_merge($controls, $settings['controls']);
 		}
 
 		// escape controls
-		$controls = array_map( function ( $item ) {
-			return esc_attr( $item );
-		}, $controls );
+		$controls = array_map(function($item) {
+			return esc_attr($item);
+		}, $controls);
+
+		// add collapsed / contracted
+		$expanded = 'tr-repeater-expanded';
+		$expand_label = $controls['contract'];
+		if(!empty($settings['contracted'])) {
+			$fields_classes = ' tr-repeater-collapse';
+			$expanded = 'tr-repeater-contacted';
+			$expand_label = $controls['expand'];
+		}
 
 		// template for repeater groups
-		$href          = '#remove';
-		$openContainer = '<div class="repeater-controls"><div class="collapse"></div>';
-		$openContainer .= $this->sortField ? '<div class="move"></div>' : '';
-		$openContainer .='<a href="' . $href . '" class="toggle-child remove-child" title="remove"></a></div><div class="repeater-inputs">';
+		$sortable = $this->sortField ? ' tr-control-icon-move' : '';
+		$contol_list = [
+			['class' => 'collapse tr-control-icon tr-control-icon-collapse'],
+			['class' => 'move tr-control-icon' . $sortable],
+			['class' => 'toggle-child tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove')],
+		];
+
+		$controls_html = array_reduce($contol_list, function($carry, $item) {
+			return $carry . Tag::make('a', $item);
+		});
+
+		$sortable = $this->sortField ? ' sortable' : '';
+		$openContainer = '<div class="repeater-controls' . $sortable . '">'.$controls_html.'</div><div class="repeater-inputs">';
 		$endContainer  = '</div>';
 
-		$html .= '<div class="control-section tr-repeater">'; // start tr-repeater
+		$html .= '<div class="tr-repeater">'; // start tr-repeater
 
 		// setup repeater
 		$cache_group = $form->getGroup();
@@ -203,18 +218,30 @@ class HasManyRepeater extends Repeater {
 		$root_group = $group_prefix . "." . $this->getDots();
 		$form->setGroup( $group_prefix . "." . $this->getDots() . ".{{ {$name} }}" );
 
-		// add controls (add, flip, clear all)
+		// add controls (add, flip)
 		$generator    = new Generator();
 		$default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null )->getString();
 		$foreign_key  = $generator->newInput( 'hidden', "tr[" . $group_prefix . "][" . $this->getDots() . "]" . "[foreignkey]", $this->foreignKey )->getString();
+
 		if( $this->sortField ) {
 			$sort_field = $generator->newInput( 'hidden', "tr[" . $group_prefix . "][" . $this->getDots() . "]" . "[sortfield]", $this->sortField )->getString();
 		} else {
 			$sort_field = '';
 		}
 
+		// main controls
+		$contol_list = [
+			['class' => 'flip button', 'value' => $controls['flip'] ],
+			['class' => "tr_action_collapse button {$expanded}", 'value' => $expand_label, 'data-contract' => $controls['contract'], 'data-expand' => $controls['expand']],
+		];
 
-		$html .= "<div class=\"controls\"><div class=\"tr-repeater-button-add\"><input type=\"button\" value=\"{$controls['add']}\" class=\"button add\" /></div>{$help}<div>{$default_null}{$foreign_key}{$sort_field}</div></div>";
+		$controls_html = array_reduce($contol_list, function($carry, $item) {
+			return $carry . Tag::make('input', array_merge(['type' => 'button'], $item));
+		});
+
+		$add_button = Tag::make('input', ['type' => 'button', 'value' => $controls['add'], 'class' => 'button add']);
+
+		$html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\">{$add_button}</div><div class=\"button-group\">{$controls_html}</div>{$help}<div>{$default_null}{$foreign_key}{$sort_field}</div></div>";
 
 		// replace name attr with data-name so fields are not saved
 		$templateFields = str_replace( ' name="', ' data-name="', $this->getTemplateFields() );
@@ -225,10 +252,10 @@ class HasManyRepeater extends Repeater {
 		$html .= '</div>';
 
 		// render saved data
-		$html    .= '<div class="' . $group_prefix . ' tr-repeater-fields' . $fields_classes . '">'; // start tr-repeater-fields
+		$html .= '<div class="tr-repeater-fields'.$fields_classes.'">'; // start tr-repeater-fields
 		$repeats = $this->getValue();
 		if ( is_array( $repeats ) ) {
-			foreach ( $repeats as $k => $array ) {
+			foreach ($repeats as $k => $array) {
 				$recordform = tr_form( $this->relatedResource, 'update', $k );
 				foreach ( $this->fields as $field ) {
 					$field->form = $recordform;

@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
             if ($repeater_fields.length > 0) {
                 $repeater_fields.sortable({
                     connectWith: '.tr-repeater-group',
-                    handle: '.repeater-controls',
+                    handle: '.repeater-controls.sortable',
                     placeholder: "tr-sortable-placeholder",
                     forcePlaceholderSize: true
                 });
@@ -226,6 +226,17 @@ jQuery(document).ready(function($) {
                 });
                 e.preventDefault();
             });
+            jQuery( document ).on( 'click', '.hasmany .toggle-child', function () {
+                if ( jQuery( this ).hasClass( 'tr-control-icon-remove' ) ) {
+                    jQuery( this ).removeClass( 'tr-control-icon-remove' ).addClass( 'tr-control-icon-restore' );
+                    jQuery( this ).parent().parent().find( '.delete-child' ).val( 1 );
+                    jQuery( this ).parent().parent().addClass( 'delete-record' );
+                } else {
+                    jQuery( this ).removeClass( 'tr-control-icon-restore' ).addClass( 'tr-control-icon-remove' );
+                    jQuery( this ).parent().parent().find( '.delete-child' ).val( 0 );
+                    jQuery( this ).parent().parent().removeClass( 'delete-record' );
+                }
+            } );
             $(document).on('click', '.tr-repeater .repeater-controls .collapse', function(e) {
                 var $group;
                 $group = $(this).parent().parent();

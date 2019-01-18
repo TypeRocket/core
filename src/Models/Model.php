@@ -540,6 +540,12 @@ class Model
 
         $keys = $this->getDotKeys( $field );
 
+        $do_not_parse = false;
+	    if ( $keys[0] == 'hasmany' ) {
+	    	$do_not_parse = true;
+		    $keys = array_reverse( $keys );
+	    }
+
         if( $this->old ) {
             if( ! empty($this->old[$keys[0]]) ) {
                 $data = wp_unslash( $this->old[$keys[0]] );
@@ -554,7 +560,11 @@ class Model
             return null;
         }
 
-        return $this->parseValueData( $data, $keys );
+        if( $do_not_parse ) {
+        	return $data;
+        } else {
+	        return $this->parseValueData( $data, $keys );
+        }
     }
 
     /**
