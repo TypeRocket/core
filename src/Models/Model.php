@@ -52,6 +52,7 @@ class Model
         $this->query->resultsClass = $this->resultsClass;
         $table = $this->getTable();
         $this->query->table($table);
+        $this->query->setIdColumn($this->idColumn);
 
         $suffix  = '';
 
@@ -1155,7 +1156,7 @@ class Model
         }
 
         $id = $this->getProperty( $id_local );
-        return $relationship->where( $this->getIdColumn(), $id)->take(1);
+        return $relationship->where( $relationship->getIdColumn(), $id)->take(1);
     }
 
     /**

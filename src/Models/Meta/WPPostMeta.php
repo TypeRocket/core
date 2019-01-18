@@ -3,6 +3,7 @@
 namespace TypeRocket\Models\Meta;
 
 use TypeRocket\Models\Model;
+use TypeRocket\Models\WPPost;
 
 class WPPostMeta extends Model
 {
@@ -20,7 +21,7 @@ class WPPostMeta extends Model
         'meta_id'
     ];
 
-    public function post( $modelClass ) {
-        return $this->belongsTo( $modelClass, 'post_id' );
+    public function post( $modelClass = null ) {
+        return $this->belongsTo( $modelClass ?? WPPost::class, 'post_id' );
     }
 }
