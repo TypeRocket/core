@@ -6,7 +6,6 @@ namespace Query;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Meta\WPPostMeta;
-use TypeRocket\Models\WPPost;
 
 class BelongsToTest extends TestCase
 {
