@@ -165,7 +165,7 @@ class Builder extends Matrix
     private function getComponentThumbnail($name, $type) {
         $path = '/' .$name . '/' . $type . '.png';
         $thumbnail = $this->paths['urls']['components'] . $path;
-        return $thumbnail;
+        return apply_filters('tr_builder_component_thumbnails', $thumbnail, $this);
     }
 
     /**
