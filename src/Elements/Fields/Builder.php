@@ -181,7 +181,7 @@ class Builder extends Matrix
     private function getBuilderBlocks()
     {
 
-        $val = $this->getValue();
+        $val = $this->componentValues = $this->getValue();
         $utility = new Buffer();
         $blocks = '';
         $form = $this->getForm();
