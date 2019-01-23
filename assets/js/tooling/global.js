@@ -2,5 +2,6 @@
   httpCallbacks: [],
   repeaterCallbacks: [],
   lastSubmittedForm: false,
-  redactorSettings: {}
+  redactorSettings: {},
+  builderCallbacks: [],
 };

@@ -151,7 +151,6 @@ class Builder extends Matrix
         }
 
         return $select;
-
     }
 
     /**
