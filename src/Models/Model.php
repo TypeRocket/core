@@ -7,6 +7,8 @@ use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
 use TypeRocket\Utility\Inflect;
+use TypeRocket\Utility\Sanitize;
+use TypeRocket\Utility\Str;
 
 class Model
 {
@@ -371,26 +373,6 @@ class Model
     }
 
     /**
-     * Get Property
-     *
-     * By key
-     *
-     * @param $key
-     *
-     * @return null
-     */
-    public function getProperty( $key )
-    {
-        $data = null;
-
-        if (array_key_exists( $key, $this->properties )) {
-            $data = $this->properties[$key];
-        }
-
-        return $data;
-    }
-
-    /**
      * Set Property
      *
      * By key
@@ -418,6 +400,21 @@ class Model
     public function setProperties( array $properties )
     {
         return $this->properties = $properties;
+    }
+
+    /**
+    * Get an attribute from the model.
+    *
+    * @param  string  $key
+    * @return mixed
+    */
+    public function getProperty($key)
+    {
+      if (array_key_exists($key, $this->properties) || $this->hasGetMutator($key)) {
+        return $this->getPropertyValue($key);
+      }
+
+      return $this->getRelationValue($key);
     }
 
     /**
@@ -995,7 +992,7 @@ class Model
             $data = (array) $this->query->findById($this->getID())->get();
         }
 
-        return $this->getValueOrNull( $data[$field_name] );
+        return $this->getValueOrNull( $data[$field_name] ?? null );
     }
 
     /**
@@ -1422,7 +1419,7 @@ class Model
      */
     public function __isset($key)
     {
-        return isset($this->properties[$key]);
+        return !is_null($this->getProperty($key));
     }
 
     /**
@@ -1448,6 +1445,92 @@ class Model
     public function __set($key, $value = null)
     {
         $this->setProperty($key, $value);
+    }
+
+    /**
+    * Get a plain attribute (not a relationship).
+    *
+    * @param  string  $key
+    * @return mixed
+    */
+    public function getPropertyValue($key)
+    {
+      $value = $this->getPropertyFromArray($key);
+
+      // If the attribute has a get mutator, we will call that then return what
+      // it returns as the value, which is useful for transforming values on
+      // retrieval from the model to a form that is more useful for usage.
+      if ($this->hasGetMutator($key)) {
+        return $this->mutateProperty($key, $value);
+      }
+
+      return $value;
+    }
+
+    /**
+    * Get a relationship.
+    *
+    * @param  string  $key
+    * @return mixed
+    */
+    public function getRelationValue($key)
+    {
+
+      // If the "attribute" exists as a method on the model, we will just assume
+      // it is a relationship and will load and return results from the query
+      // and hydrate the relationship's value on the "relationships" array.
+      if (method_exists($this, $key)) {
+        return $this->getRelationshipFromMethod($key);
+      }
+    }
+
+    /**
+    * Get an attribute from the $attributes array.
+    *
+    * @param  string  $key
+    * @return mixed
+    */
+    protected function getPropertyFromArray($key)
+    {
+      if (array_key_exists($key, $this->properties)) {
+        return $this->properties[$key];
+      }
+    }
+
+    /**
+    * Get a relationship value from a method.
+    *
+    * @param  string  $method
+    * @return mixed
+    *
+    * @throws \LogicException
+    */
+    protected function getRelationshipFromMethod($method)
+    {
+      return $this->$method() ? $this->$method()->get() : null;
+    }
+
+    /**
+    * Determine if a get mutator exists for an attribute.
+    *
+    * @param  string  $key
+    * @return bool
+    */
+    public function hasGetMutator($key)
+    {
+      return method_exists($this, 'get'.Str::camelize($key).'Property');
+    }
+
+    /**
+    * Get the value of an attribute using its mutator.
+    *
+    * @param  string  $key
+    * @param  mixed  $value
+    * @return mixed
+    */
+    protected function mutateProperty($key, $value)
+    {
+      return $this->{'get'.Str::camelize($key).'Property'}($value);
     }
 
 }
