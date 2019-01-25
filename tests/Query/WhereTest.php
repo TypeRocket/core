@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 class WhereTest extends TestCase
 {
 
-    public function testRawWhereTitle()
+    public function testRawWhere()
     {
         $query = new \TypeRocket\Database\Query();
         $query->table('wp_posts');
@@ -24,7 +24,7 @@ class WhereTest extends TestCase
         $this->assertTrue( $last == $sql);
     }
 
-    public function testOnlyRawWhereTitle()
+    public function testOnlyRawWhere()
     {
         $query = new \TypeRocket\Database\Query();
         $query->table('wp_posts');
@@ -38,7 +38,7 @@ class WhereTest extends TestCase
         $this->assertTrue( $last == $sql);
     }
 
-    public function testMultipleRawWhereTitle()
+    public function testMultipleRawWhere()
     {
         $query = new \TypeRocket\Database\Query();
         $query->table('wp_posts');
@@ -53,7 +53,7 @@ class WhereTest extends TestCase
         $this->assertTrue( $last == $sql);
     }
 
-    public function testWhereResetTitle()
+    public function testWhereResetBefore()
     {
         $query = new \TypeRocket\Database\Query();
         $query->table('wp_posts');
@@ -67,5 +67,25 @@ class WhereTest extends TestCase
         $sql = "UPDATE wp_posts SET post_title='My Title'";
         $last = $query->lastCompiledSQL;
         $this->assertTrue( $last == $sql);
+    }
+
+    public function testWhereResetAfter()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $query->run = false;
+        $query
+            ->where('ID', 1)
+            ->update(['post_title' => 'My Title']);
+        $sql = "UPDATE wp_posts SET post_title='My Title' WHERE ID = 1";
+        $last_where = $query->lastCompiledSQL;
+        $this->assertTrue( $last_where == $sql);
+
+
+        $query->resetWhere()->update(['post_title' => 'My Title']);
+        $sql_reset = "UPDATE wp_posts SET post_title='My Title'";
+        $last_reset = $query->lastCompiledSQL;
+        $this->assertTrue( $last_reset == $sql_reset);
     }
 }
