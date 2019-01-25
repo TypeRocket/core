@@ -780,7 +780,7 @@ class Model
      * This method is not sanitized before it is run. Do not
      * use this method with user provided input.
      *
-     * @param $condition string
+     * @param $condition string|null
      * @param $sql string
      * @return $this
      */
