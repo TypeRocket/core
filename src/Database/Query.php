@@ -599,6 +599,7 @@ class Query
             if($results && $this->returnOne && !$this->useResultsClass) {
                 $result = $results[0];
             } elseif( $results ) {
+                /** @var Results $result */
                 $result = new $this->resultsClass;
                 foreach ($results as $object) {
                     $result->append( (object) $object );
