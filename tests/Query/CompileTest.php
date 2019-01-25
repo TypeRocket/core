@@ -15,7 +15,8 @@ class CompileTest extends TestCase
         $query->run = false;
         $query->where('ID', 1)->update(['post_title' => 'My Title']);
         $sql = "UPDATE wp_posts SET post_title='My Title' WHERE ID = 1";
-        $this->assertTrue( $query->lastCompiledSQL == $sql);
+        $last = $query->lastCompiledSQL;
+        $this->assertTrue( $last == $sql);
     }
 
     public function testCreatePost()

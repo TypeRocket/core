@@ -80,6 +80,7 @@ class Query
      * Get results from find methods
      *
      * @return array|null|object
+     * @throws \Exception
      */
     public function get() {
         $this->setQueryType();
@@ -103,7 +104,7 @@ class Query
         if( !empty($this->query['where']) ) {
             $whereQuery['condition'] = strtoupper($condition);
         } else {
-            $whereQuery['condition'] = 'WHERE';
+            $whereQuery['condition'] = null;
         }
 
         $whereQuery['column'] = $column;
@@ -132,6 +133,43 @@ class Query
     public function orWhere($column, $arg1, $arg2 = null)
     {
         return $this->where($column, $arg1, $arg2, 'OR');
+    }
+
+    /**
+     * Append Raw Where
+     *
+     * This method is not sanitized before it is run. Do not
+     * use this method with user provided input.
+     *
+     * @param $condition string
+     * @param $sql string
+     * @return $this
+     */
+    public function appendRawWhere($condition, $sql)
+    {
+        $this->query['raw']['where'][] = [$condition, $sql];
+
+        return $this;
+    }
+
+    /**
+     * Reset Where
+     *
+     * Reset raw and standard where clauses.
+     *
+     * @return $this
+     */
+    public function resetWhere()
+    {
+        if(!empty($this->query['raw']['where'])) {
+            unset($this->query['raw']['where']);
+        }
+
+        if(!empty($this->query['where'])) {
+            unset($this->query['where']);
+        }
+
+        return $this;
     }
 
     /**
@@ -196,7 +234,12 @@ class Query
     }
 
     /**
+     * Get First
+     *
+     * Get first and return one but not as a collection.
+     *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function first() {
         $this->returnOne = true;
@@ -225,6 +268,7 @@ class Query
      * @param array $multiple optional
      *
      * @return mixed
+     * @throws \Exception
      */
     public function create( $fields, $multiple = [] )
     {
@@ -241,6 +285,7 @@ class Query
      * @param array|\ArrayObject $fields
      *
      * @return mixed
+     * @throws \Exception
      */
     public function update( $fields = [])
     {
@@ -269,6 +314,7 @@ class Query
      * @param $id
      *
      * @return object
+     * @throws \Exception
      */
     public function findOrDie($id) {
         if( ! $data = $this->findById($id)->get() ) {
@@ -289,6 +335,7 @@ class Query
      * @return object
      * @internal param $id
      *
+     * @throws \Exception
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
         if( ! $data = $this->where( $column, $arg1, $arg2, $condition)->first() ) {
@@ -304,6 +351,7 @@ class Query
      * @param array|\ArrayObject $ids
      *
      * @return array|false|int|null|object
+     * @throws \Exception
      */
     public function delete( $ids = [] ) {
         $this->setQueryType('delete');
@@ -339,6 +387,7 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function count( $column = '*' )
     {
@@ -353,6 +402,7 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function sum( $column )
     {
@@ -367,6 +417,7 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function min( $column )
     {
@@ -381,6 +432,7 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function max( $column )
     {
@@ -395,6 +447,7 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function avg( $column )
     {
@@ -514,6 +567,7 @@ class Query
      * @param array|\ArrayObject $query
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     protected function runQuery( $query = [] ) {
         /** @var \wpdb $wpdb */
@@ -557,6 +611,12 @@ class Query
         return $result;
     }
 
+    /**
+     * Compile Full Query
+     *
+     * @return string|null
+     * @throws \Exception
+     */
     public function compileFullQuery() {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -625,6 +685,7 @@ class Query
      * Compile Union
      *
      * @return string
+     * @throws \Exception
      */
     protected function compileUnion()
     {
@@ -722,7 +783,7 @@ class Query
     /**
      * Compile Insert
      *
-     * @return string
+     * @return string|array
      */
     protected function compileInsert() {
         /** @var \wpdb $wpdb */
@@ -813,7 +874,7 @@ class Query
      *
      * @param $value
      *
-     * @return int|null|string|void
+     * @return int|null|string
      */
     protected function prepareValue( $value ) {
         /** @var \wpdb $wpdb */
@@ -855,8 +916,24 @@ class Query
                     $where['value'] = $this->prepareValue($where['value']);
                 }
 
+                if($where['condition'] === null) {
+                    unset($where['condition']);
+                }
+
                 $sql .= ' ' . implode(' ', $where);
             }
+        }
+
+        if(!empty($this->query['raw']['where']) && is_array($this->query['raw']['where'])) {
+
+            foreach ($this->query['raw']['where'] as $rawWhere) {
+                if(!$sql) { unset($rawWhere[0]); }
+                $sql .= ' ' . implode(' ', $rawWhere);
+            }
+        }
+
+        if($sql) {
+            $sql = ' WHERE' . $sql;
         }
 
         return $sql;

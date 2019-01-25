@@ -734,6 +734,7 @@ class Model
      * Get results from find methods
      *
      * @return array|null|object
+     * @throws \Exception
      */
     public function get() {
         $results = $this->query->get();
@@ -769,6 +770,36 @@ class Model
     public function orWhere($column, $arg1, $arg2 = null)
     {
         $this->query->where($column, $arg1, $arg2, 'OR');
+
+        return $this;
+    }
+
+    /**
+     * Append Raw Where
+     *
+     * This method is not sanitized before it is run. Do not
+     * use this method with user provided input.
+     *
+     * @param $condition string
+     * @param $sql string
+     * @return $this
+     */
+    public function appendRawWhere($condition, $sql)
+    {
+        $this->query->appendRawWhere($condition, $sql);
+
+        return $this;
+    }
+
+    /**
+     * Reset Where
+     *
+     * Reset raw and standard where clauses.
+     *
+     * @return $this
+     */
+    public function resetWhere() {
+        $this->query->resetWhere();
 
         return $this;
     }
