@@ -7,7 +7,6 @@ use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
 use TypeRocket\Utility\Inflect;
-use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Str;
 
 class Model
@@ -36,6 +35,7 @@ class Model
 
     /**
      * Construct Model based on resource
+     * @throws \ReflectionException
      */
     public function __construct()
     {
@@ -329,7 +329,7 @@ class Model
      *
      * Get all the fields that can be filled
      *
-     * @return array|mixed|void
+     * @return array|mixed
      */
     public function getFillableFields()
     {
@@ -341,7 +341,7 @@ class Model
      *
      * Get all the fields that have been write protected
      *
-     * @return array|mixed|void
+     * @return array|mixed
      */
     public function getGuardFields()
     {
@@ -365,7 +365,7 @@ class Model
      *
      * Get all the fields that have been set for formatting
      *
-     * @return array|mixed|void
+     * @return array|mixed
      */
     public function getFormatFields()
     {
@@ -476,7 +476,7 @@ class Model
      *
      * @param array|\ArrayObject $fields
      *
-     * @return mixed|void
+     * @return mixed
      */
     public function provisionFields( $fields )
     {
@@ -525,6 +525,7 @@ class Model
      * @param $field
      *
      * @return array|mixed|null|string
+     * @throws \Exception
      */
     public function getFieldValue( $field )
     {
@@ -853,6 +854,7 @@ class Model
      * Find the first record and set properties
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function first() {
         $results = $this->query->first();
@@ -868,6 +870,7 @@ class Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return mixed
+     * @throws \Exception
      */
     public function create( $fields = [] )
     {
@@ -882,6 +885,7 @@ class Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return mixed
+     * @throws \Exception
      */
     public function update( $fields = [] )
     {
@@ -896,6 +900,7 @@ class Model
      * @param $id
      *
      * @return mixed
+     * @throws \Exception
      */
     public function findById($id)
     {
@@ -909,6 +914,7 @@ class Model
      * @param $id
      *
      * @return object
+     * @throws \Exception
      */
     public function findOrDie($id) {
         $results = $this->query->findOrDie($id);
@@ -926,6 +932,7 @@ class Model
      * @return object
      * @internal param $id
      *
+     * @throws \Exception
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
         $results = $this->query->findFirstWhereOrDie( $column, $arg1, $arg2, $condition);
@@ -968,6 +975,7 @@ class Model
      * @param array|\ArrayObject $ids
      *
      * @return array|false|int|null|object
+     * @throws \Exception
      */
     public function delete( $ids = [] ) {
         return $this->query->delete($ids);
@@ -977,6 +985,7 @@ class Model
      * Count results
      *
      * @return array|bool|false|int|null|object
+     * @throws \Exception
      */
     public function count()
     {
@@ -1014,6 +1023,7 @@ class Model
      * @param $field_name
      *
      * @return null
+     * @throws \Exception
      */
     public function getBaseFieldValue($field_name)
     {
@@ -1062,6 +1072,7 @@ class Model
      * @param array|\TypeRocket\Http\Fields $fields
      *
      * @return mixed
+     * @throws \Exception
      */
     public function save( $fields = [] ) {
         if( isset( $this->properties[$this->idColumn] ) && $this->findById($this->properties[$this->idColumn]) ) {
@@ -1271,6 +1282,7 @@ class Model
      * @param array $args
      *
      * @return array $query
+     * @throws \Exception
      */
     public function attach( array $args )
     {
@@ -1294,6 +1306,7 @@ class Model
      * @param array $args
      *
      * @return array
+     * @throws \Exception
      */
     public function detach( array $args = [] )
     {
@@ -1322,6 +1335,7 @@ class Model
      * @param array $args
      *
      * @return array $results
+     * @throws \Exception
      */
     public function sync( array $args = [] )
     {
@@ -1407,6 +1421,7 @@ class Model
      * Get Last SQL Query
      *
      * @return null|string
+     * @throws \Exception
      */
     public function getSuspectSQL()
     {
@@ -1457,8 +1472,6 @@ class Model
      * Unset Property
      *
      * @param $key
-     *
-     * @return bool
      */
     public function __unset($key)
     {
@@ -1479,11 +1492,15 @@ class Model
     }
 
     /**
-    * Get a plain attribute (not a relationship).
-    *
-    * @param  string  $key
-    * @return mixed
-    */
+     * Get a plain attribute (not a relationship).
+     *
+     * If the attribute has a get mutator, we will call that then return what
+     * it returns as the value, which is useful for transforming values on
+     * retrieval from the model to a form that is more useful for usage.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
     public function getPropertyValue($key)
     {
       $value = $this->getPropertyFromArray($key);
@@ -1499,66 +1516,72 @@ class Model
     }
 
     /**
-    * Get a relationship.
-    *
-    * @param  string  $key
-    * @return mixed
-    */
+     * Get a relationship.
+     *
+     * If the "attribute" exists as a method on the model, we will just assume
+     *  it is a relationship and will load and return results from the query
+     * and hydrate the relationship's value on the "relationships" array.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
     public function getRelationValue($key)
     {
 
-      // If the "attribute" exists as a method on the model, we will just assume
-      // it is a relationship and will load and return results from the query
-      // and hydrate the relationship's value on the "relationships" array.
+
       if (method_exists($this, $key)) {
         return $this->getRelationshipFromMethod($key);
       }
+
+      throw new \InvalidArgumentException("$key does not exist in Models properties array");
     }
 
     /**
-    * Get an attribute from the $attributes array.
-    *
-    * @param  string  $key
-    * @return mixed
-    */
+     * Get an attribute from the $this->properties array.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
     protected function getPropertyFromArray($key)
     {
       if (array_key_exists($key, $this->properties)) {
         return $this->properties[$key];
       }
+
+      throw new \InvalidArgumentException("$key does not exist in Models properties array");
     }
 
     /**
-    * Get a relationship value from a method.
-    *
-    * @param  string  $method
-    * @return mixed
-    *
-    * @throws \LogicException
-    */
+     * Get a relationship value from a method.
+     *
+     * @param  string  $method
+     * @return mixed
+     *
+     * @throws \LogicException
+     */
     protected function getRelationshipFromMethod($method)
     {
       return $this->$method() ? $this->$method()->get() : null;
     }
 
     /**
-    * Determine if a get mutator exists for an attribute.
-    *
-    * @param  string  $key
-    * @return bool
-    */
+     * Determine if a get mutator exists for an attribute.
+     *
+     * @param  string  $key
+     * @return bool
+     */
     public function hasGetMutator($key)
     {
       return method_exists($this, 'get'.Str::camelize($key).'Property');
     }
 
     /**
-    * Get the value of an attribute using its mutator.
-    *
-    * @param  string  $key
-    * @param  mixed  $value
-    * @return mixed
-    */
+     * Get the value of an attribute using its mutator.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return mixed
+     */
     protected function mutateProperty($key, $value)
     {
       return $this->{'get'.Str::camelize($key).'Property'}($value);
