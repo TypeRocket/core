@@ -48,6 +48,7 @@ class Launcher
         | Load TypeRocket Router
         |
         */
+	    do_action( 'tr_load_routes' );
         $base_dir = Config::locate('paths.base');
         $routeFile = $base_dir . '/routes.php';
         if( file_exists($routeFile) ) {
