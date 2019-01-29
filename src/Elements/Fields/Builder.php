@@ -10,6 +10,7 @@ class Builder extends Matrix
 {
 
     protected $components = [];
+    protected $componentValues = [];
 
     /**
      * Get the scripts
@@ -71,24 +72,28 @@ class Builder extends Matrix
                     <?php echo $this->getSelectHtml(); ?>
                 </div>
                 <ul data-thumbnails="<?php echo $this->paths['urls']['components']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
-                    <?php foreach($this->components as $option):
-                        $count++;
-                        $type = $option[0];
-                        $name = $option[1];
+                    <?php
+                    $c = count($this->componentValues);
+                    $componentKeys = array_keys($this->componentValues);
+                    for($i = 0; $i < $c; $i++) {
+
+                        $type = $this->components[$i][0];
+                        $name = $this->components[$i][1];
+                        $componentValue = array_values($this->componentValues[$componentKeys[$i]] ?? [] )[0] ?? [];
                         $classes = '';
-                        if ($count == 1) {
+                        if ($i == 0) {
                             $classes .= ' active';
                         }
-                        $thumbnail = $this->getComponentThumbnail($component_name, $type);
+                        $thumbnail = $this->getComponentThumbnail($component_name, $type, $componentValue);
                         ?>
-                    <li class="tr-builder-component-control <?php echo $classes; ?>">
-                        <?php if ($thumbnail) : ?>
-                        <img src="<?php echo $thumbnail; ?>" alt="Thumbnail, <?php echo $name; ?>">
-                        <?php endif; ?>
-                        <span class="tr-builder-component-title"><?php echo $name; ?></span>
-                        <span class="remove tr-remove-builder-component"></span>
-                    </li>
-                    <?php endforeach; ?>
+                        <li class="tr-builder-component-control <?php echo $classes; ?>">
+                            <?php if ($thumbnail) : ?>
+                                <img src="<?php echo $thumbnail; ?>" alt="Thumbnail, <?php echo $name; ?>">
+                            <?php endif; ?>
+                            <span class="tr-builder-component-title"><?php echo $name; ?></span>
+                            <span class="remove tr-remove-builder-component"></span>
+                        </li>
+                    <?php } ?>
                 </ul>
             </div>
 
@@ -127,7 +132,7 @@ class Builder extends Matrix
             foreach ($options as $name => $value) {
 
                 $attr['data-value'] = $value;
-                $attr['data-thumbnail'] = $this->getComponentThumbnail($folder, $value);
+                $attr['data-thumbnail'] = $this->getComponentThumbnail($folder, $value, null);
                 $attr['class'] = 'builder-select-option';
                 $attr['data-id'] = $this->mxid;
                 $attr['data-folder'] = $folder;
@@ -151,7 +156,6 @@ class Builder extends Matrix
         }
 
         return $select;
-
     }
 
     /**
@@ -160,12 +164,13 @@ class Builder extends Matrix
      * @param $name
      * @param $type
      *
+     * @param $value
      * @return string
      */
-    private function getComponentThumbnail($name, $type) {
+    private function getComponentThumbnail($name, $type, $value) {
         $path = '/' .$name . '/' . $type . '.png';
         $thumbnail = $this->paths['urls']['components'] . $path;
-        return $thumbnail;
+        return apply_filters('tr_builder_component_thumbnails', $thumbnail, $value, $type, $name, $this);
     }
 
     /**
@@ -176,7 +181,7 @@ class Builder extends Matrix
     private function getBuilderBlocks()
     {
 
-        $val = $this->getValue();
+        $val = $this->componentValues = $this->getValue();
         $utility = new Buffer();
         $blocks = '';
         $form = $this->getForm();

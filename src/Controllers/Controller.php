@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use \TypeRocket\Models\Model;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 
@@ -21,8 +22,11 @@ class Controller
     /** @var \TypeRocket\Http\Request */
     protected $request = null;
 
+    protected $fields = [];
     protected $middleware = [];
-    protected $modelClass = null;
+    protected $model = null;
+    protected $modelClass = Model::class;
+    protected $validation = [];
 
     /*
      * Construct Controller
@@ -31,6 +35,8 @@ class Controller
     {
         $this->response = $response;
         $this->request  = $request;
+        $this->fields = $this->request->getFields();
+        $this->model = new $this->modelClass;
         $this->init();
         $this->routing();
     }
@@ -83,6 +89,20 @@ class Controller
         $this->middleware[] = $middleware;
 
         return $this;
+    }
+
+    /**
+     * invalid
+     * if($this->invalid()) return tr_redirect()
+     * @return bool whether validation is passed
+     */
+    protected function invalid()
+    {
+        $validator = tr_validator($this->validation, $this->fields);
+        if($validator->getErrors()) {
+            $validator->flashErrors($this->response);
+            return true;
+        }
     }
 
 }

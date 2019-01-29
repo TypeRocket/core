@@ -1,6 +1,7 @@
-;var TypeRocket = {
+;window.TypeRocket = {
   httpCallbacks: [],
   repeaterCallbacks: [],
   lastSubmittedForm: false,
-  redactorSettings: {}
+  redactorSettings: {},
+  builderCallbacks: [],
 };

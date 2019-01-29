@@ -92,7 +92,7 @@ abstract class Field
             }
         }
 
-        die('TypeRocket: A field does not have a From connected to it.');
+        die('TypeRocket: A field does not have a Form connected to it.');
     }
 
     /**

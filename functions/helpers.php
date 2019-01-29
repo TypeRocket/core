@@ -256,7 +256,7 @@ if ( ! function_exists('tr_posts_field')) {
     }
 }
 
-if ( ! function_exists('tr_components_field')) {
+if ( ! function_exists('tr_posts_components_field')) {
     /**
      * Get components
      *
@@ -284,20 +284,31 @@ if ( ! function_exists('tr_components_field')) {
         $builder_data = $model->getFieldValue($name);
 
         if (is_array($builder_data)) {
+            $i = 0;
+            $len = count($builder_data);
             foreach ($builder_data as $data) {
+                $first_item = $last_item = false;
+
+                if ($i == 0) {
+                    $first_item = true;
+                } else if ($i == $len - 1) {
+                    $last_item = true;
+                }
+
                 $key       = key($data);
                 $component = strtolower(key($data));
                 $paths     = \TypeRocket\Core\Config::locate('paths');
                 $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
                 if (file_exists($file)) {
-                    $fn = function ($file, $data, $name, $item_id, $model) {
+                    $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item) {
                         /** @noinspection PhpIncludeInspection */
                         include($file);
                     };
-                    $fn($file, $data[$key], $name, $item_id, $model);
+                    $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item);
                 } else {
                     echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
                 }
+                $i++;
             }
         }
 
@@ -331,7 +342,9 @@ if ( ! function_exists('tr_components')) {
         $model->findById($item_id);
 
         $builder_data = $model->getFieldValue($name);
-        tr_components_loop($builder_data, compact('name', 'item_id', 'model'));
+        if(is_array($builder_data)) {
+            tr_components_loop($builder_data, compact('name', 'item_id', 'model'));
+        }
 
         return $builder_data;
     }
@@ -346,20 +359,32 @@ if( ! function_exists('tr_components_loop')) {
      */
     function tr_components_loop($builder_data, $other = []) {
         extract($other);
+        $i = 0;
+        $len = count($builder_data);
         foreach ($builder_data as $data) {
+            $first_item = $last_item = false;
+
+            if ($i == 0) {
+                $first_item = true;
+            } else if ($i == $len - 1) {
+                $last_item = true;
+            }
+
             $key       = key($data);
             $component = strtolower(key($data));
             $paths     = \TypeRocket\Core\Config::locate('paths');
             $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
             if (file_exists($file)) {
-                $fn = function ($file, $data, $name, $item_id, $model) {
+                $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item) {
                     /** @noinspection PhpIncludeInspection */
                     include($file);
                 };
-                $fn($file, $data[$key], $name, $item_id, $model);
+                $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item);
             } else {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
             }
+
+            $i++;
         }
     }
 }

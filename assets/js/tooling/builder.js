@@ -139,25 +139,42 @@ export default function trBuilder() {
                             form_group: form_group
                         },
                         success: function(data) {
-                            var $active_components, $active_fields, html;
+                            var $active_components, $active_fields, html, textLabel, options, ri;
                             data = $(data);
                             $active_fields = $fields.children('.active');
                             $active_components = $components.children('.active');
                             $fields.children().removeClass('active');
                             $components.children().removeClass('active');
-                            if (img) {
-                                img = '<img src="' + img + '" />';
+                            textLabel = $that.text();
+                            if (img) { img = '<img src="' + img + '" />'; }
+
+                            options = {
+                                data: data,
+                                textLabel: textLabel,
+                                img: img,
+                            };
+
+                            ri = 0;
+
+                            while (TypeRocket.builderCallbacks.length > ri) {
+                                if (typeof TypeRocket.builderCallbacks[ri] === 'function') {
+                                    TypeRocket.builderCallbacks[ri](options);
+                                }
+                                ri++;
                             }
-                            html = '<li class="active tr-builder-component-control">' + img + '<span class="tr-builder-component-title">' + $that.text() + '</span><span class="remove tr-remove-builder-component"></span>';
+
+                            html = '<li class="active tr-builder-component-control">' + options.img + '<span class="tr-builder-component-title">' + options.textLabel + '</span><span class="remove tr-remove-builder-component"></span>';
+
+
                             if ($active_components.length > 0 && $active_fields.length > 0) {
-                                data.insertAfter($active_fields).addClass('active');
+                                options.data.insertAfter($active_fields).addClass('active');
                                 $active_components.after(html);
                             } else {
-                                data.prependTo($fields).addClass('active');
+                                options.data.prependTo($fields).addClass('active');
                                 $components.prepend(html);
                             }
-                            initComponent(data, $fields);
-                            return $that.removeClass('disabled');
+                            initComponent(options.data, $fields);
+                            $that.removeClass('disabled');
                         },
                         error: function(jqXHR) {
                             $that.val('Try again - Error ' + jqXHR.status).removeAttr('disabled', 'disabled');

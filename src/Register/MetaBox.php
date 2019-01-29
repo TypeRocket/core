@@ -129,6 +129,7 @@ class MetaBox extends Registrable
 
         if(!empty($post)) {
             $postType = get_post_type( $post->ID );
+            $pageTemplate = get_post_meta( $post->ID, '_wp_page_template', true );
         }
 
         if (!empty($post) && post_type_supports( $postType, $this->id )) {
@@ -136,7 +137,19 @@ class MetaBox extends Registrable
         }
 
         foreach ($this->screens as $screen) {
-            if (( $postType == $screen && isset( $post ) ) ||
+            $isPageTemplate = $isFrontPage = $isPostsPage = false;
+            if(isset($post)) {
+              $isPageTemplate = $pageTemplate == $screen
+                && $post->ID != get_option( 'page_on_front' )
+                && $post->ID != get_option( 'page_for_posts' );
+              $isFrontPage = $post->ID == get_option( 'page_on_front' ) && $screen == 'front_page';
+              $isPostsPage = $post->ID == get_option( 'page_for_posts' ) && $screen == 'posts_page';
+            }
+
+            if ( $postType == $screen ||
+                $isPageTemplate ||
+                $isFrontPage ||
+                $isPostsPage ||
                 ( $screen == 'comment' && isset( $comment ) ) ||
                 ( $screen == 'dashboard' && ! isset( $post ) )
             ) {
@@ -161,7 +174,7 @@ class MetaBox extends Registrable
                     $this->id,
                     $this->label,
                     $callback,
-                    $screen,
+                    $isPageTemplate || $isFrontPage || $isPostsPage ? 'page' : $screen,
                     $this->context,
                     $this->priority
                 );
