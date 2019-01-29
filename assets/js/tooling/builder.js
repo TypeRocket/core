@@ -139,7 +139,7 @@ export default function trBuilder() {
                             form_group: form_group
                         },
                         success: function(data) {
-                            var $active_components, $active_fields, html, textLabel, options;
+                            var $active_components, $active_fields, html, textLabel, options, ri;
                             data = $(data);
                             $active_fields = $fields.children('.active');
                             $active_components = $components.children('.active');
@@ -153,6 +153,8 @@ export default function trBuilder() {
                                 textLabel: textLabel,
                                 img: img,
                             };
+
+                            ri = 0;
 
                             while (TypeRocket.builderCallbacks.length > ri) {
                                 if (typeof TypeRocket.builderCallbacks[ri] === 'function') {
