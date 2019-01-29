@@ -325,7 +325,7 @@ class Query
     }
 
     /**
-     * Find first where of die
+     * Find first where or die
      *
      * @param $column
      * @param $arg1
