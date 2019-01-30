@@ -72,28 +72,26 @@ class Builder extends Matrix
                     <?php echo $this->getSelectHtml(); ?>
                 </div>
                 <ul data-thumbnails="<?php echo $this->paths['urls']['components']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
-                    <?php
-                    $c = count($this->componentValues);
-                    $componentKeys = array_keys($this->componentValues);
-                    for($i = 0; $i < $c; $i++) {
-
-                        $type = $this->components[$i][0];
-                        $name = $this->components[$i][1];
-                        $componentValue = array_values($this->componentValues[$componentKeys[$i]] ?? [] )[0] ?? [];
-                        $classes = '';
-                        if ($i == 0) {
-                            $classes .= ' active';
-                        }
-                        $thumbnail = $this->getComponentThumbnail($component_name, $type, $componentValue);
-                        ?>
-                        <li class="tr-builder-component-control <?php echo $classes; ?>">
-                            <?php if ($thumbnail) : ?>
-                                <img src="<?php echo $thumbnail; ?>" alt="Thumbnail, <?php echo $name; ?>">
-                            <?php endif; ?>
-                            <span class="tr-builder-component-title"><?php echo $name; ?></span>
-                            <span class="remove tr-remove-builder-component"></span>
-                        </li>
-                    <?php } ?>
+                    <?php if(!empty($this->componentValues) && is_array($this->componentValues)) :
+                        $c = count($this->componentValues);
+                        $componentKeys = array_keys($this->componentValues);
+                        for($i = 0; $i < $c; $i++) :
+                            $type = $this->components[$i][0];
+                            $name = $this->components[$i][1];
+                            $componentValue = array_values($this->componentValues[$componentKeys[$i]] ?? [] )[0] ?? [];
+                            $classes = '';
+                            if ($i == 0) { $classes .= ' active'; }
+                            $thumbnail = $this->getComponentThumbnail($component_name, $type, $componentValue);
+                            ?>
+                            <li class="tr-builder-component-control <?php echo $classes; ?>">
+                                <?php if ($thumbnail) : ?>
+                                    <img src="<?php echo $thumbnail; ?>" alt="Thumbnail, <?php echo $name; ?>">
+                                <?php endif; ?>
+                                <span class="tr-builder-component-title"><?php echo $name; ?></span>
+                                <span class="remove tr-remove-builder-component"></span>
+                            </li>
+                        <?php endfor; ?>
+                    <?php endif; ?>
                 </ul>
             </div>
 
