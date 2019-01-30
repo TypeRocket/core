@@ -62,4 +62,9 @@ class WPPostController extends Controller
         }
 
     }
+
+    public function destroy()
+    {
+
+    }
 }
