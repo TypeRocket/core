@@ -195,6 +195,15 @@ abstract class Registrable
         }
     }
 
+	protected function isReserved()
+	{
+		if (in_array($this->id, $this->reservedNames)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
     /**
      * Use other Registrable objects or string IDs
      *

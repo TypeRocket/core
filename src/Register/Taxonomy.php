@@ -182,16 +182,16 @@ class Taxonomy extends Registrable
      *
      * @return $this
      */
-    public function register()
-    {
-        $this->dieIfReserved();
+	public function register()
+	{
+		if( ! $this->isReserved() ) {
+			do_action( 'tr_register_taxonomy_' . $this->id, $this );
+			register_taxonomy( $this->id, $this->postTypes, $this->args );
+		}
+		Registry::addTaxonomyResource($this->id, $this->resource);
 
-        do_action( 'tr_register_taxonomy_' . $this->id, $this );
-        register_taxonomy( $this->id, $this->postTypes, $this->args );
-        Registry::addTaxonomyResource($this->id, $this->resource);
-
-        return $this;
-    }
+		return $this;
+	}
 
     /**
      * Apply post types
