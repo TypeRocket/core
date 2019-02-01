@@ -267,6 +267,7 @@ class Registry
     {
         $pt = $post_type->getId();
         $new_columns = $post_type->getColumns();
+	    $primary_column = $post_type->getPrimaryColumn();
 
         add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($new_columns) {
             foreach ($new_columns as $key => $new_column) {
@@ -300,6 +301,17 @@ class Registry
                 }
             }
         }, 10, 2);
+
+	    if( $primary_column ) {
+		    add_filter( 'list_table_primary_column', function ( $default, $screen ) use ( $pt, $primary_column ) {
+
+			    if ( $screen === 'edit-' . $pt ){
+				    $default = $primary_column;
+			    }
+
+			    return $default;
+		    }, 10, 2 );
+	    }
 
         foreach ($new_columns as $new_column) {
             if(!empty($new_column['sort'])) {
