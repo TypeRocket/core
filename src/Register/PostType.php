@@ -14,6 +14,7 @@ class PostType extends Registrable
     protected $form = [];
     protected $taxonomies = [];
     protected $columns = [];
+    protected $primaryColumn = null;
     protected $metaBoxes = [];
     protected $archiveQuery = [];
     protected $icon = null;
@@ -422,6 +423,28 @@ class PostType extends Registrable
      */
     public function getColumns() {
         return $this->columns;
+    }
+
+	/**
+	 * Set Primary Column that will contain the "Edit | Quick Edit | Trash | View" controls
+	 *
+	 * @param $field
+	 *
+	 * @return $this
+	 */
+    public function setPrimaryColumn( $field ) {
+    	$this->primaryColumn = $field;
+
+    	return $this;
+    }
+
+	/**
+	 * Get Primary Column
+	 *
+	 * @return null
+	 */
+    public function getPrimaryColumn() {
+    	return $this->primaryColumn;
     }
 
     /**
