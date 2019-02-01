@@ -174,7 +174,7 @@ class MetaBox extends Registrable
                     $this->id,
                     $this->label,
                     $callback,
-                    $isPageTemplate || $isFrontPage || $isPostsPage ? 'page' : $screen,
+                    $isPageTemplate || $isFrontPage || $isPostsPage ? $postType : $screen,
                     $this->context,
                     $this->priority
                 );
