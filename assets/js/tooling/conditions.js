@@ -7,18 +7,24 @@ class ConditionalLogic {
    */
   initializeChangingFields($template = null) {
 
-    var $conditions = this.$scope.find('[data-conditions]')
+    var $scope = this.$scope
 
-    if($template && !$template.target) $conditions = $template.find('[data-conditions]')
+    if($template && !$template.target) $scope = $template
+
+    var $conditions = $scope.find('[data-conditions]')
 
     $conditions.each(function(index, item) {
 
-      if(!$(item).data('conditional-name') && $(item).attr('name')) {
-        $(item).attr('data-conditional-name', $(item).attr('name') + '[' + index + ']')
+      if($(item).parents('.tr-repeater-group-template').first().length) return true
+
+      var $item = $(item)
+
+      if(!$item.data('conditional-name') && $item.attr('name')) {
+        $item.attr('data-conditional-name', $item.attr('name') + '[' + index + ']')
       }
 
-      var conditions = $(item).getConditions(),
-        $wrapper = $(item).getOuterWrapper()
+      var conditions = $item.getConditions(),
+        $wrapper = $item.getOuterWrapper()
 
       for(var c in conditions) {
 
@@ -30,7 +36,7 @@ class ConditionalLogic {
             $field = $wrapper.find('[name*="[' + condition.field + ']"]'),
             conditionalFields = $field.data('conditional-fields') ? $field.data('conditional-fields') : []
 
-          conditionalFields.push($(item).data('conditional-name'))
+          conditionalFields.push($item.data('conditional-name'))
 
           $field.addClass('has-conditional-fields').data('conditional-fields', conditionalFields)
 
@@ -193,6 +199,7 @@ class ConditionalLogic {
 
 jQuery.fn.extend({
   getConditions: function() {
+    if(typeof $(this).data('conditions') == 'undefined') return
     return JSON.parse($(this).data('conditions').replace(/'/g, '"'))
   },
   getFieldWrapper: function() {
