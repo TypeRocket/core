@@ -111,7 +111,7 @@ class Repeater extends Field implements ScriptField
 
         // add controls (add, flip, clear all)
         $generator    = new Generator();
-        $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null )->getString();
+        $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null, $this->getAttributes() )->getString();
 
         // main controls
         $contol_list = [
@@ -241,4 +241,3 @@ class Repeater extends Field implements ScriptField
     }
 
 }
-
