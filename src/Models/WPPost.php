@@ -226,11 +226,6 @@ class WPPost extends Model
         return $this;
     }
 
-    public function delete( $ids = [] ) {
-    	//echo 'test';
-    	//die();
-    }
-
     /**
      * Save post meta fields from TypeRocket fields
      *
