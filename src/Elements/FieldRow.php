@@ -52,7 +52,9 @@ class FieldRow
         }
 
         foreach( $this->fields as $field) {
-            if( $field instanceof Field ) {
+        	if( $field instanceof Generator ) {
+        		$fieldsHtml .= $field;
+	        } elseif( $field instanceof Field ) {
                 $fieldsHtml .= (string) $field;
             } elseif( $field instanceof FieldColumn ) {
                 $this->hasColumns = true;
