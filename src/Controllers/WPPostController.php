@@ -63,8 +63,12 @@ class WPPostController extends Controller
 
     }
 
+	/**
+	 * Delete Post
+	 */
     public function destroy()
     {
-
+    	//override this method to spoof delete_post action
     }
+
 }

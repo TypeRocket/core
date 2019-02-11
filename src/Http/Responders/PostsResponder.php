@@ -21,6 +21,15 @@ class PostsResponder extends Responder
     {
         $postId = $args['id'];
 
+        $action = current_action();
+        if( $action == 'save_post' ) {
+        	$action = 'update';
+	        $method = 'PUT';
+        } elseif ( $action == 'delete_post' ) {
+        	$action = 'delete';
+        	$method = 'DELETE';
+        }
+
         if ( ! $id = wp_is_post_revision( $postId ) ) {
             $id = $postId;
         }
@@ -36,7 +45,7 @@ class PostsResponder extends Responder
             $resource = 'post';
         }
 
-        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook );
+        $request  = new Request( $resource, $method, $args, $action, $this->hook );
         $response = new Response();
         $response->blockFlash();
 
