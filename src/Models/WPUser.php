@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Exceptions\ModelNotFoundException;
 use TypeRocket\Models\Meta\WPUserMeta;
 
 class WPUser extends Model
@@ -57,10 +58,18 @@ class WPUser extends Model
      * @param $id
      *
      * @return $this
+     * @throws ModelNotFoundException
      */
     public function findById( $id )
     {
         $user = get_user_by( 'id', $id );
+
+        if(!$user) {
+            $class = static::class;
+            throw new ModelNotFoundException("ID $id of {$class} class not found");
+        }
+
+
         $this->fetchResult(  (array) $user->data );
 
         return $this;
@@ -73,6 +82,7 @@ class WPUser extends Model
      *
      * @return $this
      * @throws \TypeRocket\Exceptions\ModelException
+     * @throws ModelNotFoundException
      */
     function create( $fields = [] )
     {
@@ -104,6 +114,7 @@ class WPUser extends Model
      *
      * @return $this
      * @throws \TypeRocket\Exceptions\ModelException
+     * @throws ModelNotFoundException
      */
     function update( $fields = [] )
     {

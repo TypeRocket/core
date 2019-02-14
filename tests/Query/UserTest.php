@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Query;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Exceptions\ModelNotFoundException;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPUser;
 
@@ -75,5 +76,16 @@ class UserTest extends TestCase
         }
 
         $this->assertTrue( $post instanceof WPPost);
+    }
+
+    public function testUserNotFound()
+    {
+        try {
+            $user = new WPUser();
+            $user->findById( 0 );
+        } catch (ModelNotFoundException $e) {
+            $this->assertTrue( $e->getMessage() === 'ID 0 of TypeRocket\Models\WPUser class not found');
+        }
+
     }
 }
