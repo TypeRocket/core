@@ -692,6 +692,20 @@ class Form
         return new FieldRow( $fields );
     }
 
+	/**
+	 * Add text between fields in row
+	 *
+	 * @param $content
+	 *
+	 * @return Generator
+	 */
+    public function rowText( $content ) {
+    	$generator = new Generator;
+    	$generator->newElement( 'div', ['class' => 'control-section'], $content );
+
+    	return $generator;
+    }
+
     /**
      * Get fields as row
      *
