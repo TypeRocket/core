@@ -2,8 +2,6 @@ import Booyah from './tooling/booyah.js';
 import trBuilder from './tooling/builder.js';
 
 window.Booyah = Booyah;
-require('./tooling/global');
-
 require('./tooling/util');
 require('./tooling/typerocket');
 require('./tooling/dev');

@@ -86,6 +86,5 @@ class UserTest extends TestCase
         } catch (ModelNotFoundException $e) {
             $this->assertTrue( $e->getMessage() === 'ID 0 of TypeRocket\Models\WPUser class not found');
         }
-
     }
 }
