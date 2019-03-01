@@ -281,6 +281,8 @@ jQuery(document).ready(function($) {
             $(document).on('click', '.tr-repeater .controls .clear', function(e) {
                 if (confirm('Remove all items?')) {
                     $(this).parent().parent().next().next().html('');
+                    var add = $(this).parent().prev().children();
+                    add.removeClass('disabled').attr('value', add.data('add'))
                 }
                 e.preventDefault();
             });

@@ -13,7 +13,7 @@ class Repeater extends Field implements ScriptField
 
     protected $fields = [];
     protected $headline = null;
-    protected $limit = 0;
+    protected $limit = 99999;
     protected $hide = [
         'move' => false,
         'remove' => false,
@@ -280,7 +280,7 @@ class Repeater extends Field implements ScriptField
      * @param int $limit
      * @return $this
      */
-    public function setLimit($limit = 0)
+    public function setLimit($limit = 99999)
     {
         $this->limit = (int) $limit;
         return $this;
