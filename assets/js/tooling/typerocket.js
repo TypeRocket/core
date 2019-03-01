@@ -131,10 +131,10 @@ jQuery(document).ready(function($) {
     ==========================================================================
     */
     TypeRocket.repeaterCallbacks.push(function($template) {
-      var $tinymce = $template.find('.wp-editor-area');
-      $tinymce.each(function() {
-        tinyMCE.execCommand('mceAddEditor', false, $(this).attr('id'));
-      });
+        var $tinymce = $template.find('.wp-editor-area');
+        $tinymce.each(function() {
+            tinyMCE.execCommand('mceAddEditor', false, $(this).attr('id'));
+        });
     });
 
     $trContainer.on('input keyup', '.redactor-editor', function () {
@@ -169,9 +169,10 @@ jQuery(document).ready(function($) {
             var obj;
             obj = this;
             $(document).on('click', '.tr-repeater .controls .add', function() {
-                var $fields_div, $group_template, data_name, data_name_filtered, dev_notes, hash, replacement_id, ri;
+                var $fields_div, $group_template, data_name, data_name_filtered, dev_notes, hash, replacement_id, ri, limit, num_fields;
                 $group_template = $($(this).parent().parent().next().clone()).removeClass('tr-repeater-group-template').addClass('tr-repeater-group');
                 hash = (new Date).getTime();
+                limit = $group_template.data('limit');
                 replacement_id = $group_template.data('id');
                 dev_notes = $group_template.find('.dev .field span');
                 data_name = $group_template.find('[data-name]');
@@ -218,13 +219,25 @@ jQuery(document).ready(function($) {
                     ri++;
                 }
                 $fields_div = $(this).parent().parent().next().next();
-                $group_template.prependTo($fields_div).hide().delay(10).slideDown(300).scrollTop('100%');
+                num_fields = $fields_div.children().length;
+                if(num_fields < limit) {
+                    $group_template.prependTo($fields_div).hide().delay(10).slideDown(300).scrollTop('100%');
+                }
+
+                if(num_fields + 1 >= limit) {
+                    $(this).addClass('disabled').attr('value',$(this).data('limit'))
+                } else {
+                    $(this).removeClass('disabled').attr('value',$(this).data('add'))
+                }
             });
             $(document).on('click', '.tr-repeater .repeater-controls .remove', function(e) {
                 $(this).parent().parent().slideUp(300, function() {
                     $(this).remove();
                 });
                 e.preventDefault();
+                var $add = $($(this).parent().parent().parent().siblings('.controls').find('.add')[0]);
+                $add.removeClass('disabled');
+                $add.attr('value',$add.data('add'));
             });
             $(document).on('click', '.tr-repeater .repeater-controls .collapse', function(e) {
                 var $group;

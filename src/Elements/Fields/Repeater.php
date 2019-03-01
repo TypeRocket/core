@@ -9,10 +9,11 @@ use TypeRocket\Html\Tag;
 class Repeater extends Field implements ScriptField
 {
 
-	use ControlsSetting;
+    use ControlsSetting;
 
     protected $fields = [];
     protected $headline = null;
+    protected $limit = 0;
     protected $hide = [
         'move' => false,
         'remove' => false,
@@ -49,6 +50,8 @@ class Repeater extends Field implements ScriptField
         $name     = $this->getName();
         $form->setDebugStatus( false );
         $html =  $fields_classes = '';
+        $repeats = $this->getValue();
+        $num_repeaters = count($repeats ?? []);
 
         $headline = $this->headline ? '<h1>' . $this->headline . '</h1>': '';
 
@@ -67,23 +70,24 @@ class Repeater extends Field implements ScriptField
             $add_button_value = "Add New";
         }
 
-	    $controls = [
-		    'contract' => 'Contract',
-		    'expand' => 'Expand',
-		    'flip' => 'Flip',
-		    'clear' => 'Clear All',
-		    'add' => $add_button_value,
-	    ];
+        $controls = [
+            'contract' => 'Contract',
+            'expand' => 'Expand',
+            'flip' => 'Flip',
+            'clear' => 'Clear All',
+            'add' => $add_button_value,
+            'limit' => 'Limit Hit',
+        ];
 
-	    // controls settings
-	    if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
-		    $controls = array_merge($controls, $settings['controls']);
-	    }
+        // controls settings
+        if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
+            $controls = array_merge($controls, $settings['controls']);
+        }
 
-	    // escape controls
-	    $controls = array_map(function($item) {
-	    	return esc_attr($item);
-	    }, $controls);
+        // escape controls
+        $controls = array_map(function($item) {
+            return esc_attr($item);
+        }, $controls);
 
         // add collapsed / contracted
         $expanded = 'tr-repeater-expanded';
@@ -138,8 +142,9 @@ class Repeater extends Field implements ScriptField
         $controls_html = array_reduce($control_list, function($carry, $item) {
             return $carry . Tag::make('input', array_merge(['type' => 'button'], $item));
         });
-
-        $add_button = Tag::make('input', ['type' => 'button', 'value' => $controls['add'], 'class' => 'button add']);
+        $add_value = $num_repeaters < $this->limit ? $controls['add'] : $controls['limit'];
+        $add_class = $num_repeaters < $this->limit ? 'button add' : 'button disabled add';
+        $add_button = Tag::make('input', ['type' => 'button', 'value' => $add_value, 'class' => $add_class, 'data-add' => $controls['add'], 'data-limit' => $controls['limit']]);
 
         $html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\">{$add_button}</div><div class=\"button-group\">{$controls_html}</div>{$help}<div>{$default_null}</div></div>";
 
@@ -147,13 +152,13 @@ class Repeater extends Field implements ScriptField
         $templateFields = str_replace( ' name="', ' data-name="', $this->getTemplateFields() );
 
         // render js template data
-        $html .= "<div class=\"tr-repeater-group-template\" data-id=\"{$name}\">";
+        $html .= "<div class=\"tr-repeater-group-template\" data-id=\"{$name}\" data-limit=\"{$this->limit}\">";
         $html .= $openContainer . $headline . $templateFields . $endContainer;
         $html .= '</div>';
 
         // render saved data
         $html .= '<div class="tr-repeater-fields'.$fields_classes.'">'; // start tr-repeater-fields
-        $repeats = $this->getValue();
+
         if ( is_array( $repeats ) ) {
             foreach ($repeats as $k => $array) {
                 $html .= '<div class="tr-repeater-group">';
@@ -267,6 +272,39 @@ class Repeater extends Field implements ScriptField
     {
         array_key_exists($name, $this->hide) ? $this->hide[$name] = false : null;
         return $this;
+    }
+
+    /**
+     * Limit Number of Items
+     *
+     * @param int $limit
+     * @return $this
+     */
+    public function setLimit($limit = 0)
+    {
+        $this->limit = (int) $limit;
+        return $this;
+    }
+
+    /**
+     * Get Item Limit
+     *
+     * @return int
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Set Control Limit
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
+    public function setControlLimit( $value ) {
+        return $this->appendToArraySetting('controls', 'limit', $value);
     }
 
     /**
