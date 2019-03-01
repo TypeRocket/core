@@ -13,6 +13,13 @@ class Repeater extends Field implements ScriptField
 
     protected $fields = [];
     protected $headline = null;
+    protected $hide = [
+        'move' => false,
+        'remove' => false,
+        'contract' => false,
+        'clear' => false,
+        'flip' => false,
+    ];
 
     /**
      * Run on construction
@@ -88,13 +95,17 @@ class Repeater extends Field implements ScriptField
         }
 
         // template for repeater groups
-        $contol_list = [
-            ['class' => 'collapse tr-control-icon tr-control-icon-collapse'],
-            ['class' => 'move tr-control-icon tr-control-icon-move'],
-            ['class' => 'remove tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove')],
+        $control_list = [
+            'contract' => ['class' => 'collapse tr-control-icon tr-control-icon-collapse'],
+            'move' => ['class' => 'move tr-control-icon tr-control-icon-move'],
+            'remove' => ['class' => 'remove tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove')],
         ];
 
-        $controls_html = array_reduce($contol_list, function($carry, $item) {
+        foreach ($this->hide as $control_name => $hide) {
+            if($hide) { unset($control_list[$control_name]); }
+        }
+
+        $controls_html = array_reduce($control_list, function($carry, $item) {
             return $carry . Tag::make('a', $item);
         });
 
@@ -114,13 +125,17 @@ class Repeater extends Field implements ScriptField
         $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null, $this->getAttributes() )->getString();
 
         // main controls
-        $contol_list = [
-            ['class' => 'flip button', 'value' => $controls['flip'] ],
-            ['class' => "tr_action_collapse button {$expanded}", 'value' => $expand_label, 'data-contract' => $controls['contract'], 'data-expand' => $controls['expand']],
-            ['class' => 'clear button', 'value' => $controls['clear'] ],
+        $control_list = [
+            'flip' => ['class' => 'flip button', 'value' => $controls['flip'] ],
+            'contract' => ['class' => "tr_action_collapse button {$expanded}", 'value' => $expand_label, 'data-contract' => $controls['contract'], 'data-expand' => $controls['expand']],
+            'clear' => ['class' => 'clear button', 'value' => $controls['clear'] ],
         ];
 
-        $controls_html = array_reduce($contol_list, function($carry, $item) {
+        foreach ($this->hide as $control_name => $hide) {
+            if($hide) { unset($control_list[$control_name]); }
+        }
+
+        $controls_html = array_reduce($control_list, function($carry, $item) {
             return $carry . Tag::make('input', array_merge(['type' => 'button'], $item));
         });
 
@@ -228,6 +243,30 @@ class Repeater extends Field implements ScriptField
     public function getHeadline()
     {
         return $this->headline;
+    }
+
+    /**
+     * Hide Item Control
+     *
+     * @param $name
+     * @return $this
+     */
+    public function hideControl($name)
+    {
+        array_key_exists($name, $this->hide) ? $this->hide[$name] = true : null;
+        return $this;
+    }
+
+    /**
+     * Show Item Control
+     *
+     * @param $name
+     * @return $this
+     */
+    public function showControl($name)
+    {
+        array_key_exists($name, $this->hide) ? $this->hide[$name] = false : null;
+        return $this;
     }
 
     /**

@@ -17,6 +17,13 @@ class Matrix extends Field implements ScriptField {
     protected $mxid = null;
     protected $componentFolder = null;
     protected $paths;
+    protected $hide = [
+        'move' => false,
+        'remove' => false,
+        'contract' => false,
+        'clear' => false,
+        'flip' => false,
+    ];
 
     /**
      * Define debug function
@@ -119,6 +126,20 @@ class Matrix extends Field implements ScriptField {
             $expand_label = $controls['expand'];
         }
 
+        $controls_buttons = [
+            'flip' => "<input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">",
+            'contract' => "<input type=\"button\" value=\"{$expand_label}\" data-contract=\"{$controls['contract']}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\">",
+            'clear' => "<input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\">"
+        ];
+
+        foreach ($this->hide as $control_name => $hide) {
+            if($hide) { unset($controls_buttons[$control_name]); }
+        }
+
+        $controls_html = array_reduce($controls_buttons, function($carry, $item) {
+            return $carry . $item;
+        });
+
         // add it all
         $home_url = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
         $html = "
@@ -129,9 +150,7 @@ class Matrix extends Field implements ScriptField {
 <input type=\"button\" value=\"{$controls['add']}\" data-root=\"{$home_url}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
 </div>
 <div class=\"button-group\">
-<input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">
-<input type=\"button\" value=\"{$expand_label}\" data-contract=\"{$controls['contract']}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\">
-<input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\">
+{$controls_html}
 </div>
 {$help}
 </div>
@@ -281,9 +300,15 @@ class Matrix extends Field implements ScriptField {
                     ?>
                     <div class="<?php echo $classes; ?>">
                         <div class="repeater-controls">
+                            <?php if(!$this->hide['contact']) : ?>
                             <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
+                            <?php endif; ?>
+                            <?php if(!$this->hide['move']) : ?>
                             <div class="move tr-control-icon tr-control-icon-move"></div>
+                            <?php endif; ?>
+                            <?php if(!$this->hide['remove']) : ?>
                             <a href="<?php echo $remove; ?>" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>
+                            <?php endif; ?>
                         </div>
                         <div class="repeater-inputs">
                             <?php
@@ -345,6 +370,30 @@ class Matrix extends Field implements ScriptField {
             $this->componentFolder = $folder_name;
         }
 
+        return $this;
+    }
+
+    /**
+     * Hide Item Control
+     *
+     * @param $name
+     * @return $this
+     */
+    public function hideControl($name)
+    {
+        array_key_exists($name, $this->hide) ? $this->hide[$name] = true : null;
+        return $this;
+    }
+
+    /**
+     * Show Item Control
+     *
+     * @param $name
+     * @return $this
+     */
+    public function showControl($name)
+    {
+        array_key_exists($name, $this->hide) ? $this->hide[$name] = false : null;
         return $this;
     }
 
