@@ -54,7 +54,7 @@ class Redirect
     {
         $dots = explode('.', $dots);
         $scheme = is_ssl() ? 'https' : 'http';
-        $this->url = esc_url( home_url( implode('/', $dots ), $scheme ) );
+        $this->url = esc_url_raw( home_url( implode('/', $dots ), $scheme ) );
 
         return $this;
     }
@@ -89,7 +89,7 @@ class Redirect
      * @return Redirect $this
      */
     public function toUrl( $url ) {
-        $this->url = esc_url($url);
+        $this->url = esc_url_raw($url);
 
         return $this;
     }
