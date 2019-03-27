@@ -97,7 +97,7 @@ class UseRoot extends Command
 
         // Salts
         $lines = (array) file('https://api.wordpress.org/secret-key/1.1/salt/');
-        $regex = "/define(.*)here\\'\\)\\;/m";
+        $regex = "/define(.*)here\'\s?\)\;/m";
         preg_match_all($regex, file_get_contents( $file->file ) , $matches);
 
         if( !empty($lines) && count( $lines ) == count($matches[0]) ) {
