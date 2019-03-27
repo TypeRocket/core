@@ -300,7 +300,7 @@ class Matrix extends Field implements ScriptField {
                     ?>
                     <div class="<?php echo $classes; ?>">
                         <div class="repeater-controls">
-                            <?php if(!$this->hide['contact']) : ?>
+                            <?php if(!$this->hide['contract']) : ?>
                             <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
                             <?php endif; ?>
                             <?php if(!$this->hide['move']) : ?>
