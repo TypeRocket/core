@@ -111,9 +111,11 @@ class Routes
     {
         $args = [$path, self::$request, $wilds];
         $this->vars = $wilds;
+        $addSlash = $this->match[1]->addTrailingSlash ?? true;
+        $path = self::$request->getPath();
 
-        if( ! Str::ends('/', self::$request->getPath() ) && self::$request->getMethod() == 'GET' ) {
-            wp_redirect( self::$request->getPath() . '/' );
+        if( $addSlash && ! Str::ends('/', $path ) && self::$request->getMethod() == 'GET' ) {
+            wp_redirect( $path . '/' );
             die();
         }
 
@@ -185,9 +187,25 @@ class Routes
 
         if($match) {
             $this->match = [$requestPath, $match[2], $args];
+            add_filter( 'redirect_canonical', [$this, 'redirect_canonical'] , 10, 2);
         }
 
         return $this;
+    }
+
+    /**
+     * Custom Routes Will Add Trailing Slash
+     *
+     * Custom routes always add a trailing slash unless otherwise
+     * defined in route declaration. We do not need WP to handle
+     * this functionality for us.
+     *
+     * @return $this
+     */
+    public function redirect_canonical($redirect_url, $requested_url)
+    {
+        remove_filter('redirect_canonical', [$this, 'redirect_canonical']);
+        return $requested_url;
     }
 
     /**

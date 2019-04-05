@@ -8,6 +8,7 @@ class Route
     public $do;
     public $middleware;
     public $methods;
+    public $addTrailingSlash = true;
 
     public function match($regex, $map = [])
     {
@@ -25,6 +26,17 @@ class Route
     {
         $this->do = $handle;
         $this->registerRoute();
+        return $this;
+    }
+
+    /**
+     * Do not redirect route with trailing slash
+     *
+     * @return $this
+     */
+    public function noTrailingSlash()
+    {
+        $this->addTrailingSlash = false;
         return $this;
     }
 
