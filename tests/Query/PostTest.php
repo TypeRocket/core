@@ -78,4 +78,12 @@ class PostTest extends TestCase
         $this->assertTrue( $user instanceof WPUser);
     }
 
+    public function testNotExisting()
+    {
+        $post = new \TypeRocket\Models\WPPost();
+        $result = $post->findById(9999);
+
+        $this->assertTrue( $result === null );
+    }
+
 }

@@ -134,9 +134,7 @@ class WPPost extends Model
      * @return $this
      */
     public function findById($id) {
-        $this->fetchResult(get_post( $id, ARRAY_A ));
-
-        return $this;
+        return $this->fetchResult(get_post( $id, ARRAY_A ));
     }
 
     /**
