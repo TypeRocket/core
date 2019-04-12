@@ -35,10 +35,10 @@ class PostType extends Registrable
         }
 
         // make lowercase
-        $singular      = strtolower( $singular );
-        $plural        = strtolower( $plural );
         $upperSingular = ucwords( $singular );
         $upperPlural   = ucwords( $plural );
+        $singular      = strtolower( $singular );
+        $plural        = strtolower( $plural );
 
         $labels = [
             'add_new'            => 'Add New',

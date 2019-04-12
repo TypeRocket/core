@@ -360,10 +360,7 @@ class Launcher
 
     public function addTopJs()
     {
-        ?>
-        <script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url());?>"}</script>
-        <?php
-        wp_localize_script( 'typerocket-scripts', 'trHelpers', [ 'site_uri' => home_url() ] );
+        ?><script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url());?>"}</script><?php
     }
 
     /**
