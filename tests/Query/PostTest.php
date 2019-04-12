@@ -60,7 +60,7 @@ class PostTest extends TestCase
     public function testRelationshipPostMeta()
     {
         $post = new \TypeRocket\Models\WPPost();
-        $meta = $post->findById(1)->meta();
+        $meta = $post->findById(1)->meta(true);
         $results = $meta->get();
 
         foreach ($results as $result ) {

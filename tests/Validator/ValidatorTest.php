@@ -100,6 +100,8 @@ class ValidatorTest extends TestCase
         ], $fields);
 
         $this->assertEquals(3, count($validator->getErrors()) );
+        $this->assertNotTrue( $validator->passed() );
+        $this->assertNotTrue( $validator->passed() );
     }
 
     public function testMinFailing()
