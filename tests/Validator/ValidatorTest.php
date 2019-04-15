@@ -11,6 +11,51 @@ use TypeRocket\Utility\Validator;
 class ValidatorTest extends TestCase
 {
 
+    public function testSetMessage()
+    {
+        $fields['person'] = 'Kevin';
+
+        $validator = new Validator([
+            'email' => 'required|max:4',
+            'person' => 'max:4',
+        ], $fields, null, false);
+
+        $validator->setErrorMessages([
+            'person:max' => 'Custom Message',
+            'email:required' => function($name, $type, $message) {
+                return $message . ' Callable';
+            }
+        ])->validate();
+
+        $errors = $validator->getErrors();
+
+        $this->assertEquals($errors['person'], 'Custom Message');
+        $this->assertEquals($errors['email'], '"<strong>Email</strong>" is required. Callable');
+    }
+
+    public function testDeepMultipleSetMessageRegex()
+    {
+        $fields['person'][1]['email'] = 'example@typerocket.com';
+        $fields['person'][2]['email'] = 'example2';
+
+        $validator = new Validator([
+            'person.*.email' => 'email'
+        ], $fields, null, false);
+
+        $validator->setErrorMessages([
+            'person\.(.*)\.(email)\:email' => function($name, $type, $message, $matches) {
+                $m = $message;
+                return $matches[0][1] . $matches[0][2];
+            }
+        ], true)->validate();
+
+        $errors = $validator->getErrors();
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+        $this->assertEquals(1, count($errors) );
+        $this->assertEquals($errors['person.2.email'], '2email' );
+    }
+
     public function testEmailFieldPasses()
     {
         $fields['email'] = 'example@typerocket.com';
@@ -39,10 +84,12 @@ class ValidatorTest extends TestCase
         $fields['person'][2]['email'] = 'example2.1@typerocket.com';
 
         $validator = new Validator([
-            'person.*.email' => 'email'
+            'person.*.email' => 'email',
+            'person.*.name' => 'required',
         ], $fields);
 
         $this->assertEquals(2, count($validator->getPasses()) );
+        $this->assertEquals(2, count($validator->getErrors()) );
     }
 
     public function testDeepMultipleEmailsFieldFailing()

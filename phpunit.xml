@@ -21,5 +21,9 @@
             <directory suffix="Test.php">./tests/Query</directory>
         </testsuite>
 
+        <testsuite name="Validate">
+            <directory suffix="Test.php">./tests/Validator</directory>
+        </testsuite>
+
     </testsuites>
 </phpunit>

@@ -8,7 +8,7 @@ use TypeRocket\Http\Response;
 class Validator
 {
     public $errors = [];
-    public $errorMessages = [];
+    public $errorMessages = ['messages' => [], 'regex' => false];
     public $passes = [];
     public $rules = [];
     public $fields = [];
@@ -22,13 +22,24 @@ class Validator
      * @param array $rules the rules and validation handler
      * @param array|\ArrayObject $fields the fields to be validated
      * @param null $modelClass must be a class of Model
+     * @param bool $run run validation on new
      */
-    public function __construct($rules, $fields, $modelClass = null)
+    public function __construct($rules, $fields, $modelClass = null, $run = true)
     {
         $this->modelClass = $modelClass;
         $this->fields = $fields;
         $this->rules = $rules;
 
+        if($run) {
+            $this->mapFieldsToValidation();
+        }
+    }
+
+    /**
+     * Run Validation
+     */
+    public function validate()
+    {
         $this->mapFieldsToValidation();
     }
 
@@ -55,11 +66,12 @@ class Validator
      * Set Error Messages
      *
      * @param array $messages
+     * @param bool $regex search for key using regex
      * @return $this
      */
-    public function setErrorMessages(array $messages)
+    public function setErrorMessages(array $messages, $regex = false)
     {
-        $this->errorMessages = $messages;
+        $this->errorMessages = [ 'messages' => $messages, 'regex' => $regex ];
         return $this;
     }
 
@@ -95,7 +107,7 @@ class Validator
      */
     private function mapFieldsToValidation() {
         foreach ($this->rules as $path => $handle) {
-            $this->ArrayDots($this->fields, $path, $handle, $path);
+            $this->walk($this->fields, $path, $handle, $path);
         }
     }
 
@@ -108,8 +120,9 @@ class Validator
      * @param $fullPath
      *
      * @return array|null
+     * @throws \Exception
      */
-    private function ArrayDots(array &$arr, $path, $handle, $fullPath) {
+    private function walk(array &$arr, $path, $handle, $fullPath) {
         $loc = &$arr;
         $dots = explode('.', $path);
         foreach($dots as $step)
@@ -121,21 +134,23 @@ class Validator
                 foreach($indies as $index) {
                     if(isset($new_loc[$index])) {
                         $newFullPath = preg_replace('(\*)', "{$index}", $fullPath, 1);
-                        $this->ArrayDots($new_loc[$index], implode('.', $dots), $handle, $newFullPath);
+                        $this->walk($new_loc[$index], implode('.', $dots), $handle, $newFullPath);
                     }
                 }
             } elseif( isset($loc[$step] ) ) {
                 $loc = &$loc[$step];
             } else {
+                if( !empty($handle) && !isset($indies) ) {
+                    $this->validateField( $handle, null, $fullPath );
+                }
+
                 return null;
             }
 
         }
 
-        if(!isset($indies)) {
-            if( !empty($handle) ) {
-                $this->validateField( $handle, $loc, $fullPath );
-            }
+        if(!isset($indies) && !empty($handle)) {
+            $this->validateField( $handle, $loc, $fullPath );
         }
 
         return $loc;
@@ -148,12 +163,38 @@ class Validator
      *
      * @param $name
      * @param $type
-     * @param $default
+     * @param $message
      */
-    protected function setErrorMessage($name, $type, $default) {
-        $this->errors[$name] = $default;
-        if(!empty($this->errorMessages[$name.':'.$type])) {
-            $this->errors[$name] = $this->errorMessages[$name.':'.$type];
+    protected function setErrorMessage($name, $type, $message) {
+        $this->errors[$name] = $message;
+        $index = $name.':'.$type;
+        $validate = $value = $match = $matches = false;
+
+        if($this->errorMessages['regex']) {
+            foreach ($this->errorMessages['messages'] as $key => $value) {
+                $match = preg_match_all("/{$key}/", $index, $matches, PREG_SET_ORDER, 0);
+                if($match) {
+                    $validate = true;
+                    break;
+                }
+            }
+        } else {
+            $validate = !empty($this->errorMessages['messages'][$index]);
+
+            if($validate) {
+                $value = $this->errorMessages['messages'][$index];
+            }
+
+        }
+
+
+        if($validate) {
+            if(is_callable($value)) {
+                $this->errors[$name] = call_user_func($value, $name, $type, $message, $matches);
+            } else {
+                $this->errors[$name] = $value;
+            }
+
         }
     }
 
@@ -163,6 +204,7 @@ class Validator
      * @param $handle
      * @param $value
      * @param $name
+     * @throws \Exception
      */
     protected function validateField( $handle, $value, $name ) {
         $list = explode('|', $handle);
