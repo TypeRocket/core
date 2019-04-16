@@ -92,7 +92,7 @@ class WhereTest extends TestCase
         $query
             ->where('ID', 1)
             ->appendRawWhere('AND', "post_status = 'publish'")
-            ->resetWhere()
+            ->removeWhere()
             ->update(['post_title' => 'My Title']);
         $sql = "UPDATE wp_posts SET post_title='My Title'";
         $last = $query->lastCompiledSQL;
@@ -113,7 +113,7 @@ class WhereTest extends TestCase
         $this->assertTrue( $last_where == $sql);
 
 
-        $query->resetWhere()->update(['post_title' => 'My Title']);
+        $query->removeWhere()->update(['post_title' => 'My Title']);
         $sql_reset = "UPDATE wp_posts SET post_title='My Title'";
         $last_reset = $query->lastCompiledSQL;
         $this->assertTrue( $last_reset == $sql_reset);
