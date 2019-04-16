@@ -41,7 +41,7 @@ class MetaBox extends Registrable
 
         $defaults = [
             'context'  => 'normal', // 'normal', 'advanced', or 'side'
-            'priority' => 'high', // 'high', 'core', 'default' or 'low'
+            'priority' => 'default', // 'high', 'core', 'default' or 'low'
             'args'     => []
         ]; // arguments to pass into your callback function.
 
