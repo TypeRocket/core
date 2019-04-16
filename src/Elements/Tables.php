@@ -229,8 +229,9 @@ class Tables
         }
 
 	    do_action('tr_table_search_model'.$action_key, $this->model, $this);
+        $count_model = clone $this->model;
         $results = $this->results = $this->model->findAll()->useResultsClass()->take($this->limit, $this->offset)->get();
-        $count = $this->count = $this->model->count();
+        $count = $this->count = $count_model->count();
         $columns = $this->columns;
         $this_table = $this;
         $table = new Generator();
@@ -495,9 +496,6 @@ class Tables
                 <br class="clear">
             </div>
 
-
-
-
         <?php
         if($this->formWrapTable == false) {
             echo '</form>';
@@ -507,8 +505,6 @@ class Tables
             echo '</form>';
         }
         ?>
-
-
         <div class="tablenav bottom">
             <div class="tablenav-pages">
                 <span class="displaying-num"><?php echo $count; ?> <?php echo $item_word; ?></span>
@@ -533,29 +529,29 @@ class Tables
 
         if($first && $pages > 2) {
             if( (int) $page === 1 ) {
-                echo ' <span class="tablenav-pages-navspan" aria-hidden="true">&laquo;</span> ';
+                echo ' <span class="tablenav-pages-navspan  button disabled" aria-hidden="true">&laquo;</span> ';
             } else {
-                echo " <a class=\"last-page\" href=\"{$first}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&laquo;</span></a> ";
+                echo " <a class=\"last-page button\" href=\"{$first}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&laquo;</span></a> ";
             }
         }
 
         if( $page < 2 ) {
-            echo " <span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&lsaquo;</span> ";
+            echo " <span class=\"tablenav-pages-navspan button disabled\" aria-hidden=\"true\">&lsaquo;</span> ";
         } else {
-            echo " <a class=\"prev-page\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a> ";
+            echo " <a class=\"prev-page button\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a> ";
         }
         echo " <span id=\"table-paging\" class=\"paging-input\">{$page} of <span class=\"total-pages\">{$pages}</span></span> ";
         if( $page < $pages ) {
-            echo " <a class=\"next-page\" href=\"{$next}\"><span class=\"screen-reader-text\">Next page</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
+            echo " <a class=\"next-page button\" href=\"{$next}\"><span class=\"screen-reader-text\">Next page</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
         } else {
-            echo " <span class=\"tablenav-pages-navspan\" aria-hidden=\"true\">&rsaquo;</span> ";
+            echo " <span class=\"tablenav-pages-navspan button disabled\" aria-hidden=\"true\">&rsaquo;</span> ";
         }
 
         if($last && $pages > 2) {
             if( (int) $pages === $page  ) {
-                echo ' <span class="tablenav-pages-navspan" aria-hidden="true">&raquo;</span> ';
+                echo ' <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span> ';
             } else {
-                echo " <a class=\"last-page\" href=\"{$last}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&raquo;</span></a> ";
+                echo " <a class=\"last-page button\" href=\"{$last}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&raquo;</span></a> ";
             }
 
         }
