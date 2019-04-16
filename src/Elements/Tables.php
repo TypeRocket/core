@@ -217,11 +217,12 @@ class Tables
         return $this;
     }
 
-	/**
-	 * Render table
-	 *
-	 * @param string $action_key a key to customize hooks by
-	 */
+    /**
+     * Render table
+     *
+     * @param string $action_key a key to customize hooks by
+     * @throws \Exception
+     */
     public function render($action_key = '')
     {
         if($action_key) {
@@ -231,7 +232,7 @@ class Tables
 	    do_action('tr_table_search_model'.$action_key, $this->model, $this);
         $count_model = clone $this->model;
         $results = $this->results = $this->model->findAll()->useResultsClass()->take($this->limit, $this->offset)->get();
-        $count = $this->count = $count_model->count();
+        $count = $this->count = $count_model->removeTake()->count();
         $columns = $this->columns;
         $this_table = $this;
         $table = new Generator();

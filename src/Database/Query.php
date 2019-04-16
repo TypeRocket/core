@@ -153,13 +153,13 @@ class Query
     }
 
     /**
-     * Reset Where
+     * Remove Where
      *
-     * Reset raw and standard where clauses.
+     * Remove raw and standard where clauses.
      *
      * @return $this
      */
-    public function resetWhere()
+    public function removeWhere()
     {
         if(!empty($this->query['raw']['where'])) {
             unset($this->query['raw']['where']);
@@ -168,6 +168,20 @@ class Query
         if(!empty($this->query['where'])) {
             unset($this->query['where']);
         }
+
+        return $this;
+    }
+
+    /**
+     * Remove Take
+     *
+     * Remove take from query
+     *
+     * @return $this
+     */
+    public function removeTake()
+    {
+        unset($this->query['take']);
 
         return $this;
     }
@@ -891,6 +905,8 @@ class Query
         } else {
             $prepared = $wpdb->prepare( '%s', $value );
         }
+
+        $prepared = $wpdb->remove_placeholder_escape($prepared);
 
         return $prepared;
     }

@@ -793,14 +793,28 @@ class Model
     }
 
     /**
-     * Reset Where
+     * Remove Where
      *
-     * Reset raw and standard where clauses.
+     * Remove raw and standard where clauses.
      *
      * @return $this
      */
-    public function resetWhere() {
-        $this->query->resetWhere();
+    public function removeWhere() {
+        $this->query->removeWhere();
+
+        return $this;
+    }
+
+    /**
+     * Remove Take
+     *
+     * Remove take from query
+     *
+     * @return $this
+     */
+    public function removeTake()
+    {
+        $this->query->removeTake();
 
         return $this;
     }
