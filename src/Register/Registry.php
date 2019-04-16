@@ -269,6 +269,18 @@ class Registry
         $new_columns = $post_type->getColumns();
 	    $primary_column = $post_type->getPrimaryColumn();
 
+        $model = WPPost::class;
+	    $resource = Registry::getPostTypeResource($pt);
+	    if($resource) {
+            $Resource = \TypeRocket\Utility\Str::camelize($resource[0]);
+            $model_class    = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
+
+            if (class_exists($model_class)) {
+                /** @var \TypeRocket\Models\Model $object */
+                $model = $model_class;
+            }
+        }
+
         add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($new_columns) {
             foreach ($new_columns as $key => $new_column) {
                 if($new_column == false && array_key_exists($key, $columns)) {
@@ -281,7 +293,7 @@ class Registry
             return $columns;
         });
 
-        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($new_columns) {
+        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($new_columns, $model) {
             global $post;
 
             foreach ($new_columns as $new_column) {
@@ -292,7 +304,7 @@ class Registry
                         'post' => $post,
                         'post_id' => $post_id
                     ];
-                    $post_temp = (new WPPost());
+                    $post_temp = (new $model);
                     $value = $post_temp
                         ->setProperty($post_temp->getIdColumn(), $post_id)
                         ->getBaseFieldValue($new_column['field']);

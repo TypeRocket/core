@@ -193,7 +193,7 @@ class MetaBox extends Registrable
     }
 
     /**
-     * @param null $priority
+     * @param null $priority 'high', 'core', 'default' or 'low'
      *
      * @return MetaBox
      */
@@ -205,7 +205,7 @@ class MetaBox extends Registrable
     }
 
     /**
-     * @param null $context
+     * @param null $context 'normal', 'advanced', or 'side'
      *
      * @return MetaBox
      */
