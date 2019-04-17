@@ -65,12 +65,14 @@ class Query
      *
      * @param array|\ArrayObject $ids
      *
+     * @param null $table
      * @return Query $this
      */
-    public function findAll( $ids = [] )
+    public function findAll( $ids = [], $table = null )
     {
         if(!empty($ids)) {
-            $this->where( $this->query['table'] . '.' .$this->idColumn , 'IN', $ids);
+            if(!$table) { $table = $this->query['table']; }
+            $this->where( $table . '.' .$this->idColumn , 'IN', $ids);
         }
 
         return $this;

@@ -52,6 +52,49 @@ class Controller
     }
 
     /**
+     * Set Model
+     *
+     * @param Model $model
+     * @return $this
+     */
+    public function setModel(Model $model)
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /**
+     * Get Model
+     *
+     * @return null
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Get Response
+     *
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * Get Request
+     *
+     * @return $this
+     */
+    public function getRequest()
+    {
+        return $this;
+    }
+
+    /**
      * Run just before middleware is run
      *
      * @return $this

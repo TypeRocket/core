@@ -9,7 +9,7 @@ class WPTerm extends Model
 {
     protected $idColumn = 'term_id';
     protected $resource = 'terms';
-    protected $taxonomy = 'category';
+    protected $taxonomy = null;
 
     protected $builtin = [
         'description',
@@ -28,6 +28,19 @@ class WPTerm extends Model
     ];
 
     /**
+     * Set Taxonomy
+     *
+     * @param string $taxonomy
+     * @return $this
+     */
+    public function setTaxonomy($taxonomy)
+    {
+        $this->taxonomy = $taxonomy;
+
+        return $this;
+    }
+
+    /**
      * Init Query
      *
      * @param Query $query
@@ -36,12 +49,15 @@ class WPTerm extends Model
      */
     protected function initQuery(Query $query)
     {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-        $tt = $wpdb->prefix . 'term_taxonomy';
-        $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
-        $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
-        $query->where($tt.'.taxonomy', $this->taxonomy);
+        if($this->taxonomy) {
+            /** @var \wpdb $wpdb */
+            global $wpdb;
+            $tt = $wpdb->prefix . 'term_taxonomy';
+            $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
+            $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
+            $query->where($tt.'.taxonomy', $this->taxonomy);
+        }
+
         return $query;
     }
 
@@ -126,8 +142,8 @@ class WPTerm extends Model
             $term = wp_insert_term( $name, $this->taxonomy, $builtin );
             add_action('create_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
-            if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
-                throw new ModelException('WPTerm not created: name is required');
+            if ( $term instanceof \WP_Error || empty($term['term_id']) ) {
+                throw new ModelException('WPTerm not created: name field and taxonomy property are required');
             } else {
                 $this->findById( $term['term_id'] );
             }
@@ -159,7 +175,7 @@ class WPTerm extends Model
                 $term = wp_update_term( $id, $this->taxonomy, $builtin );
                 add_action('edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
 
-                if ( empty($term['term_id']) || $term instanceof \WP_Error ) {
+                if ( $term instanceof \WP_Error || empty($term['term_id']) ) {
                     throw new ModelException('WPTerm not updated: name is required');
                 } else {
                     $this->findById($id);

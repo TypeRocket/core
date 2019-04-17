@@ -10,7 +10,7 @@ class TermTest extends TestCase
     public function testCreateWithSlashing()
     {
         $term = new \TypeRocket\Models\WPTerm();
-
+        $term->setTaxonomy('category');
         $data = [
             'name' => 'new \'name\' \Name',
             'description' => 'Create \\ \TypeRocket\Name \'in quotes\'',
@@ -36,6 +36,7 @@ class TermTest extends TestCase
     public function testUpdateWithSlashing()
     {
         $term = new \TypeRocket\Models\WPTerm();
+        $term->setTaxonomy('category');
         $term->findById(1);
 
         $data = [

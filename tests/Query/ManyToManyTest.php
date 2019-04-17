@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Query;
 
 
+use App\Models\Category;
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
@@ -16,7 +17,18 @@ class ManyToManyTest extends TestCase
         $post = new WPPost();
         $terms = $post->findById(1)->belongsToMany( WPTerm::class, 'posts_terms' );
         $sql = $terms->getSuspectSQL();
-        $expected_before_term_advanced = "SELECT DISTINCT wp_terms.* FROM wp_terms INNER JOIN posts_terms ON posts_terms.terms_id = wp_terms.term_id WHERE posts_terms.posts_id = 1";
+        $expected = "SELECT DISTINCT wp_terms.* FROM wp_terms INNER JOIN posts_terms ON posts_terms.terms_id = wp_terms.term_id WHERE posts_terms.posts_id = 1";
+        $this->assertTrue( $terms->getRelatedModel() instanceof WPPost );
+        $junction = $terms->getJunction();
+        $this->assertTrue( $junction['table'] == 'posts_terms' );
+        $this->assertTrue($sql == $expected);
+    }
+
+    public function testManyToManyCategory()
+    {
+        $post = new WPPost();
+        $terms = $post->findById(1)->belongsToMany( Category::class, 'posts_terms' );
+        $sql = $terms->getSuspectSQL();
         $expected = "SELECT DISTINCT wp_terms.* FROM wp_terms INNER JOIN wp_term_taxonomy ON wp_term_taxonomy.term_id = wp_terms.term_id INNER JOIN posts_terms ON posts_terms.terms_id = wp_terms.term_id WHERE wp_term_taxonomy.taxonomy = 'category' AND posts_terms.posts_id = 1";
         $this->assertTrue( $terms->getRelatedModel() instanceof WPPost );
         $junction = $terms->getJunction();

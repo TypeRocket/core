@@ -20,7 +20,9 @@ class TermTest extends TestCase
         $request = new Request();
         $response = new Response();
         $controller = new WPTermController( $request, $response );
+        $controller->getModel()->setTaxonomy('category');
         $controller->update( 1 );
+        $response = $controller->getResponse();
 
         $model = new WPTerm();
         $meta = $model->findById( $response->getData('resourceId') )->getFieldValue('meta_key');
