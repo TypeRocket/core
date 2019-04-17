@@ -73,7 +73,7 @@ class Taxonomy extends Registrable
             'rewrite'           => ['slug' => Sanitize::dash( $this->id )],
         ];
 
-        $this->args = array_merge( $defaults, $settings );
+        $this->args = array_merge( $this->args, $defaults, $settings );
 
         return $this;
     }
