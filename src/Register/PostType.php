@@ -106,9 +106,9 @@ class PostType extends Registrable
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
-        $upperSingular = ucwords( $singular );
-        $upperPlural   = ucwords( $plural );
-        $pluralLower   = strtolower( $plural );
+        $upperSingular = $keep_case ? $singular : ucwords( $singular );
+        $upperPlural   = $keep_case ? $plural : ucwords( $plural );
+        $pluralLower   = $keep_case ? $plural : strtolower( $plural );
 
         $labels = [
             'add_new'            => 'Add New',

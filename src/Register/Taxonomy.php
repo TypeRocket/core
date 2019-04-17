@@ -31,6 +31,7 @@ class Taxonomy extends Registrable
         $lowerSingular = strtolower( trim($singular) );
 
         if (is_null( $plural )) {
+            $plural = Inflect::pluralize($singular);
             $existing = get_taxonomy( strtolower($lowerSingular) );
 
             if($existing) {
@@ -44,7 +45,7 @@ class Taxonomy extends Registrable
             }
         }
 
-        $this->applyQuickLabels($singular);
+        $this->applyQuickLabels($singular, $plural);
 
         if (array_key_exists( 'hierarchical', $settings ) && $settings['hierarchical'] === true) :
             $settings['hierarchical'] = true;
