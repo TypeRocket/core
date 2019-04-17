@@ -17,6 +17,7 @@ class Taxonomy extends Registrable
     protected $postTypes = [];
     protected $form = [];
     protected $resource = null;
+    protected $existing = null;
 
     /**
      * Make Taxonomy. Do not use before init.
@@ -27,34 +28,23 @@ class Taxonomy extends Registrable
      */
     public function __construct( $singular, $plural = null, $settings = [])
     {
+        $lowerSingular = strtolower( trim($singular) );
 
         if (is_null( $plural )) {
-            $plural = Inflect::pluralize( $singular );
+            $existing = get_taxonomy( strtolower($lowerSingular) );
+
+            if($existing) {
+                $this->existing = $existing;
+                $this->id = $this->existing->name;
+                $this->resource = Registry::getTaxonomyResource($this->id);
+                $this->postTypes = $this->existing->object_type;
+                $this->args = array_merge($this->args, (array) $this->existing, $settings);
+
+                return $this;
+            }
         }
 
-        $upperPlural   = ucwords( $plural );
-        $upperSingular = ucwords( $singular );
-        $lowerPlural   = strtolower( $plural );
-
-        $labels = [
-            'add_new_item'               => __( 'Add New ' . $upperSingular ),
-            'add_or_remove_items'        => __( 'Add or remove ' . $lowerPlural ),
-            'all_items'                  => __( 'All ' . $upperPlural ),
-            'choose_from_most_used'      => __( 'Choose from the most used ' . $lowerPlural ),
-            'edit_item'                  => __( 'Edit ' . $upperSingular ),
-            'name'                       => __( $upperPlural ),
-            'menu_name'                  => __( $upperPlural ),
-            'new_item_name'              => __( 'New ' . $upperSingular . ' Name' ),
-            'not_found'                  => __( 'No ' . $lowerPlural . ' found.' ),
-            'parent_item'                => __( 'Parent ' . $upperSingular ),
-            'parent_item_colon'          => __( 'Parent ' . $upperSingular . ':' ),
-            'popular_items'              => __( 'Popular ' . $upperPlural ),
-            'search_items'               => __( 'Search ' . $upperPlural ),
-            'separate_items_with_commas' => __( 'Separate ' . $lowerPlural . ' with commas' ),
-            'singular_name'              => __( $upperSingular ),
-            'update_item'                => __( 'Update ' . $upperSingular ),
-            'view_item'                  => __( 'View ' . $upperSingular )
-        ];
+        $this->applyQuickLabels($singular);
 
         if (array_key_exists( 'hierarchical', $settings ) && $settings['hierarchical'] === true) :
             $settings['hierarchical'] = true;
@@ -78,7 +68,6 @@ class Taxonomy extends Registrable
         endif;
 
         $defaults = [
-            'labels'            => $labels,
             'show_admin_column' => false,
             'rewrite'           => ['slug' => Sanitize::dash( $this->id )],
         ];
@@ -86,6 +75,59 @@ class Taxonomy extends Registrable
         $this->args = array_merge( $defaults, $settings );
 
         return $this;
+    }
+
+    /**
+     * Apply Quick Labels
+     *
+     * @param string $singular
+     * @param string $plural
+     * @param bool $keep_case
+     * @return Taxonomy $this
+     */
+    public function applyQuickLabels($singular, $plural = null, $keep_case = false)
+    {
+        if(!$plural) { $plural = Inflect::pluralize($singular); }
+
+        // make lowercase
+        $upperPlural   = $keep_case ? $plural : ucwords( $plural );
+        $upperSingular = $keep_case ? $singular : ucwords( $singular );
+        $lowerPlural   = $keep_case ? $plural : strtolower( $plural );
+
+        $labels = [
+            'add_new_item'               => __( 'Add New ' . $upperSingular ),
+            'add_or_remove_items'        => __( 'Add or remove ' . $lowerPlural ),
+            'all_items'                  => __( 'All ' . $upperPlural ),
+            'choose_from_most_used'      => __( 'Choose from the most used ' . $lowerPlural ),
+            'edit_item'                  => __( 'Edit ' . $upperSingular ),
+            'name'                       => __( $upperPlural ),
+            'menu_name'                  => __( $upperPlural ),
+            'new_item_name'              => __( 'New ' . $upperSingular . ' Name' ),
+            'not_found'                  => __( 'No ' . $lowerPlural . ' found.' ),
+            'parent_item'                => __( 'Parent ' . $upperSingular ),
+            'parent_item_colon'          => __( 'Parent ' . $upperSingular . ':' ),
+            'popular_items'              => __( 'Popular ' . $upperPlural ),
+            'search_items'               => __( 'Search ' . $upperPlural ),
+            'separate_items_with_commas' => __( 'Separate ' . $lowerPlural . ' with commas' ),
+            'singular_name'              => __( $upperSingular ),
+            'update_item'                => __( 'Update ' . $upperSingular ),
+            'view_item'                  => __( 'View ' . $upperSingular )
+        ];
+
+        $this->args['label'] = $upperPlural;
+        $this->args['labels'] = $labels;
+
+        return $this;
+    }
+
+    /**
+     * Get Existing Post Type
+     *
+     * @return \WP_Taxonomy|null
+     */
+    public function getExisting()
+    {
+        return $this->existing;
     }
 
     /**
@@ -184,11 +226,13 @@ class Taxonomy extends Registrable
      */
     public function register()
     {
-        $this->dieIfReserved();
+        if(!$this->existing) {
+            $this->dieIfReserved();
+            Registry::addTaxonomyResource($this->id, $this->resource);
+        }
 
         do_action( 'tr_register_taxonomy_' . $this->id, $this );
         register_taxonomy( $this->id, $this->postTypes, $this->args );
-        Registry::addTaxonomyResource($this->id, $this->resource);
 
         return $this;
     }

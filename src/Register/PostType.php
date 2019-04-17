@@ -33,11 +33,11 @@ class PostType extends Registrable
     public function __construct( $singular, $plural = null, $settings = [] )
     {
         // make lowercase
-        $singular = strtolower( trim($singular) );
+        $singularLower = strtolower( trim($singular) );
 
         if(is_null($plural)) {
             $plural = strtolower(Inflect::pluralize($singular));
-            $this->existing = get_post_type_object($singular);
+            $this->existing = get_post_type_object($singularLower);
 
             if($this->existing) {
                 $this->id = $this->existing->name;
@@ -98,30 +98,31 @@ class PostType extends Registrable
      *
      * @param string $singular
      * @param string $plural
+     * @param bool $keep_case
      * @return PostType $this
      */
-    public function applyQuickLabels($singular, $plural = null)
+    public function applyQuickLabels($singular, $plural = null, $keep_case = false)
     {
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
         $upperSingular = ucwords( $singular );
         $upperPlural   = ucwords( $plural );
-        $plural        = strtolower( $plural );
+        $pluralLower   = strtolower( $plural );
 
         $labels = [
             'add_new'            => 'Add New',
             'add_new_item'       => 'Add New ' . $upperSingular,
             'edit_item'          => 'Edit ' . $upperSingular,
-            'item_published'       => $upperSingular . ' published.',
+            'item_published'     => $upperSingular . ' published.',
             'item_updated'       => $upperSingular . ' updated.',
             'item_reverted_to_draft' => $upperSingular . ' reverted to draft.',
             'item_scheduled'     => $upperSingular . ' scheduled.',
             'menu_name'          => $upperPlural,
             'name'               => $upperPlural,
             'new_item'           => 'New ' . $upperSingular,
-            'not_found'          => 'No ' . $plural . ' found',
-            'not_found_in_trash' => 'No ' . $plural . ' found in Trash',
+            'not_found'          => 'No ' . $pluralLower . ' found',
+            'not_found_in_trash' => 'No ' . $pluralLower . ' found in Trash',
             'parent_item_colon'  => '',
             'search_items'       => 'Search ' . $upperPlural,
             'singular_name'      => $upperSingular,
