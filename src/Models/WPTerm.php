@@ -37,6 +37,16 @@ class WPTerm extends Model
     }
 
     /**
+     * Get Term Taxonomy
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function termTaxonomies()
+    {
+        return $this->hasMany( WPTermTaxonomy::class, 'term_id' );
+    }
+
+    /**
      * Get Taxonomy
      *
      * @return string
