@@ -12,8 +12,10 @@ class WPTermTest extends TestCase
     public function testBasicTermTaxonomiesRelationship()
     {
         $term = new WPTerm();
-        $term = $term->findById(1);
-        $taxonomies = $term->termTaxonomies()->first();
-        $this->assertTrue( $taxonomies instanceof WPTermTaxonomy);
+        $terms = $term->findAll([1])->get();
+        foreach ($terms as $term) {
+            $taxonomies = $term->termTaxonomies()->first();
+            $this->assertTrue( $taxonomies instanceof WPTermTaxonomy);
+        }
     }
 }

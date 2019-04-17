@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPTermMeta;
 
@@ -25,6 +26,24 @@ class WPTerm extends Model
         'parent',
         'count',
     ];
+
+    /**
+     * Init Query
+     *
+     * @param Query $query
+     *
+     * @return mixed
+     */
+    protected function initQuery(Query $query)
+    {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $tt = $wpdb->prefix . 'term_taxonomy';
+        $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.term_group');
+        $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
+        $query->where($tt.'.taxonomy', $this->taxonomy);
+        return $query;
+    }
 
     /**
      * Get Term Meta

@@ -70,7 +70,7 @@ class Query
     public function findAll( $ids = [] )
     {
         if(!empty($ids)) {
-            $this->where( $this->idColumn , 'IN', $ids);
+            $this->where( $this->query['table'] . '.' .$this->idColumn , 'IN', $ids);
         }
 
         return $this;
