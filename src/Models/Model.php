@@ -1113,7 +1113,7 @@ class Model
         foreach ($this->properties as $name => $property ) {
             $cast[$name] = $this->getCast($name);
         }
-        $this->properties = $cast;
+        $this->properties = apply_filters( 'tr_model_cast_fields', $cast, $this );
 
         return $this;
     }
