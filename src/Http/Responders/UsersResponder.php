@@ -3,6 +3,7 @@ namespace TypeRocket\Http\Responders;
 
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
+use TypeRocket\Utility\Str;
 
 class UsersResponder extends Responder {
 
@@ -14,8 +15,11 @@ class UsersResponder extends Responder {
      * @param $args
      */
     public function respond( $args ) {
+        $resource = 'user';
+        $Resource = Str::camelize( $resource );
+        $controller  = tr_app("Controllers\\{$Resource}Controller");
 
-        $request = new Request('user', 'PUT', $args, 'update', $this->hook);
+        $request = new Request($resource, 'PUT', $args, 'update', $this->hook, $controller);
         $response = new Response();
         $response->blockFlash();
 

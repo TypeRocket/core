@@ -9,13 +9,13 @@ class Registry
 
     public static $collection = [];
     public static $postTypes = [
-        'post' => ['post', 'posts'],
-        'page' => ['page', 'pages']
+        'post' => ['post', 'posts', null, null],
+        'page' => ['page', 'pages', null, null]
     ];
 
     public static $taxonomies = [
-        'category' => ['category', 'categories'],
-        'post_tag' => ['tag', 'tags']
+        'category' => ['category', 'categories', null, null],
+        'post_tag' => ['tag', 'tags', null, null]
     ];
 
     /**
@@ -274,12 +274,9 @@ class Registry
         add_action('init', function() use (&$model, $pt) {
             $resource = Registry::getPostTypeResource($pt);
             if($resource) {
-                $Resource = \TypeRocket\Utility\Str::camelize($resource[0]);
-                $model_class    = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
-
-                if (class_exists($model_class)) {
-                    /** @var \TypeRocket\Models\Model $object */
-                    $model = $model_class;
+                if (class_exists($resource[2])) {
+                    /** @var \TypeRocket\Models\Model|string $model */
+                    $model = $resource[2];
                 }
             }
         });

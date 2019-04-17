@@ -6,11 +6,15 @@ abstract class Kernel
 
     public $request;
     public $response;
+    public $action_method;
 
     /** @var Router */
     public $router;
     public $group;
     public $middleware = [];
+
+    /** @var Route|null */
+    public $route;
 
     /**
      * Handle Middleware
@@ -26,12 +30,18 @@ abstract class Kernel
      * @param null|\TypeRocket\Http\Route $route
      */
     public function __construct(Request $request, Response $response, $group = 'hookGlobal', $action_method = 'GET', $route = null ) {
-
         $this->response = $response;
         $this->request = $request;
         $this->group = $group;
+        $this->action_method = $action_method;
+        $this->route = $route;
 
-        $resource = strtolower( $request->getResource() );
+        $this->runKernel();
+    }
+
+    public function runKernel()
+    {
+        $resource = strtolower( $this->request->getResource() );
 
         if(array_key_exists($resource, $this->middleware)) {
             $resourceMiddleware = $this->middleware[$resource];
@@ -39,14 +49,14 @@ abstract class Kernel
             $resourceMiddleware = $this->middleware['noResource'];
         }
 
-        if(!empty($route) && $route->middleware) {
-            $resourceMiddleware = array_merge($resourceMiddleware, $route->middleware);
+        if(!empty($this->route) && $this->route->middleware) {
+            $resourceMiddleware = array_merge($resourceMiddleware, $this->route->middleware);
         }
 
-        $client = $this->router = new Router($request, $response, $action_method);
+        $client = $this->router = new Router($this->request, $this->response, $this->action_method);
         $middleware = $this->compileMiddleware($resourceMiddleware);
 
-        (new Stack($middleware))->handle($request, $response, $client);
+        (new Stack($middleware))->handle($this->request, $this->response, $client);
     }
 
     /**

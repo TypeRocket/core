@@ -21,7 +21,7 @@ abstract class Responder
      */
     public function runKernel(Request $request, Response $response, $type = 'hookGlobal', $action_method = null, $route = null )
     {
-        $Kernel = "\\" . TR_APP_NAMESPACE . "\\Http\\Kernel";
+        $Kernel = tr_app("Http\\Kernel");
         $this->kernel = new $Kernel( $request, $response, $type, $action_method, $route);
     }
 }

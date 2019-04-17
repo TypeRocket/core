@@ -36,15 +36,19 @@ class Router
         $this->request = $request;
         $this->response = $response;
         $this->action = $this->getAction( $action_method );
+        $controllerName = $this->request->getHandler();
         $resource = $this->request->getResource();
-        $resource = Str::camelize( $resource );
-        $controllerName  = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$resource}Controller";
+
+        if(!$controllerName) {
+            $resource = Str::camelize( $resource );
+            $controllerName = tr_app("Controllers\\{$resource}Controller");
+        }
 
         if ( class_exists( $controllerName ) ) {
             $this->controller = $controller = new $controllerName( $this->request, $this->response);
 
             if ( ! $controller instanceof Controller || ! method_exists( $controller, $this->action ) ) {
-                $this->response->setMessage("The controller or the action of the controller you are trying to access does not exist: <strong>{$this->action}@$resource</strong>");
+                $this->response->setMessage("The controller or the action of the controller you are trying to access does not exist: <strong>{$this->action}@{$resource}</strong>");
                 $this->response->exitAny(405);
             }
 

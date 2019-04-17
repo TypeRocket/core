@@ -11,7 +11,6 @@ use TypeRocket\Utility\Sanitize;
  */
 class Taxonomy extends Registrable
 {
-
     use Resourceful;
 
     protected $postTypes = [];
@@ -56,7 +55,7 @@ class Taxonomy extends Registrable
         // setup object for later use
         $plural       = Sanitize::underscore( $plural );
         $singular     = Sanitize::underscore( $singular );
-        $this->resource = [$singular, $plural];
+        $this->resource = [$singular, $plural, $this->modelClass, $this->controllerClass];
         $this->id     = ! $this->id ? $singular : $this->id;
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
@@ -229,11 +228,11 @@ class Taxonomy extends Registrable
     {
         if(!$this->existing) {
             $this->dieIfReserved();
-            Registry::addTaxonomyResource($this->id, $this->resource);
         }
 
         do_action( 'tr_register_taxonomy_' . $this->id, $this );
         register_taxonomy( $this->id, $this->postTypes, $this->args );
+        Registry::addTaxonomyResource($this->id, $this->resource);
 
         return $this;
     }

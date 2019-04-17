@@ -18,7 +18,7 @@ class OwnsPostOrCanEditPosts extends Middleware
             $post  = get_post( $this->request->getRouterArg('id') );
             $currentUser = wp_get_current_user();
 
-            if ($post->post_author != $currentUser->ID && ! current_user_can( 'edit_posts' )) {
+            if (empty($post) || $post->post_author != $currentUser->ID && ! current_user_can( 'edit_posts' )) {
                 $this->response->setError( 'auth', false );
                 $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
                 $this->response->exitAny(401);

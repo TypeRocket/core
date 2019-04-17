@@ -28,20 +28,19 @@ class PostsResponder extends Responder
         $type       = get_post_type( $id );
         $resource   = Registry::getPostTypeResource( $type );
         $prefix     = Str::camelize( $resource[0] );
-        $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$prefix}Controller";
-        $model      = "\\" . TR_APP_NAMESPACE . "\\Models\\{$prefix}";
-        $resource = $resource[0];
+        $controller = $resource[3] ?? tr_app("Controllers\\{$prefix}Controller");
+        $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
+        $resource   = $resource[0];
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
             $resource = 'post';
         }
 
-        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook );
+        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
         $response = new Response();
         $response->blockFlash();
 
         $this->runKernel($request, $response);
-
     }
 
 }

@@ -55,7 +55,7 @@ class PostType extends Registrable
         // setup object for later use
         $plural   = Sanitize::underscore( $plural );
         $singular = Sanitize::underscore( $singular );
-        $this->resource = [$singular, $plural];
+        $this->resource = [$singular, $plural, $this->modelClass, $this->controllerClass];
         $this->id       = ! $this->id ? $singular : $this->id;
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
@@ -523,13 +523,14 @@ class PostType extends Registrable
     {
         if(!$this->existing) {
             $this->dieIfReserved();
-            Registry::addPostTypeResource($this->id, $this->resource);
         }
 
         $supports = array_unique(array_merge($this->args['supports'], $this->metaBoxes));
         $this->args['supports'] = $supports;
-
+        do_action('tr_post_type_register_' . $this->id, $this);
         register_post_type( $this->id, $this->args );
+        Registry::addPostTypeResource($this->id, $this->resource);
+
         return $this;
     }
 

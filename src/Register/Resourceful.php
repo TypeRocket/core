@@ -7,6 +7,9 @@ use TypeRocket\Utility\Sanitize;
 
 trait Resourceful
 {
+    protected $modelClass = null;
+    protected $controllerClass = null;
+
     /**
      * Set the Registrable ID for WordPress to use. Don't use reserved names.
      *
@@ -23,7 +26,7 @@ trait Resourceful
         if($resource) {
             $singular     = Sanitize::underscore( $this->id );
             $plural       = Sanitize::underscore( Inflect::pluralize($this->id) );
-            $this->resource = [$singular, $plural];
+            $this->resource = [$singular, $plural, $this->modelClass, $this->controllerClass];
         }
 
         return $this;
@@ -45,8 +48,25 @@ trait Resourceful
         if($resource) {
             $singular     = $this->id;
             $plural       = Inflect::pluralize($this->id);
-            $this->resource = [$singular, $plural];
+            $this->resource = [$singular, $plural, $this->modelClass, $this->controllerClass];
         }
+
+        return $this;
+    }
+
+    /**
+     * Override Default Controller and Model
+     *
+     * @param string $model_class
+     * @param string $controller_class
+     * @return $this
+     */
+    public function setResponder($model_class, $controller_class)
+    {
+        $this->modelClass = $model_class;
+        $this->controllerClass = $controller_class;
+        $this->resource[2] = $this->modelClass;
+        $this->resource[3] = $this->controllerClass;
 
         return $this;
     }

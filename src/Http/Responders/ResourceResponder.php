@@ -13,6 +13,7 @@ class ResourceResponder extends Responder
     private $action = null;
     private $route = null;
     private $actionMethod = null;
+    private $handler = null;
 
     /**
      * Respond to custom requests
@@ -23,7 +24,7 @@ class ResourceResponder extends Responder
      */
     public function respond( $args )
     {
-        $request  = new Request( $this->resource, null, $args, $this->action, $this->hook );
+        $request  = new Request( $this->resource, null, $args, $this->action, $this->hook, $this->handler );
         $response = new Response();
         $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod, $this->route);
         tr_http_response($this->kernel->router->returned, $response);
@@ -78,6 +79,19 @@ class ResourceResponder extends Responder
      */
     public function setActionMethod( $action_method ) {
         $this->actionMethod = $action_method;
+
+        return $this;
+    }
+
+    /**
+     * Set Handler
+     *
+     * @param $handler
+     * @return $this
+     */
+    public function setHandler($handler)
+    {
+        $this->handler = $handler;
 
         return $this;
     }

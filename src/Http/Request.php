@@ -18,6 +18,7 @@ class Request
     protected $files = null;
     protected $cookies = null;
     protected $protocall = 'http';
+    protected $handler = null;
 
     /**
      * Construct the request
@@ -27,10 +28,10 @@ class Request
      * @param array $args the router args
      * @param string $action
      * @param bool $hook
-     *
+     * @param null|string $handler
      * @internal param int $id the resource ID
      */
-    public function __construct( $resource = null, $method = null, $args = null, $action = 'auto', $hook = false )
+    public function __construct( $resource = null, $method = null, $args = null, $action = 'auto', $hook = false, $handler = null )
     {
         $this->resource = $resource;
         $this->routerArgs = $args;
@@ -45,6 +46,7 @@ class Request
         $this->cookies  = ! empty ( $_COOKIE ) ? wp_unslash($_COOKIE) : null;
         $this->uri    = ! empty ( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
         $this->host   = ! empty ( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;
+        $this->handler = $handler;
 
         if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
             $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -100,6 +102,19 @@ class Request
     public function getResource()
     {
         return $this->resource;
+    }
+
+    /**
+     * Get Handler
+     *
+     * The handler should be a callable or
+     * the class name of a controller.
+     *
+     * @return null|string
+     */
+    public function getHandler()
+    {
+        return $this->handler;
     }
 
     /**

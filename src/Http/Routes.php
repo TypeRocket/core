@@ -126,10 +126,12 @@ class Routes
             tr_http_response(resolve_method_map($map), $args[2]['response']);
         } else {
             list($action, $resource) = explode('@', $handle->do);
+            list($resource, $handler) = array_pad(explode(':', $resource, 2), 2, null);
             $respond = new ResourceResponder();
             $respond->setResource( ucfirst($resource) );
             $respond->setAction( $action );
             $respond->setRoute( $handle );
+            $respond->setHandler( $handler );
             $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
             $respond->respond( $this->vars );
         }

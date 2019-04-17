@@ -1,4 +1,11 @@
 <?php
+if( ! function_exists('tr_app') ) {
+    function tr_app( $append ) {
+        $space = "\\" . TR_APP_NAMESPACE . "\\";
+        return $space . $append;
+    }
+}
+
 if ( ! function_exists('tr_get_model')) {
     /**
      * Get model by recourse
@@ -10,7 +17,7 @@ if ( ! function_exists('tr_get_model')) {
     function tr_get_model($resource)
     {
         $Resource = TypeRocket\Utility\Str::camelize($resource);
-        $model    = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
+        $model    = tr_app("Models\\{$Resource}");
         $object   = null;
 
         if (class_exists($model)) {
@@ -174,14 +181,14 @@ if ( ! function_exists('tr_form')) {
      * @param string $resource posts, users, comments, options your own
      * @param string $action update or create
      * @param null|int $item_id you can set this to null or an integer
-     *
+     * @param null|Model|string $model
      * @return \TypeRocket\Elements\Form
      */
-    function tr_form($resource = 'auto', $action = 'update', $item_id = null)
+    function tr_form($resource = 'auto', $action = 'update', $item_id = null, $model = null)
     {
         $form = \TypeRocket\Core\Config::locate('app.class.form');
 
-        return new $form($resource, $action, $item_id);
+        return new $form($resource, $action, $item_id, $model);
     }
 }
 

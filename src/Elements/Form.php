@@ -34,8 +34,10 @@ class Form
      * @param string $resource posts, users, comments or options
      * @param string $action update or create
      * @param null|int $itemId you can set this to null or an integer
+     * @param null|Model|string $model
+     * @throws \Exception
      */
-    public function __construct( $resource = 'auto', $action = 'update', $itemId = null )
+    public function __construct( $resource = 'auto', $action = 'update', $itemId = null, $model = null )
     {
         if( is_int($action) && ! $itemId ) {
             $itemId = $action;
@@ -48,7 +50,7 @@ class Form
         $this->autoConfig();
 
         $Resource = Str::camelize($this->resource);
-        $this->setModel("\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}");
+        $this->setModel($model ?? tr_app("Models\\{$Resource}"));
 
         do_action('tr_after_form_element_init', $this);
     }
@@ -59,6 +61,7 @@ class Form
      * @param Model|string $model
      *
      * @return $this
+     * @throws \Exception
      */
     public function setModel( $model )
     {
@@ -91,8 +94,8 @@ class Form
 
                 $Resource = Str::camelize($resource[0]);
                 $resource = $resource[0];
-                $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
-                $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$Resource}Controller";
+                $controller = $resource[3] ?? tr_app("Controllers\\{$Resource}Controller");
+                $model      = $resource[2] ?? tr_app("Models\\{$Resource}");
 
                 if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
                     $resource = 'post';
@@ -109,8 +112,8 @@ class Form
 
                 $Resource = Str::camelize($resource[0]);
                 $resource = $resource[0];
-                $model = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
-                $controller = "\\" . TR_APP_NAMESPACE . "\\Controllers\\{$Resource}Controller";
+                $controller = $resource[3] ?? tr_app("Controllers\\{$Resource}Controller");
+                $model      = $resource[2] ?? tr_app("Models\\{$Resource}");
 
                 if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
                     $resource = 'category';
