@@ -102,23 +102,27 @@ if ( ! function_exists('tr_resource_pages')) {
      * @param string $singular
      * @param string $plural
      * @param array $settings
-     *
+     * @param null $resource
      * @return \TypeRocket\Register\Page
      */
-    function tr_resource_pages($singular, $plural = null, array $settings = [])
+    function tr_resource_pages($singular, $plural = null, array $settings = [], $resource = null)
     {
 
         if ( ! $plural) {
             $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
         }
 
+        if( ! $resource) {
+            $resource = $singular;
+        }
+
         $menu_id = 'add_resource_' . \TypeRocket\Utility\Sanitize::underscore($singular);
 
-        return tr_page($singular, 'index', $plural, $settings)->apply(
-            tr_page($singular, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
-            tr_page($singular, 'show', $singular)->useController()->addNewButton()->removeMenu(),
-            tr_page($singular, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
-            tr_page($singular, 'add', 'Add ' . $singular)->useController()->setArgument('menu',
+        return tr_page($resource, 'index', $plural, $settings)->apply(
+            tr_page($resource, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
+            tr_page($resource, 'show', $singular)->useController()->addNewButton()->removeMenu(),
+            tr_page($resource, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
+            tr_page($resource, 'add', 'Add ' . $singular)->useController()->setArgument('menu',
                 'Add New')->adminBar($menu_id, $singular, 'new-content')
         )->addNewButton()->useController();
     }
