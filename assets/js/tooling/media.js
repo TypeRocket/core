@@ -1,9 +1,11 @@
+const { __ } = wp.i18n;
+
 ;jQuery(document).ready(function($) {
     var clear_gallery, clear_media, set_file_uploader, set_gallery_uploader, set_image_uploader;
     set_image_uploader = function(button, field) {
         var btnTitle, temp_frame, title, typeInput;
-        title = 'Select an Image';
-        btnTitle = 'Use Image';
+        title = __('Select an Image', 'typerocket-domain');
+        btnTitle = __('Use Image', 'typerocket-domain');
         typeInput = 'image';
         temp_frame = wp.media({
             title: title,
@@ -34,8 +36,8 @@
     };
     set_file_uploader = function(button, field) {
         var btnTitle, temp_frame, title, typeInput, options;
-        title = 'Select a File';
-        btnTitle = 'Use File';
+        title = __('Select a File', 'typerocket-domain');
+        btnTitle = __('Use File', 'typerocket-domain');
         typeInput = button.data('type'); // https://codex.wordpress.org/Function_Reference/get_allowed_mime_types
         options = {
             title: title,
@@ -69,8 +71,8 @@
     };
     set_gallery_uploader = function(button, list) {
         var btnTitle, temp_frame, title;
-        title = 'Select Images';
-        btnTitle = 'Use Images';
+        title = __('Select Images', 'typerocket-domain');
+        btnTitle = __('Use Images', 'typerocket-domain');
         temp_frame = wp.media({
             title: title,
             button: {
@@ -110,7 +112,7 @@
         return false;
     };
     clear_gallery = function(button, field) {
-        if (confirm('Remove all images?')) {
+        if (confirm(__('Remove all images?', 'typerocket-domain'))) {
             $(field).html('');
         }
         return false;

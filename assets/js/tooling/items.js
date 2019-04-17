@@ -1,7 +1,9 @@
+const { __ } = wp.i18n;
+
 ;jQuery(document).ready(function($) {
     var clear_items;
     clear_items = function(button, field) {
-        if (confirm('Remove all items?')) {
+        if (confirm(__('Remove all items?', 'typerocket-domain'))) {
             $(field).val('');
             $(button).parent().next().html('');
             var add = button.prev();

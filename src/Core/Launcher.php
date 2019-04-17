@@ -355,7 +355,8 @@ class Launcher
         $assetVersion = Config::locate('app.assets');
 	    $assets = SSL::fixSSLUrl($paths['urls']['assets']);
 
-        wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery' ], $assetVersion, true );
+        wp_enqueue_script( 'typerocket-scripts', $assets . '/typerocket/js/core.js', [ 'jquery', 'wp-i18n' ], $assetVersion, true );
+        wp_set_script_translations( 'typerocket-scripts', 'typerocket-domain' );
     }
 
     public function addTopJs()

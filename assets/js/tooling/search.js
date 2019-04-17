@@ -1,3 +1,5 @@
+const { __ } = wp.i18n;
+
 ;(function( $ ) {
     $.fn.TypeRocketSearch = function(type, taxonomy, model) {
     var param, search, that;
@@ -82,7 +84,7 @@ $('.typerocket-container').on('click', '.tr-link-search-remove-selection', funct
     parent = $(this).parent();
     parent.prev().val('');
     parent.prev().prev().focus();
-    parent.text('No selection... Search and click on a result');
+    parent.text(__('No selection... Search and click on a result', 'typerocket-domain'));
 });
 
 }( jQuery ));

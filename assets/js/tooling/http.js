@@ -1,3 +1,5 @@
+const { __ } = wp.i18n;
+
 ;jQuery.typerocketHttp = {
     get: function(url, data) {
         this.send('GET', url, data);
@@ -52,7 +54,7 @@
                     tools.checkData(data);
                 },
                 error: function(hx, error, message) {
-                    alert('Your request had an error. ' + hx.status + ' - ' + message);
+                    alert(__('Your request had an error. ', 'typerocket-domain') + hx.status + ' - ' + message);
                 }
             };
             jQuery.extend(settings, obj);
@@ -86,7 +88,7 @@ jQuery(document).ready(function($) {
     return $('.tr-delete-row-rest-button').on('click', function(e) {
         var data, target;
         e.preventDefault();
-        if (confirm("Confirm Delete.")) {
+        if (confirm(__("Confirm Delete.", 'typerocket-domain'))) {
             target = $(this).data('target');
             $(target).remove();
             data = {

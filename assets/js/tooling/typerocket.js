@@ -1,4 +1,6 @@
-jQuery(document).ready(function($) {
+const { __ } = wp.i18n;
+
+;jQuery(document).ready(function($) {
     var $trContainer, add_color_picker, add_date_picker, add_editor, add_sorting, editorHeight, repeaterClone, tr_max;
     editorHeight = function() {
         $('.wp-editor-wrap').each(function() {
@@ -288,7 +290,7 @@ jQuery(document).ready(function($) {
             });
             $(document).on('click', '.tr-repeater .controls .flip', function(e) {
                 var items;
-                if (confirm('Flip order of all items?')) {
+                if (confirm(__('Flip order of all items?', 'typerocket-domain'))) {
                     items = $(this).parent().parent().next().next();
                     items.children().each(function(i, item) {
                         items.prepend(item);
