@@ -270,16 +270,19 @@ class Registry
 	    $primary_column = $post_type->getPrimaryColumn();
 
         $model = WPPost::class;
-	    $resource = Registry::getPostTypeResource($pt);
-	    if($resource) {
-            $Resource = \TypeRocket\Utility\Str::camelize($resource[0]);
-            $model_class    = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
 
-            if (class_exists($model_class)) {
-                /** @var \TypeRocket\Models\Model $object */
-                $model = $model_class;
+        add_action('init', function() use (&$model, $pt) {
+            $resource = Registry::getPostTypeResource($pt);
+            if($resource) {
+                $Resource = \TypeRocket\Utility\Str::camelize($resource[0]);
+                $model_class    = "\\" . TR_APP_NAMESPACE . "\\Models\\{$Resource}";
+
+                if (class_exists($model_class)) {
+                    /** @var \TypeRocket\Models\Model $object */
+                    $model = $model_class;
+                }
             }
-        }
+        });
 
         add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($new_columns) {
             foreach ($new_columns as $key => $new_column) {
@@ -293,7 +296,7 @@ class Registry
             return $columns;
         });
 
-        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($new_columns, $model) {
+        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($new_columns, &$model) {
             global $post;
 
             foreach ($new_columns as $new_column) {
