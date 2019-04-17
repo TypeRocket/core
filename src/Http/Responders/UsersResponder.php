@@ -15,11 +15,9 @@ class UsersResponder extends Responder {
      * @param $args
      */
     public function respond( $args ) {
-        $resource = 'user';
-        $Resource = Str::camelize( $resource );
-        $controller  = tr_app("Controllers\\{$Resource}Controller");
-
-        $request = new Request($resource, 'PUT', $args, 'update', $this->hook, $controller);
+        $controller = tr_app("Controllers\\UserController");
+        $controller  = apply_filters('tr_users_responder_controller', $controller);
+        $request = new Request('user', 'PUT', $args, 'update', $this->hook, $controller);
         $response = new Response();
         $response->blockFlash();
 

@@ -25,6 +25,7 @@ class TaxonomiesResponder extends Responder
         $resource   = Registry::getTaxonomyResource( $taxonomy );
         $prefix     = Str::camelize( $resource[0] );
         $controller = $resource[3] ?? tr_app("Controllers\\{$prefix}Controller");
+        $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
         $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
         $resource = $resource[0];
 

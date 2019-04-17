@@ -15,11 +15,9 @@ class CommentsResponder extends Responder {
      * @param $args
      */
     public function respond( $args ) {
-        $resource = 'comment';
-        $Resource = Str::camelize( $resource );
-        $controller  = tr_app("Controllers\\{$Resource}Controller");
-
-        $request = new Request($resource, 'PUT', $args, 'update', $this->hook, $controller);
+        $controller = tr_app("Controllers\\CommentController");
+        $controller  = apply_filters('tr_comments_responder_controller', $controller);
+        $request = new Request('comment', 'PUT', $args, 'update', $this->hook, $controller);
         $response = new Response();
         $response->blockFlash();
 
