@@ -19,9 +19,12 @@ class PostType extends Registrable
     protected $archiveQuery = [];
     protected $icon = null;
     protected $resource = null;
+    protected $existing = null;
 
     /**
-     * Make Post Type. Do not use before init hook.
+     * Make or Modify Post Type.
+     *
+     * Do not use before init hook.
      *
      * @param string $singular singular name is required
      * @param string $plural plural name
@@ -29,31 +32,25 @@ class PostType extends Registrable
      */
     public function __construct( $singular, $plural = null, $settings = [] )
     {
+        // make lowercase
+        $singular = strtolower( trim($singular) );
 
         if(is_null($plural)) {
-            $plural = Inflect::pluralize($singular);
+            $plural = strtolower(Inflect::pluralize($singular));
+            $this->existing = get_post_type_object($singular);
+
+            if($this->existing) {
+                $this->id = $this->existing->name;
+                $this->args = (array) $this->existing;
+                $this->resource = Registry::getPostTypeResource($this->id);
+                $this->args['supports'] = array_keys(get_all_post_type_supports($this->id));
+                $this->args = array_merge($this->args, $settings);
+
+                return $this;
+            }
         }
 
-        // make lowercase
-        $upperSingular = ucwords( $singular );
-        $upperPlural   = ucwords( $plural );
-        $singular      = strtolower( $singular );
-        $plural        = strtolower( $plural );
-
-        $labels = [
-            'add_new'            => 'Add New',
-            'add_new_item'       => 'Add New ' . $upperSingular,
-            'edit_item'          => 'Edit ' . $upperSingular,
-            'menu_name'          => $upperPlural,
-            'name'               => $upperPlural,
-            'new_item'           => 'New ' . $upperSingular,
-            'not_found'          => 'No ' . $plural . ' found',
-            'not_found_in_trash' => 'No ' . $plural . ' found in Trash',
-            'parent_item_colon'  => '',
-            'search_items'       => 'Search ' . $upperPlural,
-            'singular_name'      => $upperSingular,
-            'view_item'          => 'View ' . $upperSingular,
-        ];
+        $this->applyQuickLabels($singular, $plural);
 
         // setup object for later use
         $plural   = Sanitize::underscore( $plural );
@@ -76,7 +73,6 @@ class PostType extends Registrable
         endif;
 
         $defaults = [
-            'labels'      => $labels,
             'description' => $plural,
             'rewrite'     => [ 'slug' => Sanitize::dash( $this->id ) ],
             'public'      => true,
@@ -90,9 +86,55 @@ class PostType extends Registrable
             $settings['taxonomies'] = $this->taxonomies;
         }
 
-        $this->args = array_merge( $defaults, $settings );
+        $this->args = array_merge( $this->args, $defaults, $settings );
 
         return $this;
+    }
+
+    /**
+     * Apply Quick Labels
+     *
+     * @param string $singular
+     * @param string $plural
+     * @return PostType $this
+     */
+    public function applyQuickLabels($singular, $plural = null)
+    {
+        if(!$plural) { $plural = Inflect::pluralize($singular); }
+
+        // make lowercase
+        $upperSingular = ucwords( $singular );
+        $upperPlural   = ucwords( $plural );
+        $plural        = strtolower( $plural );
+
+        $labels = [
+            'add_new'            => 'Add New',
+            'add_new_item'       => 'Add New ' . $upperSingular,
+            'edit_item'          => 'Edit ' . $upperSingular,
+            'menu_name'          => $upperPlural,
+            'name'               => $upperPlural,
+            'new_item'           => 'New ' . $upperSingular,
+            'not_found'          => 'No ' . $plural . ' found',
+            'not_found_in_trash' => 'No ' . $plural . ' found in Trash',
+            'parent_item_colon'  => '',
+            'search_items'       => 'Search ' . $upperPlural,
+            'singular_name'      => $upperSingular,
+            'view_item'          => 'View ' . $upperSingular,
+        ];
+
+        $this->args['labels'] = $labels;
+
+        return $this;
+    }
+
+    /**
+     * Get Existing Post Type
+     *
+     * @return \WP_Post_Type|null
+     */
+    public function getExisting()
+    {
+        return $this->existing;
     }
 
     /**
@@ -118,9 +160,10 @@ class PostType extends Registrable
         add_action( 'admin_head', \Closure::bind( function() use ($icons) {
             $postType = $this->getId();
             $icon = $this->getIcon();
+            $id = in_array($postType, ['post', 'page']) ? "#menu-{$postType}s" : "#menu-posts-{$postType}";
             echo "
             <style type=\"text/css\">
-                #adminmenu #menu-posts-{$postType} .wp-menu-image:before {
+                #adminmenu {$id} .wp-menu-image:before {
                     font: {$icons->fontWeight} {$icons->fontSize} {$icons->fontFamily} !important;
                     content: '{$icon}';
                     speak: none;
@@ -470,13 +513,15 @@ class PostType extends Registrable
      */
     public function register()
     {
-        $this->dieIfReserved();
+        if(!$this->existing) {
+            $this->dieIfReserved();
+            Registry::addPostTypeResource($this->id, $this->resource);
+        }
 
         $supports = array_unique(array_merge($this->args['supports'], $this->metaBoxes));
         $this->args['supports'] = $supports;
 
         register_post_type( $this->id, $this->args );
-        Registry::addPostTypeResource($this->id, $this->resource);
         return $this;
     }
 
