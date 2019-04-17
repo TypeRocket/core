@@ -94,6 +94,8 @@ class PostType extends Registrable
     /**
      * Apply Quick Labels
      *
+     * @link https://developer.wordpress.org/reference/functions/get_post_type_labels/
+     *
      * @param string $singular
      * @param string $plural
      * @return PostType $this
@@ -111,6 +113,10 @@ class PostType extends Registrable
             'add_new'            => 'Add New',
             'add_new_item'       => 'Add New ' . $upperSingular,
             'edit_item'          => 'Edit ' . $upperSingular,
+            'item_published'       => $upperSingular . ' published.',
+            'item_updated'       => $upperSingular . ' updated.',
+            'item_reverted_to_draft' => $upperSingular . ' reverted to draft.',
+            'item_scheduled'     => $upperSingular . ' scheduled.',
             'menu_name'          => $upperPlural,
             'name'               => $upperPlural,
             'new_item'           => 'New ' . $upperSingular,
@@ -122,6 +128,7 @@ class PostType extends Registrable
             'view_item'          => 'View ' . $upperSingular,
         ];
 
+        $this->args['label'] = $upperPlural;
         $this->args['labels'] = $labels;
 
         return $this;

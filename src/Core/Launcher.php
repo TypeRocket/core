@@ -211,7 +211,7 @@ class Launcher
 
         $pt = get_post_type( $post->ID );
 
-        if ($pt != 'attachment' && $pt != 'page' && $pt != 'post') :
+        if ($pt != 'attachment' ) :
 
             $obj      = get_post_type_object( $pt );
             $singular = $obj->labels->singular_name;
@@ -260,7 +260,7 @@ class Launcher
 
             $pt = get_post_type( $post->ID );
 
-            if ($pt != 'attachment' && $pt != 'page' && $pt != 'post') :
+            if ($pt != 'attachment') :
                 $obj      = get_post_type_object( $pt );
                 $singular = strtolower($obj->labels->singular_name);
                 $plural   = strtolower($obj->labels->name);
