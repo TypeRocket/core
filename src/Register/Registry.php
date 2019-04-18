@@ -110,6 +110,21 @@ class Registry
 
                 self::taxonomyFormContent($obj);
 
+                if($custom_templates = $obj->getTemplates()) {
+                    foreach(['taxonomy', 'category', 'tag'] as $template_hook) {
+                        add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
+                            /** @var \WP_Term $term */
+                            $term = get_queried_object();
+
+                            if($term->taxonomy == $this->getId()) {
+                                $template = $custom_templates['archive'];
+                            }
+
+                            return $template;
+                        }, $obj), 0, 2);
+                    }
+                }
+
             } elseif ($obj instanceof PostType) {
                 /** @var PostType $obj */
                 add_action( 'init', [$obj, 'register']);
@@ -138,6 +153,23 @@ class Registry
                             }
                         }
                     }, $obj));
+                }
+
+                if($custom_templates = $obj->getTemplates()) {
+                    foreach(['single', 'archive'] as $template_hook) {
+                        if(!empty($custom_templates[$template_hook])) {
+                            add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
+                                /** @var \WP_Post $post */
+                                global $post;
+
+                                if($post->post_type == $this->getId()) {
+                                    $template = $custom_templates[$type];
+                                }
+
+                                return $template;
+                            }, $obj), 0, 2);
+                        }
+                    }
                 }
 
                 self::setPostTypeColumns($obj);

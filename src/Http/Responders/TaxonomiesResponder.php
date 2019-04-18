@@ -31,6 +31,7 @@ class TaxonomiesResponder extends Responder
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
             $resource = 'category';
+            $controller = tr_app("Controllers\\CategoryController");
         }
 
         $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );

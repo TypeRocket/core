@@ -13,6 +13,13 @@ if( ! function_exists('tr_assets_url') ) {
     }
 }
 
+if( ! function_exists('tr_views_dir') ) {
+    function tr_views_dir( $append ) {
+        $root = \TypeRocket\Core\Config::locate('paths.views');
+        return $root . '/' . ltrim($append, '/');
+    }
+}
+
 if ( ! function_exists('tr_get_model')) {
     /**
      * Get model by recourse

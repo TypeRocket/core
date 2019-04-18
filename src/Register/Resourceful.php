@@ -9,6 +9,7 @@ trait Resourceful
 {
     protected $modelClass = null;
     protected $controllerClass = null;
+    protected $templates = null;
 
     /**
      * Set the Registrable ID for WordPress to use. Don't use reserved names.
@@ -69,5 +70,28 @@ trait Resourceful
         $this->resource[3] = $this->controllerClass;
 
         return $this;
+    }
+
+    /**
+     * Set Templates
+     *
+     * @param array $templates
+     * @return $this
+     */
+    public function setTemplates($templates)
+    {
+        $this->templates = $templates;
+
+        return $this;
+    }
+
+    /**
+     * Get Templates
+     *
+     * @return null
+     */
+    public function getTemplates()
+    {
+        return $this->templates;
     }
 }
