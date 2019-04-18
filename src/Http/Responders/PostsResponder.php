@@ -35,6 +35,7 @@ class PostsResponder extends Responder
 
         if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
             $resource = 'post';
+            $controller = tr_app("Controllers\\PostController");
         }
 
         $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
