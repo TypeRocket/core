@@ -24,10 +24,33 @@
     }
 
     .tr-form-field-help p {
-        color: #666;
+        color: $gray;
         font-style: italic;
         margin: 4px 0 0;
         font-size: 13px;
+    }
+
+    .radio-images {
+        [type=radio] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        [type=radio] + span > img {
+            cursor: pointer;
+            max-width: 100%;
+            height: auto;
+
+            &:hover, &:focus {
+                box-shadow: 0 0 5px $gray;
+            }
+        }
+
+        [type=radio]:checked + span > img {
+            box-shadow: 0 0 5px $blue;
+        }
     }
 
     .control-section,
@@ -62,7 +85,7 @@
         font-size: 12px;
         flex: 0 0 100%;
         display: block;
-        color: #191e23;
+        color: $gray_dark;
         padding-bottom: 8px;
     }
 
@@ -75,7 +98,7 @@
     .control-row-has-title .control-row-column-has-title {
         .form-control-title {
             font-size: 12px;
-            color: #666;
+            color: $gray;
         }
     }
 
@@ -111,7 +134,7 @@
     }
 
     .control-label {
-        color: #191e23;
+        color: $gray_dark;
         display: block;
         font-family: sans-serif;
         font-size: 12px;
@@ -144,7 +167,7 @@
 .tr-maxlength {
     margin-top: 3px;
     margin-bottom: 6px;
-    color: #666;
+    color: $gray;
     font-size: 12px;
     font-weight: normal;
     font-style: italic;

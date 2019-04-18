@@ -6,6 +6,13 @@ if( ! function_exists('tr_app') ) {
     }
 }
 
+if( ! function_exists('tr_assets_url') ) {
+    function tr_assets_url( $append ) {
+        $root = \TypeRocket\Core\Config::locate('paths.urls.assets');
+        return $root . '/' . ltrim($append, '/');
+    }
+}
+
 if ( ! function_exists('tr_get_model')) {
     /**
      * Get model by recourse

@@ -17,6 +17,24 @@
 
 /* Grid
 ----------------------------------------------------------------------- */
+.tr-flex-tight {
+    display: flex;
+    box-sizing: border-box;
+
+    > * {
+        box-sizing: border-box;
+        padding: 0 5px;
+    }
+
+    > :first-child {
+        padding-left: 0;
+    }
+
+    > :last-child {
+        padding-right: 0;
+    }
+}
+
 .tr-flex-list {
     display: flex;
     box-sizing: border-box;
@@ -36,6 +54,10 @@
     }
 }
 
+.tr-flex-justify {
+    justify-content: flex-start
+}
+
 /* Helpers
 ----------------------------------------------------------------------- */
 .tr-mr-10 { margin-right: 10px; }
@@ -49,6 +71,10 @@
 .tr-d-inline { display: inline; }
 .tr-d-inline-block { display: inline-block; }
 .tr-d-block { display: block; }
+
+.tr-w-100 { width: 100% }
+.tr-w-50 { width: 50% }
+.tr-w-25 { width: 25% }
 
 .cf:before,
 .cf:after {

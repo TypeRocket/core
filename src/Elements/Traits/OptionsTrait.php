@@ -99,6 +99,7 @@ trait OptionsTrait
      * @param null|string $value_name name of the field column to use as value
      *
      * @return $this
+     * @throws \Exception
      */
     public function setModelOptions(Model $model, $key_name, $value_name = null)
     {
