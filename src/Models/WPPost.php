@@ -43,6 +43,12 @@ class WPPost extends Model
         'id'
     ];
 
+    public function __construct($postType = null)
+    {
+        if($postType) { $this->postType = $postType; }
+        parent::__construct();
+    }
+
     /**
      * Posts Meta Fields
      *

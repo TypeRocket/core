@@ -11,7 +11,7 @@ class WPPostTest extends TestCase
 {
     public function testBasicPostTypeSelect()
     {
-        $post = new WPPost();
+        $post = new WPPost('post');
         $posts = $post->published()->get();
         $this->assertTrue( $posts instanceof Results);
     }

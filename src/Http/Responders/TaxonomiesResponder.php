@@ -31,7 +31,7 @@ class TaxonomiesResponder extends Responder
         $controller = $resource[3] ?? tr_app("Controllers\\{$prefix}Controller");
         $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
         $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
-        $resource = $resource[0];
+        $resource = $resource[0] ?? null;
         $response = new Response();
 
         if(! class_exists( $model )) {
@@ -40,6 +40,10 @@ class TaxonomiesResponder extends Responder
 
         if (! class_exists( $controller ) ) {
             $controller = new WPTermController(new Request(), $response, $model);
+        }
+
+        if(empty($resource)) {
+            $resource = 'category';
         }
 
         $request = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );

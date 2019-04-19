@@ -25,7 +25,7 @@ class Registry
      * @param array $resource resource name ex. posts, pages, books
      */
     public static function addPostTypeResource($id, $resource = []) {
-        self::$postTypes[$id] = $resource;
+        self::$postTypes[$id] = array_pad($resource, 4, null);
     }
 
     /**
@@ -57,7 +57,7 @@ class Registry
      * @param array $resource resource name ex. posts, pages, books
      */
     public static function addTaxonomyResource($id, $resource = []) {
-        self::$taxonomies[$id] = $resource;
+        self::$taxonomies[$id] = array_pad($resource, 4, null);
     }
 
     /**

@@ -2,6 +2,9 @@
 namespace TypeRocket\Controllers;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Http\Request;
+use TypeRocket\Http\Response;
+use TypeRocket\Models\Model;
 use TypeRocket\Models\WPPost;
 
 class WPPostController extends Controller
@@ -12,6 +15,12 @@ class WPPostController extends Controller
     protected $model = null;
     protected $type = null;
 
+    public function __construct( Request $request, Response $response, $model = null)
+    {
+        if($model) { $this->modelClass = $model; }
+        parent::__construct($request, $response);
+    }
+
     /**
      * Dynamically load proper Model based on post type
      */
@@ -21,7 +30,9 @@ class WPPostController extends Controller
         $type       = substr( $reflect->getShortName(), 0, - 10 );
         $this->type = $type;
 
-        $this->model = new $this->modelClass;
+        if(!$this->modelClass instanceof Model) {
+            $this->model = new $this->modelClass;
+        }
     }
 
     /**

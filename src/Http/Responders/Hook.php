@@ -14,6 +14,7 @@ class Hook {
      * Respond to posts hooks
      *
      * @param $id
+     * @throws \ReflectionException
      */
     static public function posts($id) {
         $responder = new PostsResponder();
@@ -49,6 +50,7 @@ class Hook {
      * @param $term_id
      * @param $term_taxonomy_id
      * @param $taxonomy
+     * @throws \ReflectionException
      */
     static public function taxonomies($term_id, $term_taxonomy_id, $taxonomy) {
         $responder = new TaxonomiesResponder();

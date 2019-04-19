@@ -1,8 +1,11 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
+use TypeRocket\Controllers\Controller;
+use TypeRocket\Controllers\WPPostController;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
+use TypeRocket\Models\WPPost;
 use \TypeRocket\Register\Registry;
 use TypeRocket\Utility\Str;
 
@@ -16,6 +19,7 @@ class PostsResponder extends Responder
      * against that resource.
      *
      * @param $args
+     * @throws \ReflectionException
      */
     public function respond( $args )
     {
@@ -31,15 +35,27 @@ class PostsResponder extends Responder
         $controller = $resource[3] ?? tr_app("Controllers\\{$prefix}Controller");
         $controller  = apply_filters('tr_posts_responder_controller', $controller);
         $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
-        $resource   = $resource[0];
+        $resource   = $resource[0] ?? null;
+        $response = new Response();
 
-        if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
+        if(! class_exists( $model )) {
+            $model = new WPPost($type);
+        }
+
+        if (! class_exists( $controller ) ) {
+            $controller = new WPPostController(new Request(), $response, $model);
+        }
+
+        if ( empty($resource) ) {
             $resource = 'post';
-            $controller = tr_app("Controllers\\PostController");
         }
 
         $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
-        $response = new Response();
+
+        if($controller instanceof Controller) {
+            $controller->setRequest($request);
+        }
+
         $response->blockFlash();
 
         $this->runKernel($request, $response);

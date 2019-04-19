@@ -93,12 +93,15 @@ class Form
                 $item_id  = $post->ID;
                 $resource = Registry::getPostTypeResource($post->post_type);
 
-                $Resource = Str::camelize($resource[0]);
+                $Resource = Str::camelize($resource[0] ?? '');
                 $resource = $resource[0] ?? null;
-                $controller = $resource[3] ?? tr_app("Controllers\\{$Resource}Controller");
-                $model      = $resource[2] ?? tr_app("Models\\{$Resource}");
+                $model = $resource[2] ?? tr_app("Models\\{$Resource}");
 
-                if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
+                if(! class_exists($model) ) {
+                    $this->model = new WPPost($post->post_type);
+                }
+
+                if( empty($resource) ) {
                     $resource = 'post';
                 }
             } elseif ( isset($comment->comment_ID ) ) {
@@ -281,6 +284,7 @@ class Form
      * @param array $data
      *
      * @return $this
+     * @throws \ReflectionException
      */
     public function useExternal($data = [])
     {
@@ -295,6 +299,7 @@ class Form
      * @param array $data
      *
      * @return $this
+     * @throws \ReflectionException
      */
     public function useWidget(\WP_Widget $widget, $data = [])
     {
