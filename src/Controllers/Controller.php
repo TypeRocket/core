@@ -36,7 +36,7 @@ class Controller
         $this->response = $response;
         $this->request  = $request;
         $this->fields = $this->request->getFields();
-        $this->model = new $this->modelClass;
+        $this->model = is_object($this->modelClass) ? $this->modelClass : new $this->modelClass;
         $this->init();
         $this->routing();
     }
@@ -72,6 +72,13 @@ class Controller
     public function getModel()
     {
         return $this->model;
+    }
+
+    public function setRequest($request)
+    {
+        $this->request = $request;
+
+        return $this;
     }
 
     /**

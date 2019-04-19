@@ -32,7 +32,7 @@ trait Resourceful
 
         return $this;
     }
-    
+
     /**
      * Set the Registrable ID for WordPress to use. Don't use reserved names.
      *
@@ -58,11 +58,11 @@ trait Resourceful
     /**
      * Override Default Controller and Model
      *
-     * @param string $model_class
      * @param string $controller_class
+     * @param string|null $model_class
      * @return $this
      */
-    public function setResponder($model_class, $controller_class)
+    public function setResponder($controller_class, $model_class = null)
     {
         $this->modelClass = $model_class;
         $this->controllerClass = $controller_class;

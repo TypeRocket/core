@@ -1,8 +1,11 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
+use TypeRocket\Controllers\Controller;
+use TypeRocket\Controllers\WPTermController;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
+use TypeRocket\Models\WPTerm;
 use \TypeRocket\Register\Registry;
 use TypeRocket\Utility\Str;
 
@@ -18,6 +21,7 @@ class TaxonomiesResponder extends Responder
      * against that resource.
      *
      * @param $args
+     * @throws \ReflectionException
      */
     public function respond( $args )
     {
@@ -28,14 +32,22 @@ class TaxonomiesResponder extends Responder
         $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
         $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
         $resource = $resource[0];
+        $response = new Response();
 
-        if ( empty($prefix) || ! class_exists( $controller ) || ! class_exists( $model )) {
-            $resource = 'category';
-            $controller = tr_app("Controllers\\CategoryController");
+        if(! class_exists( $model )) {
+           $model = new WPTerm($taxonomy);
         }
 
-        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
-        $response = new Response();
+        if (! class_exists( $controller ) ) {
+            $controller = new WPTermController(new Request(), $response, $model);
+        }
+
+        $request = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
+
+        if($controller instanceof Controller) {
+            $controller->setRequest($request);
+        }
+
         $response->blockFlash();
 
         $this->runKernel($request, $response);

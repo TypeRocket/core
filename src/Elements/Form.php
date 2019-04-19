@@ -50,7 +50,7 @@ class Form
         $this->autoConfig();
 
         $Resource = Str::camelize($this->resource);
-        $this->setModel($model ?? tr_app("Models\\{$Resource}"));
+        $this->setModel($this->model ?? $model ?? tr_app("Models\\{$Resource}"));
 
         do_action('tr_after_form_element_init', $this);
     }
@@ -69,10 +69,10 @@ class Form
             $this->model = $model;
         } elseif(class_exists($model)) {
             $this->model = new $model();
+        }
 
-            if( !empty($this->itemId) ) {
-                $this->model->findById($this->itemId);
-            }
+        if( !empty($this->itemId) ) {
+            $this->model->findById($this->itemId);
         }
 
         return $this;
@@ -82,6 +82,7 @@ class Form
      * Auto config form is no Controller etc. is set
      *
      * @return $this
+     * @throws \ReflectionException
      */
     protected function autoConfig()
     {
@@ -93,7 +94,7 @@ class Form
                 $resource = Registry::getPostTypeResource($post->post_type);
 
                 $Resource = Str::camelize($resource[0]);
-                $resource = $resource[0];
+                $resource = $resource[0] ?? null;
                 $controller = $resource[3] ?? tr_app("Controllers\\{$Resource}Controller");
                 $model      = $resource[2] ?? tr_app("Models\\{$Resource}");
 
@@ -108,17 +109,18 @@ class Form
                 $resource = 'user';
             } elseif ( isset( $taxonomy ) || isset($tag_ID) ) {
                 $item_id  = $tag_ID;
-                $resource = Registry::getTaxonomyResource($taxonomy);
+                $resources = Registry::getTaxonomyResource($taxonomy);
+                $Resource = Str::camelize($resources[0]);
+                $resource = $resources[0] ?? null;
+                $model = $resource[2] ?? tr_app("Models\\{$Resource}");
 
-                $Resource = Str::camelize($resource[0]);
-                $resource = $resource[0];
-                $controller = $resource[3] ?? tr_app("Controllers\\{$Resource}Controller");
-                $model      = $resource[2] ?? tr_app("Models\\{$Resource}");
-
-                if( empty($resource) || ! class_exists($model) || ! class_exists($controller) ) {
-                    $resource = 'category';
+                if(! class_exists($model) ) {
+                    $this->model = new WPTerm($taxonomy);
                 }
 
+                if( empty($resource) ) {
+                    $resource = 'category';
+                }
             } else {
                 $item_id  = null;
                 $resource = 'option';

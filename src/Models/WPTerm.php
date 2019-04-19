@@ -27,6 +27,12 @@ class WPTerm extends Model
         'count',
     ];
 
+    public function __construct($taxonomy = null)
+    {
+        if($taxonomy) { $this->taxonomy = $taxonomy; }
+        parent::__construct();
+    }
+
     /**
      * Set Taxonomy
      *

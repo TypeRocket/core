@@ -44,10 +44,14 @@ class Router
             $controllerName = tr_app("Controllers\\{$resource}Controller");
         }
 
-        if ( class_exists( $controllerName ) ) {
-            $this->controller = $controller = new $controllerName( $this->request, $this->response);
+        if ( !is_object($controllerName) && class_exists( $controllerName ) ) {
+            $this->controller = new $controllerName($this->request, $this->response);
+        } elseif($controllerName instanceof Controller) {
+            $this->controller = $controllerName;
+        }
 
-            if ( ! $controller instanceof Controller || ! method_exists( $controller, $this->action ) ) {
+        if($this->controller) {
+            if ( ! $this->controller instanceof Controller || ! method_exists( $this->controller, $this->action ) ) {
                 $this->response->setMessage("The controller or the action of the controller you are trying to access does not exist: <strong>{$this->action}@{$resource}</strong>");
                 $this->response->exitAny(405);
             }
