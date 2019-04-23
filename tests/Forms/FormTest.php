@@ -12,8 +12,7 @@ class FormTest extends TestCase
 
     public function testSimpleUpdatePostForm()
     {
-        $form = new Form('post', 'update', 1);
-        $form->setModel( WPPost::class );
+        $form = new Form('post', 'update', 1, WPPost::class);
         $title = $form->text('post_title')->getValue();
         $content = $form->textarea('post_content')->getValue();
 
@@ -24,7 +23,7 @@ class FormTest extends TestCase
 
     public function testUseURL()
     {
-        $form = new Form('post', 'update', 1);
+        $form = new Form('post', 'update', 1, WPPost::class);
         $form->useUrl('delete', '/posts/create');
         $value = $form->open();
         $needle = 'action="' . home_url('/posts/create/');
@@ -34,7 +33,7 @@ class FormTest extends TestCase
 
     public function testQuickForm()
     {
-        $form = new Form('post', 1);
+        $form = new Form('post', 1, null, WPPost::class);
         $this->assertTrue($form->getAction() == 'update' );
         $this->assertTrue($form->getItemId() == 1 );
         $this->assertTrue($form->getResource() == 'post' );
@@ -50,7 +49,7 @@ class FormTest extends TestCase
 
     public function testBasicDeleteForm()
     {
-        $form = new Form('post', 'delete', 33);
+        $form = new Form('post', 'delete', 33, WPPost::class);
         $this->assertTrue($form->getAction() == 'delete' );
         $this->assertTrue($form->getItemId() == 33 );
         $this->assertTrue($form->getResource() == 'post' );
@@ -58,7 +57,7 @@ class FormTest extends TestCase
 
     public function testBasicUpdateForm()
     {
-        $form = new Form('post', 'update', 12);
+        $form = new Form('post', 'update', 12, WPPost::class);
         $this->assertTrue($form->getAction() == 'update' );
         $this->assertTrue($form->getItemId() == 12 );
         $this->assertTrue($form->getResource() == 'post' );
