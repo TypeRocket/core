@@ -16,6 +16,10 @@ class Resolver
      */
     public function resolve($class)
     {
+        if( $instance = Injector::make($class)) {
+            return $instance;
+        }
+
         $reflector = new \ReflectionClass($class);
         if ( ! $reflector->isInstantiable()) {
             throw new \Exception($class . ' is not instantiable');
