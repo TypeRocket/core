@@ -35,8 +35,7 @@ abstract class Kernel
         $this->group = $group;
         $this->action_method = $action_method;
         $this->route = $route;
-
-        $this->runKernel();
+        do_action('tr_kernel', $this);
     }
 
     public function runKernel()

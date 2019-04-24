@@ -23,5 +23,6 @@ abstract class Responder
     {
         $Kernel = tr_app("Http\\Kernel");
         $this->kernel = new $Kernel( $request, $response, $type, $action_method, $route);
+        $this->kernel->runKernel();
     }
 }
