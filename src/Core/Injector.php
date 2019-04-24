@@ -9,7 +9,7 @@ class Injector
 
     protected static $list = [];
 
-    public static function make($class_name) {
+    public static function resolve($class_name) {
         if(array_key_exists($class_name, self::$list)) {
             $singleton = !empty(self::$list[$class_name]['make_singleton']);
             $single = self::$list[$class_name]['singleton_instance'];

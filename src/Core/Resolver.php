@@ -16,7 +16,7 @@ class Resolver
      */
     public function resolve($class)
     {
-        if( $instance = Injector::make($class)) {
+        if( $instance = Injector::resolve($class)) {
             return $instance;
         }
 

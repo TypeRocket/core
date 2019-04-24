@@ -168,11 +168,15 @@ class Launcher
             $plugin_dir = Config::locate('paths.plugins');
 
             foreach ($plugins_list as $plugin) {
-                $folder = $plugin_dir . '/' . $plugin . '/';
+                if(class_exists($plugin)) {
+                    (new Resolver())->resolve($plugin);
+                } else {
+                    $folder = $plugin_dir . '/' . $plugin . '/';
 
-                if (file_exists($folder . 'init.php')) {
-                    /** @noinspection PhpIncludeInspection */
-                    include $folder . 'init.php';
+                    if (file_exists($folder . 'init.php')) {
+                        /** @noinspection PhpIncludeInspection */
+                        include $folder . 'init.php';
+                    }
                 }
             }
         }

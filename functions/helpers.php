@@ -778,3 +778,18 @@ if ( ! function_exists('tr_http_response')) {
         }
     }
 }
+
+if ( ! function_exists('tr_http_response')) {
+    /**
+     * Automatically Resolve Class
+     *
+     * Inject all class dependencies
+     *
+     * @param $class_name
+     * @return object
+     * @throws Exception
+     */
+    function tr_resolve($class_name) {
+        return (new \TypeRocket\Core\Resolver())->resolve($class_name);
+    }
+}
