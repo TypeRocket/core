@@ -8,11 +8,13 @@ use \TypeRocket\Http\Response;
 class ResourceResponder extends Responder
 {
 
-    private $resource = null;
-    private $action = null;
-    private $route = null;
-    private $actionMethod = null;
-    private $handler = null;
+    protected $resource = null;
+    protected $action = null;
+    protected $route = null;
+    protected $rest = false;
+    protected $actionMethod = null;
+    protected $handler = null;
+    protected $middlewareGroups = null;
 
     /**
      * Respond to custom requests
@@ -23,7 +25,7 @@ class ResourceResponder extends Responder
      */
     public function respond( $args )
     {
-        $request  = new Request($this->actionMethod, $this->hook);
+        $request  = new Request($this->actionMethod, $this->hook, $this->rest);
         $response = new Response();
 
         $handler = (new Handler())
@@ -33,7 +35,8 @@ class ResourceResponder extends Responder
             ->setHook($this->hook)
             ->setResource($this->resource)
             ->setRoute($this->route)
-            ->setMiddlewareGroups($this->resource);
+            ->setRest($this->rest)
+            ->setMiddlewareGroups($this->middlewareGroups ?? $this->resource);
 
         $this->runKernel($request, $response, $handler);
         tr_http_response($this->kernel->router->returned, $response);
@@ -102,6 +105,29 @@ class ResourceResponder extends Responder
     {
         $this->handler = $handler;
 
+        return $this;
+    }
+
+    /**
+     * Set Middleware Groups
+     *
+     * @param $middlewareGroups
+     * @return $this
+     */
+    public function setMiddlewareGroups($middlewareGroups)
+    {
+        $this->middlewareGroups = $middlewareGroups;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $rest
+     * @return ResourceResponder
+     */
+    public function setRest($rest)
+    {
+        $this->rest = $rest;
         return $this;
     }
 

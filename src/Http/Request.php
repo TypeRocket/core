@@ -15,15 +15,17 @@ class Request
     protected $cookies = null;
     protected $hook = false;
     protected $protocol = 'http';
+    protected $rest = false;
 
     /**
      * Construct the request
      *
      * @param string $method the method PUT, POST, GET, DELETE
      * @param bool $hook
+     * @param bool $rest
      * @internal param int $id the resource ID
      */
-    public function __construct( $method = null, $hook = false )
+    public function __construct( $method = null, $hook = false, $rest = false )
     {
         $this->method = $method ? $method : $this->getFormMethod();
         $this->protocol = get_http_protocol();
@@ -39,6 +41,7 @@ class Request
             $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
         $this->hook = $hook;
+        $this->rest = $rest;
     }
 
     /**
@@ -232,6 +235,14 @@ class Request
     public function isHook()
     {
         return $this->hook;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRest()
+    {
+        return $this->rest;
     }
 
 }

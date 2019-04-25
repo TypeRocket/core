@@ -8,6 +8,16 @@ use TypeRocket\Http\Responders\ResourceResponder;
 class Rest
 {
 
+    public $reserved_resources = [
+        'option' => ['fallback_middleware_group' => null],
+        'post' => ['fallback_middleware_group' => null],
+        'page' => ['fallback_middleware_group' => 'post'],
+        'category' => ['fallback_middleware_group' => 'term'],
+        'tag' => ['fallback_middleware_group' => 'term'],
+        'user' => ['fallback_middleware_group' => null],
+        'comment' => ['fallback_middleware_group' => null],
+    ];
+
     public function __construct()
     {
         if ( defined( 'TR_PATH' ) ) {
@@ -18,19 +28,24 @@ class Rest
             if ($tr_load) {
 
                 $request = new Request();
-                $method = $request->getFormMethod();
-                if( $method == 'PUT' ) {
+                if( $request->isPut() ) {
                     $action = 'update';
-                } elseif( $method == 'DELETE' ) {
+                } elseif( $request->isDelete() ) {
                     $action = 'destroy';
-                } else {
+                } elseif( $request->isPost() ) {
                     $action = 'create';
+                } else {
+                    $action = 'showRest';
                 }
 
-                $restResponder = new ResourceResponder();
-                $restResponder->setAction($action);
-                $restResponder->setResource($tr_resource);
-                $restResponder->respond($tr_item_id);
+                $fallback_middleware_group = $this->reserved_resources[$tr_resource]['fallback_middleware_group'] ?? null;
+
+                (new ResourceResponder())
+                    ->setAction($action)
+                    ->setRest(true)
+                    ->setResource($tr_resource)
+                    ->setMiddlewareGroups([$tr_resource, $fallback_middleware_group])
+                    ->respond($tr_item_id);
             }
         }
 

@@ -17,6 +17,7 @@ class Handler
     protected $middlewareGroups;
     protected $resource;
     protected $route;
+    protected $rest;
 
     /**
      * @return mixed
@@ -38,6 +39,10 @@ class Handler
     }
 
     /**
+     * Get Action
+     *
+     * Reserved actions: add, create, edit, update, delete, index, and show are reserved.
+     *
      * @param null $method
      * @return string
      */
@@ -70,13 +75,7 @@ class Handler
             ],
         ];
 
-        $action = $method ? $reserved_actions[$this->action][$method] ?? null : $this->action;
-
-        if(!$action) {
-            wp_die('Reserved action method mismatch: add, create, edit, update, delete, index, and show are reserved.');
-        }
-
-        return $action;
+        return $method ? $reserved_actions[$this->action][$method] ?? $this->action : $this->action;
     }
 
     /**
@@ -211,6 +210,24 @@ class Handler
         $this->route = $route;
 
         return $this;
+    }
+
+    /**
+     * @param mixed $rest
+     * @return Handler
+     */
+    public function setRest($rest)
+    {
+        $this->rest = $rest;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRest()
+    {
+        return $this->rest;
     }
 
 }

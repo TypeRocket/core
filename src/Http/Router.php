@@ -3,6 +3,7 @@ namespace TypeRocket\Http;
 
 use ReflectionMethod;
 use TypeRocket\Controllers\Controller;
+use TypeRocket\Core\Config;
 use TypeRocket\Core\Resolver;
 use TypeRocket\Models\Model;
 
@@ -61,7 +62,8 @@ class Router
 
         if($this->controller) {
             if ( ! $this->controller instanceof Controller || ! method_exists( $this->controller, $this->action ) ) {
-                $this->response->setMessage("The controller or the action of the controller you are trying to access does not exist: <strong>{$this->action}@{$resource}</strong>");
+                $message = Config::locate('app.debug') ? "Not found: {$this->action}@{$resource}" : 'No Response';
+                $this->response->setMessage($message);
                 $this->response->exitAny(405);
             }
 
