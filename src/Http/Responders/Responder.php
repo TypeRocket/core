@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
+use TypeRocket\Http\Handler;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 
@@ -15,14 +16,12 @@ abstract class Responder
      *
      * @param Request $request
      * @param Response $response
-     * @param string $type
-     * @param null $action_method
-     * @param null|\TypeRocket\Http\Route $route
+     * @param Handler $handler
      */
-    public function runKernel(Request $request, Response $response, $type = 'hookGlobal', $action_method = null, $route = null )
+    public function runKernel(Request $request, Response $response, Handler $handler )
     {
         $Kernel = tr_app("Http\\Kernel");
-        $this->kernel = new $Kernel( $request, $response, $type, $action_method, $route);
+        $this->kernel = new $Kernel( $request, $response, $handler);
         $this->kernel->runKernel();
     }
 }

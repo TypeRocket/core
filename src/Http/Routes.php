@@ -103,9 +103,9 @@ class Routes
      * If the callback is not a controller pass in the Response
      * object as the argument $response
      *
-     * @param null $path
-     * @param null $handle
-     * @param null $wilds
+     * @param string|null $path
+     * @param object|null $handle
+     * @param array|null $wilds
      */
     private function runRoute($path = null, $handle = null, $wilds = null)
     {
@@ -114,7 +114,7 @@ class Routes
         $addSlash = $this->match[1]->addTrailingSlash ?? true;
         $path = self::$request->getPath();
 
-        if( $addSlash && ! Str::ends('/', $path ) && self::$request->getMethod() == 'GET' ) {
+        if( $addSlash && ! Str::ends('/', $path ) && self::$request->isGet() ) {
             wp_redirect( $path . '/' );
             die();
         }

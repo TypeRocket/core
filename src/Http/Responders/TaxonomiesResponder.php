@@ -1,8 +1,8 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use TypeRocket\Controllers\Controller;
 use TypeRocket\Controllers\WPTermController;
+use TypeRocket\Http\Handler;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 use TypeRocket\Models\WPTerm;
@@ -25,36 +25,36 @@ class TaxonomiesResponder extends Responder
      */
     public function respond( $args )
     {
-        $taxonomy   = $this->taxonomy;
-        $resource   = Registry::getTaxonomyResource( $taxonomy );
-        $prefix     = Str::camelize( $resource[0] );
-        $controller = $resource[3] ?? tr_app("Controllers\\{$prefix}Controller");
-        $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
-        $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
-        $resource = $resource[0] ?? null;
-        $response = new Response();
+        $registered = Registry::getTaxonomyResource($this->taxonomy);
+        $prefix = Str::camelize( $registered[0] );
 
-        if(! class_exists( $model )) {
-           $model = new WPTerm($taxonomy);
-        }
+        $controller = $registered[3] ?? tr_app("Controllers\\{$prefix}Controller");
+        $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
+
+        $resource = $registered[0] ?? 'category';
+        $response = (new Response())->blockFlash();
+        $request = new Request( 'PUT', $this->hook );
+        $middlewareGroup = [$resource, 'category', 'tag'];
 
         if (! class_exists( $controller ) ) {
-            $controller = new WPTermController(new Request(), $response, $model);
+            $model = $registered[2] ?? tr_app("Models\\{$prefix}");
+
+            if(! class_exists( $model )) {
+                $model = new WPTerm($this->taxonomy);
+            }
+
+            $controller = new WPTermController($request, $response, $model);
         }
 
-        if(empty($resource)) {
-            $resource = 'category';
-        }
+        $handler = (new Handler())
+            ->setAction('update')
+            ->setArgs($args)
+            ->setHandler($controller)
+            ->setHook($this->hook)
+            ->setResource($resource)
+            ->setMiddlewareGroups($middlewareGroup);
 
-        $request = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
-
-        if($controller instanceof Controller) {
-            $controller->setRequest($request);
-        }
-
-        $response->blockFlash();
-
-        $this->runKernel($request, $response);
+        $this->runKernel($request, $response, $handler);
     }
 
 }

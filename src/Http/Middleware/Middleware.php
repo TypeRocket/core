@@ -8,13 +8,16 @@ use \TypeRocket\Http\Request;
 abstract class Middleware
 {
 
-    /** @var null|Middleware $middleware */
+    /** @var Middleware|null $middleware */
     protected $next = null;
-    protected $request = null;
-    protected $response = null;
+    /** @var Request  */
+    protected $request;
+    /** @var Response  */
+    protected $response;
+    /** @var Handler|null  */
     protected $handler = null;
 
-    public function __construct( Request $request, Response $response, $middleware = null, Handler $handler)
+    public function __construct( Request $request, Response $response, $middleware = null, $handler = null )
     {
     	$this->next = $middleware;
     	$this->request = $request;

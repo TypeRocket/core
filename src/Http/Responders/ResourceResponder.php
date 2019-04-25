@@ -1,10 +1,9 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use \TypeRocket\Http\Redirect;
+use TypeRocket\Http\Handler;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
-use TypeRocket\Http\Routes;
 
 class ResourceResponder extends Responder
 {
@@ -24,9 +23,19 @@ class ResourceResponder extends Responder
      */
     public function respond( $args )
     {
-        $request  = new Request( $this->resource, null, $args, $this->action, $this->hook, $this->handler );
+        $request  = new Request($this->actionMethod, $this->hook);
         $response = new Response();
-        $this->runKernel($request, $response, 'resourceGlobal', $this->actionMethod, $this->route);
+
+        $handler = (new Handler())
+            ->setAction($this->action)
+            ->setArgs($args)
+            ->setHandler($this->handler)
+            ->setHook($this->hook)
+            ->setResource($this->resource)
+            ->setRoute($this->route)
+            ->setMiddlewareGroups($this->resource);
+
+        $this->runKernel($request, $response, $handler);
         tr_http_response($this->kernel->router->returned, $response);
     }
 

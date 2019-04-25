@@ -15,13 +15,22 @@ use TypeRocket\Models\Model;
  */
 class Router
 {
-    public $returned = [];
-    protected $request = null;
-    protected $response = null;
-    protected $handler = null;
+    /** @var Request  */
+    protected $request;
+    /** @var Response  */
+    protected $response;
+    /** @var Handler  */
+    protected $handler;
+
     /** @var Controller  */
     protected $controller;
+    /** @var string  */
+    protected $action;
+    /** @var array */
     public $middleware = [];
+
+    /** @var mixed */
+    public $returned = [];
 
     /**
      * Router constructor.
@@ -36,6 +45,7 @@ class Router
         $this->response = $response;
         $this->handler = $handler;
 
+        $this->action = $this->handler->getAction($this->request->getMethod());
         $controllerName = $this->handler->getHandler();
         $resource = $this->handler->getResource('camel');
 
@@ -50,7 +60,7 @@ class Router
         }
 
         if($this->controller) {
-            if ( ! $this->controller instanceof Controller || ! method_exists( $this->controller, $this->handler->getAction() ) ) {
+            if ( ! $this->controller instanceof Controller || ! method_exists( $this->controller, $this->action ) ) {
                 $this->response->setMessage("The controller or the action of the controller you are trying to access does not exist: <strong>{$this->action}@{$resource}</strong>");
                 $this->response->exitAny(405);
             }
@@ -67,7 +77,7 @@ class Router
      * @throws \Exception
      */
     public function handle() {
-        $action = $this->handler->getAction();
+        $action = $this->action;
         $controller = $this->controller;
         $params = (new ReflectionMethod($controller, $action))->getParameters();
 
@@ -111,7 +121,7 @@ class Router
      */
     public function getMiddlewareGroups() {
         $groups = [];
-        $action = $this->handler->getAction();
+        $action = $this->action;
 
         foreach ($this->middleware as $group ) {
             if (array_key_exists('group', $group)) {
@@ -136,74 +146,6 @@ class Router
         }
 
         return $groups;
-    }
-
-    /**
-     * Get the controller action to call
-     *
-     * @param string $action_method
-     *
-     * @return null|string
-     */
-    protected function getAction( $action_method = 'GET' ) {
-        $method = $this->request->getMethod();
-        $action = 'tr_xxx_reserved';
-
-        switch ( $this->handler->getAction() ) {
-            case 'add' :
-                if( $method == 'POST' ) {
-                    $action = 'create';
-                } else {
-                    $action = 'add';
-                }
-                break;
-            case 'create' :
-                if( $method == 'POST' ) {
-                    $action = 'create';
-                }
-                break;
-            case 'edit' :
-                if( $method == 'PUT' ) {
-                    $action = 'update';
-                } else {
-                    $action = 'edit';
-                }
-                break;
-            case 'update' :
-                if( $method == 'PUT' ) {
-                    $action = 'update';
-                }
-                break;
-            case 'delete' :
-                if( $method == 'DELETE' ) {
-                    $action = 'destroy';
-                } else {
-                    $action = 'delete';
-                }
-                break;
-            case 'index' :
-                if( $method == 'GET' ) {
-                    $action = 'index';
-                }
-                break;
-            case 'show' :
-                if( $method == 'GET' ) {
-                    $action = 'show';
-                }
-                break;
-            default :
-                $action = null;
-                if($action_method == $method ) {
-                    $action = $this->handler->getAction();
-                }
-                break;
-        }
-
-        if($action == 'tr_xxx_reserved') {
-            wp_die('You are using a reserved action: add, create, edit, update, delete, index, or show. Be sure you map these actions to the correct HTTP methods.' );
-        }
-
-        return $action;
     }
 
 }

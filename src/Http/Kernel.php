@@ -31,10 +31,10 @@ abstract class Kernel
 
     public function runKernel()
     {
-        $groups = $this->handler->getMiddlewareGroup();
+        $groups = $this->handler->getMiddlewareGroups();
         $resourceMiddleware = [];
         foreach ($groups as $group) {
-            if(!empty($this->middleware[$group])) {
+            if($group && !empty($this->middleware[$group])) {
                 $resourceMiddleware = $this->middleware[$group];
                 break;
             }

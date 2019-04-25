@@ -22,7 +22,7 @@ class BaseVerify extends Middleware  {
         $path = $this->request->getPath();
 
         if( ! $this->excludePath($path) ) {
-            if( $this->request->getMethod() != 'GET' ) {
+            if( ! $this->request->isGet() ) {
                 $token = check_ajax_referer( 'form_' . Config::locate('app.seed'), '_tr_nonce_form', false );
                 if ( ! $token ) {
                     $this->response->setError( 'csrf', true );

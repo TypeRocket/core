@@ -14,7 +14,7 @@ class Handler
     protected $action;
     protected $args;
     protected $hook;
-    protected $middlewareGroup;
+    protected $middlewareGroups;
     protected $resource;
     protected $route;
 
@@ -38,11 +38,45 @@ class Handler
     }
 
     /**
+     * @param null $method
      * @return string
      */
-    public function getAction()
+    public function getAction($method = null)
     {
-        return $this->action;
+        $reserved_actions = [
+            'add' => [
+                'POST' => 'create',
+                'GET' => 'add',
+            ],
+            'create' => [
+                'POST' => 'create',
+            ],
+            'edit' => [
+                'PUT' => 'update',
+                'GET' => 'edit',
+            ],
+            'update' => [
+                'PUT' => 'update',
+            ],
+            'delete' => [
+                'DELETE' => 'destroy',
+                'GET' => 'delete',
+            ],
+            'index' => [
+                'GET' => 'index'
+            ],
+            'show' => [
+                'GET' => 'show'
+            ],
+        ];
+
+        $action = $method ? $reserved_actions[$this->action][$method] ?? null : $this->action;
+
+        if(!$action) {
+            wp_die('Reserved action method mismatch: add, create, edit, update, delete, index, and show are reserved.');
+        }
+
+        return $action;
     }
 
     /**
@@ -114,19 +148,19 @@ class Handler
     /**
      * @return array
      */
-    public function getMiddlewareGroup()
+    public function getMiddlewareGroups()
     {
-        return explode('|', $this->middlewareGroup);
+        return explode('|', $this->middlewareGroups);
     }
 
     /**
-     * @param string|array $middlewareGroup
+     * @param string|array $middlewareGroups
      * @return Handler
      */
-    public function setMiddlewareGroup($middlewareGroup)
+    public function setMiddlewareGroups($middlewareGroups)
     {
-        $group = (string) is_array($middlewareGroup) ? implode('|', $middlewareGroup) : $middlewareGroup;
-        $this->middlewareGroup = strtolower($group);
+        $group = (string) is_array($middlewareGroups) ? implode('|', $middlewareGroups) : $middlewareGroups;
+        $this->middlewareGroups = strtolower($group);
 
         return $this;
     }

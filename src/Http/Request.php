@@ -62,6 +62,46 @@ class Request
     }
 
     /**
+     * Is Get
+     *
+     * @return bool
+     */
+    public function isGet()
+    {
+        return $this->method == 'GET';
+    }
+
+    /**
+     * Is Post
+     *
+     * @return bool
+     */
+    public function isPost()
+    {
+        return $this->method == 'POST';
+    }
+
+    /**
+     * Is Put
+     *
+     * @return bool
+     */
+    public function isPut()
+    {
+        return $this->method == 'PUT';
+    }
+
+    /**
+     * Is Delete
+     *
+     * @return bool
+     */
+    public function isDelete()
+    {
+        return $this->method == 'DELETE';
+    }
+
+    /**
      * Get the form method
      *
      * @return string POST|DELETE|PUT|GET

@@ -430,15 +430,12 @@ class Page extends Registrable
         parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $request_params);
 
         if( !empty($request_params['page']) &&  $request_params['page'] == $this->getSlug() ) {
+            $form_method = (new Request())->getFormMethod();
+
             $respond = new ResourceResponder();
             $respond->setResource( $this->resource );
-            $respond->setAction( $this->action );
-            $form_method = (new Request())->getFormMethod();
+            $respond->setAction( $this->actionMap[$form_method] ?? $this->action );
             $respond->setActionMethod($form_method);
-
-            if( !empty($this->actionMap[$form_method]) ) {
-                $respond->setAction($this->actionMap[$form_method]);
-            }
 
             $args = [];
 
