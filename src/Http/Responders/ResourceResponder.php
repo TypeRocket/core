@@ -67,9 +67,9 @@ class ResourceResponder extends Responder
     }
 
     /**
-     * Set the action
+     * Set the route
      *
-     * @param $action
+     * @param $route
      *
      * @return $this
      */
