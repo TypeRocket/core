@@ -204,13 +204,13 @@ class Handler
 
     /**
      * @param mixed $route
-     * @return mixed
+     * @return $this
      */
     public function setRoute($route)
     {
         $this->route = $route;
 
-        return $route;
+        return $this;
     }
 
 }
