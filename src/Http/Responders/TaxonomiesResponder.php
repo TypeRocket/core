@@ -34,7 +34,7 @@ class TaxonomiesResponder extends Responder
         $resource = $registered[0] ?? 'category';
         $response = (new Response())->blockFlash();
         $request = new Request( 'PUT', $this->hook );
-        $middlewareGroup = [$resource, 'category', 'tag'];
+        $middlewareGroup = [$resource, 'term', 'category', 'tag'];
 
         if (! class_exists( $controller ) ) {
             $model = $registered[2] ?? tr_app("Models\\{$prefix}");
