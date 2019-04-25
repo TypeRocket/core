@@ -27,6 +27,8 @@ class Router
     protected $controller;
     /** @var string  */
     protected $action;
+    /** @var string  */
+    protected $resource;
     /** @var array */
     public $middleware = [];
 
@@ -47,31 +49,21 @@ class Router
         $this->handler = $handler;
 
         $this->action = $this->handler->getAction($this->request->getMethod());
-        $controllerName = $this->handler->getHandler();
-        $resource = $this->handler->getResource('camel');
+        $this->resource = $this->handler->getResource('camel');
 
-        if(!$controllerName) {
-            $controllerName = tr_app("Controllers\\{$resource}Controller");
+        $caller = $this->handler->getHandler() ?? tr_app("Controllers\\{$this->resource}Controller");
+
+        if (!is_object($caller) && class_exists($caller)) {
+            $caller = new $caller($this->request, $this->response);
         }
 
-        if ( !is_object($controllerName) && class_exists( $controllerName ) ) {
-            $this->controller = new $controllerName($this->request, $this->response);
-        } elseif($controllerName instanceof Controller) {
-            $this->controller = $controllerName;
+        if ( !$this->validController($caller) ) {
+            $class = get_class($caller);
+            $this->response->exitServerError("Invalid Controller Action: {$this->action}@{$this->resource}:\\{$class}");
         }
 
-        if($this->controller) {
-            if ( ! $this->controller instanceof Controller || ! method_exists( $this->controller, $this->action ) ) {
-                $message = Config::locate('app.debug') ? "Not found: {$this->action}@{$resource}" : 'No Response';
-                $this->response->setMessage($message);
-                $this->response->exitAny(405);
-            }
-
-            $this->middleware = $this->controller->getMiddleware();
-
-        } else {
-            wp_die('Missing controller: ' . $controllerName );
-        }
+        $this->controller = $caller;
+        $this->middleware = $this->controller->getMiddleware();
     }
 
     /**
@@ -148,6 +140,21 @@ class Router
         }
 
         return $groups;
+    }
+
+    /**
+     * Validate Controller
+     *
+     * @param $caller
+     * @return bool
+     */
+    public function validController($caller)
+    {
+        if ($caller instanceof Controller && method_exists($caller, $this->action)) {
+            return true;
+        }
+
+        return false;
     }
 
 }

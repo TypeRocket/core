@@ -15,7 +15,7 @@ class OwnsPostOrCanEditPosts extends Middleware
     public function handle() {
 
         if( ! $this->request->isHook() ) {
-            $post  = get_post( $this->request->getRouterArg('id') );
+            $post  = get_post( $this->handler->getArg('id') );
             $currentUser = wp_get_current_user();
 
             if (empty($post) || $post->post_author != $currentUser->ID && ! current_user_can( 'edit_posts' )) {

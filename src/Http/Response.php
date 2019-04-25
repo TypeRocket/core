@@ -392,4 +392,16 @@ class Response {
         exit();
     }
 
+    /**
+     * Exit as Server Error
+     *
+     * @param null $message
+     * @param int $code
+     */
+    public function exitServerError($message = null, $code = 500)
+    {
+        status_header( $code >= 500 ?: 500 );
+        wp_die(WP_DEBUG ? $message ?? $this->message : 'Something went wrong!');
+    }
+
 }
