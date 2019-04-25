@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Http;
 
+use TypeRocket\Http\Middleware\Middleware;
+
 class Stack
 {
     protected $middleware;
@@ -11,10 +13,12 @@ class Stack
         $this->middleware = $middleware;
     }
 
-    public function handle($request, $response, $client)
+    public function handle($request, $response, $client, $handler)
     {
         foreach($this->middleware as $class) {
-            $client = new $class($request, $response, $client);
+            /** @var Middleware $client
+             */
+            $client = new $class($request, $response, $client, $handler);
         }
 
         $client->handle();

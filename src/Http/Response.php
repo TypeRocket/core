@@ -240,10 +240,12 @@ class Response {
      *
      * Block the flashing no matter what.
      *
-     * @return bool
+     * @return $this
      */
     public function blockFlash() {
-        return $this->blockFlash = true;
+        $this->blockFlash = true;
+
+        return $this;
     }
 
     /**

@@ -3,12 +3,8 @@ namespace TypeRocket\Http;
 
 class Request
 {
-
-    protected $resource = null;
-    protected $action = null;
-    protected $hook = null;
+    
     protected $method = null;
-    protected $routerArgs = [];
     protected $uri = null;
     protected $path = null;
     protected $host = null;
@@ -17,50 +13,32 @@ class Request
     protected $get = null;
     protected $files = null;
     protected $cookies = null;
-    protected $protocall = 'http';
-    protected $handler = null;
+    protected $hook = false;
+    protected $protocol = 'http';
 
     /**
      * Construct the request
      *
-     * @param string $resource the resource
      * @param string $method the method PUT, POST, GET, DELETE
-     * @param array $args the router args
-     * @param string $action
      * @param bool $hook
-     * @param null|string $handler
      * @internal param int $id the resource ID
      */
-    public function __construct( $resource = null, $method = null, $args = null, $action = 'auto', $hook = false, $handler = null )
+    public function __construct( $method = null, $hook = false )
     {
-        $this->resource = $resource;
-        $this->routerArgs = $args;
-        $this->action = $action;
-        $this->hook = $hook;
         $this->method = $method ? $method : $this->getFormMethod();
-        $this->protocall = get_http_protocall();
-        $this->post   = ! empty ( $_POST ) ? wp_unslash($_POST) : null;
-        $this->fields = ! empty ( $this->post['tr'] ) ? $this->post['tr'] : [];
-        $this->get    = ! empty ( $_GET ) ? wp_unslash($_GET) : null;
-        $this->files  = ! empty ( $_FILES ) ? $_FILES : null;
-        $this->cookies  = ! empty ( $_COOKIE ) ? wp_unslash($_COOKIE) : null;
-        $this->uri    = ! empty ( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
-        $this->host   = ! empty ( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;
-        $this->handler = $handler;
+        $this->protocol = get_http_protocol();
+        $this->post = !empty ($_POST) ? wp_unslash($_POST) : null;
+        $this->fields = !empty ($this->post['tr']) ? $this->post['tr'] : [];
+        $this->get = !empty ($_GET) ? wp_unslash($_GET) : null;
+        $this->files = !empty ($_FILES) ? $_FILES : null;
+        $this->cookies = !empty ($_COOKIE) ? wp_unslash($_COOKIE) : null;
+        $this->uri = !empty ($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+        $this->host = !empty ($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
 
         if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
             $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
-    }
-
-    /**
-     * Get the action
-     *
-     * @return string
-     */
-    public function getAction()
-    {
-        return $this->action;
+        $this->hook = $hook;
     }
 
     /**
@@ -68,9 +46,9 @@ class Request
      *
      * @return string
      */
-    public function getProtocall()
+    public function getProtocol()
     {
-        return $this->protocall;
+        return $this->protocol;
     }
 
     /**
@@ -92,56 +70,6 @@ class Request
     {
         $method = isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : 'GET';
         return ( isset( $_POST['_method'] ) ) ? $_POST['_method'] : $method;
-    }
-
-    /**
-     * Get the resource
-     *
-     * @return null
-     */
-    public function getResource()
-    {
-        return $this->resource;
-    }
-
-    /**
-     * Get Handler
-     *
-     * The handler should be a callable or
-     * the class name of a controller.
-     *
-     * @return null|string
-     */
-    public function getHandler()
-    {
-        return $this->handler;
-    }
-
-    /**
-     * Get the router args
-     *
-     * @return null
-     */
-    public function getRouterArgs()
-    {
-        return $this->routerArgs;
-    }
-
-    /**
-     * Get the router arg
-     *
-     * @param $key
-     * @param null $default
-     *
-     * @return mixed
-     */
-    public function getRouterArg($key, $default = null)
-    {
-        if( array_key_exists($key, $this->routerArgs) ) {
-            $default = $this->routerArgs[$key];
-        }
-
-        return $default;
     }
 
     /**
@@ -259,9 +187,7 @@ class Request
     }
 
     /**
-     * Check if request is a hook action
-     *
-     * @return bool|null
+     * @return bool
      */
     public function isHook()
     {

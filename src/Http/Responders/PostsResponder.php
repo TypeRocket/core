@@ -3,6 +3,7 @@ namespace TypeRocket\Http\Responders;
 
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Controllers\WPPostController;
+use TypeRocket\Http\Handler;
 use \TypeRocket\Http\Request;
 use \TypeRocket\Http\Response;
 use TypeRocket\Models\WPPost;
@@ -29,36 +30,39 @@ class PostsResponder extends Responder
             $id = $postId;
         }
 
-        $type       = get_post_type( $id );
-        $resource   = Registry::getPostTypeResource( $type );
-        $prefix     = Str::camelize( $resource[0] );
-        $controller = $resource[3] ?? tr_app("Controllers\\{$prefix}Controller");
-        $controller  = apply_filters('tr_posts_responder_controller', $controller);
-        $model      = $resource[2] ?? tr_app("Models\\{$prefix}");
-        $resource   = $resource[0] ?? null;
-        $response = new Response();
+        $type = get_post_type($id);
+        $registered = Registry::getPostTypeResource($type);
+        $prefix = Str::camelize($registered[0]);
+        $controller = $registered[3] ?? tr_app("Controllers\\{$prefix}Controller");
+        $controller = apply_filters('tr_posts_responder_controller', $controller);
+        $model = $registered[2] ?? tr_app("Models\\{$prefix}");
+        $resource = $registered[0] ?? null;
+        $response = (new Response())->blockFlash();
+        $request = new Request('PUT', true);
+        $middlewareGroup = [ $resource ,'post'];
 
         if(! class_exists( $model )) {
             $model = new WPPost($type);
         }
 
         if (! class_exists( $controller ) ) {
-            $controller = new WPPostController(new Request(), $response, $model);
+            $controller = new WPPostController($request, $response, $model);
         }
 
         if ( empty($resource) ) {
             $resource = 'post';
+            $middlewareGroup = 'post';
         }
 
-        $request  = new Request( $resource, 'PUT', $args, 'update', $this->hook, $controller );
+        $handler = (new Handler())
+            ->setAction('update')
+            ->setArgs($args)
+            ->setHandler($controller)
+            ->setHook($this->hook)
+            ->setResource($resource)
+            ->setMiddlewareGroup($middlewareGroup);
 
-        if($controller instanceof Controller) {
-            $controller->setRequest($request);
-        }
-
-        $response->blockFlash();
-
-        $this->runKernel($request, $response);
+        $this->runKernel($request, $response, $handler);
     }
 
 }

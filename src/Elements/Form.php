@@ -190,7 +190,7 @@ class Form
             $this->useAjax();
         }
 
-        $this->formUrl = home_url('/', get_http_protocall() ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
+        $this->formUrl = home_url('/', get_http_protocol() ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
 
         return $this;
     }
@@ -206,7 +206,7 @@ class Form
     public function useUrl($method, $url)
     {
         $url_parts     = explode('/', trim($url, '/') );
-        $this->formUrl = home_url(implode('/', $url_parts ) . '/', get_http_protocall() );
+        $this->formUrl = home_url(implode('/', $url_parts ) . '/', get_http_protocol() );
         $this->method  = strtoupper($method);
 
         return $this;

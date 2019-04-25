@@ -220,14 +220,14 @@ if ( ! function_exists('resolve_method_map')) {
     }
 }
 
-if ( ! function_exists('get_http_protocall')) {
+if ( ! function_exists('get_http_protocol')) {
 
     /**
      * Get the HTTP Protocall
      *
      * @return string
      */
-    function get_http_protocall()
+    function get_http_protocol()
     {
         return is_ssl() ? 'https' : 'http';
     }
