@@ -26,6 +26,7 @@ class Rest
 
             $tr_load = apply_filters( 'tr_rest_api_load', true, $tr_resource, $tr_item_id );
             if ($tr_load) {
+                do_action('tr_rest_api_loaded', $this, $tr_resource, $tr_item_id);
 
                 $request = new Request();
                 if( $request->isPut() ) {
