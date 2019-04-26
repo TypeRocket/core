@@ -1567,7 +1567,7 @@ class Model
         }
 
         if ($this->hasGetMutator($key)) {
-            return $this->mutateProperty($key, null);
+            return $this->mutateProperty($key, $value);
         }
 
         return $value;

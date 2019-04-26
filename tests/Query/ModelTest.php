@@ -9,6 +9,23 @@ use TypeRocket\Models\Model;
 class ModelTest extends TestCase
 {
 
+    public function testModelPropertyMutation()
+    {
+        $class = new class extends Model {
+
+            protected $properties = [
+                'name' => 'kevin'
+            ];
+
+            public function getNameProperty($value) {
+                return $value . ' dees';
+            }
+        };
+
+        $name = $class->name;
+        $this->assertTrue($name === 'kevin dees');
+    }
+
     public function testFillableMethods()
     {
         $passing = false;
