@@ -28,6 +28,7 @@ abstract class Field
      * @param array $settings the settings of the field
      * @param bool|true $label show the label
      *
+     * @throws \ReflectionException
      * @internal A Form must be passed for the field to work
      */
     public function __construct( $name, $attr = [], $settings = [], $label = true )

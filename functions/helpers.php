@@ -330,7 +330,9 @@ if ( ! function_exists('tr_posts_components_field')) {
      *
      * @param $modelClass
      *
+     * @deprecated
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_posts_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\WPPost::class)
     {
@@ -379,7 +381,7 @@ if ( ! function_exists('tr_posts_components_field')) {
     }
 }
 
-if ( ! function_exists('tr_components')) {
+if ( ! function_exists('tr_components_field')) {
     /**
      * Get components
      *
@@ -391,6 +393,7 @@ if ( ! function_exists('tr_components')) {
      * @param $modelClass
      *
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\WPPost::class)
     {
@@ -437,6 +440,7 @@ if( ! function_exists('tr_components_loop')) {
             $component = strtolower(key($data));
             $paths     = \TypeRocket\Core\Config::locate('paths');
             $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
+            $file = apply_filters('tr_component_file', $file, ['folder' => $name, 'name' => $component, 'view' => 'visual']);
             if (file_exists($file)) {
                 $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item) {
                     /** @noinspection PhpIncludeInspection */

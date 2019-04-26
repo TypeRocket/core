@@ -187,6 +187,7 @@ class Matrix extends Field implements ScriptField {
         $folder = $this->getComponentFolder();
         $options = $this->getOptions();
         $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
+        $options = apply_filters('tr_component_select_list', $options);
 
         if ($options) {
             $generator = new Generator();
@@ -295,6 +296,7 @@ class Matrix extends Field implements ScriptField {
 
                     $form->setGroup($append_group . "{$tr_matrix_group}.{$tr_matrix_key}.{$tr_matrix_type}");
                     $file        = $paths['components'] . "/" . $folder . "/{$tr_matrix_type}.php";
+                    $file = apply_filters('tr_component_file', $file, ['folder' => $folder, 'name' => $tr_matrix_type, 'view' => 'component']);
                     $classes = "matrix-field-group tr-repeater-group matrix-type-{$tr_matrix_type} matrix-group-{$tr_matrix_group}";
                     $remove = '#remove';
                     ?>

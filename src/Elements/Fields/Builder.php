@@ -118,6 +118,7 @@ class Builder extends Matrix
         $folder = $this->getComponentFolder();
         $options = $this->getOptions();
         $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
+        $options = apply_filters('tr_component_select_list', $options);
 
         if ($options) {
             $generator = new Generator();
@@ -205,6 +206,7 @@ class Builder extends Matrix
 
                     $form->setGroup($append_group . "{$tr_matrix_group}.{$tr_matrix_key}.{$tr_matrix_type}");
                     $file        = $paths['components'] . "/" . $folder . "/{$tr_matrix_type}.php";
+                    $file = apply_filters('tr_component_file', $file, ['folder' => $folder, 'name' => $tr_matrix_type, 'view' => 'component']);
                     $classes = "builder-field-group builder-type-{$tr_matrix_type} builder-group-{$tr_matrix_group}";
 
                     if(file_exists($file)) {
