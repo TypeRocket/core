@@ -8,11 +8,20 @@ return [
     | The folder names of the TypeRocket plugins you wish to enable.
     |
     */
-    'plugins' => [
-        'seo',
-        'dev',
-        'theme-options',
-        'builder',
+    'plugins' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enabled Features
+    |--------------------------------------------------------------------------
+    |
+    | Options to control what features you can use on the site.
+    |
+    */
+    'features' => [
+        'gutenberg' => false,
+        'posts_menu' => true,
+        'comments' => true,
     ],
 
     /*
@@ -23,7 +32,7 @@ return [
     | Turn on Debugging for TypeRocket. Set to false to disable.
     |
     */
-    'debug' => true,
+    'debug' => immutable('WP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -33,7 +42,7 @@ return [
     | A 'random' string of text to help with security from time to time.
     |
     */
-    'seed' => 'PUT_TYPEROCKET_SEED_HERE',
+    'seed' => 'seed_5c1d0ca4c27ce',
 
     /*
     |--------------------------------------------------------------------------
@@ -74,17 +83,6 @@ return [
     | browser caches.
     |
     */
-    'assets' => '1.0.2',
-
-    /*
-    |--------------------------------------------------------------------------
-    | App Namespace
-    |--------------------------------------------------------------------------
-    |
-    | Set the apps namespace. If the namespace is updated you also need to be
-    | updated in the composer.json file.
-    |
-    */
-    'namespace' => 'App',
+    'assets' => '1.0.4'
 
 ];

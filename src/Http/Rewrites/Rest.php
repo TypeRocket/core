@@ -45,7 +45,7 @@ class Rest
                     ->setAction($action)
                     ->setRest(true)
                     ->setResource($tr_resource)
-                    ->setMiddlewareGroups([$tr_resource, $fallback_middleware_group])
+                    ->setMiddlewareGroups([$tr_resource, $fallback_middleware_group, 'rest'])
                     ->respond(['id' => $tr_item_id]);
             }
         }

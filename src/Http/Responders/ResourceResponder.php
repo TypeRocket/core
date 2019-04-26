@@ -97,14 +97,23 @@ class ResourceResponder extends Responder
     /**
      * Set Middleware Groups
      *
-     * @param $middlewareGroups
+     * @param $groups
      * @return $this
      */
-    public function setMiddlewareGroups($middlewareGroups)
+    public function setMiddlewareGroups($groups)
     {
-        $this->middlewareGroups = $middlewareGroups;
+        $groups = (string) is_array($groups) ? implode('|', array_filter($groups)) : $groups;
+        $this->middlewareGroups = strtolower($groups);
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewareGroups()
+    {
+        return explode('|', $this->middlewareGroups);
     }
 
     /**

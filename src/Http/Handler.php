@@ -124,13 +124,13 @@ class Handler
     }
 
     /**
-     * @param string|array $middlewareGroups
+     * @param string|array $groups
      * @return Handler
      */
-    public function setMiddlewareGroups($middlewareGroups)
+    public function setMiddlewareGroups($groups)
     {
-        $group = (string) is_array($middlewareGroups) ? implode('|', $middlewareGroups) : $middlewareGroups;
-        $this->middlewareGroups = strtolower($group);
+        $groups = (string) is_array($groups) ? implode('|', array_filter($groups)) : $groups;
+        $this->middlewareGroups = strtolower($groups);
 
         return $this;
     }
