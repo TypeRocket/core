@@ -11,8 +11,6 @@ class ResourceResponder extends Responder
     protected $resource = null;
     protected $action = null;
     protected $route = null;
-    protected $rest = false;
-    protected $actionMethod = null;
     protected $handler = null;
     protected $middlewareGroups = null;
 
@@ -25,7 +23,7 @@ class ResourceResponder extends Responder
      */
     public function respond( $args )
     {
-        $request  = new Request($this->actionMethod, $this->hook, $this->rest);
+        $request  = new Request(null, $this->hook, $this->rest, $this->custom);
         $response = new Response();
 
         $handler = (new Handler())
@@ -36,6 +34,7 @@ class ResourceResponder extends Responder
             ->setResource($this->resource)
             ->setRoute($this->route)
             ->setRest($this->rest)
+            ->setCustom($this->custom)
             ->setMiddlewareGroups($this->middlewareGroups ?? $this->resource);
 
         $this->runKernel($request, $response, $handler);
@@ -83,19 +82,6 @@ class ResourceResponder extends Responder
     }
 
     /**
-     * Set the action method
-     *
-     * @param $action_method
-     *
-     * @return $this
-     */
-    public function setActionMethod( $action_method ) {
-        $this->actionMethod = $action_method;
-
-        return $this;
-    }
-
-    /**
      * Set Handler
      *
      * @param $handler
@@ -122,12 +108,27 @@ class ResourceResponder extends Responder
     }
 
     /**
+     * Set Rest
+     *
      * @param bool $rest
      * @return ResourceResponder
      */
     public function setRest($rest)
     {
         $this->rest = $rest;
+        return $this;
+    }
+
+    /**
+     * Set Custom
+     *
+     * @param bool $custom
+     * @return $this
+     */
+    public function setCustom($custom)
+    {
+        $this->custom = $custom;
+
         return $this;
     }
 

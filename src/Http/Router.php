@@ -48,7 +48,7 @@ class Router
         $this->response = $response;
         $this->handler = $handler;
 
-        $this->action = $this->handler->getAction($this->request->getMethod());
+        $this->action = $this->handler->getAction();
         $this->resource = $this->handler->getResource('camel');
 
         $caller = $this->handler->getHandler() ?? tr_app("Controllers\\{$this->resource}Controller");
@@ -58,8 +58,8 @@ class Router
         }
 
         if ( !$this->validController($caller) ) {
-            $class = get_class($caller);
-            $this->response->exitServerError("Invalid Controller Action: {$this->action}@{$this->resource}:\\{$class}");
+            $class = is_string($caller) ? $caller : '\\' . get_class($caller);
+            $this->response->exitServerError("Invalid Controller Action: {$this->action}@{$this->resource}:{$class}");
         }
 
         $this->controller = $caller;

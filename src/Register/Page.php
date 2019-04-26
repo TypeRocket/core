@@ -2,11 +2,11 @@
 
 namespace TypeRocket\Register;
 
+use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Config;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Utility\Sanitize;
-use TypeRocket\Elements\Icons;
 use TypeRocket\Template\View;
 use TypeRocket\Utility\Str;
 
@@ -15,6 +15,9 @@ class Page extends Registrable
 
     public $title = 'Admin Page Title';
     public $resource = 'admin';
+    /** @var string|Controller|null  */
+    public $handler = null;
+    public $middlewareGroups = null;
     public $action = 'index';
     public $actionMap = [];
     public $icon = null;
@@ -276,6 +279,40 @@ class Page extends Registrable
     }
 
     /**
+     * Disable Controller
+     *
+     * @return $this
+     */
+    public function disableController()
+    {
+        $this->useController = false;
+
+        return $this;
+    }
+
+    /**
+     * Set Handler
+     *
+     * The class name of the controller for the page to use.
+     *
+     * @param $handler
+     * @return $this
+     */
+    public function setHandler($handler)
+    {
+        $this->handler = $handler;
+
+        return $this;
+    }
+
+    public function setMiddlewareGroups($middlewareGroups)
+    {
+        $this->middlewareGroups = $middlewareGroups;
+
+        return $this;
+    }
+
+    /**
      * Get Capability
      *
      * @return string
@@ -331,7 +368,8 @@ class Page extends Registrable
                 if( is_string($this->showAddNewButton) ) {
                     $url = $this->showAddNewButton;
                 }
-                $action = ' <a href="'.$url.'" class="page-title-action">Add New</a>';
+                $add_text = __('Add New');
+                $action = ' <a href="'.$url.'" class="page-title-action">'.$add_text.'</a>';
             }
 
             if( $this->showTitle ) {
@@ -380,7 +418,7 @@ class Page extends Registrable
      * @param $id
      * @param null $title
      * @param string $parent_id
-     * 
+     *
      * @return $this
      */
     public function adminBar( $id, $title = null, $parent_id = 'site-name')
@@ -401,7 +439,7 @@ class Page extends Registrable
                 ]);
             }
         }, $this), 80);
-        
+
         return $this;
     }
 
@@ -423,6 +461,24 @@ class Page extends Registrable
     }
 
     /**
+     * Map Actions
+     *
+     * Used to reduce the number of page registrations needed
+     * to map REST methods to actions. This allows for each
+     * page=? to act as a single route that can respond
+     * to any number of HTTP request methods.
+     *
+     * @param $map ['POST' => 'create', 'GET' => 'add', 'DELETE' => 'destroy']
+     * @return $this
+     */
+    public function mapActions($map)
+    {
+        $this->actionMap = $map;
+
+        return $this;
+    }
+
+    /**
      * Invoked if $useController is true
      */
     public function respond()
@@ -430,12 +486,6 @@ class Page extends Registrable
         parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $request_params);
 
         if( !empty($request_params['page']) &&  $request_params['page'] == $this->getSlug() ) {
-            $form_method = (new Request())->getFormMethod();
-
-            $respond = new ResourceResponder();
-            $respond->setResource( $this->resource );
-            $respond->setAction( $this->actionMap[$form_method] ?? $this->action );
-            $respond->setActionMethod($form_method);
 
             $args = [];
 
@@ -447,7 +497,15 @@ class Page extends Registrable
                 }
             }
 
-            $respond->respond( $args );
+            $method = (new Request())->getFormMethod();
+
+            (new ResourceResponder())
+                ->setResource( $this->resource )
+                ->setHandler( $this->handler )
+                ->setCustom(true)
+                ->setMiddlewareGroups($this->middlewareGroups)
+                ->setAction( $this->actionMap[$method] ?? $this->action )
+                ->respond( $args );
         }
     }
 

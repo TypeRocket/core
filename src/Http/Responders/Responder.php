@@ -10,6 +10,8 @@ abstract class Responder
     /** @var \TypeRocket\Http\Kernel */
     public $kernel;
     public $hook = false;
+    public $rest = false;
+    public $custom = false;
 
     /**
      * Run the Kernel

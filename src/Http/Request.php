@@ -16,6 +16,7 @@ class Request
     protected $hook = false;
     protected $protocol = 'http';
     protected $rest = false;
+    protected $custom;
 
     /**
      * Construct the request
@@ -25,7 +26,7 @@ class Request
      * @param bool $rest
      * @internal param int $id the resource ID
      */
-    public function __construct( $method = null, $hook = false, $rest = false )
+    public function __construct( $method = null, $hook = false, $rest = false, $custom = false )
     {
         $this->method = $method ? $method : $this->getFormMethod();
         $this->protocol = get_http_protocol();
@@ -42,6 +43,7 @@ class Request
         }
         $this->hook = $hook;
         $this->rest = $rest;
+        $this->custom = $custom;
     }
 
     /**
@@ -243,6 +245,14 @@ class Request
     public function isRest()
     {
         return $this->rest;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustom()
+    {
+        return $this->custom;
     }
 
 }

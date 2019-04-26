@@ -9,15 +9,15 @@ use TypeRocket\Utility\Str;
 
 class Handler
 {
-
     protected $handler;
     protected $action;
     protected $args;
     protected $hook;
+    protected $rest;
+    protected $custom;
     protected $middlewareGroups;
     protected $resource;
     protected $route;
-    protected $rest;
 
     /**
      * @return mixed
@@ -41,41 +41,12 @@ class Handler
     /**
      * Get Action
      *
-     * Reserved actions: add, create, edit, update, delete, index, and show are reserved.
-     *
-     * @param null $method
      * @return string
      */
-    public function getAction($method = null)
+    public function getAction()
     {
-        $reserved_actions = [
-            'add' => [
-                'POST' => 'create',
-                'GET' => 'add',
-            ],
-            'create' => [
-                'POST' => 'create',
-            ],
-            'edit' => [
-                'PUT' => 'update',
-                'GET' => 'edit',
-            ],
-            'update' => [
-                'PUT' => 'update',
-            ],
-            'delete' => [
-                'DELETE' => 'destroy',
-                'GET' => 'delete',
-            ],
-            'index' => [
-                'GET' => 'index'
-            ],
-            'show' => [
-                'GET' => 'show'
-            ],
-        ];
 
-        return $method ? $reserved_actions[$this->action][$method] ?? $this->action : $this->action;
+        return $this->action;
     }
 
     /**
@@ -228,6 +199,24 @@ class Handler
     public function getRest()
     {
         return $this->rest;
+    }
+
+    /**
+     * @param bool $custom
+     * @return Handler
+     */
+    public function setCustom($custom)
+    {
+        $this->custom = $custom;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getCustom()
+    {
+        return $this->custom;
     }
 
 }

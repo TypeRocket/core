@@ -128,6 +128,7 @@ if ( ! function_exists('tr_resource_pages')) {
      */
     function tr_resource_pages($singular, $plural = null, array $settings = [], $resource = null)
     {
+        list($singular, $handle) = array_pad(explode('@', $singular), 2, null);
 
         if ( ! $plural) {
             $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
@@ -139,13 +140,51 @@ if ( ! function_exists('tr_resource_pages')) {
 
         $menu_id = 'add_resource_' . \TypeRocket\Utility\Sanitize::underscore($singular);
 
-        return tr_page($resource, 'index', $plural, $settings)->apply(
-            tr_page($resource, 'edit', 'Edit ' . $singular)->useController()->addNewButton()->removeMenu(),
-            tr_page($resource, 'show', $singular)->useController()->addNewButton()->removeMenu(),
-            tr_page($resource, 'delete', 'Delete ' . $singular)->useController()->removeMenu(),
-            tr_page($resource, 'add', 'Add ' . $singular)->useController()->setArgument('menu',
-                'Add New')->adminBar($menu_id, $singular, 'new-content')
-        )->addNewButton()->useController();
+        $add = tr_page($resource, 'add', __('Add ' . $singular))
+            ->setArgument('menu', __('Add New'))
+            ->adminBar($menu_id, $singular, 'new-content')
+            ->mapActions([
+                'GET' => 'add',
+                'POST' => 'create',
+            ]);
+
+        $delete = tr_page($resource, 'delete', 'Delete ' . $singular)
+            ->removeMenu()
+            ->mapActions([
+                'GET' => 'delete',
+                'POST' => 'destroy',
+            ]);
+
+        $show = tr_page($resource, 'show', $singular)
+            ->addNewButton()
+            ->removeMenu()
+            ->mapActions([
+                'GET' => 'show'
+            ]);
+
+        $edit = tr_page($resource, 'edit', __('Edit ' . $singular))
+            ->addNewButton()
+            ->removeMenu()
+            ->mapActions([
+                'GET' => 'edit',
+                'PUT' => 'update',
+            ]);
+
+        $index = tr_page($resource, 'index', $plural, $settings)
+            ->apply($edit, $show, $delete, $add)
+            ->useController()
+            ->addNewButton();
+
+        foreach ([$add, $edit, $delete, $show, $index] as $page) {
+            /** @var \TypeRocket\Register\Page $page */
+            $page->useController();
+
+            if($handle) {
+                $page->setHandler($handle);
+            }
+        }
+
+        return $index;
     }
 }
 
