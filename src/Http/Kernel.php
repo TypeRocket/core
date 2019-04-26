@@ -32,6 +32,11 @@ abstract class Kernel
     public function runKernel()
     {
         $groups = $this->handler->getMiddlewareGroups();
+
+        if($this->handler->getRest()) {
+            $groups[] = 'restApi';
+        }
+
         $resourceMiddleware = [];
         foreach ($groups as $group) {
             if($group && !empty($this->middleware[$group])) {

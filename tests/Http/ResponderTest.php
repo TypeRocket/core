@@ -47,9 +47,9 @@ class ResponderTest extends TestCase
         $handler = new ResourceResponder();
 
         $response = $handler
-            ->setMiddlewareGroups(['post', null, 'restApi'])
+            ->setMiddlewareGroups(['post', null, 'rest_api'])
             ->getMiddlewareGroups();
 
-        $this->assertTrue($response == ['post', 'restapi']);
+        $this->assertTrue($response == ['post', 'rest_api']);
     }
 }
