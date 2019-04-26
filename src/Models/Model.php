@@ -38,7 +38,7 @@ class Model
     protected $idColumn = 'id';
     protected $resultsClass = Results::class;
     protected $currentRelationshipModel = null;
-    private $junction = null;
+    protected $junction = null;
 
     /**
      * Construct Model based on resource
@@ -1545,7 +1545,7 @@ class Model
             return $this->getRelationshipFromMethod($key);
         }
 
-        throw new InvalidArgumentException("$key does not exist as a Model relationship");
+        return null;
     }
 
     /**
@@ -1560,21 +1560,17 @@ class Model
      */
     protected function getPropertyFromArray($key)
     {
+        $value = null;
+
         if (array_key_exists($key, $this->properties)) {
             $value = $this->properties[$key];
-
-            if ($this->hasGetMutator($key)) {
-                return $this->mutateProperty($key, $value);
-            }
-
-            return $value;
         }
 
         if ($this->hasGetMutator($key)) {
             return $this->mutateProperty($key, null);
         }
 
-        throw new InvalidArgumentException("$key does not exist in Model's properties array");
+        return $value;
     }
 
     /**
