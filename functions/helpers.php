@@ -172,7 +172,6 @@ if ( ! function_exists('tr_resource_pages')) {
 
         $index = tr_page($resource, 'index', $plural, $settings)
             ->apply($edit, $show, $delete, $add)
-            ->useController()
             ->addNewButton();
 
         foreach ([$add, $edit, $delete, $show, $index] as $page) {
