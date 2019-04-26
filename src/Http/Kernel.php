@@ -34,7 +34,7 @@ abstract class Kernel
         $groups = $this->handler->getMiddlewareGroups();
 
         if($this->handler->getRest()) {
-            $groups[] = 'restApi';
+            $groups[] = 'restApiFallback';
         }
 
         $resourceMiddleware = [];
