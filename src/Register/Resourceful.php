@@ -62,7 +62,7 @@ trait Resourceful
      * @param string|null $model_class
      * @return $this
      */
-    public function setResponder($controller_class, $model_class = null)
+    public function setHandler($controller_class, $model_class = null)
     {
         $this->modelClass = $model_class;
         $this->controllerClass = $controller_class;
