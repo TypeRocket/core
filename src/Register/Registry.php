@@ -156,7 +156,7 @@ class Registry
                 }
 
                 if($custom_templates = $obj->getTemplates()) {
-                    foreach(['single', 'archive'] as $template_hook) {
+                    foreach(['single', 'archive', 'page'] as $template_hook) {
                         if(!empty($custom_templates[$template_hook])) {
                             add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
                                 /** @var \WP_Post $post */
