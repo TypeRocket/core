@@ -37,6 +37,7 @@ class Builder
 
                 $form->setGroup($formGroup . "{$group}.{$tr_matrix_id}.{$type}");
                 $file = $paths['components'] . "/{$folder}/{$type}.php";
+                $file = apply_filters('tr_component_file', $file, ['folder' => $folder, 'name' => $type, 'view' => 'component']);
                 ?>
                 <div class="builder-field-group builder-type-<?php echo $type; ?> builder-group-<?php echo $group; ?>">
                     <div class="builder-inputs">

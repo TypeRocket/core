@@ -37,7 +37,7 @@ class Matrix
 
                 $form->setGroup($formGroup . "{$group}.{$tr_matrix_id}.{$type}");
                 $file = $paths['components'] . "/{$folder}/{$type}.php";
-
+                $file = apply_filters('tr_component_file', $file, ['folder' => $folder, 'name' => $type, 'view' => 'component']);
                 ?>
                 <div class="matrix-field-group tr-repeater-group matrix-type-<?php echo $type; ?> matrix-group-<?php echo $group; ?>">
                     <div class="repeater-controls">
