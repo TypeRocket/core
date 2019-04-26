@@ -132,7 +132,6 @@ class Routes
             $respond->setAction( $action );
             $respond->setRoute( $handle );
             $respond->setHandler( $handler );
-            $respond->setActionMethod( strtoupper( self::$request->getFormMethod() ) );
             $respond->respond( $this->vars );
         }
 

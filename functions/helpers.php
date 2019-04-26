@@ -152,7 +152,7 @@ if ( ! function_exists('tr_resource_pages')) {
             ->removeMenu()
             ->mapActions([
                 'GET' => 'delete',
-                'POST' => 'destroy',
+                'DELETE' => 'destroy',
             ]);
 
         $show = tr_page($resource, 'show', $singular)
