@@ -187,7 +187,7 @@ class Matrix extends Field implements ScriptField {
         $folder = $this->getComponentFolder();
         $options = $this->getOptions();
         $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
-        $options = apply_filters('tr_component_select_list', $options);
+        $options = apply_filters('tr_component_select_list', $options, $folder, $name);
 
         if ($options) {
             $generator = new Generator();
