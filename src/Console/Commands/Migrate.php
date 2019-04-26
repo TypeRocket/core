@@ -55,12 +55,17 @@ class Migrate extends Command
         /** @var \wpdb $wpdb */
         global $wpdb;
         $root = Config::locate('paths.migrate');
-        $migrations_folder = $root['migrations'];
+        $migrations_list = is_array($root['migrations']) ? $root['migrations'] : [$root['migrations']];
         $migrations_run_folder = $root['run'];
+        $migrations = [];
 
-        if( ! file_exists( $migrations_folder ) ) {
-            $this->error('No migrations found at: ' . $migrations_folder);
-            return;
+        foreach ($migrations_list as $migrations_folder) {
+            if( ! file_exists( $migrations_folder ) ) {
+                $this->error('Migrations folder not found: ' . $migrations_folder);
+                return;
+            }
+            $new_migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
+            $migrations = array_merge($migrations, $new_migrations);
         }
 
         // Make directories if needed
@@ -70,7 +75,6 @@ class Migrate extends Command
             $this->success('Location created...');
         }
 
-        $migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
         $migrations_run = array_diff(scandir($migrations_run_folder), ['..', '.'] );
 
         if($type == 'up') {
