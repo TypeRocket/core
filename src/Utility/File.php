@@ -100,7 +100,7 @@ class File
      *
      * Delete everything, files and folders.
      *
-     * @param null $path
+     * @param null|string $path
      * @param bool $removeSelf
      *
      * @return bool
@@ -142,6 +142,42 @@ class File
         }
 
         return true;
+    }
+
+    /**
+     * Copy Recursive
+     *
+     * @param string $destination location file/dir will be copied to
+     * @param bool $relative prefix destination location relative to the TypeRocket root.
+     */
+    public function copyTo($destination, $relative = false)
+    {
+        $path = $this->file;
+
+        if($relative) {
+            $destination = TR_PATH . '/' . ltrim($destination, DIRECTORY_SEPARATOR);
+        }
+
+        if(!file_exists($destination) && is_dir($path)) {
+            mkdir($destination, 0755);
+        }
+
+        if(!is_dir($path) && is_file($path)) {
+            copy($path, $destination);
+            return;
+        }
+
+        $no_dots = \RecursiveDirectoryIterator::SKIP_DOTS;
+        $self_first = \RecursiveIteratorIterator::SELF_FIRST;
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, $no_dots), $self_first);
+
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            } else {
+                copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            }
+        }
     }
 
 }

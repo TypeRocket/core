@@ -821,7 +821,7 @@ if ( ! function_exists('tr_http_response')) {
     }
 }
 
-if ( ! function_exists('tr_http_response')) {
+if ( ! function_exists('tr_resolve')) {
     /**
      * Automatically Resolve Class
      *
@@ -833,5 +833,18 @@ if ( ! function_exists('tr_http_response')) {
      */
     function tr_resolve($class_name) {
         return (new \TypeRocket\Core\Resolver())->resolve($class_name);
+    }
+}
+
+if ( ! function_exists('tr_file')) {
+    /**
+     * File Utility
+     *
+     * @param $file
+     * @return object
+     * @throws Exception
+     */
+    function tr_file($file) {
+        return new \TypeRocket\Utility\File($file);
     }
 }

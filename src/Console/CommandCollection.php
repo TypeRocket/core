@@ -14,6 +14,7 @@ class CommandCollection extends \ArrayObject
         Commands\GenerateSeed::class,
         Commands\UseTemplates::class,
         Commands\UseRoot::class,
+        Commands\PublishPlugin::class,
     ];
 
     public $wordpress = [
