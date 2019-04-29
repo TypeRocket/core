@@ -147,6 +147,8 @@ class File
     /**
      * Copy Recursive
      *
+     * This function replaces all older files. Use with caution.
+     *
      * @param string $destination location file/dir will be copied to
      * @param bool $relative prefix destination location relative to the TypeRocket root.
      */
