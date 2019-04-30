@@ -85,10 +85,18 @@ class UseRoot extends Command
         $file = new File($this->configWP);
 
         // Add init.php
-        $needle = 'require_once(ABSPATH . \'wp-settings.php\');';
+        $needle = 'require_once( ABSPATH . \'wp-settings.php\' );';
         $replace  = "require __DIR__ . '/init.php'; // Init TypeRocket" . PHP_EOL;
-        $replace .= "require_once(ABSPATH . 'wp-settings.php');";
-        $file->replaceOnLine($needle, $replace);
+        $replace .= "require_once( ABSPATH . 'wp-settings.php' );";
+
+        if( ! $file->replaceOnLine($needle, $replace) ) {
+            $needle = 'require_once(ABSPATH . \'wp-settings.php\');';
+
+            if(! $file->replaceOnLine($needle, $replace) ) {
+                $this->error('The TypeRocket init.php file was not included in wp-config.php');
+            };
+
+        };
 
         // WP config
         $file->replaceOnLine('database_name_here', $this->getArgument('database'));
