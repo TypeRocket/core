@@ -31,20 +31,27 @@ class File
      * @param $needle
      * @param $replacement
      *
+     * @param bool $regex
      * @return bool
      * @throws \Exception
      */
-    public function replaceOnLine( $needle, $replacement)
+    public function replaceOnLine( $needle, $replacement, $regex = false)
     {
         $data = file($this->file);
         $fileContent = '';
         $found = false;
         if( $data ) {
+
             foreach ($data as $line ) {
-                if ( strpos($line, $needle) !== false ) {
+                if($regex && preg_match($needle, $line)) {
+                    $found = true;
+                    $fileContent .= rtrim(preg_replace($needle, $replacement, $line)) . PHP_EOL;
+                }
+                elseif ( !$regex && strpos($line, $needle) !== false ) {
                     $found = true;
                     $fileContent .= rtrim(str_replace($needle, $replacement, $line)) . PHP_EOL;
-                } else {
+                }
+                else {
                     $fileContent .= rtrim($line) . PHP_EOL;
                 }
             }
