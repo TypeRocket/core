@@ -40,6 +40,7 @@ function tr_feature_disable_comments_dashboard() {
     remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
 }
 add_action('admin_init', 'tr_feature_disable_comments_dashboard');
+
 // Remove comments links from admin bar
 function tr_feature_disable_comments_admin_bar() {
     if (is_admin_bar_showing()) {
@@ -47,3 +48,9 @@ function tr_feature_disable_comments_admin_bar() {
     }
 }
 add_action('init', 'tr_feature_disable_comments_admin_bar');
+
+function tr_feature_remove_comments_admin_bar(){
+    global $wp_admin_bar;
+    $wp_admin_bar->remove_menu('comments');
+}
+add_action( 'wp_before_admin_bar_render', 'tr_feature_remove_comments_admin_bar' );
