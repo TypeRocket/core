@@ -4,49 +4,57 @@ namespace TypeRocket\Http\Rewrites;
 
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Responders\ResourceResponder;
+use TypeRocket\Register\Registry;
 
 class Rest
 {
 
-    public $reserved_resources = [
-        'option' => ['fallback_middleware_group' => null],
-        'post' => ['fallback_middleware_group' => null],
-        'page' => ['fallback_middleware_group' => 'post'],
-        'category' => ['fallback_middleware_group' => 'term'],
-        'tag' => ['fallback_middleware_group' => 'term'],
-        'user' => ['fallback_middleware_group' => null],
-        'comment' => ['fallback_middleware_group' => null],
-    ];
+    public $responder;
+    public $resource;
+    public $action;
+    public $item;
+    public $middleware;
+    public $handler;
+    public $middleware_fallback;
 
     public function __construct()
     {
         if ( defined( 'TR_PATH' ) ) {
-            $tr_resource = get_query_var( 'tr_json_controller', null );
-            $tr_item_id  = get_query_var( 'tr_json_item', null );
+            $this->resource = get_query_var( 'tr_json_controller', null );
+            $this->item  = (int) get_query_var( 'tr_json_item', null );
+            $this->responder = (new ResourceResponder());
 
-            $tr_load = apply_filters( 'tr_rest_api_load', true, $tr_resource, $tr_item_id );
-            if ($tr_load) {
-                do_action('tr_rest_api_loaded', $this, $tr_resource, $tr_item_id);
+            $request = new Request();
+            if( $request->isPut() ) {
+                $this->action = 'update';
+            } elseif( $request->isDelete() ) {
+                $this->action = 'destroy';
+            } elseif( $request->isPost() ) {
+                $this->action = 'create';
+            } else {
+                $this->action = 'showRest';
+            }
 
-                $request = new Request();
-                if( $request->isPut() ) {
-                    $action = 'update';
-                } elseif( $request->isDelete() ) {
-                    $action = 'destroy';
-                } elseif( $request->isPost() ) {
-                    $action = 'create';
-                } else {
-                    $action = 'showRest';
-                }
+            if($obj = Registry::getPostTypeResource($this->resource)) {
+                $this->middleware_fallback = 'post';
+                $this->middleware = $this->resource;
+                $this->handler = $obj[3];
+            }
+            elseif($obj = Registry::getTaxonomyResource($this->resource)) {
+                $this->middleware_fallback = 'term';
+                $this->middleware = $this->resource;
+                $this->handler = $obj[3];
+            }
 
-                $fallback_middleware_group = $this->reserved_resources[$tr_resource]['fallback_middleware_group'] ?? null;
-
-                (new ResourceResponder())
-                    ->setAction($action)
+            if ( apply_filters( 'tr_rest_api_load', true, $this->resource, $this->item ) ) {
+                do_action('tr_rest_api_loaded', $this, $this->resource, $this->item);
+                $this->responder
+                    ->setAction($this->action)
+                    ->setHandler($this->handler)
                     ->setRest(true)
-                    ->setResource($tr_resource)
-                    ->setMiddlewareGroups([$tr_resource, $fallback_middleware_group])
-                    ->respond(['id' => $tr_item_id]);
+                    ->setResource($this->resource)
+                    ->setMiddlewareGroups([$this->middleware ?? $this->resource, $this->middleware_fallback])
+                    ->respond(['id' => $this->item]);
             }
         }
 
