@@ -15,6 +15,7 @@ class CommandCollection extends \ArrayObject
         Commands\UseTemplates::class,
         Commands\UseRoot::class,
         Commands\PublishPlugin::class,
+        Commands\DownloadWordPress::class,
     ];
 
     public $wordpress = [

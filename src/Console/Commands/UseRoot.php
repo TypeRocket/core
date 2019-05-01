@@ -5,7 +5,6 @@ namespace TypeRocket\Console\Commands;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use Symfony\Component\Console\Input\ArrayInput;
-use TypeRocket\Utility\Str;
 
 class UseRoot extends Command
 {
@@ -57,11 +56,9 @@ class UseRoot extends Command
 
         // Run
         $this->downloadWordPress();
-        $this->unArchiveWordPress();
         $this->configWordPress();
         $this->useTemplates();
         $this->updateTypeRocketPaths();
-        $this->cleanWordPressThemes();
 
         $this->success('TypeRocket is connected, Happy coding!');
     }
@@ -118,41 +115,14 @@ class UseRoot extends Command
     }
 
     /**
-     * Download WordPress
+     * Use Templates
+     *
+     * @throws \Exception
      */
-    protected function downloadWordPress()
-    {
-        // Message
-        $this->success('Downloading WordPress');
-
-        // Download
-        $file = new File( $this->archiveWP );
-        $file->download('https://wordpress.org/latest.zip');
-    }
-
-    /**
-     * Un-archive WordPress
-     */
-    protected function unArchiveWordPress() {
-        $zip = new \ZipArchive;
-
-        if ( $zip->open( $this->archiveWP ) ) {
-            // Message
-            $this->success('Extracting WordPress');
-
-            $zip->extractTo( TR_PATH );
-            $zip->close();
-        } else {
-            // Error
-            $this->error('Error opening archive file');
-            die();
-        }
-
-        // Cleanup zip file
-        if( file_exists( $this->archiveWP ) ) {
-            $this->success('Archive file deleted');
-            unlink( $this->archiveWP );
-        }
+    protected function downloadWordPress() {
+        $command = $this->getApplication()->find('wp:download');
+        $input = new ArrayInput( [ 'clean' => 'all', 'path' => TR_PATH ] );
+        $command->run($input, $this->output);
     }
 
     /**
@@ -191,25 +161,5 @@ class UseRoot extends Command
             $file->replaceOnLine($path, $replacements[$index]);
         }
 
-    }
-
-    /**
-     * Clean WordPress Themes
-     */
-    protected function cleanWordPressThemes() {
-        $twentyThemes = glob( TR_PATH . "/wordpress/wp-content/themes/twenty*/");
-
-        foreach ($twentyThemes as $value) {
-
-            // Message
-            $this->success('Deleting ' . $value);
-            if( Str::starts( TR_PATH, $value) && file_exists( $value ) ) {
-
-                // Delete theme
-                ( new File($value) )->removeRecursiveDirectory();
-            } else {
-                $this->error('Error deleting none project file ' . $value);
-            }
-        }
     }
 }

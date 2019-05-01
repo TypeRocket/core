@@ -130,6 +130,11 @@ class File
             die('You are about to delete your server!');
         }
 
+        if(!is_dir($dir) && is_file($dir)) {
+            unlink($dir);
+            return true;
+        }
+
         if( file_exists( $dir ) ) {
             $it = new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS );
             $files = new \RecursiveIteratorIterator( $it, \RecursiveIteratorIterator::CHILD_FIRST );
