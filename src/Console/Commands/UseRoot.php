@@ -33,6 +33,7 @@ class UseRoot extends Command
      * Example command: php galaxy use:root
      *
      * @return int|null|void
+     * @throws \Exception
      */
     protected function exec()
     {
@@ -156,6 +157,8 @@ class UseRoot extends Command
 
     /**
      * Use Templates
+     *
+     * @throws \Exception
      */
     protected function useTemplates() {
         $command = $this->getApplication()->find('use:templates');
@@ -165,6 +168,8 @@ class UseRoot extends Command
 
     /**
      * Update TypeRocket Paths
+     *
+     * @throws \Exception
      */
     protected function updateTypeRocketPaths() {
         // Message
