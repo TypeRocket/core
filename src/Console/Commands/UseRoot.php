@@ -69,6 +69,7 @@ class UseRoot extends Command
      * Configure WordPress
      *
      * @return bool
+     * @throws \Exception
      */
     protected function configWordPress() {
         // Check for wp-config.php
@@ -85,17 +86,12 @@ class UseRoot extends Command
         $file = new File($this->configWP);
 
         // Add init.php
-        $needle = 'require_once( ABSPATH . \'wp-settings.php\' );';
+        $needle = '/require_once.*wp-settings.php.\s*?\)\;/m';
         $replace  = "require __DIR__ . '/init.php'; // Init TypeRocket" . PHP_EOL;
         $replace .= "require_once( ABSPATH . 'wp-settings.php' );";
 
-        if( ! $file->replaceOnLine($needle, $replace) ) {
-            $needle = 'require_once(ABSPATH . \'wp-settings.php\');';
-
-            if(! $file->replaceOnLine($needle, $replace) ) {
-                $this->error('The TypeRocket init.php file was not included in wp-config.php');
-            };
-
+        if( ! $file->replaceOnLine($needle, $replace, true) ) {
+            $this->error('The TypeRocket init.php file was not included in wp-config.php');
         };
 
         // WP config
