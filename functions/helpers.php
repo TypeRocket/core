@@ -1,5 +1,11 @@
 <?php
 if( ! function_exists('tr_app') ) {
+    /**
+     * Get Namespaced Class
+     *
+     * @param string $append
+     * @return string
+     */
     function tr_app( $append ) {
         $space = "\\" . TR_APP_NAMESPACE . "\\";
         return $space . $append;
@@ -7,13 +13,26 @@ if( ! function_exists('tr_app') ) {
 }
 
 if( ! function_exists('tr_assets_url') ) {
+    /**
+     * Get Assets URL
+     *
+     * @param string $append
+     * @return string
+     */
     function tr_assets_url( $append ) {
         $root = \TypeRocket\Core\Config::locate('paths.urls.assets');
         return $root . '/' . ltrim($append, '/');
     }
 }
 
+
 if( ! function_exists('tr_views_dir') ) {
+    /**
+     * Get Views Directory
+     *
+     * @param string $append
+     * @return string
+     */
     function tr_views_dir( $append ) {
         $root = \TypeRocket\Core\Config::locate('paths.views');
         return $root . '/' . ltrim($append, '/');
@@ -248,10 +267,11 @@ if ( ! function_exists('tr_modify_model_value')) {
     /**
      * Modify Model Value
      *
-     * @param \TypeRocket\Models\Model $name use dot notation
-     * @param null $arg
+     * @param \TypeRocket\Models\Model $model use dot notation
+     * @param mixed $args
      *
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_modify_model_value($model, $args)
     {
@@ -303,6 +323,7 @@ if ( ! function_exists('tr_posts_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
+     * @throws ReflectionException
      */
     function tr_posts_field($name, $item_id = null)
     {
@@ -464,6 +485,7 @@ if ( ! function_exists('tr_users_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_users_field($name, $item_id = null)
     {
@@ -508,6 +530,7 @@ if ( ! function_exists('tr_comments_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_comments_field($name, $item_id = null)
     {
@@ -553,6 +576,7 @@ if ( ! function_exists('tr_resource_field')) {
      * @param null|int $item_id
      *
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_resource_field($name, $resource, $item_id = null)
     {
@@ -846,5 +870,26 @@ if ( ! function_exists('tr_file')) {
      */
     function tr_file($file) {
         return new \TypeRocket\Utility\File($file);
+    }
+}
+
+if ( ! function_exists('tr_get_url')) {
+    /**
+     * URL
+     *
+     * @param string $path relative path to type's location
+     * @param string $type theme, mu, or root
+     * @return string
+     */
+    function tr_get_url($path, $type = 'theme') {
+        switch ($type) {
+            case 'mu' :
+            case 'mu-plugins' :
+                return WPMU_PLUGIN_URL . '/' . ltrim($path, '/');
+            case 'root' :
+                return home_url($path);
+        }
+
+        return get_theme_file_uri($path);
     }
 }
