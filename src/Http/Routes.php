@@ -30,6 +30,11 @@ class Routes
         self::$request = new Request();
     }
 
+    /**
+     * Init Hooks
+     *
+     * @return $this
+     */
     public function initHooks()
     {
         if( ! is_admin() ) {
@@ -240,7 +245,7 @@ class Routes
     }
 
     /**
-     * @param $method
+     * Get Registered Routes
      *
      * @return array
      */

@@ -10,18 +10,44 @@ class Route
     public $methods;
     public $addTrailingSlash = true;
 
-    public function match($regex, $map = [])
+    /**
+     * Match URL Path
+     *
+     * @param string $regex regular expression to match URL path
+     * @param array $map an array of values to mark regex capture groups
+     * @param bool $clean trim beginning and ending forward slashes
+     * @return $this
+     */
+    public function match($regex, $map = [], $clean = true)
     {
-        $this->match = [ltrim($regex, '/'), $map, $this];
+        $this->match = [$clean ? trim($regex, '/') : $regex, $map, $this];
         return $this;
     }
 
+    /**
+     * Add Middleware Classes
+     *
+     * This method does not accept middleware groups.
+     *
+     * @param array $middleware list of middleware classes to use for the route
+     * @return $this
+     */
     public function middleware(array $middleware)
     {
         $this->middleware = $middleware;
         return $this;
     }
 
+    /**
+     * Handler
+     *
+     * This takes a callable or a quick route decoration.
+     *
+     * @link https://typerocket.com/docs/v4/routes/#section-quick-route-declarations
+     *
+     * @param mixed $handle
+     * @return $this
+     */
     public function do($handle)
     {
         $this->do = $handle;
@@ -103,6 +129,9 @@ class Route
         return $this;
     }
 
+    /**
+     * Register the route
+     */
     protected function registerRoute() {
         Routes::addRoute($this);
     }
