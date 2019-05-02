@@ -2,10 +2,14 @@
 
 namespace TypeRocket\Register;
 
-abstract class BaseWidget extends \WP_Widget
+use ReflectionException;
+use TypeRocket\Elements\Form;
+use WP_Widget;
+
+abstract class BaseWidget extends WP_Widget
 {
 
-    /** @var \TypeRocket\Elements\Form */
+    /** @var Form */
     protected $form;
     protected $newFields;
     protected $oldFields;
@@ -24,6 +28,7 @@ abstract class BaseWidget extends \WP_Widget
      * Outputs the options form on admin
      *
      * @param array $instance The widget options
+     * @throws ReflectionException
      */
     public function form($instance) {
         echo '<div class="typerocket-container">';
@@ -32,17 +37,36 @@ abstract class BaseWidget extends \WP_Widget
         echo '</div>';
     }
 
+    /**
+     * Update
+     *
+     * @param array $new_instance
+     * @param array $old_instance
+     * @return array
+     */
     public function update( $new_instance, $old_instance ) {
         $this->newFields = $new_instance;
         $this->oldFields = $old_instance;
         return $this->save($new_instance, $old_instance);
     }
 
+    /**
+     * Get New Field Value
+     *
+     * @param $name
+     * @return string
+     */
     public function getNewFieldValue($name)
     {
         return !empty( $this->newFields[$name] ) ? $this->newFields[$name] : '';
     }
 
+    /**
+     * Get Old Field Value
+     *
+     * @param $name
+     * @return string
+     */
     public function getOldFieldValue($name)
     {
         return !empty( $this->oldFields[$name] ) ? $this->oldFields[$name] : '';

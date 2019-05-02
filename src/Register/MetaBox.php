@@ -57,7 +57,7 @@ class MetaBox extends Registrable
      *
      * @param $label
      *
-     * @return $this
+     * @return MetaBox $this
      */
     public function setLabel( $label )
     {
@@ -70,7 +70,7 @@ class MetaBox extends Registrable
     /**
      * Set the meta box label
      *
-     * @return $this->label
+     * @return null|string
      */
     public function getLabel()
     {
@@ -82,7 +82,7 @@ class MetaBox extends Registrable
      *
      * @param string|array $screen
      *
-     * @return $this
+     * @return MetaBox $this
      */
     public function addScreen( $screen )
     {
@@ -96,7 +96,7 @@ class MetaBox extends Registrable
      *
      * @param string|array|PostType $s
      *
-     * @return $this
+     * @return MetaBox $this
      */
     public function addPostType( $s )
     {
@@ -119,7 +119,7 @@ class MetaBox extends Registrable
     /**
      * Register meta box with WordPress
      *
-     * @return $this
+     * @return MetaBox $this
      */
     public function register()
     {
@@ -185,7 +185,9 @@ class MetaBox extends Registrable
     }
 
     /**
-     * @return null
+     * Set Priority
+     *
+     * @return null|string
      */
     public function getPriority()
     {
@@ -193,9 +195,11 @@ class MetaBox extends Registrable
     }
 
     /**
+     * Set Priority
+     *
      * @param null $priority 'high', 'core', 'default' or 'low'
      *
-     * @return MetaBox
+     * @return MetaBox $this
      */
     public function setPriority( $priority )
     {
@@ -205,9 +209,11 @@ class MetaBox extends Registrable
     }
 
     /**
+     * Set Context
+     *
      * @param null $context 'normal', 'advanced', or 'side'
      *
-     * @return MetaBox
+     * @return MetaBox $this
      */
     public function setContext( $context )
     {
@@ -217,13 +223,21 @@ class MetaBox extends Registrable
     }
 
     /**
-     * @return null
+     * Get Context
+     *
+     * @return null|string
      */
     public function getContext()
     {
         return $this->context;
     }
 
+    /**
+     * Set Callback
+     *
+     * @param $callback
+     * @return MetaBox $this
+     */
     public function setCallback( $callback )
     {
 
@@ -237,7 +251,9 @@ class MetaBox extends Registrable
     }
 
     /**
-     * @return null
+     * Set Callback
+     *
+     * @return mixed
      */
     public function getCallback()
     {

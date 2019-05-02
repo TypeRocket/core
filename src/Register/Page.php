@@ -2,6 +2,7 @@
 
 namespace TypeRocket\Register;
 
+use Closure;
 use TypeRocket\Controllers\Controller;
 use TypeRocket\Core\Config;
 use TypeRocket\Http\Request;
@@ -9,6 +10,7 @@ use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Template\View;
 use TypeRocket\Utility\Str;
+use WP_Admin_Bar;
 
 class Page extends Registrable
 {
@@ -70,7 +72,7 @@ class Page extends Registrable
      *
      * @param $name
      *
-     * @return $this
+     * @return Page $this
      */
     public function setIcon( $name )
     {
@@ -83,7 +85,7 @@ class Page extends Registrable
             return $this;
         }
 
-        add_action( 'admin_head', \Closure::bind( function() use ($icons) {
+        add_action( 'admin_head', Closure::bind( function() use ($icons) {
             $slug = $this->args['slug'];
             $icon = $this->getIcon();
             echo "
@@ -125,7 +127,7 @@ class Page extends Registrable
      *
      * @param $slug
      *
-     * @return $this
+     * @return Page $this
      */
     public function setSlug( $slug ) {
         $this->args['slug'] = $slug;
@@ -136,9 +138,9 @@ class Page extends Registrable
     /**
      * Set the parent page
      *
-     * @param \TypeRocket\Register\Page $parent
+     * @param Page $parent
      *
-     * @return $this
+     * @return Page $this
      */
     public function setParent( Page $parent ) {
         $this->parent = $parent;
@@ -149,7 +151,7 @@ class Page extends Registrable
     /**
      * Get the parent page
      *
-     * @return null|\TypeRocket\Register\Page
+     * @return null|Page
      */
     public function getParent() {
         return $this->parent;
@@ -170,7 +172,7 @@ class Page extends Registrable
      *
      * @param $title
      *
-     * @return $this
+     * @return Page $this
      */
     public function setTitle( $title )
     {
@@ -182,7 +184,7 @@ class Page extends Registrable
     /**
      * Remove title from page
      *
-     * @return $this
+     * @return Page $this
      */
     public function removeTitle()
     {
@@ -244,7 +246,7 @@ class Page extends Registrable
     /**
      * Remove menu
      *
-     * @return $this
+     * @return Page $this
      */
     public function removeMenu()
     {
@@ -258,7 +260,7 @@ class Page extends Registrable
      *
      * @param bool $url
      *
-     * @return $this
+     * @return Page $this
      */
     public function addNewButton( $url = true ) {
         $this->showAddNewButton = $url;
@@ -269,7 +271,7 @@ class Page extends Registrable
     /**
      * Make the page use a TypeRocket controller and routing
      *
-     * @return $this
+     * @return Page $this
      */
     public function useController()
     {
@@ -281,7 +283,7 @@ class Page extends Registrable
     /**
      * Disable Controller
      *
-     * @return $this
+     * @return Page $this
      */
     public function disableController()
     {
@@ -296,7 +298,7 @@ class Page extends Registrable
      * The class name of the controller for the page to use.
      *
      * @param $handler
-     * @return $this
+     * @return Page $this
      */
     public function setHandler($handler)
     {
@@ -334,7 +336,7 @@ class Page extends Registrable
      *
      * Override this in concrete classes
      *
-     * @return $this
+     * @return Page $this
      */
     public function register()
     {
@@ -392,15 +394,15 @@ class Page extends Registrable
         };
 
         if( array_key_exists( $this->resource, $this->builtin ) ) {
-            add_submenu_page( $this->builtin[$this->resource] , $this->title, $menu_title, $capability, $slug, \Closure::bind( $callback, $this ) );
+            add_submenu_page( $this->builtin[$this->resource] , $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ) );
         } elseif( ! $this->parent ) {
-            add_menu_page( $this->title, $menu_title, $capability, $slug, \Closure::bind( $callback, $this ), '', $position);
+            add_menu_page( $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ), '', $position);
             if( $this->hasShownSubPages() ) {
                 add_submenu_page( $slug , $this->title, $menu_title, $capability, $slug );
             }
         } else {
             $parent_slug = $this->parent->getSlug();
-            add_submenu_page( $parent_slug, $this->title, $menu_title, $capability, $slug, \Closure::bind( $callback, $this ) );
+            add_submenu_page( $parent_slug, $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ) );
 
             if( ! $this->showMenu ) {
                 add_action( 'admin_head', function() use ($parent_slug, $slug) {
@@ -419,13 +421,13 @@ class Page extends Registrable
      * @param null $title
      * @param string $parent_id
      *
-     * @return $this
+     * @return Page $this
      */
     public function adminBar( $id, $title = null, $parent_id = 'site-name')
     {
-        add_action('admin_bar_menu', \Closure::bind(function() use ($parent_id, $title, $id) {
+        add_action('admin_bar_menu', Closure::bind(function() use ($parent_id, $title, $id) {
             if( current_user_can( $this->getCapability() ) ) {
-                /** @var $wp_admin_bar \WP_Admin_Bar */
+                /** @var $wp_admin_bar WP_Admin_Bar */
                 global $wp_admin_bar;
                 $link = $this->getUrl();
                 $wp_admin_bar->add_menu([
@@ -451,7 +453,7 @@ class Page extends Registrable
      * @param string $method use the string POST, GET, UPDATE, DELETE
      * @param string $action use the action on the controller you want to call
      *
-     * @return $this
+     * @return Page $this
      */
     public function mapAction($method, $action)
     {
@@ -469,7 +471,7 @@ class Page extends Registrable
      * to any number of HTTP request methods.
      *
      * @param $map ['POST' => 'create', 'GET' => 'add', 'DELETE' => 'destroy']
-     * @return $this
+     * @return Page $this
      */
     public function mapActions($map)
     {
@@ -532,7 +534,7 @@ class Page extends Registrable
      *
      * @param string|Page $s
      *
-     * @return $this
+     * @return Page $this
      */
     public function addPage( $s )
     {
@@ -550,6 +552,9 @@ class Page extends Registrable
 
     }
 
+    /**
+     * Load Views
+     */
     protected function loadView() {
         $GLOBALS['_tr_page'] = $this;
         $class = tr_app('Models\\' . Str::camelize($this->resource));

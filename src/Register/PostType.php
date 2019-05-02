@@ -152,7 +152,7 @@ class PostType extends Registrable
      *
      * @param $name
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setIcon( $name )
     {
@@ -188,7 +188,7 @@ class PostType extends Registrable
     /**
      * Get the post type icon
      *
-     * @return null
+     * @return null|string
      */
     public function getIcon() {
         return $this->icon;
@@ -197,7 +197,7 @@ class PostType extends Registrable
     /**
      * Get the placeholder title
      *
-     * @return null
+     * @return null|string
      */
     public function getTitlePlaceholder()
     {
@@ -209,7 +209,7 @@ class PostType extends Registrable
      *
      * @param $text
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setTitlePlaceholder( $text )
     {
@@ -242,7 +242,7 @@ class PostType extends Registrable
      *
      * @param bool|true|callable $value
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setTitleForm( $value = true )
     {
@@ -263,7 +263,7 @@ class PostType extends Registrable
      *
      * @param bool|true|callable $value
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setTopForm( $value = true )
     {
@@ -283,7 +283,7 @@ class PostType extends Registrable
      *
      * @param bool|true|callable $value
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setBottomForm( $value = true )
     {
@@ -303,7 +303,7 @@ class PostType extends Registrable
      *
      * @param bool|true|callable $value
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setEditorForm( $value = true )
     {
@@ -321,7 +321,7 @@ class PostType extends Registrable
      *
      * @param $slug
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setSlug( $slug )
     {
@@ -343,7 +343,7 @@ class PostType extends Registrable
     /**
      * @param bool|string $rest_base the REST API base path
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setRest( $rest_base = false )
     {
@@ -358,7 +358,7 @@ class PostType extends Registrable
      *
      * @param array $query the query modifiers
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setArchiveQuery( array $query )
     {
@@ -373,7 +373,7 @@ class PostType extends Registrable
      * @param $key
      * @param $value
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setArchiveQueryKey($key, $value)
     {
@@ -397,7 +397,7 @@ class PostType extends Registrable
      *
      * @param $key
      *
-     * @return $this
+     * @return PostType $this
      */
     public function removeArchiveQueryKey($key)
     {
@@ -413,7 +413,7 @@ class PostType extends Registrable
      *
      * @param int $number
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setArchivePostsPerPage( $number = -1)
     {
@@ -431,7 +431,7 @@ class PostType extends Registrable
      * @param callback|null $callback the function used to display the field data
      * @param string $order_by is the column a string or number
      *
-     * @return $this
+     * @return PostType $this
      */
     public function addColumn($field, $sort = false, $label = null, $callback = null, $order_by = '') {
         if( ! $label ) { $label = $field; }
@@ -458,7 +458,7 @@ class PostType extends Registrable
      *
      * @param $field
      *
-     * @return $this
+     * @return PostType $this
      */
     public function removeColumn($field)
     {
@@ -481,7 +481,7 @@ class PostType extends Registrable
 	 *
 	 * @param $field
 	 *
-	 * @return $this
+	 * @return PostType $this
 	 */
     public function setPrimaryColumn( $field ) {
     	$this->primaryColumn = $field;
@@ -501,7 +501,7 @@ class PostType extends Registrable
     /**
      * Set the post type to only show in WordPress Admin
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setAdminOnly() {
         $this->args['public'] = false;
@@ -517,7 +517,7 @@ class PostType extends Registrable
      * Use the registered_post_type hook if you need to update
      * the post type.
      *
-     * @return $this
+     * @return PostType $this
      */
     public function register()
     {
@@ -539,7 +539,7 @@ class PostType extends Registrable
      *
      * @param string|MetaBox $s
      *
-     * @return $this
+     * @return PostType $this
      */
     public function addMetaBox( $s )
     {
@@ -561,7 +561,7 @@ class PostType extends Registrable
      *
      * @param string|Taxonomy $s
      *
-     * @return $this
+     * @return PostType $this
      */
     public function addTaxonomy( $s )
     {

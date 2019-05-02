@@ -135,7 +135,7 @@ class Taxonomy extends Registrable
      *
      * @param $slug
      *
-     * @return $this
+     * @return Taxonomy $this
      */
     public function setSlug( $slug )
     {
@@ -149,7 +149,7 @@ class Taxonomy extends Registrable
      *
      * @param $resource
      *
-     * @return $this
+     * @return Taxonomy $this
      */
     public function setResource( array $resource )
     {
@@ -182,7 +182,7 @@ class Taxonomy extends Registrable
      *
      * @param bool|true|callable $value
      *
-     * @return $this
+     * @return Taxonomy $this
      */
     public function setMainForm( $value = true )
     {
@@ -200,7 +200,7 @@ class Taxonomy extends Registrable
      *
      * @param bool $bool
      *
-     * @return $this
+     * @return Taxonomy $this
      */
     public function setHierarchical( $bool = true )
     {
@@ -222,7 +222,7 @@ class Taxonomy extends Registrable
     /**
      * Register the taxonomy with WordPress
      *
-     * @return $this
+     * @return Taxonomy $this
      */
     public function register()
     {
@@ -242,7 +242,7 @@ class Taxonomy extends Registrable
      *
      * @param string|PostType $s
      *
-     * @return $this
+     * @return Taxonomy $this
      */
     public function addPostType( $s )
     {
