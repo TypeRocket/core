@@ -892,7 +892,7 @@ if ( ! function_exists('tr_get_url')) {
             case 'mu' :
             case 'mu-plugins' :
                 return WPMU_PLUGIN_URL . '/' . ltrim($path, '/');
-            case 'root' :
+            case 'home' :
                 return home_url($path);
         }
 
