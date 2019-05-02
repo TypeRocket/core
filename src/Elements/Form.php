@@ -89,7 +89,7 @@ class Form
         if ($this->resource === 'auto') {
             global $post, $comment, $user_id, $taxonomy, $tag_ID;
 
-            if ( isset( $post->ID ) ) {
+            if ( isset( $post->ID ) && empty($taxonomy) ) {
                 $item_id  = $post->ID;
                 $resource = Registry::getPostTypeResource($post->post_type);
 
