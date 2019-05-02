@@ -442,9 +442,14 @@ if( ! function_exists('tr_components_loop')) {
      * Loop Components
      *
      * @param array $builder_data
-     * @param array $other be sure to pass $name, $item_is, $model
+     * @param array $other be sure to pass $name, $item_id, $model
      */
     function tr_components_loop($builder_data, $other = []) {
+        /**
+         * @var $name
+         * @var $item_id
+         * @var $model
+         */
         extract($other);
         $i = 0;
         $len = count($builder_data);
@@ -556,6 +561,7 @@ if ( ! function_exists('tr_taxonomies_field')) {
      * @param null|int $item_id
      *
      * @return array|mixed|null|string
+     * @throws Exception
      */
     function tr_taxonomies_field($name, $taxonomy, $item_id = null)
     {
@@ -808,8 +814,8 @@ if ( ! function_exists('tr_http_response')) {
     /**
      * Http Response
      *
-     * @param string $name the constant variable name
-     * @param null|mixed $default The default value
+     * @param string $returned the constant variable name
+     * @param null|mixed $response The default value
      *
      * @return mixed
      */
