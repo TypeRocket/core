@@ -242,7 +242,9 @@ class WPTerm extends Model
     public function getBaseFieldValue( $field_name )
     {
         $id = $this->getID();
-        if(in_array($field_name, $this->builtin)) {
+        $data = $this->getProperty($field_name);
+
+        if(is_null($data) && in_array($field_name, $this->builtin)) {
             switch ($field_name) {
                 case 'term_id' :
                 case 'name' :
@@ -254,7 +256,7 @@ class WPTerm extends Model
                     $data = get_term_meta( $field_name, $id, 'raw' );
                     break;
             }
-        } else {
+        } elseif(is_null($data)) {
             $data = get_metadata( 'term', $id, $field_name, true );
         }
 

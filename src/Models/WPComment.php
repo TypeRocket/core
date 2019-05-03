@@ -202,7 +202,9 @@ class WPComment extends Model
      */
     public function getBaseFieldValue( $field_name )
     {
-        if (in_array($field_name, $this->builtin)) {
+        $data = $this->getProperty($field_name);
+
+        if (is_null($data) && in_array($field_name, $this->builtin)) {
             switch ($field_name) {
                 case 'comment_author_ip' :
                     $data = $this->properties['comment_author_IP'];
@@ -217,8 +219,7 @@ class WPComment extends Model
                     $data = $this->properties[$field_name];
                     break;
             }
-
-        } else {
+        } elseif(is_null($data)) {
             $data = get_metadata('comment', $this->getID(), $field_name, true);
         }
 

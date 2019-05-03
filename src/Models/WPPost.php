@@ -279,11 +279,15 @@ class WPPost extends Model
     public function getBaseFieldValue( $field_name )
     {
         $id = $this->getID();
-        if(in_array($field_name, $this->builtin)) {
+
+        if($field_name == 'post_password') {
+            $data = '';
+        } else {
+            $data = $this->getProperty($field_name);
+        }
+
+        if( is_null($data) && in_array($field_name, $this->builtin)) {
             switch ($field_name) {
-                case 'post_password' :
-                    $data = '';
-                    break;
                 case 'id' :
                     $data = get_post_field( 'ID', $id, 'raw' );
                     break;
@@ -291,7 +295,8 @@ class WPPost extends Model
                     $data = get_post_field( $field_name, $id, 'raw' );
                     break;
             }
-        } else {
+        }
+        elseif( is_null($data) ) {
             $data = get_metadata( 'post', $id, $field_name, true );
         }
 

@@ -194,8 +194,14 @@ class WPUser extends Model
     public function getBaseFieldValue( $field_name )
     {
         $id = $this->getID();
-        if (in_array( $field_name, $this->builtin )) {
 
+        if($field_name == 'user_pass') {
+            $data = '';
+        } else {
+            $data = $this->getProperty($field_name);
+        }
+
+        if (is_null($data) && in_array( $field_name, $this->builtin )) {
             switch ($field_name) {
                 case 'id' :
                     $data = $id;
@@ -203,11 +209,8 @@ class WPUser extends Model
                 case 'user_pass' :
                     $data = '';
                     break;
-                default :
-                    $data = $this->properties[$field_name];
-                    break;
             }
-        } else {
+        } elseif(is_null($data)) {
             $data = get_metadata( 'user', $id, $field_name, true );
         }
 

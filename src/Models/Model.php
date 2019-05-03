@@ -19,6 +19,7 @@ use wpdb;
 class Model
 {
     protected $fillable = [];
+    protected $closed = false;
     protected $guard = ['id'];
     protected $format = [];
     protected $cast = [];
@@ -504,6 +505,11 @@ class Model
                 }
             }
             $fields = $fillable;
+        }
+
+        // Closed
+        if($this->closed && empty($fillable)) {
+            $fields = [];
         }
 
         // Guard
