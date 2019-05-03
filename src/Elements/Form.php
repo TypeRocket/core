@@ -91,11 +91,11 @@ class Form
 
             if ( isset( $post->ID ) && empty($taxonomy) ) {
                 $item_id  = $post->ID;
-                $resource = Registry::getPostTypeResource($post->post_type);
+                $resource_data = Registry::getPostTypeResource($post->post_type);
 
-                $Resource = Str::camelize($resource[0] ?? '');
-                $resource = $resource[0] ?? null;
-                $model = $resource[2] ?? tr_app("Models\\{$Resource}");
+                $Resource = Str::camelize($resource_data[0] ?? '');
+                $model = $resource_data[2] ?? tr_app("Models\\{$Resource}");
+                $resource = $resource_data[0] ?? null;
 
                 if(! class_exists($model) ) {
                     $this->model = new WPPost($post->post_type);
