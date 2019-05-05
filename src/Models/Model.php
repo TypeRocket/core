@@ -43,7 +43,6 @@ class Model
 
     /**
      * Construct Model based on resource
-     * @throws ReflectionException
      */
     public function __construct()
     {
@@ -52,7 +51,11 @@ class Model
         global $wpdb;
 
         $this->table = $this->initTable( $wpdb );
-        $type    = (new ReflectionClass( $this ))->getShortName();
+        try {
+            $type    = (new ReflectionClass( $this ))->getShortName();
+        } catch (\ReflectionException $e) {
+            wp_die('Model failed');
+        }
 
         if( ! $this->resource ) {
             $this->resource = strtolower( Inflect::pluralize($type) );

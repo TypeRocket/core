@@ -321,7 +321,7 @@ class Query
     public function findById($id)
     {
         $this->returnOne = true;
-        return $this->where( $this->idColumn, $id)->take(1)->findAll();
+        return $this->where( $this->query['table'] . '.' . $this->idColumn, $id)->take(1)->findAll();
     }
 
     /**

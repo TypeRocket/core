@@ -139,7 +139,7 @@ class WPPost extends Model
      *
      * @return $this
      */
-    public function findById($id) {
+    public function getPost($id) {
         return $this->fetchResult(get_post( $id, ARRAY_A ));
     }
 
@@ -280,23 +280,15 @@ class WPPost extends Model
     {
         $id = $this->getID();
 
+        $field_name = $field_name === 'ID' ? 'id' : $field_name;
+
         if($field_name == 'post_password') {
             $data = '';
         } else {
             $data = $this->getProperty($field_name);
         }
 
-        if( is_null($data) && in_array($field_name, $this->builtin)) {
-            switch ($field_name) {
-                case 'id' :
-                    $data = get_post_field( 'ID', $id, 'raw' );
-                    break;
-                default :
-                    $data = get_post_field( $field_name, $id, 'raw' );
-                    break;
-            }
-        }
-        elseif( is_null($data) ) {
+        if( is_null($data) ) {
             $data = get_metadata( 'post', $id, $field_name, true );
         }
 

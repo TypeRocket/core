@@ -195,22 +195,15 @@ class WPUser extends Model
     {
         $id = $this->getID();
 
+        $field_name = $field_name === 'ID' ? 'id' : $field_name;
+
         if($field_name == 'user_pass') {
             $data = '';
         } else {
             $data = $this->getProperty($field_name);
         }
 
-        if (is_null($data) && in_array( $field_name, $this->builtin )) {
-            switch ($field_name) {
-                case 'id' :
-                    $data = $id;
-                    break;
-                case 'user_pass' :
-                    $data = '';
-                    break;
-            }
-        } elseif(is_null($data)) {
+        if(is_null($data)) {
             $data = get_metadata( 'user', $id, $field_name, true );
         }
 

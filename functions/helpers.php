@@ -323,7 +323,7 @@ if ( ! function_exists('tr_posts_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
-     * @throws ReflectionException
+     * @throws Exception
      */
     function tr_posts_field($name, $item_id = null)
     {

@@ -67,7 +67,7 @@ class Controller
     /**
      * Get Model
      *
-     * @return null
+     * @return mixed
      */
     public function getModel()
     {

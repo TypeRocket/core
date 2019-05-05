@@ -15,7 +15,7 @@ class WPTerm extends Model
         'description',
         'name',
         'slug',
-        'parent'
+        'term_group'
     ];
 
     protected $guard = [
@@ -37,11 +37,13 @@ class WPTerm extends Model
      * Set Taxonomy
      *
      * @param string $taxonomy
+     * @param bool $init init query when setting taxonomy
      * @return $this
      */
-    public function setTaxonomy($taxonomy)
+    public function setTaxonomy($taxonomy, $init = true)
     {
         $this->taxonomy = $taxonomy;
+        if($init) { $this->initQuery($this->query); }
 
         return $this;
     }
@@ -59,7 +61,7 @@ class WPTerm extends Model
             /** @var \wpdb $wpdb */
             global $wpdb;
             $tt = $wpdb->prefix . 'term_taxonomy';
-            $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
+            $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
             $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
             $query->where($tt.'.taxonomy', $this->taxonomy);
         }
@@ -116,7 +118,7 @@ class WPTerm extends Model
      *
      * @return $this
      */
-    public function findById( $id )
+    public function getTerm( $id )
     {
         $this->fetchResult(  get_term( $id, $this->taxonomy, ARRAY_A ) );
         return $this;
@@ -131,8 +133,9 @@ class WPTerm extends Model
      *
      * @param array|\TypeRocket\Http\Fields $fields
      *
-     * @return $this
+     * @return WPTerm
      * @throws \TypeRocket\Exceptions\ModelException
+     * @throws \ReflectionException
      */
     public function create( $fields = [] )
     {
@@ -151,13 +154,13 @@ class WPTerm extends Model
             if ( $term instanceof \WP_Error || empty($term['term_id']) ) {
                 throw new ModelException('WPTerm not created: name field and taxonomy property are required');
             } else {
-                $this->findById( $term['term_id'] );
+                $term = (new self($this->taxonomy))->findById( $term['term_id'] );
             }
         }
 
         $this->saveMeta( $fields );
 
-        return $this;
+        return $term;
     }
 
     /**
@@ -244,25 +247,17 @@ class WPTerm extends Model
         $id = $this->getID();
         $data = $this->getProperty($field_name);
 
-        if(is_null($data) && in_array($field_name, $this->builtin)) {
-            switch ($field_name) {
-                case 'term_id' :
-                case 'name' :
-                case 'description' :
-                case 'slug' :
-                    $data = $this->properties[$field_name];
-                    break;
-                default :
-                    $data = get_term_meta( $field_name, $id, 'raw' );
-                    break;
-            }
-        } elseif(is_null($data)) {
+        if(is_null($data)) {
             $data = get_metadata( 'term', $id, $field_name, true );
         }
 
         return $this->getValueOrNull($data);
     }
 
+    /**
+     * @param $builtin
+     * @return mixed
+     */
     public function slashBuiltinFields( $builtin ) {
 
         $fields = [

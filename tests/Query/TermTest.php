@@ -9,8 +9,7 @@ class TermTest extends TestCase
 {
     public function testCreateWithSlashing()
     {
-        $term = new \TypeRocket\Models\WPTerm();
-        $term->setTaxonomy('category');
+        $term = new \TypeRocket\Models\WPTerm('category');
         $data = [
             'name' => 'new \'name\' \Name',
             'description' => 'Create \\ \TypeRocket\Name \'in quotes\'',
@@ -18,9 +17,10 @@ class TermTest extends TestCase
             'parent' => 0
         ];
 
-        $term->create($data);
+        $term = $term->create($data);
+        $id = $term->getID();
 
-        wp_delete_term($term->getID(), $term->taxonomy);
+        wp_delete_term($id, $term->taxonomy);
 
         $name = $term->getProperty('name');
         $description = $term->getProperty('description');
@@ -35,8 +35,7 @@ class TermTest extends TestCase
 
     public function testUpdateWithSlashing()
     {
-        $term = new \TypeRocket\Models\WPTerm();
-        $term->setTaxonomy('category');
+        $term = new \TypeRocket\Models\WPTerm('category');
         $term->findById(1);
 
         $data = [

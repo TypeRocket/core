@@ -215,9 +215,6 @@ class WPComment extends Model
                 case 'comment_id' :
                     $data = $this->properties['comment_ID'];
                     break;
-                default :
-                    $data = $this->properties[$field_name];
-                    break;
             }
         } elseif(is_null($data)) {
             $data = get_metadata('comment', $this->getID(), $field_name, true);
