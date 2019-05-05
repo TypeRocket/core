@@ -3,10 +3,8 @@ namespace TypeRocket\Models;
 
 use ArrayObject;
 use Exception;
-use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
-use ReflectionException;
 use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
 use TypeRocket\Elements\Fields\Field;
@@ -24,7 +22,6 @@ class Model implements Formable
     protected $guard = ['id'];
     protected $format = [];
     protected $cast = [];
-    protected $isCast = false;
     protected $static = [];
     protected $builtin = [];
     protected $resource = null;
@@ -36,7 +33,7 @@ class Model implements Formable
     protected $onlyOld = false;
     protected $dataOverride = null;
     protected $properties = [];
-    protected $propertiesUnaltered = [];
+    protected $propertiesUnaltered = null;
     protected $explicitProperties = [];
     protected $idColumn = 'id';
     protected $resultsClass = Results::class;
@@ -616,16 +613,16 @@ class Model implements Formable
         $mainKey = $keys[0];
         if (isset( $mainKey ) && ! empty( $data )) {
 
-            if (  is_string($data) && tr_is_json($data)  ) {
+            if ( $data instanceof Formable) {
+                $data = $data->getFormFields();
+            }
+
+            if ( is_string($data) && tr_is_json($data)  ) {
                 $data = json_decode( $data, true );
             }
 
             if ( is_string($data) && is_serialized( $data ) ) {
                 $data = unserialize( $data );
-            }
-
-            if ( $data instanceof Formable) {
-                $data = $data->getFormFields();
             }
 
             // unset first key since $data is already set to it
@@ -1126,12 +1123,8 @@ class Model implements Formable
      */
     public function castProperties( $properties )
     {
-        if($this->isCast) {
-            // return $this;
-        }
-
         // Create Unaltered copy
-        $this->propertiesUnaltered = (array) $properties;
+        $this->propertiesUnaltered = $this->propertiesUnaltered ?: (array) $properties;
 
         // Cast properties
         $cast = [];
@@ -1161,25 +1154,32 @@ class Model implements Formable
         if ( ! empty( $this->cast[$property] ) ) {
             $handle = $this->cast[$property];
 
+            // Integer
             if ( $handle == 'int' || $handle == 'integer' ) {
-                // Integer
+
                 $value = (int) $value;
-            } if ( $handle == 'array' ) {
-                // Priority Array
+            }
+
+            // Priority Array
+            if ( $handle == 'array' ) {
                 if ( is_string($value) && tr_is_json($value)  ) {
                     $value = json_decode( $value, true );
                 } elseif ( is_string($value) && is_serialized( $value ) ) {
                     $value = unserialize( $value );
                 }
-            } if ( $handle == 'object' ) {
-                // Priority Object
+            }
+
+            // Priority Object
+            if ( $handle == 'object' ) {
                 if ( is_string($value) && tr_is_json($value)  ) {
                     $value = json_decode( $value );
                 } elseif ( is_string($value) && is_serialized( $value ) ) {
                     $value = unserialize( $value );
                 }
-            } elseif ( is_callable($handle) ) {
-                // Callback
+            }
+
+            // Callback
+            if ( is_callable($handle) ) {
                 $value = call_user_func($this->cast[$property], $value );
             }
         }
