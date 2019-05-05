@@ -152,13 +152,14 @@ class WPPost extends Model
      *
      * @param array|\TypeRocket\Http\Fields $fields
      *
-     * @return $this
+     * @return null|mixed|WPPost
      * @throws \TypeRocket\Exceptions\ModelException
      */
     public function create( $fields = [])
     {
         $fields = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields($fields);
+        $new_post = null;
 
         if ( ! empty( $builtin )) {
             $builtin = $this->slashBuiltinFields($builtin);
@@ -180,13 +181,13 @@ class WPPost extends Model
                 $error = 'WPPost not created: An error accrued during wp_insert_post.';
                 throw new ModelException( $error );
             } else {
-                $this->findById($post);
+                $new_post = $this->findById($post);
             }
         }
 
         $this->saveMeta( $fields );
 
-        return $this;
+        return $new_post;
     }
 
     /**
@@ -295,10 +296,12 @@ class WPPost extends Model
         return $this->getValueOrNull($data);
     }
 
-    public function getBuiltinFields() {
-        return $this->builtin;
-    }
-
+    /**
+     * Slash Builtin Fields
+     *
+     * @param $builtin
+     * @return mixed
+     */
     public function slashBuiltinFields( $builtin ) {
 
         $fields = [

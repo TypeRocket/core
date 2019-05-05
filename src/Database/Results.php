@@ -1,9 +1,10 @@
 <?php
 namespace TypeRocket\Database;
 
+use TypeRocket\Models\Contract\Formable;
 use TypeRocket\Models\Model;
 
-class Results extends \ArrayObject
+class Results extends \ArrayObject implements Formable
 {
 
     public $class = null;
@@ -58,5 +59,24 @@ class Results extends \ArrayObject
      */
     public function hasResults() {
         return $this->count() > 0 ? true : false;
+    }
+
+    /**
+     * Get Form Fields
+     */
+    public function getFormFields()
+    {
+        $data = $this->getArrayCopy();
+        $result = [];
+
+        foreach ($data as $item) {
+            if($item instanceof Formable) {
+                $result[] = $item->getFormFields();
+            } else {
+                $result[] = $item;
+            }
+        }
+
+        return $result;
     }
 }

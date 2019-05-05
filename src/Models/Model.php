@@ -12,17 +12,19 @@ use TypeRocket\Database\Results;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
+use TypeRocket\Models\Contract\Formable;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
 use wpdb;
 
-class Model
+class Model implements Formable
 {
     protected $fillable = [];
     protected $closed = false;
     protected $guard = ['id'];
     protected $format = [];
     protected $cast = [];
+    protected $isCast = false;
     protected $static = [];
     protected $builtin = [];
     protected $resource = null;
@@ -622,6 +624,10 @@ class Model
                 $data = unserialize( $data );
             }
 
+            if ( $data instanceof Formable) {
+                $data = $data->getFormFields();
+            }
+
             // unset first key since $data is already set to it
             unset( $keys[0] );
 
@@ -1120,6 +1126,10 @@ class Model
      */
     public function castProperties( $properties )
     {
+        if($this->isCast) {
+            // return $this;
+        }
+
         // Create Unaltered copy
         $this->propertiesUnaltered = (array) $properties;
 
@@ -1130,6 +1140,7 @@ class Model
             $cast[$name] = $this->getCast($name);
         }
         $this->properties = apply_filters( 'tr_model_cast_fields', $cast, $this );
+        $this->isCast = true;
 
         return $this;
     }
@@ -1616,6 +1627,18 @@ class Model
     protected function mutateProperty($key, $value)
     {
       return $this->{'get'.Str::camelize($key).'Property'}($value);
+    }
+
+    /**
+     * Get Form Fields
+     *
+     * @return array
+     */
+    public function getFormFields()
+    {
+        $this->castProperties($this->properties);
+
+        return $this->properties;
     }
 
 }

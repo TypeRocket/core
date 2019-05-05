@@ -43,20 +43,6 @@ class WPComment extends Model
     }
 
     /**
-     * Get comment by ID
-     *
-     * @param $id
-     *
-     * @return $this
-     */
-    public function findById( $id )
-    {
-        $this->fetchResult( get_comment( $id, ARRAY_A ) );
-
-        return $this;
-    }
-
-    /**
      * Create comment from TypeRocket fields
      *
      * @param array|\TypeRocket\Http\Fields $fields
