@@ -25,6 +25,7 @@ class Model implements Formable
     protected $cast = [];
     protected $static = [];
     protected $builtin = [];
+    protected $metaless = [];
     protected $resource = null;
     protected $table = null;
     protected $errors = null;
@@ -461,9 +462,9 @@ class Model implements Formable
      */
     public function getFilteredMetaFields( $fields )
     {
-        $builtin = array_flip( $this->builtin );
+        $diff = array_flip( array_unique( array_merge($this->builtin, $this->metaless) ) );
 
-        return array_diff_key( $fields, $builtin );
+        return array_diff_key( $fields, $diff );
     }
 
     /**
