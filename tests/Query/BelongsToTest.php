@@ -25,9 +25,11 @@ class BelongsToTest extends TestCase
     public function testBelongsEagerLoad()
     {
         $post = new WPPost();
-        $result = $post->with('author')->findById(1);
+        $result = $post->with('author.meta')->findById(1);
         $author = $result->getRelationship('author');
+        $meta = $result->getRelationship('author.meta');
 
         $this->assertTrue( $author instanceof WPUser );
+        $this->assertTrue( is_array($meta) );
     }
 }

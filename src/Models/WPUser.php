@@ -1,9 +1,12 @@
 <?php
 namespace TypeRocket\Models;
 
+use ArrayObject;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Exceptions\ModelNotFoundException;
+use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPUserMeta;
+use WP_Error;
 
 class WPUser extends Model
 {
@@ -30,7 +33,7 @@ class WPUser extends Model
     /**
      * Get User Meta
      *
-     * @return null|\TypeRocket\Models\Model
+     * @return null|Model
      */
     public function meta()
     {
@@ -42,14 +45,14 @@ class WPUser extends Model
      *
      * @param $modelClass
      *
-     * @return null|\TypeRocket\Models\Model
+     * @return null|Model
      */
-    public function posts( $modelClass )
+    public function posts( $modelClass = WPPost::class )
     {
         /** @var WPPost $post */
         $post = new $modelClass;
-
-        return $this->hasMany( $modelClass, 'post_author' )->where('post_type', $post->getPostType());
+        $post_type = $post->getPostType();
+        return $this->hasMany( $modelClass, 'post_author' )->where('post_type', $post_type);
     }
 
     /**
@@ -60,7 +63,7 @@ class WPUser extends Model
      * @return $this
      * @throws ModelNotFoundException
      */
-    public function findById( $id )
+    public function getUser( $id )
     {
         $user = get_user_by( 'id', $id );
 
@@ -68,7 +71,6 @@ class WPUser extends Model
             $class = static::class;
             throw new ModelNotFoundException("ID $id of {$class} class not found");
         }
-
 
         $this->fetchResult(  (array) $user->data );
 
@@ -78,11 +80,10 @@ class WPUser extends Model
     /**
      * Create users from TypeRocket fields
      *
-     * @param array|\TypeRocket\Http\Fields $fields
+     * @param array|Fields $fields
      *
      * @return $this
-     * @throws \TypeRocket\Exceptions\ModelException
-     * @throws ModelNotFoundException
+     * @throws ModelException
      */
     function create( $fields = [] )
     {
@@ -95,7 +96,7 @@ class WPUser extends Model
             $user  = wp_insert_user( $builtin );
             add_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
 
-            if ($user instanceof \WP_Error || ! is_int( $user )) {
+            if ($user instanceof WP_Error || ! is_int( $user )) {
                 throw new ModelException('WPUser not created');
             } else {
                 $this->findById($user);
@@ -110,10 +111,10 @@ class WPUser extends Model
     /**
      * Update user from TypeRocket fields
      *
-     * @param array|\TypeRocket\Http\Fields $fields
+     * @param array|Fields $fields
      *
      * @return $this
-     * @throws \TypeRocket\Exceptions\ModelException
+     * @throws ModelException
      * @throws ModelNotFoundException
      */
     function update( $fields = [] )
@@ -152,7 +153,7 @@ class WPUser extends Model
     /**
      * Save user meta fields from TypeRocket fields
      *
-     * @param array|\ArrayObject $fields
+     * @param array|ArrayObject $fields
      *
      * @return $this
      */

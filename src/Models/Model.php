@@ -942,6 +942,7 @@ class Model implements Formable
     public function findById($id)
     {
         $results = $this->query->findById($id)->get();
+
         return $this->getQueryResult($results);
     }
 
@@ -982,6 +983,7 @@ class Model implements Formable
      * @param $result
      *
      * @return mixed
+     * @throws Exception
      */
     protected function fetchResult( $result )
     {
@@ -1002,13 +1004,13 @@ class Model implements Formable
 
         // Eager Loader
         if($this->with) {
-            $name = $this->with;
+            list($name, $with) = array_pad(explode('.', $this->with, 2), 2, null);
             $loader = new EagerLoader();
             $relation = $this->{$name}();
             $result = $loader->load([
                 'name' => $name,
                 'relation' => $relation,
-            ], $result);
+            ], $result, $with);
         }
 
         return $result;
@@ -1145,7 +1147,6 @@ class Model implements Formable
             $cast[$name] = $this->getCast($name);
         }
         $this->properties = apply_filters( 'tr_model_cast_fields', $cast, $this );
-        $this->isCast = true;
 
         return $this;
     }
@@ -1210,9 +1211,6 @@ class Model implements Formable
     public function hasOne($modelClass, $id_foreign = null)
     {
         $id = $this->getID();
-        if( ! $id ) {
-           return null;
-        }
 
         if( ! $id_foreign && $this->resource ) {
             $id_foreign = $this->resource . '_id';
@@ -1243,10 +1241,6 @@ class Model implements Formable
      */
     public function belongsTo($modelClass, $id_local = null)
     {
-        if( ! $this->getID() ) {
-            return null;
-        }
-
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
@@ -1278,9 +1272,6 @@ class Model implements Formable
     public function hasMany($modelClass, $id_foreign = null)
     {
         $id = $this->getID();
-        if( ! $id ) {
-            return null;
-        }
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
@@ -1316,9 +1307,6 @@ class Model implements Formable
     public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null )
     {
         $id = $this->getID();
-        if( ! $id ) {
-            return null;
-        }
 
         // Column ID
         if( ! $id_column && $this->resource ) {
@@ -1536,6 +1524,7 @@ class Model implements Formable
      *
      * @return Model|Results|null|object
      *
+     * @throws Exception
      */
     protected function getQueryResult( $results ) {
         return $this->fetchResult( $results );
@@ -1732,7 +1721,13 @@ class Model implements Formable
      * @return mixed|null
      */
     public function getRelationship($name) {
-        return $this->relationships[$name] ?? null;
+
+        $names = explode('.', $name);
+        $rel = $this;
+        foreach ($names as $name) {
+            $rel = $rel->relationships[$name];
+        }
+        return $rel;
     }
 
 }

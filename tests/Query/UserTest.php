@@ -80,11 +80,9 @@ class UserTest extends TestCase
 
     public function testUserNotFound()
     {
-        try {
-            $user = new WPUser();
-            $user->findById( 0 );
-        } catch (ModelNotFoundException $e) {
-            $this->assertTrue( $e->getMessage() === 'ID 0 of TypeRocket\Models\WPUser class not found');
-        }
+        $user = new WPUser();
+        $result = $user->findById( 0 );
+
+        $this->assertTrue( $result === null);
     }
 }
