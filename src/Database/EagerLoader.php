@@ -159,6 +159,13 @@ class EagerLoader
         return $result;
     }
 
+    /**
+     * Has Many
+     *
+     * @param $result
+     * @return mixed
+     * @throws \Exception
+     */
     public function hasMany($result)
     {
         $ids = [];
@@ -181,6 +188,58 @@ class EagerLoader
 
         foreach($items as $item) {
             $set[$item->{$query['id_foreign']}][] = $item;
+        }
+
+        if($result instanceof Results) {
+            foreach($result as $key => $value) {
+                /** @var Model $value */
+                $local_id = $value->getId();
+                $value->setRelationship($name, $set[$local_id]);
+            }
+        } else {
+            $result->setRelationship($name, $set[$result->getId()]);
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Belong To Many
+     *
+     * @param $result
+     * @return mixed
+     * @throws \Exception
+     */
+    public function belongsToMany($result)
+    {
+        $ids = [];
+        /** @var Model $relation */
+        $relation = clone $this->load['relation'];
+        $name = $this->load['name'];
+        $query = $relation->getRelatedBy()['query'];
+        $set = [];
+
+        if($result instanceof Results) {
+            foreach($result as $model) {
+                /** @var Model $model */
+                $ids[] = $model->getId();
+            }
+        } elseif($result instanceof Model) {
+            $ids[] = $result->getId();
+        }
+
+        $items = $relation
+            ->select($query['where_column'] . ' as the_relationship_id')
+            ->removeTake()
+            ->removeWhere()
+            ->where($query['where_column'], 'IN', $ids)
+            ->with($this->with)
+            ->get();
+
+        foreach($items as $item) {
+            $set[$item->the_relationship_id][] = $item;
+            unset($item->the_relationship_id);
         }
 
         if($result instanceof Results) {

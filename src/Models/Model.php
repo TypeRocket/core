@@ -1058,6 +1058,23 @@ class Model implements Formable
     }
 
     /**
+     * Reselect
+     *
+     * @param $args
+     * @return $this
+     */
+    public function reselect($args)
+    {
+        if( ! is_array($args) ) {
+            $args = func_get_args();
+        }
+
+        $this->query->reselect($args);
+
+        return $this;
+    }
+
+    /**
      * Get base field value
      *
      * Some fields need to be saved as serialized arrays. Getting
@@ -1315,17 +1332,6 @@ class Model implements Formable
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
-        $relationship->setRelatedModel( $this );
-        $relationship->relatedBy = [
-            'type' => 'hasMany',
-            'query' => [
-                'caller' => $this,
-                'class' => $modelClass,
-                'junction_table' => $junction_table,
-                'id_column' => $id_column,
-                'id_foreign' => $id_foreign,
-            ]
-        ];
 
         // Foreign ID
         if( ! $id_foreign && $relationship->resource ) {
@@ -1346,7 +1352,21 @@ class Model implements Formable
         $foreign_join = $join_table.'.'.$id_foreign;
         $where_column = $join_table.'.'.$id_column;
         $relationship->getQuery()->distinct()->join($join_table, $foreign_join, $rel_join);
-        return  $relationship->select($rel_table.'.*')
+
+        $relationship->setRelatedModel( $this );
+        $relationship->relatedBy = [
+            'type' => 'belongsToMany',
+            'query' => [
+                'caller' => $this,
+                'class' => $modelClass,
+                'junction_table' => $junction_table,
+                'id_column' => $id_column,
+                'id_foreign' => $id_foreign,
+                'where_column' => $where_column,
+            ]
+        ];
+
+        return  $relationship->reselect($rel_table.'.*')
                              ->where($where_column, $id)
                              ->findAll();
     }

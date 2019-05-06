@@ -11,6 +11,14 @@ class CategoryMockClass extends WPTerm {
     protected $taxonomy = 'category';
 }
 
+class PostMockClass extends WPPost {
+    protected $postType = 'post';
+
+    public function terms() {
+        return $this->belongsToMany( WPTerm::class, 'posts_terms' );
+    }
+}
+
 class ManyToManyTest extends TestCase
 {
 
@@ -46,6 +54,14 @@ class ManyToManyTest extends TestCase
         $expected = "INSERT INTO posts_terms (terms_id,posts_id)  VALUES  ( 1,'1' ) , ( 2,'1' ) , ( 3,'1' ) ";
         $sql = $result[1]->lastCompiledSQL;
         $this->assertTrue($sql == $expected);
+    }
+
+    public function testJunctionGetEager()
+    {
+        $post = new PostMockClass();
+        $posts = $post->with('terms')->findById(1);
+        $items = $posts->terms;
+        $this->assertTrue(!empty($items));
     }
 
     public function testJunctionDetachList()

@@ -390,12 +390,31 @@ class Query
     public function select($args)
     {
         if( is_array($args) ) {
-            $this->query['select'] = $args;
+            $select = $args;
         } else {
-            $this->query['select'] = func_get_args();
+            $select = func_get_args();
         }
 
+        $this->query['select'] = array_merge($this->query['select'] ?? [], $select);
+
         return $this;
+    }
+
+    /**
+     * Reset Select
+     *
+     * @param $args
+     * @return Query
+     */
+    public function reselect($args)
+    {
+        if( ! is_array($args) ) {
+            $args = func_get_args();
+        }
+
+        unset($this->query['select']);
+
+        return $this->select($args);
     }
 
     /**
