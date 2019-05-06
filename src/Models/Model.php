@@ -961,6 +961,39 @@ class Model implements Formable
     }
 
     /**
+     * Find Or Create
+     *
+     * @param $id
+     * @param array $fields
+     * @return mixed|Model
+     * @throws Exception
+     */
+    public function findOrCreate($id, $fields = [])
+    {
+        if($item = $this->findById($id)) {
+            return $item;
+        };
+
+        return (new static)->create($fields);
+    }
+
+    /**
+     * Find Or New
+     *
+     * @param $id
+     * @return mixed|Model
+     * @throws Exception
+     */
+    public function findOrNew($id)
+    {
+        if($item = $this->findById($id)) {
+            return $item;
+        };
+
+        return new static;
+    }
+
+    /**
      * Find first where of die
      *
      * @param $column
