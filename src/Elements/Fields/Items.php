@@ -6,6 +6,7 @@ use \TypeRocket\Html\Generator;
 class Items extends Field
 {
     public $limit = 99999;
+    public $inputType = 'text';
 
     /**
      * Run on construction
@@ -52,7 +53,7 @@ class Items extends Field
             foreach ($items as $value) {
 
                 $value = esc_attr( $this->sanitize($value, 'raw') );
-                $input = $generator->newInput( 'text', $name . '[]', $value )->getString();
+                $input = $generator->newInput( $this->inputType, $name . '[]', $value )->getString();
                 $remove = '#remove';
                 $list .= $generator->newElement( 'li', ['class' => 'item'],
                     '<a class="move tr-control-icon tr-control-icon-move"></a><a href="'.$remove.'" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>' . $input )->getString();
@@ -88,6 +89,29 @@ class Items extends Field
         ], $list )->getString();
 
         return $html;
+    }
+
+    /**
+     * Set Input Type
+     *
+     * @param $type
+     * @return $this
+     */
+    public function setInputType($type)
+    {
+        $this->inputType = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get Input Types
+     *
+     * @return string
+     */
+    public function getInputType()
+    {
+        return $this->inputType;
     }
 
     /**
