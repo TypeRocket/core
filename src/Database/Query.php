@@ -184,6 +184,7 @@ class Query
     public function removeTake()
     {
         unset($this->query['take']);
+        $this->returnOne = false;
 
         return $this;
     }

@@ -14,6 +14,10 @@ class Config
      */
     public function __construct( $root )
     {
+        if(self::$root) {
+            return;
+        }
+
         self::$root = $root;
         if(is_file($root . '/app.php')) {
             self::$config['app'] = require( $root . '/app.php' );

@@ -5,6 +5,7 @@ use ArrayObject;
 use Exception;
 use LogicException;
 use ReflectionClass;
+use TypeRocket\Database\EagerLoader;
 use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
 use TypeRocket\Elements\Fields\Field;
@@ -38,7 +39,10 @@ class Model implements Formable
     protected $idColumn = 'id';
     protected $resultsClass = Results::class;
     protected $currentRelationshipModel = null;
+    protected $relatedBy = null;
+    protected $relationships = [];
     protected $junction = null;
+    protected $with = null;
 
     /**
      * Construct Model based on resource
@@ -986,20 +990,28 @@ class Model implements Formable
             return null;
         }
 
-        // Return Results
+        // Cast Results
         if( $result instanceof Results ) {
             if( $result->class == null ) {
                $result->class = static::class;
             }
             $result->castResults();
-
-            return $result;
+        } else {
+            $result = $this->castProperties( (array) $result );
         }
 
-        // Cast Properties
-        $this->castProperties( (array) $result );
+        // Eager Loader
+        if($this->with) {
+            $name = $this->with;
+            $loader = new EagerLoader();
+            $relation = $this->{$name}();
+            $result = $loader->load([
+                'name' => $name,
+                'relation' => $relation,
+            ], $result);
+        }
 
-        return $this;
+        return $result;
     }
 
     /**
@@ -1209,6 +1221,14 @@ class Model implements Formable
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+        $relationship->relatedBy = [
+            'type' => 'hasOne',
+            'query' => [
+                'caller' => $this,
+                'class' => $modelClass,
+                'id_foreign' => $id_foreign
+            ]
+        ];
 
         return $relationship->findAll()->where( $id_foreign, $id)->take(1);
     }
@@ -1230,6 +1250,14 @@ class Model implements Formable
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+        $relationship->relatedBy = [
+            'type' => 'belongsTo',
+            'query' => [
+                'caller' => $this,
+                'class' => $modelClass,
+                'local_id' => $id_local
+            ]
+        ];
 
         if( ! $id_local && $relationship->resource ) {
             $id_local = $relationship->resource . '_id';
@@ -1257,6 +1285,14 @@ class Model implements Formable
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+        $relationship->relatedBy = [
+            'type' => 'hasMany',
+            'query' => [
+                'caller' => $this,
+                'class' => $modelClass,
+                'id_foreign' => $id_foreign
+            ]
+        ];
 
         if( ! $id_foreign && $this->resource ) {
             $id_foreign = $this->resource . '_id';
@@ -1292,6 +1328,16 @@ class Model implements Formable
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+        $relationship->relatedBy = [
+            'type' => 'hasMany',
+            'query' => [
+                'caller' => $this,
+                'class' => $modelClass,
+                'junction_table' => $junction_table,
+                'id_column' => $id_column,
+                'id_foreign' => $id_foreign,
+            ]
+        ];
 
         // Foreign ID
         if( ! $id_foreign && $relationship->resource ) {
@@ -1435,6 +1481,16 @@ class Model implements Formable
     }
 
     /**
+     * Get Relationship
+     *
+     * @return array|null
+     */
+    public function getRelatedBy()
+    {
+        return $this->relatedBy;
+    }
+
+    /**
      * Get Junction
      *
      * @return null|string
@@ -1561,6 +1617,10 @@ class Model implements Formable
      */
     public function getRelationValue($key)
     {
+        if(array_key_exists($key, $this->relationships)) {
+            return $this->relationships[$key];
+        }
+
         if (method_exists($this, $key)) {
             return $this->getRelationshipFromMethod($key);
         }
@@ -1639,6 +1699,40 @@ class Model implements Formable
         $this->castProperties($this->properties);
 
         return $this->properties;
+    }
+
+    /**
+     * Eager Load With
+     *
+     * @param $name
+     * @return $this
+     */
+    public function with($name)
+    {
+        $this->with = $name;
+
+        return $this;
+    }
+
+    /**
+     * Set Relationship
+     *
+     * @param $name
+     * @param $value
+     */
+    public function setRelationship($name, $value)
+    {
+        $this->relationships[$name] = $value;
+    }
+
+    /**
+     * Get Relationship
+     *
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getRelationship($name) {
+        return $this->relationships[$name] ?? null;
     }
 
 }

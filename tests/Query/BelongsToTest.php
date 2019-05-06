@@ -6,6 +6,8 @@ namespace Query;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Meta\WPPostMeta;
+use TypeRocket\Models\WPPost;
+use TypeRocket\Models\WPUser;
 
 class BelongsToTest extends TestCase
 {
@@ -18,5 +20,14 @@ class BelongsToTest extends TestCase
         $rel = $post->getRelatedModel();
         $this->assertTrue( $rel instanceof WPPostMeta );
         $this->assertTrue($sql == $expected);
+    }
+
+    public function testBelongsEagerLoad()
+    {
+        $post = new WPPost();
+        $result = $post->with('author')->findById(1);
+        $author = $result->getRelationship('author');
+
+        $this->assertTrue( $author instanceof WPUser );
     }
 }
