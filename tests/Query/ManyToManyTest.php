@@ -59,9 +59,10 @@ class ManyToManyTest extends TestCase
     public function testJunctionGetEager()
     {
         $post = new PostMockClass();
+        /** @var PostMockClass $posts */
         $posts = $post->with('terms')->findById(1);
-        $items = $posts->terms;
-        $this->assertTrue(!empty($items));
+        $terms = $posts->getRelationship('terms');
+        $this->assertTrue(!empty($terms));
     }
 
     public function testJunctionDetachList()
