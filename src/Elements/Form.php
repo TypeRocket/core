@@ -7,11 +7,13 @@ use TypeRocket\Elements\Traits\MacroTrait;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Models\WPComment;
 use TypeRocket\Models\WPOption;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\Model;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
+use TypeRocket\Models\WPUser;
 use TypeRocket\Register\Registry;
 use TypeRocket\Utility\Str;
 
@@ -506,6 +508,12 @@ class Form
                 $param .= ', '.$id;
             } elseif($this->model instanceof WPOption) {
                 $controller = 'options';
+                $param = '';
+            } elseif($this->model instanceof WPUser) {
+                $controller = 'users';
+                $param = '';
+            }  elseif($this->model instanceof WPComment) {
+                $controller = 'comments';
                 $param = '';
             } elseif($this->model instanceof Model) {
                 $controller = 'resource';
