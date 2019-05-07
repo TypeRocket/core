@@ -126,18 +126,19 @@ class WPComment extends Model
     private function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields( $fields );
-        if ( ! empty( $fields ) && ! empty( $this->id )) :
+        $id = $this->getID();
+        if ( ! empty( $fields ) && ! empty( $id )) :
             foreach ($fields as $key => $value) :
                 if (is_string( $value )) {
                     $value = trim( $value );
                 }
 
-                $current_value = get_comment_meta( $this->id, $key, true );
+                $current_value = get_comment_meta( $id, $key, true );
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
-                    update_comment_meta( $this->id, $key, wp_slash($value) );
+                    update_comment_meta( $id, $key, wp_slash($value) );
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
-                    delete_comment_meta( $this->id, $key );
+                    delete_comment_meta( $id, $key );
                 endif;
 
             endforeach;
