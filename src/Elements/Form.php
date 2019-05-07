@@ -47,7 +47,7 @@ class Form
         $this->resource = strtolower($resource);
         $this->action = $action;
         $this->itemId = $itemId;
-        $this->autoConfig();
+        $this->autoConfig($model);
 
         $Resource = Str::camelize($this->resource);
         $this->setModel($this->model ?? $model ?? tr_app("Models\\{$Resource}"));
@@ -79,14 +79,18 @@ class Form
     }
 
     /**
-     * Auto config form is no Controller etc. is set
+     * Auto config form if no Model is set.
      *
+     * These global vars can impact the results of auto
+     * config of the form: $post, $comment, $user_id,
+     * $taxonomy, $tag_ID, and $screen
+     *
+     * @param $model
      * @return $this
-     * @throws \ReflectionException
      */
-    protected function autoConfig()
+    protected function autoConfig($model)
     {
-        if ($this->resource === 'auto') {
+        if ($this->resource === 'auto' && is_null($model)) {
             global $post, $comment, $user_id, $taxonomy, $tag_ID, $screen;
 
             if ( isset( $post->ID ) && empty($taxonomy) && empty($screen) ) {
