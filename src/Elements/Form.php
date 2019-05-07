@@ -87,9 +87,9 @@ class Form
     protected function autoConfig()
     {
         if ($this->resource === 'auto') {
-            global $post, $comment, $user_id, $taxonomy, $tag_ID;
+            global $post, $comment, $user_id, $taxonomy, $tag_ID, $screen;
 
-            if ( isset( $post->ID ) && empty($taxonomy) ) {
+            if ( isset( $post->ID ) && empty($taxonomy) && empty($screen) ) {
                 $item_id  = $post->ID;
                 $resource_data = Registry::getPostTypeResource($post->post_type);
 
