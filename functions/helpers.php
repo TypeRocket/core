@@ -349,13 +349,13 @@ if ( ! function_exists('tr_posts_components_field')) {
      * @param string $name use dot notation
      * @param null $item_id
      *
-     * @param $modelClass
+     * @param null|string $modelClass
      *
      * @deprecated
      * @return array|mixed|null|string
      * @throws Exception
      */
-    function tr_posts_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\WPPost::class)
+    function tr_posts_components_field($name, $item_id = null, $modelClass = null)
     {
         global $post;
 
@@ -364,6 +364,7 @@ if ( ! function_exists('tr_posts_components_field')) {
         }
 
         /** @var \TypeRocket\Models\Model $model */
+        $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
         $model = new $modelClass;
         $model->findById($item_id);
 
@@ -411,12 +412,12 @@ if ( ! function_exists('tr_components_field')) {
      * @param string $name use dot notation
      * @param null $item_id
      *
-     * @param $modelClass
+     * @param null|string $modelClass
      *
      * @return array|mixed|null|string
      * @throws Exception
      */
-    function tr_components_field($name, $item_id = null, $modelClass = \TypeRocket\Models\WPPost::class)
+    function tr_components_field($name, $item_id = null, $modelClass = null)
     {
         global $post;
 
@@ -425,6 +426,7 @@ if ( ! function_exists('tr_components_field')) {
         }
 
         /** @var \TypeRocket\Models\Model $model */
+        $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
         $model = new $modelClass;
         $model->findById($item_id);
 
@@ -434,6 +436,26 @@ if ( ! function_exists('tr_components_field')) {
         }
 
         return $builder_data;
+    }
+}
+
+if( ! function_exists('tr_get_post_type_model') ) {
+    /**
+     * Get Model Assigned To WP_Post Class
+     *
+     * @param WP_Post $wp_post
+     * @param null|string $override
+     * @return \TypeRocket\Models\WPPost
+     */
+    function tr_get_post_type_model(WP_Post $wp_post, $override = null) {
+
+        if($override) { return new $override; }
+
+        $resource_data = \TypeRocket\Register\Registry::getPostTypeResource($wp_post->post_type);
+        $Resource = \TypeRocket\Utility\Str::camelize($resource_data[0] ?? '');
+        $model = $resource_data[2] ?? tr_app("Models\\{$Resource}");
+
+        return class_exists($model) ? new $model: new \TypeRocket\Models\WPPost($wp_post->post_type);
     }
 }
 
