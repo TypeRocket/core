@@ -145,6 +145,34 @@ class WPPost extends Model
     }
 
     /**
+     * Find by ID with Where
+     *
+     * @param $id
+     * @return mixed|object|\TypeRocket\Database\Results|Model|null
+     * @throws \Exception
+     */
+    public function findByIdWithWhere($id)
+    {
+        $results = $this->query->findById($id)->get();
+
+        return $this->getQueryResult($results);
+    }
+
+    /**
+     * Find by ID and Remove Where
+     *
+     * @param $id
+     * @return mixed|object|\TypeRocket\Database\Results|Model|null
+     * @throws \Exception
+     */
+    public function findById($id)
+    {
+        $results = $this->query->removeWhere()->findById($id)->get();
+
+        return $this->getQueryResult($results);
+    }
+
+    /**
      * Create post from TypeRocket fields
      *
      * Set the post type property on extended model so they
