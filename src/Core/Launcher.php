@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Core;
 
+use Query\PostMockClass;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Rewrites\Builder;
 use TypeRocket\Http\Rewrites\Matrix;
@@ -48,7 +49,25 @@ class Launcher
         | Load TypeRocket Router
         |
         */
-	    do_action( 'tr_load_routes' );
+        $routes_hook = $this->typerocket['routes']['hook'] ?? 'plugins_loaded';
+
+        if($routes_hook === '_instant_') {
+            $this->loadRoutes();
+        } else {
+            add_action($routes_hook, [$this, 'loadRoutes']);
+        }
+
+        $this->initEndpoints();
+
+        return $this;
+    }
+
+    /**
+     * Load Routes
+     */
+    public function loadRoutes()
+    {
+        do_action( 'tr_load_routes' );
         $base_dir = Config::locate('paths.base');
         $routeFile = $base_dir . '/routes.php';
         if( file_exists($routeFile) ) {
@@ -56,10 +75,6 @@ class Launcher
             require( $routeFile );
         }
         (new Routes())->detectRoute()->initHooks();
-
-        $this->initEndpoints();
-
-        return $this;
     }
 
     /**
