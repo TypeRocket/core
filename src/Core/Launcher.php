@@ -49,7 +49,7 @@ class Launcher
         | Load TypeRocket Router
         |
         */
-        $routes_hook = $this->typerocket['routes']['hook'] ?? 'plugins_loaded';
+        $routes_hook = $this->typerocket['routes']['hook'] ?? 'typerocket_loaded';
 
         if($routes_hook === '_instant_') {
             $this->loadRoutes();
