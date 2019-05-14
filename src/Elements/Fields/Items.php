@@ -27,7 +27,7 @@ class Items extends Field
         $this->removeAttribute('name');
         $generator = Generator::make();
         $settings = $this->getSettings();
-        $num_items = count($items ?? []);
+        $num_items = count( is_countable($items) ? $items : []);
 
         // add button settings
         if (isset( $settings['button'] )) {

@@ -51,7 +51,7 @@ class Repeater extends Field implements ScriptField
         $form->setDebugStatus( false );
         $html =  $fields_classes = '';
         $repeats = $this->getValue();
-        $num_repeaters = count($repeats ?? []);
+        $num_repeaters = count( is_countable($repeats) ? $repeats : []);
 
         $headline = $this->headline ? '<h1>' . $this->headline . '</h1>': '';
 
