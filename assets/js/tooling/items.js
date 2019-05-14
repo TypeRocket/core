@@ -16,7 +16,6 @@ const { __ } = wp.i18n;
         $ul = $(this).parent().next();
         name = $ul.attr('name');
         limit = $ul.data('limit');
-        console.log(limit);
         if (name) {
             $ul.data('name', name);
         }
