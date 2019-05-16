@@ -1,7 +1,6 @@
 <?php
 namespace TypeRocket\Core;
 
-use Query\PostMockClass;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Rewrites\Builder;
 use TypeRocket\Http\Rewrites\Matrix;
