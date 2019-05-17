@@ -379,7 +379,8 @@ class Launcher
 
     public function addTopJs()
     {
-        ?><script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url());?>"}</script><?php
+        $scheme = 'on' === $_SERVER['HTTPS'] || 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ? 'https' : '';
+        ?><script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url( '', $scheme ));?>"}</script><?php
     }
 
     /**
