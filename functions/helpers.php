@@ -921,3 +921,17 @@ if ( ! function_exists('tr_get_url')) {
         return get_theme_file_uri($path);
     }
 }
+
+if ( ! function_exists('tr_asset_version')) {
+    /**
+     * Get Asset Version
+     *
+     * @param string $fallback version number
+     * @return string
+     */
+    function tr_asset_version($fallback) {
+        $version = json_decode(file_get_contents(TR_PATH . '/asset-version.json'), true);
+        return $version['version'] ?? $fallback;
+    }
+}
+
