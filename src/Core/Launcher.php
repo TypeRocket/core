@@ -380,9 +380,9 @@ class Launcher
     public function addTopJs()
     {
         $scheme = '';
-        if ( ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
-	    $scheme =  'https';
-	}
+        if ( is_ssl() || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
+            $scheme =  'https';
+        }
         ?><script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url( '', $scheme ));?>"}</script><?php
     }
 
