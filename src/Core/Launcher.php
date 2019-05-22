@@ -93,11 +93,25 @@ class Launcher
             add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
         }
 
-        if(isset($features['gutenberg']) && !$features['gutenberg']) {
-            add_filter( 'use_block_editor_for_post_type', '__return_false' );
-            add_action( 'wp_enqueue_scripts', function() {
-                wp_dequeue_style( 'wp-block-library' );
-            }, 100 );
+        if(isset($features['gutenberg'])) {
+            $gb = $features['gutenberg'];
+            if(is_array($gb)) {
+                add_filter('use_block_editor_for_post_type', function ($value, $type) use ($gb) {
+
+                    if(in_array($type, $gb) && $value) { return true; }
+
+                    add_action( 'wp_enqueue_scripts', function() {
+                        wp_dequeue_style( 'wp-block-library' );
+                    }, 100 );
+
+                    return false;
+                }, 10, 2);
+            } elseif(!$features['gutenberg']) {
+                add_filter( 'use_block_editor_for_post_type', '__return_false' );
+                add_action( 'wp_enqueue_scripts', function() {
+                    wp_dequeue_style( 'wp-block-library' );
+                }, 100 );
+            }
         }
 
         if(isset($features['comments']) && !$features['comments']) {
