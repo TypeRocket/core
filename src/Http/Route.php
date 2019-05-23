@@ -58,11 +58,13 @@ class Route
     /**
      * Do not redirect route with trailing slash
      *
+     * @param bool $value
+     *
      * @return $this
      */
-    public function noTrailingSlash()
+    public function noTrailingSlash($value = true)
     {
-        $this->addTrailingSlash = false;
+        $this->addTrailingSlash = !$value;
         return $this;
     }
 
