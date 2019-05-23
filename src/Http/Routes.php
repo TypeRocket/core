@@ -186,7 +186,8 @@ class Routes
      */
     public function detectRoute()
     {
-        $requestPath = trim(self::$request->getPath(), '/');
+        $path = self::$request->getPath();
+        $requestPath = ltrim($path, '/');
         $routesRegistered = $this->getRegisteredRoutes();
 
         list($match, $args) = $this->matchRoute($requestPath, $routesRegistered);
@@ -226,7 +227,8 @@ class Routes
 
         $regex = ['#^(?'];
         foreach ($routes as $i => $route) {
-            $regex[] = $route[0] . '(*MARK:'.$i.')';
+            $slash = $route[2]->addTrailingSlash ? '/?' : '';
+            $regex[] = rtrim($route[0], '/') . $slash . '(*MARK:'.$i.')';
         }
         $regex = implode('|', $regex) . ')$#x';
         preg_match($regex, $uri, $m);
