@@ -935,3 +935,19 @@ if ( ! function_exists('tr_asset_version')) {
     }
 }
 
+if ( ! function_exists('tr_config')) {
+    /**
+     * Locate Config Setting
+     *
+     * Traverse array with dot notation.
+     *
+     * @param string $dots dot notation key.next.final
+     * @param null|mixed $default default value to return if null
+     *
+     * @return array|mixed|null
+     */
+    function tr_config($dots, $default = null) {
+        return \TypeRocket\Core\Config::locate($dots, $default);
+    }
+}
+
