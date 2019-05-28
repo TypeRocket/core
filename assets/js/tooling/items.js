@@ -12,19 +12,21 @@ const { __ } = wp.i18n;
         return false;
     };
     $(document).on('click', '.items-list-button', function() {
-        var $ul, name, limit;
+        var $ul, name, limit, inputType, removeTitle;
         $ul = $(this).parent().next();
         name = $ul.attr('name');
+        inputType = $ul.data('type');
         limit = $ul.data('limit');
         if (name) {
             $ul.data('name', name);
         }
         name = $ul.data('name');
+        removeTitle =__('Remove Item', 'typerocket-domain');
 
         var num_fields = $ul.children().length;
 
         if(num_fields < limit) {
-            $ul.prepend($('<li class="item"><a class="move tr-control-icon tr-control-icon-move"></a><a href="#remove" class="remove tr-control-icon tr-control-icon-remove" title="Remove Item"></a><input type="text" name="' + name + '[]" /></li>')
+            $ul.prepend($('<li class="item"><a class="move tr-control-icon tr-control-icon-move"></a><a href="#remove" class="remove tr-control-icon tr-control-icon-remove" title="'+removeTitle+'"></a><input type="'+inputType+'" name="' + name + '[]" /></li>')
                 .hide().delay(10).slideDown(150).scrollTop('100%'));
         }
 

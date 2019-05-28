@@ -55,8 +55,9 @@ class Items extends Field
                 $value = esc_attr( $this->sanitize($value, 'raw') );
                 $input = $generator->newInput( $this->inputType, $name . '[]', $value )->getString();
                 $remove = '#remove';
+                $remove_title = __('Remove Item');
                 $list .= $generator->newElement( 'li', ['class' => 'item'],
-                    '<a class="move tr-control-icon tr-control-icon-move"></a><a href="'.$remove.'" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>' . $input )->getString();
+                    '<a class="move tr-control-icon tr-control-icon-move"></a><a href="'.$remove.'" class="remove tr-control-icon tr-control-icon-remove" title="'.$remove_title.'"></a>' . $input )->getString();
 
             }
         }
@@ -84,6 +85,7 @@ class Items extends Field
 
         $html .= $generator->newElement( 'ul', [
             'data-name' => $name,
+            'data-type' => $this->inputType,
             'data-limit' => $this->limit,
             'class'     => 'tr-items-list cf'
         ], $list )->getString();
