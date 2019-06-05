@@ -927,10 +927,11 @@ if ( ! function_exists('tr_asset_version')) {
      * Get Asset Version
      *
      * @param string $fallback version number
+     * @param string|null $path file path to asset-version.json
      * @return string
      */
-    function tr_asset_version($fallback = '0.0.0') {
-        $version = json_decode(file_get_contents(TR_PATH . '/asset-version.json'), true);
+    function tr_asset_version($fallback = '0.0.0', $path = null) {
+        $version = json_decode(file_get_contents($path ?? TR_PATH . '/asset-version.json'), true);
         return $version['version'] ?? $fallback;
     }
 }
