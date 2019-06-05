@@ -4,6 +4,7 @@ namespace TypeRocket\Console\Commands;
 
 
 use TypeRocket\Console\Command;
+use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 
 class MakeCommand extends Command
@@ -31,15 +32,16 @@ class MakeCommand extends Command
     {
         $command = $this->getArgument('class');
         $name = strtolower( $this->getArgument('name') );
+        $app_path = Config::locate('paths.app');
 
-        if( ! file_exists( TR_PATH . '/app/Commands' ) ) {
-            mkdir(TR_PATH . '/app/Commands', 0755, true);
+        if( ! file_exists( $app_path . '/Commands' ) ) {
+            mkdir($app_path . '/Commands', 0755, true);
         }
 
         $tags = ['{{namespace}}', '{{command}}', '{{name}}'];
         $replacements = [ TR_APP_NAMESPACE, $command, $name ];
         $template = __DIR__ . '/../../../templates/Command.txt';
-        $new = TR_PATH . '/app/Commands/' . $command . ".php";
+        $new = $app_path . '/Commands/' . $command . ".php";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );

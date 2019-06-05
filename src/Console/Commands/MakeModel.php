@@ -4,6 +4,7 @@ namespace TypeRocket\Console\Commands;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
+use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Inflect;
 
@@ -72,7 +73,8 @@ class MakeModel extends Command
         $tags = ['{{namespace}}', '{{model}}', '{{id}}'];
         $replacements = [ TR_APP_NAMESPACE, $model, $id ];
         $template =  __DIR__ . '/../../../templates/Models/' . $directive . '.txt';
-        $new = TR_PATH . '/app/Models/' . $model . ".php";
+        $app_path = Config::locate('paths.app');
+        $new = $app_path . '/Models/' . $model . ".php";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );

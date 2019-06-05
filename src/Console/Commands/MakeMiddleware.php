@@ -2,6 +2,7 @@
 namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\Command;
+use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 
 class MakeMiddleware extends Command
@@ -41,7 +42,8 @@ class MakeMiddleware extends Command
         $tags = ['{{namespace}}', '{{middleware}}'];
         $replacements = [ TR_APP_NAMESPACE, $middleware ];
         $template = __DIR__ . '/../../../templates/Middleware.txt';
-        $new = TR_PATH . '/app/Http/Middleware/' . $middleware . ".php";
+        $app_path = Config::locate('paths.app');
+        $new = $app_path . '/Http/Middleware/' . $middleware . ".php";
 
         $file = new File( $template );
         $new = $file->copyTemplateFile( $new, $tags, $replacements );
