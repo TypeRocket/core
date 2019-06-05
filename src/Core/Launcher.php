@@ -9,6 +9,7 @@ use TypeRocket\Elements\Notice;
 use TypeRocket\Http\Routes;
 use TypeRocket\Http\SSL;
 use TypeRocket\Register\Registry;
+use TypeRocket\Utility\ImageSizer;
 
 class Launcher
 {
@@ -91,6 +92,14 @@ class Launcher
         if(!empty($this->typerocket['admin']['post_messages'])) {
             add_action( 'post_updated_messages', [$this, 'setMessages']);
             add_action( 'bulk_post_updated_messages', [$this, 'setBulkMessages'], 10, 2);
+        }
+
+        if(!empty($this->typerocket['system']['ssl'])) {
+            new SSL();
+        }
+
+        if(!empty($this->typerocket['system']['on_demand_image_sizing'])) {
+            new ImageSizer();
         }
 
         if(isset($features['gutenberg'])) {
