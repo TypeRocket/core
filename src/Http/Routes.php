@@ -118,9 +118,13 @@ class Routes
         $this->vars = $wilds;
         $addSlash = $this->match[1]->addTrailingSlash ?? true;
         $path = self::$request->getPath();
+        $endsInSlash = Str::ends('/', $path );
 
-        if( $addSlash && ! Str::ends('/', $path ) && self::$request->isGet() ) {
+        if( $addSlash && ! $endsInSlash && self::$request->isGet() ) {
             wp_redirect( $path . '/' );
+            die();
+        } elseif( ! $addSlash && $endsInSlash && self::$request->isGet() ) {
+            wp_redirect( rtrim($path, '/') );
             die();
         }
 
@@ -190,7 +194,7 @@ class Routes
         $requestPath = ltrim($path, '/');
         $routesRegistered = $this->getRegisteredRoutes();
 
-        list($match, $args) = $this->matchRoute($requestPath, $routesRegistered);
+        list($match, $args) = $this->matchRoute(rtrim($requestPath, '/'), $routesRegistered);
 
         if($match) {
             $this->match = [$requestPath, $match[2], $args];
@@ -216,7 +220,7 @@ class Routes
     }
 
     /**
-     * @param $uri path to match
+     * @param string $uri path to match
      * @param array $routes list of routes
      *
      * @return array
@@ -227,7 +231,7 @@ class Routes
 
         $regex = ['#^(?'];
         foreach ($routes as $i => $route) {
-            $slash = $route[2]->addTrailingSlash ? '/?' : '';
+            $slash = $route[2]->addTrailingSlash ? '\/?$' : '';
             $regex[] = rtrim($route[0], '/') . $slash . '(*MARK:'.$i.')';
         }
         $regex = implode('|', $regex) . ')$#x';
