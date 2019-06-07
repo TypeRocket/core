@@ -188,15 +188,30 @@ class Form
     /**
      * Use TypeRocket Rest to submit form
      *
+     * @param null|string $resource override resource name useful for setting custom post type IDs etc.
      * @return Form $this
      */
-    public function useJson()
+    public function useJson($resource = null)
     {
         if( $this->useAjax === null ) {
             $this->useAjax();
         }
 
-        $this->formUrl = home_url('/', get_http_protocol() ) . 'tr_json_api/v1/' . $this->resource . '/' . $this->itemId;
+        $the_resource = $this->resource;
+
+        if($this->model instanceof WPPost) {
+            $pt = $this->model->getPostType();
+            $the_resource = $the_resource != $pt ? $pt : $the_resource;
+        }
+
+        if($this->model instanceof WPTerm) {
+            $tx = $this->model->getTaxonomy();
+            $the_resource = $the_resource != $tx ? $tx : $the_resource;
+        }
+
+        $the_resource = $resource ?? $the_resource;
+
+        $this->formUrl = home_url('/', get_http_protocol() ) . 'tr_json_api/v1/' . $the_resource . '/' . $this->itemId;
 
         return $this;
     }
