@@ -18,6 +18,8 @@ class Registry
         'post_tag' => ['tag', 'tags', null, null]
     ];
 
+    public static $customs = [];
+
     /**
      * Add a post type resource
      *
@@ -58,6 +60,27 @@ class Registry
      */
     public static function addTaxonomyResource($id, $resource = []) {
         self::$taxonomies[$id] = array_pad($resource, 4, null);
+    }
+
+    /**
+     * Add a custom resource
+     *
+     * @param string $id custom resource id
+     * @param array $resource resource name ex. posts, pages, books
+     */
+    public static function addCustomResource($id, $resource = []) {
+        self::$customs[$id] = array_pad($resource, 4, null);
+    }
+
+    /**
+     * Get the custom resource
+     *
+     * @param $id
+     *
+     * @return null
+     */
+    public static function getCustomResource($id) {
+        return self::$customs[$id] ?? null;
     }
 
     /**

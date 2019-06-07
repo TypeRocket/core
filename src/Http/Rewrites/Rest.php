@@ -44,6 +44,10 @@ class Rest
                 $this->middleware_fallback = 'term';
                 $this->middleware = $this->resource;
                 $this->handler = $obj[3];
+            } elseif($obj = Registry::getCustomResource($this->resource)) {
+                $this->middleware_fallback = '';
+                $this->middleware = $this->resource;
+                $this->handler = $obj[3];
             }
 
             if ( apply_filters( 'tr_rest_api_load', true, $this->resource, $this->item ) ) {
