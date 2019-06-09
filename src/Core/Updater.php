@@ -66,6 +66,9 @@ class Updater
         // trying to get from cache first, to disable cache comment 18,28,29,30,32
         if( $remote = $this->pluginGetRemote()) {
             $remote = json_decode( $remote['body'] );
+
+            $cont = json_decode(json_encode($remote->contributors), true);
+
             $res = new \stdClass();
             $res->name = $remote->name;
             $res->slug = $this->api->slug;
@@ -75,7 +78,7 @@ class Updater
             $res->author = $remote->author;
             $res->download_link = $remote->download_url;
             $res->trunk = $remote->download_url;
-            $res->contributors = $remote->contributors;
+            $res->contributors = $cont;
             $res->requires_php = $remote->requires_php;
             $res->homepage = $remote->homepage;
             $res->last_updated = $remote->last_updated;
@@ -85,9 +88,10 @@ class Updater
                 'changelog' => $remote->sections->changelog,
             ];
 
-            if($remote->banner['high']) {
+            if($remote->banners->high) {
                 $res->banners = [
-                    'high' => $remote->banner['high']
+                    'high' => $remote->banners->high,
+                    'low' => $remote->banners->low ?? null,
                 ];
             }
 
