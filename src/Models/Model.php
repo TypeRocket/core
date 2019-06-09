@@ -994,6 +994,26 @@ class Model implements Formable
     }
 
     /**
+     * Where
+     *
+     * @param string $column
+     * @param string $arg1
+     * @param null|string $arg2
+     * @param string $condition
+     *
+     * @return Model
+     * @throws Exception
+     */
+    public function firstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND')
+    {
+        if($item = $this->where($column, $arg1, $arg2, $condition)->first()) {
+            return $item;
+        };
+
+        return new static;
+    }
+
+    /**
      * Find first where of die
      *
      * @param $column
