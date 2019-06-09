@@ -891,7 +891,7 @@ class Model implements Formable
     /**
      * Find the first record and set properties
      *
-     * @return array|bool|false|int|null|object
+     * @return array|bool|false|int|null|object|Model
      * @throws Exception
      */
     public function first() {
@@ -1004,7 +1004,7 @@ class Model implements Formable
      * @return Model
      * @throws Exception
      */
-    public function firstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND')
+    public function findFirstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND')
     {
         if($item = $this->where($column, $arg1, $arg2, $condition)->first()) {
             return $item;
