@@ -105,6 +105,8 @@ class Form
 
                 if(! class_exists($model) ) {
                     $this->model = new WPPost($post->post_type);
+                } else {
+                    $this->model = $model;
                 }
 
                 if( empty($resource) ) {
@@ -119,12 +121,14 @@ class Form
             } elseif ( isset( $taxonomy ) || isset($tag_ID) ) {
                 $item_id  = $tag_ID;
                 $resources = Registry::getTaxonomyResource($taxonomy);
-                $Resource = Str::camelize($resources[0]);
+                $Resource = Str::camelize($resources[0] ?? '');
                 $resource = $resources[0] ?? null;
                 $model = $resource[2] ?? tr_app("Models\\{$Resource}");
 
                 if(! class_exists($model) ) {
                     $this->model = new WPTerm($taxonomy);
+                } else {
+                    $this->model = $model;
                 }
 
                 if( empty($resource) ) {
