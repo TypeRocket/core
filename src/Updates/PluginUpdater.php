@@ -1,43 +1,53 @@
 <?php
 
 
-namespace TypeRocket\Core;
+namespace TypeRocket\Updates;
 
 
-use TypeRocket\Utility\UpdateApi;
-
-/**
- * Class Updater
- * @package TypeRocket\Core
- *
- * @link https://rudrastyh.com/wordpress/self-hosted-plugin-update.html
- */
-class Updater
+class PluginUpdater
 {
+    public $data = [
+        'slug' => null,
+        'api_url' => null,
+        'locate' => null,
+        'transient_name' => null,
+        'cache' => 43200, // 12 hours
+    ];
 
-    /**
-     * @var UpdateApi
-     */
-    private $api;
-    private $cache = 43200; // 12 hours
-
-    public function __construct(UpdateApi $api)
+    public function __construct(array $data)
     {
-        $this->api = $api;
+        $this->data = array_merge($this->data, $data);
 
-        if($this->api->type == 'plugin') {
-            add_action('upgrader_process_complete', [$this, 'pluginCleanup'], 10, 2 );
-            add_filter('plugins_api', [$this, 'pluginInfo'], 20, 3);
-            add_filter('site_transient_update_plugins', [$this, 'pluginUpdate'] );
-        }
+        add_action('upgrader_process_complete', [$this, 'cleanup'], 10, 2 );
+        add_filter('plugins_api', [$this, 'info'], 20, 3);
+        add_filter('site_transient_update_plugins', [$this, 'update'] );
     }
 
-    public function pluginGetRemote()
+    /**
+     * @param null|string $key
+     * @return array|mixed
+     */
+    public function getData($key = null)
     {
-        if( false == $remote = get_transient( $this->api->slug_underscored ) ) {
+        if(empty($this->data['transient_name'])) {
+            $this->data['transient_name'] = 'update_' . str_replace('-', '_', $this->data['slug']);
+        }
+
+        if(empty($this->data['locate'])) {
+            $this->data['locate'] = $this->data['slug'] . '/' . $this->data['slug'] . '.php';
+        }
+
+        return $key ? $this->data[$key] : $this->data;
+    }
+
+    public function getApiJsonResponseBody()
+    {
+        $transient = $this->getData('transient_name');
+
+        if( false == $remote = get_transient( $transient ) ) {
 
             // info.json is the file with the actual plugin information on your server
-            $remote = wp_remote_get( $this->api->url, [
+            $remote = wp_remote_get( $this->getData('api_url'), [
                     'timeout' => 10,
                     'headers' => [
                         'Accept' => 'application/json'
@@ -45,33 +55,32 @@ class Updater
             );
 
             if ( !is_wp_error( $remote ) && isset( $remote['response']['code'] ) && $remote['response']['code'] == 200 && !empty( $remote['body'] ) ) {
-                set_transient( $this->api->slug_underscored, $remote, $this->cache );
+                set_transient( $transient, $remote, $this->getData('cache') );
             }
-
         }
 
-        return $remote;
+        return empty($remote['body']) ? false : json_decode( $remote['body'] );
     }
 
-    function pluginInfo( $res, $action, $args ){
+    function info( $res, $action, $args ){
 
         // do nothing if this is not about getting plugin information
         if( $action !== 'plugin_information' )
             return false;
 
+        $slug = $this->getData('slug');
+
         // do nothing if it is not our plugin
-        if( $this->api->slug !== $args->slug )
+        if( $slug !== $args->slug )
             return $res;
 
         // trying to get from cache first, to disable cache comment 18,28,29,30,32
-        if( $remote = $this->pluginGetRemote()) {
-            $remote = json_decode( $remote['body'] );
-
+        if( $remote = $this->getApiJsonResponseBody()) {
             $cont = json_decode(json_encode($remote->contributors), true);
 
             $res = new \stdClass();
             $res->name = $remote->name;
-            $res->slug = $this->api->slug;
+            $res->slug = $slug;
             $res->version = $remote->version;
             $res->tested = $remote->tested;
             $res->requires = $remote->requires;
@@ -91,7 +100,7 @@ class Updater
             if($remote->banners->high) {
                 $res->banners = [
                     'high' => $remote->banners->high,
-                    'low' => $remote->banners->low ?? null,
+                    'low' => $remote->banners->low ?? false,
                 ];
             }
 
@@ -102,37 +111,40 @@ class Updater
 
     }
 
-
-    function pluginUpdate( $transient ){
+    function update( $transient ){
 
         if ( empty($transient->checked ) ) {
             return $transient;
         }
 
-        if( $remote = $this->pluginGetRemote() ) {
+        if( $remote = $this->getApiJsonResponseBody() ) {
 
-            $remote = json_decode( $remote['body'] );
+            $locate = $this->getData('locate');
 
-            // your installed plugin version should be on the line below! You can obtain it dynamically of course
-            if( $remote && version_compare( '1.0', $remote->version, '<' ) && version_compare($remote->requires, get_bloginfo('version'), '<' ) ) {
+            if( ! $version = $transient->checked[$locate] ) {
+                return $transient;
+            }
+
+            if( $remote && version_compare( $version, $remote->version, '<' ) && version_compare($remote->requires, get_bloginfo('version'), '<' ) ) {
                 $res = new \stdClass();
-                $res->slug = $this->api->slug;
-                $res->plugin = $this->api->locate;
+                $res->slug = $this->getData('slug');
+                $res->plugin = $locate;
                 $res->new_version = $remote->version;
                 $res->tested = $remote->tested;
                 $res->package = $remote->download_url;
                 $res->url = $remote->homepage;
-                $transient->response[$res->plugin] = $res;
+                $transient->response[$locate] = $res;
+                $transient->checked[$locate] = $remote->version;
             }
 
         }
         return $transient;
     }
 
-    function pluginCleanup( $upgrader_object, $options ) {
+    function cleanup( $upgrader_object, $options ) {
         if ( $options['action'] == 'update' && $options['type'] === 'plugin' )  {
             // just clean the cache when new plugin version is installed
-            delete_transient( $this->api->slug_underscored );
+            delete_transient( $this->getData('transient_name') );
         }
     }
 }
