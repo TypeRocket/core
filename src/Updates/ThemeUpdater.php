@@ -116,19 +116,25 @@ class ThemeUpdater
             return $transient;
         }
 
-//        if( $remote = $this->getApiJsonResponseBody() ) {
-//            if( $remote && version_compare( '1.0', $remote->version, '<' ) && version_compare($remote->requires, get_bloginfo('version'), '<' ) ) {
-//                $res = new \stdClass();
-//                $res->slug = $this->getData('slug');
-//                $res->theme = $this->getData('locate');
-//                $res->new_version = $remote->version;
-//                $res->tested = $remote->tested;
-//                $res->package = $remote->download_url;
-//                $res->url = $remote->download_url;
-//                $transient->response[$res->theme] = $res;
-//            }
-//
-//        }
+        $locate = $this->getData('locate');
+
+        if( ! $version = $transient->checked[$locate] ) {
+            return $transient;
+        }
+
+        if( $remote = $this->getApiJsonResponseBody() ) {
+            if( $remote && version_compare( $version, $remote->version, '<' ) && version_compare($remote->requires, get_bloginfo('version'), '<' ) ) {
+                $res['slug'] = $this->getData('slug');
+                $res['theme'] = $locate;
+                $res['new_version'] = $remote->version;
+                $res['tested'] = $remote->tested;
+                $res['package'] = $remote->download_url;
+                $res['url'] = $remote->homepage;
+                $transient->response[$locate] = $res;
+                $transient->checked[$locate] = $locate;
+            }
+
+        }
         return $transient;
     }
 
