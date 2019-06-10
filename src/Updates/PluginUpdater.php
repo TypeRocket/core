@@ -1,6 +1,4 @@
 <?php
-
-
 namespace TypeRocket\Updates;
 
 
@@ -143,7 +141,6 @@ class PluginUpdater
 
     function cleanup( $upgrader_object, $options ) {
         if ( $options['action'] == 'update' && $options['type'] === 'plugin' )  {
-            // just clean the cache when new plugin version is installed
             delete_transient( $this->getData('transient_name') );
         }
     }
