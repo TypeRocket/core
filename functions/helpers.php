@@ -306,7 +306,7 @@ if ( ! function_exists('tr_modify_model_value')) {
                 $modified = get_term($value, $taxonomy);
                 break;
             default:
-                $callback_args = $arg2 ? [$arg1] : [];
+                $callback_args = array_merge([$value], $arg2 ? [$arg1] : []);
                 $modified = call_user_func_array($modifier, $callback_args);
                 break;
         }
