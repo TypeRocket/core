@@ -46,7 +46,6 @@ class EagerLoader
         $relation = $this->load['relation'] ? clone $this->load['relation']: null;
         $name = $this->load['name'];
 
-
         if(is_null($relation)) {
             if($result instanceof Results) {
                 foreach($result as $key => $value) {
@@ -72,6 +71,42 @@ class EagerLoader
     }
 
     /**
+     * Compile Items
+     *
+     * @param array|Results $items results from query
+     * @param string $on the field to group items by
+     * @param bool $array return array or object
+     * @param string $resultClass
+     * @param bool $unset unset the on property from result item
+     *
+     * @return array
+     */
+    protected function compileItems($items, $on = null, $array = false, $resultClass = '\TypeRocket\Database\Results', $unset = false) {
+        $set = [];
+
+        if(!empty($items)) {
+            foreach ($items as $item) {
+                $index = $item->{$on};
+
+                if(!$array) {
+                    $set[$index] = $item;
+                    return $set;
+                }
+
+                if(empty($set[$index]) && $resultClass) {
+                    $set[$index] = new $resultClass;
+                }
+
+                if($unset) { unset($item->{$on}); }
+
+                $set[$index]->append($item);
+            }
+        }
+
+        return $set;
+    }
+
+    /**
      * Belongs To
      *
      * @param $result
@@ -86,7 +121,6 @@ class EagerLoader
         $name = $this->load['name'];
         $by = $relation->getRelatedBy();
         $query = $by['query'];
-        $set = [];
 
         if($result instanceof Results) {
             foreach($result as $model) {
@@ -100,16 +134,17 @@ class EagerLoader
         $on = $relation->getIdColumn();
         $items = $relation->removeTake()->removeWhere()->where($on, 'IN', $ids)->with($this->with)->get();
 
-        foreach($items as $item) { $set[$item->{$on}] = $item; }
+        $set = $this->compileItems($items, $on, false, $relation->getResultsClass());
 
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
                 $local_id = $value->{$query['local_id']};
-                $value->setRelationship($name, $set[$local_id]);
+                $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->{$query['local_id']}]);
+            $lookup = $result->{$query['local_id']};
+            $result->setRelationship($name, $set[$lookup] ?? null);
         }
 
         return $result;
@@ -122,14 +157,13 @@ class EagerLoader
      * @return mixed
      * @throws \Exception
      */
-    public function hadOne($result)
+    public function hasOne($result)
     {
         $ids = [];
         /** @var Model $relation */
         $relation = clone $this->load['relation'];
         $name = $this->load['name'];
         $query = $relation->getRelatedBy()['query'];
-        $set = [];
 
         if($result instanceof Results) {
             foreach($result as $model) {
@@ -142,18 +176,16 @@ class EagerLoader
 
         $items = $relation->removeTake()->removeWhere()->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
 
-        foreach($items as $item) {
-            $set[$item->{$query['id_foreign']}] = $item;
-        }
+        $set = $this->compileItems($items, $query['id_foreign'], false, $relation->getResultsClass());
 
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
                 $local_id = $value->getId();
-                $value->setRelationship($name, $set[$local_id]);
+                $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->getId()]);
+            $result->setRelationship($name, $set[$result->getId()] ?? null);
         }
 
         return $result;
@@ -173,7 +205,6 @@ class EagerLoader
         $relation = clone $this->load['relation'];
         $name = $this->load['name'];
         $query = $relation->getRelatedBy()['query'];
-        $set = [];
 
         if($result instanceof Results) {
             foreach($result as $model) {
@@ -186,18 +217,16 @@ class EagerLoader
 
         $items = $relation->removeTake()->removeWhere()->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
 
-        foreach($items as $item) {
-            $set[$item->{$query['id_foreign']}][] = $item;
-        }
+        $set = $this->compileItems($items, $query['id_foreign'], true, $relation->getResultsClass() );
 
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
                 $local_id = $value->getId();
-                $value->setRelationship($name, $set[$local_id]);
+                $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->getId()]);
+            $result->setRelationship($name, $set[$result->getId()] ?? null);
         }
 
         return $result;
@@ -237,19 +266,16 @@ class EagerLoader
             ->with($this->with)
             ->get();
 
-        foreach($items as $item) {
-            $set[$item->the_relationship_id][] = $item;
-            unset($item->the_relationship_id);
-        }
+        $set = $this->compileItems($items, 'the_relationship_id', true, $relation->getResultsClass());
 
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
                 $local_id = $value->getId();
-                $value->setRelationship($name, $set[$local_id]);
+                $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->getId()]);
+            $result->setRelationship($name, $set[$result->getId()] ?? null);
         }
 
         return $result;

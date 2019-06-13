@@ -878,6 +878,16 @@ class Model implements Formable
     }
 
     /**
+     * Get Results Class
+     *
+     * @return string
+     */
+    public function getResultsClass()
+    {
+        return $this->resultsClass;
+    }
+
+    /**
      * Always Wrap In Results Class
      *
      * @return $this
@@ -1057,14 +1067,23 @@ class Model implements Formable
         }
 
         // Eager Loader
-        if($this->with) {
-            list($name, $with) = array_pad(explode('.', $this->with, 2), 2, null);
-            $loader = new EagerLoader();
-            $relation = $this->{$name}();
-            $result = $loader->load([
-                'name' => $name,
-                'relation' => $relation,
-            ], $result, $with);
+        if(!empty($this->with)) {
+
+            if(is_string($this->with)) {
+                $withList = [$this->with];
+            } else {
+                $withList = $this->with ?? [];
+            }
+
+            foreach ($withList as $withArg) {
+                list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
+                $loader = new EagerLoader();
+                $relation = $this->{$name}();
+                $result = $loader->load([
+                    'name' => $name,
+                    'relation' => $relation,
+                ], $result, $with);
+            }
         }
 
         return $result;

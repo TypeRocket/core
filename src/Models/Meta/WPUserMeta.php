@@ -2,12 +2,14 @@
 
 namespace TypeRocket\Models\Meta;
 
+use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Models\Model;
 
 class WPUserMeta extends Model
 {
     protected $idColumn = 'meta_id';
     protected $resource = 'usermeta';
+    protected $resultsClass = ResultsMeta::class;
 
     protected $builtin = [
         'meta_id',

@@ -2,12 +2,14 @@
 
 namespace TypeRocket\Models\Meta;
 
+use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Models\Model;
 
 class WPTermMeta extends Model
 {
     protected $idColumn = 'meta_id';
     protected $resource = 'termmeta';
+    protected $resultsClass = ResultsMeta::class;
 
     protected $builtin = [
         'meta_id',
