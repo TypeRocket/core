@@ -88,18 +88,6 @@ class ThemeUpdater
             $res->requires_php = $remote->requires_php;
             $res->homepage = $remote->homepage;
             $res->last_updated = $remote->last_updated;
-            $res->sections = [
-                'description' => $remote->sections->description,
-                'installation' => $remote->sections->installation,
-                'changelog' => $remote->sections->changelog,
-            ];
-
-            if($remote->banners->high) {
-                $res->banners = [
-                    'high' => $remote->banners->high,
-                    'low' => $remote->banners->low ?? false,
-                ];
-            }
 
             return $res;
         }
