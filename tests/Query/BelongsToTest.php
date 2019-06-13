@@ -5,6 +5,7 @@ namespace Query;
 
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Models\Meta\WPPostMeta;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPUser;
@@ -30,6 +31,6 @@ class BelongsToTest extends TestCase
         $meta = $result->getRelationship('author.meta');
 
         $this->assertTrue( $author instanceof WPUser );
-        $this->assertTrue( is_array($meta) );
+        $this->assertTrue( $meta instanceof ResultsMeta);
     }
 }
