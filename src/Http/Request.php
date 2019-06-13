@@ -170,7 +170,7 @@ class Request
             return $this->post[$key];
         }
 
-        return $this->post;
+        return !$key ? $this->post : null;
     }
 
     /**
@@ -186,7 +186,7 @@ class Request
             return $this->get[$key];
         }
 
-        return $this->get;
+        return !$key ? $this->get : null;
     }
 
     /**
