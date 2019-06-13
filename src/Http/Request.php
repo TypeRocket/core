@@ -166,7 +166,7 @@ class Request
      */
     public function getDataPost( $key = null )
     {
-        if( array_key_exists($key, $this->post)) {
+        if( $key && array_key_exists($key, $this->post ?? [])) {
             return $this->post[$key];
         }
 
@@ -182,7 +182,7 @@ class Request
      */
     public function getDataGet( $key = null )
     {
-        if( array_key_exists($key, $this->get)) {
+        if( isset($key) && array_key_exists($key, $this->get ?? [])) {
             return $this->get[$key];
         }
 
