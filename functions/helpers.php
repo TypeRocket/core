@@ -271,7 +271,6 @@ if ( ! function_exists('tr_modify_model_value')) {
      * @param mixed $args
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_modify_model_value($model, $args)
     {
@@ -323,7 +322,6 @@ if ( ! function_exists('tr_posts_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_posts_field($name, $item_id = null)
     {
@@ -353,7 +351,6 @@ if ( ! function_exists('tr_posts_components_field')) {
      *
      * @deprecated
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_posts_components_field($name, $item_id = null, $modelClass = null)
     {
@@ -512,7 +509,6 @@ if ( ! function_exists('tr_users_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_users_field($name, $item_id = null)
     {
@@ -557,7 +553,6 @@ if ( ! function_exists('tr_comments_field')) {
      * @param null $item_id
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_comments_field($name, $item_id = null)
     {
@@ -583,7 +578,6 @@ if ( ! function_exists('tr_taxonomies_field')) {
      * @param null|int $item_id
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_taxonomies_field($name, $taxonomy, $item_id = null)
     {
@@ -604,7 +598,6 @@ if ( ! function_exists('tr_resource_field')) {
      * @param null|int $item_id
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     function tr_resource_field($name, $resource, $item_id = null)
     {

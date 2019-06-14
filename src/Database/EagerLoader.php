@@ -20,7 +20,6 @@ class EagerLoader
      * @param $results
      * @param string|null $with
      * @return mixed
-     * @throws \Exception
      */
     public function load($load, $results, $with)
     {
@@ -35,7 +34,6 @@ class EagerLoader
      *
      * @param $result
      * @return mixed
-     * @throws \Exception
      */
     protected function withEager($result) {
         if(empty($this->load) || empty($result)) {
@@ -47,6 +45,7 @@ class EagerLoader
         $name = $this->load['name'];
 
         if(is_null($relation)) {
+            /** @var Model $result */
             if($result instanceof Results) {
                 foreach($result as $key => $value) {
                     /** @var Model $value */
@@ -60,12 +59,7 @@ class EagerLoader
         }
 
         $type = $relation->getRelatedBy()['type'];
-
-        if(method_exists($this, $type)) {
-            $result = $this->{$type}($result);
-        } else {
-            throw new \Exception("Eager loading not supported for $type. No load $name.");
-        }
+        $result = $this->{$type}($result);
 
         return $result;
     }

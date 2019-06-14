@@ -82,7 +82,6 @@ class Query
      * Get results from find methods
      *
      * @return array|null|object
-     * @throws \Exception
      */
     public function get() {
         $this->setQueryType();
@@ -256,7 +255,6 @@ class Query
      * Get first and return one but not as a collection.
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     public function first() {
         $this->returnOne = true;
@@ -285,7 +283,6 @@ class Query
      * @param array $multiple optional
      *
      * @return mixed
-     * @throws \Exception
      */
     public function create( $fields, $multiple = [] )
     {
@@ -302,7 +299,6 @@ class Query
      * @param array|\ArrayObject $fields
      *
      * @return mixed
-     * @throws \Exception
      */
     public function update( $fields = [])
     {
@@ -331,7 +327,6 @@ class Query
      * @param $id
      *
      * @return object
-     * @throws \Exception
      */
     public function findOrDie($id) {
         if( ! $data = $this->findById($id)->get() ) {
@@ -351,8 +346,6 @@ class Query
      *
      * @return object
      * @internal param $id
-     *
-     * @throws \Exception
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
         if( ! $data = $this->where( $column, $arg1, $arg2, $condition)->first() ) {
@@ -368,7 +361,6 @@ class Query
      * @param array|\ArrayObject $ids
      *
      * @return array|false|int|null|object
-     * @throws \Exception
      */
     public function delete( $ids = [] ) {
         $this->setQueryType('delete');
@@ -423,7 +415,6 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     public function count( $column = '*' )
     {
@@ -438,7 +429,6 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     public function sum( $column )
     {
@@ -453,7 +443,6 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     public function min( $column )
     {
@@ -468,7 +457,6 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     public function max( $column )
     {
@@ -483,7 +471,6 @@ class Query
      * @param string $column
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     public function avg( $column )
     {
@@ -603,7 +590,6 @@ class Query
      * @param array|\ArrayObject $query
      *
      * @return array|bool|false|int|null|object
-     * @throws \Exception
      */
     protected function runQuery( $query = [] ) {
         /** @var \wpdb $wpdb */
@@ -652,15 +638,10 @@ class Query
      * Compile Full Query
      *
      * @return string|null
-     * @throws \Exception
      */
     public function compileFullQuery() {
         /** @var \wpdb $wpdb */
         global $wpdb;
-
-        if( empty($this->query['table']) ) {
-            throw new \Exception('Missing table');
-        }
 
         $table = $this->query['table'];
         $sql_insert_columns = $sql_union = $sql_insert_values = $distinct = '';
@@ -722,7 +703,6 @@ class Query
      * Compile Union
      *
      * @return string
-     * @throws \Exception
      */
     protected function compileUnion()
     {

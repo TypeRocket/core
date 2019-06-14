@@ -163,7 +163,6 @@ class WPPost extends Model
      *
      * @param $id
      * @return mixed|object|\TypeRocket\Database\Results|Model|null
-     * @throws \Exception
      */
     public function findById($id)
     {

@@ -14,6 +14,7 @@ abstract class Field
     protected $name = null;
     protected $type = null;
     protected $required = false;
+    protected $cast = null;
 
     /** @var Form */
     protected $form = null;
@@ -64,6 +65,26 @@ abstract class Field
         }
 
         return $string;
+    }
+
+    public function setCast($callback, array $args = [])
+    {
+        $this->cast = [
+            'callback' => $callback,
+            'args' => $args,
+        ];
+
+        return $this;
+    }
+
+    public function getCast($value)
+    {
+        if( is_array($this->cast) && is_callable($this->cast['callback']) ) {
+            $args = array_merge([$value], $this->cast['args']);
+            $value = call_user_func_array($this->cast['callback'], $args);
+        }
+
+        return $value;
     }
 
     /**
@@ -383,7 +404,7 @@ abstract class Field
 
         $value = $this->form->getModel()->getFieldValue($this);
 
-        return $value;
+        return $this->getCast($value);
     }
 
     /**

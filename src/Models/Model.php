@@ -2,8 +2,6 @@
 namespace TypeRocket\Models;
 
 use ArrayObject;
-use Exception;
-use LogicException;
 use ReflectionClass;
 use TypeRocket\Database\EagerLoader;
 use TypeRocket\Database\Query;
@@ -55,13 +53,15 @@ class Model implements Formable
         global $wpdb;
 
         $this->table = $this->initTable( $wpdb );
+        $type = null;
+
         try {
-            $type    = (new ReflectionClass( $this ))->getShortName();
+            $type = (new ReflectionClass( $this ))->getShortName();
         } catch (\ReflectionException $e) {
             wp_die('Model failed');
         }
 
-        if( ! $this->resource ) {
+        if( ! $this->resource && $type ) {
             $this->resource = strtolower( Inflect::pluralize($type) );
         }
 
@@ -545,7 +545,6 @@ class Model implements Formable
      * @param $field
      *
      * @return array|mixed|null|string
-     * @throws Exception
      */
     public function getFieldValue( $field )
     {
@@ -759,7 +758,6 @@ class Model implements Formable
      * Get results from find methods
      *
      * @return array|null|object
-     * @throws Exception
      */
     public function get() {
         $results = $this->query->get();
@@ -902,7 +900,6 @@ class Model implements Formable
      * Find the first record and set properties
      *
      * @return array|bool|false|int|null|object|Model
-     * @throws Exception
      */
     public function first() {
         $results = $this->query->first();
@@ -918,7 +915,6 @@ class Model implements Formable
      * @param array|Fields $fields
      *
      * @return mixed
-     * @throws Exception
      */
     public function create( $fields = [] )
     {
@@ -933,7 +929,6 @@ class Model implements Formable
      * @param array|Fields $fields
      *
      * @return mixed
-     * @throws Exception
      */
     public function update( $fields = [] )
     {
@@ -948,7 +943,6 @@ class Model implements Formable
      * @param $id
      *
      * @return mixed
-     * @throws Exception
      */
     public function findById($id)
     {
@@ -963,7 +957,6 @@ class Model implements Formable
      * @param $id
      *
      * @return object
-     * @throws Exception
      */
     public function findOrDie($id) {
         $results = $this->query->findOrDie($id);
@@ -976,7 +969,6 @@ class Model implements Formable
      * @param $id
      * @param array $fields
      * @return mixed|Model
-     * @throws Exception
      */
     public function findOrCreate($id, $fields = [])
     {
@@ -992,7 +984,6 @@ class Model implements Formable
      *
      * @param $id
      * @return mixed|Model
-     * @throws Exception
      */
     public function findOrNew($id)
     {
@@ -1012,7 +1003,6 @@ class Model implements Formable
      * @param string $condition
      *
      * @return Model
-     * @throws Exception
      */
     public function findFirstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND')
     {
@@ -1033,8 +1023,6 @@ class Model implements Formable
      *
      * @return object
      * @internal param $id
-     *
-     * @throws Exception
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
         $results = $this->query->findFirstWhereOrDie( $column, $arg1, $arg2, $condition);
@@ -1047,7 +1035,6 @@ class Model implements Formable
      * @param $result
      *
      * @return mixed
-     * @throws Exception
      */
     protected function fetchResult( $result )
     {
@@ -1095,7 +1082,6 @@ class Model implements Formable
      * @param array|ArrayObject $ids
      *
      * @return array|false|int|null|object
-     * @throws Exception
      */
     public function delete( $ids = [] ) {
         return $this->query->delete($ids);
@@ -1105,7 +1091,6 @@ class Model implements Formable
      * Count results
      *
      * @return array|bool|false|int|null|object
-     * @throws Exception
      */
     public function count()
     {
@@ -1160,7 +1145,6 @@ class Model implements Formable
      * @param $field_name
      *
      * @return null
-     * @throws Exception
      */
     public function getBaseFieldValue($field_name)
     {
@@ -1230,7 +1214,6 @@ class Model implements Formable
      * @param array|Fields $fields
      *
      * @return mixed
-     * @throws Exception
      */
     public function save( $fields = [] ) {
         if( isset( $this->properties[$this->idColumn] ) && $this->findById($this->properties[$this->idColumn]) ) {
@@ -1471,7 +1454,6 @@ class Model implements Formable
      * @param array $args
      *
      * @return array $query
-     * @throws Exception
      */
     public function attach( array $args )
     {
@@ -1495,7 +1477,6 @@ class Model implements Formable
      * @param array $args
      *
      * @return array
-     * @throws Exception
      */
     public function detach( array $args = [] )
     {
@@ -1524,7 +1505,6 @@ class Model implements Formable
      * @param array $args
      *
      * @return array $results
-     * @throws Exception
      */
     public function sync( array $args = [] )
     {
@@ -1620,7 +1600,6 @@ class Model implements Formable
      * Get Last SQL Query
      *
      * @return null|string
-     * @throws Exception
      */
     public function getSuspectSQL()
     {
@@ -1638,7 +1617,6 @@ class Model implements Formable
      *
      * @return Model|Results|null|object
      *
-     * @throws Exception
      */
     protected function getQueryResult( $results ) {
         return $this->fetchResult( $results );
@@ -1762,7 +1740,6 @@ class Model implements Formable
      * @param  string  $method
      * @return mixed
      *
-     * @throws LogicException
      */
     protected function getRelationshipFromMethod($method)
     {
