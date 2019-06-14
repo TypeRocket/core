@@ -85,6 +85,15 @@ class Validator
     }
 
     /**
+     * Check of failed
+     *
+     * @return bool
+     */
+    public function failed() {
+        return !$this->passed();
+    }
+
+    /**
      * Flash validator errors on next request
      *
      * @param \TypeRocket\Http\Response $response
