@@ -44,17 +44,16 @@ class Redirect
     }
 
     /**
-     * Redirect to route or resource
+     * Redirect to home url
      *
-     * @param $dots
+     * @param string $path
      *
      * @return Redirect $this
      */
-    public function toRoute( $dots )
+    public function onHome( $path )
     {
-        $dots = explode('.', $dots);
         $scheme = is_ssl() ? 'https' : 'http';
-        $this->url = esc_url_raw( home_url( implode('/', $dots ), $scheme ) );
+        $this->url = esc_url_raw( home_url( $path ), $scheme );
 
         return $this;
     }
