@@ -1174,6 +1174,27 @@ class Model implements Formable
     }
 
     /**
+     * Search Deeply For Value
+     *
+     * This is best used with eager loading.
+     *
+     * @param string $dots
+     * @return mixed|Model|null
+     */
+    public function getDeepValue($dots)
+    {
+        $keys = explode('.', $dots);
+        $result = $this;
+        foreach ($keys as $property) {
+            if( !$result = $result->getProperty($property) ) {
+                return null;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Get Date Time
      *
      * @return bool|string

@@ -271,7 +271,7 @@ class Tables
                 $th->newElement('th', ['class' => $classes], ucfirst($data));
             } else {
                 $label = $data['label'];
-                if( !empty($data['sort']) && $this->page ) {
+                if( !empty($data['sort']) && $this->page && strpos($column, '.') === false) {
                     $order_direction = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'DESC' : 'ASC';
                     $order_direction_now = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'ASC' : 'DESC';
 
@@ -304,6 +304,7 @@ class Tables
         $foot->appendInside($th_row);
 
         if( !empty($results)) {
+            /** @var Model $result */
             foreach ($results as $result) {
                 $td_row = new Generator();
                 $columnValue = Sanitize::dash($result->getProperty($columnId));
@@ -324,7 +325,7 @@ class Tables
                         $column = $data;
                     }
 
-                    $text = $result->$column;
+                    $text = $result->getDeepValue($column);
 
                     if( !empty($data['callback']) && is_callable($data['callback']) ) {
                         $text = call_user_func_array($data['callback'], [$text, $result] );
@@ -457,6 +458,11 @@ class Tables
                 <div class="alignleft actions">
                     <select class="alignleft" name="on">
                         <?php foreach ($searchColumns as $column_name => $column) :
+
+                            if(strpos($column_name, '.') !== false) {
+                                continue;
+                            }
+
                             $selected = $get_on_current == $column_name ? 'selected="selected"' : '';
                             ?>
                             <option <?php echo $selected; ?> value="<?php echo esc_attr($column_name); ?>">
