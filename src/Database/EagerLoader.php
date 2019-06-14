@@ -90,16 +90,14 @@ class EagerLoader
 
                 if(!$array) {
                     $set[$index] = $item;
-                    return $set;
+                } else {
+                    if(empty($set[$index]) && $resultClass) {
+                        $set[$index] = new $resultClass;
+                    }
+
+                    if($unset) { unset($item->{$on}); }
+                    $set[$index]->append($item);
                 }
-
-                if(empty($set[$index]) && $resultClass) {
-                    $set[$index] = new $resultClass;
-                }
-
-                if($unset) { unset($item->{$on}); }
-
-                $set[$index]->append($item);
             }
         }
 

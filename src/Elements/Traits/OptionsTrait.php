@@ -105,11 +105,16 @@ trait OptionsTrait
     {
         $options = clone $model->findAll()->get();
 
+        /** @var Model $option */
         foreach ($options as $option) {
             if(!$value_name) {
                 $value_name = $model->getIdColumn();
             }
-            $this->options[$option->{$key_name}] = $option->{$value_name};
+
+            $key = $option->getDeepValue($key_name);
+            $value = $option->getDeepValue($value_name);
+
+            $this->options[$key] = $value;
         }
 
         return $this;
