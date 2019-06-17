@@ -83,6 +83,19 @@ trait FormConnectorTrait
     }
 
     /**
+     * Append To Group
+     *
+     * @param $append
+     * @return $this
+     */
+    public function appendToGroup($append)
+    {
+        $this->group = $this->group . '.' . $append;
+
+        return $this;
+    }
+
+    /**
      * Set whether to populate Field from database. If set to false fields will
      * always be left empty and with their default values.
      *
