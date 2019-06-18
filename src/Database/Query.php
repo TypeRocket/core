@@ -3,6 +3,8 @@ namespace TypeRocket\Database;
 
 class Query
 {
+    public static $numberQueriesRun = 0;
+
     public $idColumn = 'id';
     public $lastCompiledSQL = null;
     public $returnOne = false;
@@ -630,6 +632,8 @@ class Query
                 $result = false;
             }
         }
+
+        self::$numberQueriesRun++;
 
         return $result;
     }

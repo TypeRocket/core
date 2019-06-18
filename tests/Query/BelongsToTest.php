@@ -5,6 +5,7 @@ namespace Query;
 
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\Query;
 use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Models\Meta\WPPostMeta;
 use TypeRocket\Models\WPPost;
@@ -26,11 +27,24 @@ class BelongsToTest extends TestCase
     public function testBelongsEagerLoad()
     {
         $post = new WPPost();
-        $result = $post->with('author.meta')->findById(1);
-        $author = $result->getRelationship('author');
-        $meta = $result->getRelationship('author.meta');
 
-        $this->assertTrue( $author instanceof WPUser );
-        $this->assertTrue( $meta instanceof ResultsMeta);
+        $numRun = Query::$numberQueriesRun;
+
+        $result = $post->with(['author.meta', 'meta.post'])->findAll([1,2,3])->get();
+
+        foreach ($result as $item) {
+            $this->assertTrue( $item->author instanceof WPUser );
+            $this->assertTrue( $item->getRelationship('author') instanceof WPUser );
+            $this->assertTrue( $item->author->meta instanceof ResultsMeta);
+            $this->assertTrue( $item->meta instanceof ResultsMeta);
+
+            foreach ($item->meta as $meta) {
+                $this->assertTrue( $meta->post instanceof WPPost);
+            }
+        }
+
+        $numRun = Query::$numberQueriesRun - $numRun;
+
+        $this->assertTrue( $numRun === 5 );
     }
 }
