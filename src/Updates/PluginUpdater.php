@@ -41,8 +41,9 @@ class PluginUpdater
     public function getApiJsonResponseBody()
     {
         $transient = $this->getData('transient_name');
+        $remote = get_transient( $transient );
 
-        if( false == $remote = get_transient( $transient ) ) {
+        if( false == $remote ) {
 
             // info.json is the file with the actual plugin information on your server
             $remote = wp_remote_get( $this->getData('api_url'), [
@@ -52,8 +53,14 @@ class PluginUpdater
                     ]]
             );
 
-            if ( !is_wp_error( $remote ) && isset( $remote['response']['code'] ) && $remote['response']['code'] == 200 && !empty( $remote['body'] ) ) {
+            $code = $remote['response']['code'] ?? null;
+            $body = $remote['body'] ?? null;
+            $error = is_wp_error( $remote );
+
+            if ( !$error && $code == 200 && $body ) {
                 set_transient( $transient, $remote, $this->getData('cache') );
+            } elseif(!$error && $code == 404 && $body) {
+                set_transient( $transient, $remote, 500 );
             }
         }
 
