@@ -908,6 +908,9 @@ class Query
             $prepared = 'NULL';
         } elseif( is_int($value) ) {
             $prepared = (int) $value;
+        } elseif (is_object($value)) {
+            $value = (string) $value;
+            $prepared = $wpdb->prepare( '%s', $value );
         } else {
             $prepared = $wpdb->prepare( '%s', $value );
         }
