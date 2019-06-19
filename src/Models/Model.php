@@ -399,6 +399,10 @@ class Model implements Formable
      */
     public function setProperty( $key, $value = null )
     {
+        if($this->hasSetMutator($key)) {
+             $value = $this->mutatePropertySet($key, $value);
+        }
+
         $this->properties[$key] = $value;
         $this->explicitProperties[$key] = $value;
 
@@ -414,7 +418,11 @@ class Model implements Formable
      */
     public function setProperties( array $properties )
     {
-        return $this->properties = $properties;
+        foreach ($properties as $key => $value) {
+            $this->setProperty($key, $value ?? null);
+        }
+
+        return $this->properties;
     }
 
     /**
@@ -1728,7 +1736,7 @@ class Model implements Formable
         }
 
         if ($this->hasGetMutator($key)) {
-            return $this->mutateProperty($key, $value);
+            return $this->mutatePropertyGet($key, $value);
         }
 
         return $value;
@@ -1744,6 +1752,17 @@ class Model implements Formable
     protected function getRelationshipFromMethod($method)
     {
       return $this->$method() ? $this->$method()->get() : null;
+    }
+
+    /**
+     * Determine if a set mutator exists for an attribute.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function hasSetMutator($key)
+    {
+        return method_exists($this, 'set'.Str::camelize($key).'Property');
     }
 
     /**
@@ -1764,7 +1783,19 @@ class Model implements Formable
      * @param  mixed  $value
      * @return mixed
      */
-    protected function mutateProperty($key, $value)
+    protected function mutatePropertySet($key, $value)
+    {
+        return $this->{'set'.Str::camelize($key).'Property'}($value);
+    }
+
+    /**
+     * Get the value of an attribute using its mutator.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return mixed
+     */
+    protected function mutatePropertyGet($key, $value)
     {
       return $this->{'get'.Str::camelize($key).'Property'}($value);
     }
