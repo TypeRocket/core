@@ -46,6 +46,11 @@ abstract class Kernel
         }
 
         if(!empty($this->route) && $this->route->middleware) {
+
+            if(is_string($this->route->middleware)) {
+                $this->route->middleware = $this->middleware[$this->route->middleware] ?? [];
+            }
+
             $resourceMiddleware = array_merge($resourceMiddleware, $this->route->middleware);
         }
 

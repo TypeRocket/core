@@ -29,10 +29,10 @@ class Route
      *
      * This method does not accept middleware groups.
      *
-     * @param array $middleware list of middleware classes to use for the route
+     * @param array|string $middleware list of middleware classes to use for the route or string name of group
      * @return $this
      */
-    public function middleware(array $middleware)
+    public function middleware($middleware)
     {
         $this->middleware = $middleware;
         return $this;
