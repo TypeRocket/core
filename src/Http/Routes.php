@@ -192,6 +192,7 @@ class Routes
     {
         $path = self::$request->getPath();
         $requestPath = ltrim($path, '/');
+        $requestPath = apply_filters('tr_routes_path', $requestPath );
         $routesRegistered = $this->getRegisteredRoutes();
 
         list($match, $args) = $this->matchRoute(rtrim($requestPath, '/'), $routesRegistered);
