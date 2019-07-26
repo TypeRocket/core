@@ -130,74 +130,9 @@ class Registry
         foreach ($collection as $obj) {
             if ($obj instanceof Taxonomy) {
                 add_action( 'init', [$obj, 'register']);
-
-                self::taxonomyFormContent($obj);
-
-                if($custom_templates = $obj->getTemplates()) {
-                    foreach(['taxonomy', 'category', 'tag'] as $template_hook) {
-                        add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
-                            /** @var \WP_Term $term */
-                            $term = get_queried_object();
-
-                            if($term->taxonomy == $this->getId()) {
-                                $template = $custom_templates['archive'];
-                            }
-
-                            return $template;
-                        }, $obj), 0, 2);
-                    }
-                }
-
             } elseif ($obj instanceof PostType) {
                 /** @var PostType $obj */
                 add_action( 'init', [$obj, 'register']);
-
-                if (is_string( $obj->getTitlePlaceholder() )) {
-                    add_filter( 'enter_title_here', function($title) use ($obj) {
-                        global $post;
-
-                        if(!empty($post)) {
-                            if ( $post->post_type == $obj->getId() ) {
-                                return $obj->getTitlePlaceholder();
-                            }
-                        }
-
-                        return $title;
-
-                    } );
-                }
-
-                if( !empty($obj->getArchiveQuery()) ) {
-                    add_action('pre_get_posts', \Closure::bind(function( \WP_Query $main_query ) {
-                        if($main_query->is_main_query() && $main_query->is_post_type_archive($this->getId())) {
-                            $query = $this->getArchiveQuery();
-                            foreach ($query as $key => $value) {
-                                $main_query->set($key, $value);
-                            }
-                        }
-                    }, $obj));
-                }
-
-                if($custom_templates = $obj->getTemplates()) {
-                    foreach(['single', 'archive', 'page'] as $template_hook) {
-                        if(!empty($custom_templates[$template_hook])) {
-                            add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
-                                /** @var \WP_Post $post */
-                                global $post;
-
-                                if($post->post_type == $this->getId()) {
-                                    $template = $custom_templates[$type];
-                                }
-
-                                return $template;
-                            }, $obj), 0, 2);
-                        }
-                    }
-                }
-
-                self::setPostTypeColumns($obj);
-                self::postTypeFormContent($obj);
-
             } elseif ($obj instanceof MetaBox) {
                 add_action( 'admin_init', [$obj, 'register']);
                 add_action( 'add_meta_boxes', [$obj, 'register']);
@@ -209,6 +144,85 @@ class Registry
                 add_action( 'admin_menu', [$obj, 'register']);
             }
         }
+    }
+
+    /**
+     * Taxonomy Hooks
+     *
+     * @param $obj
+     */
+    public static function taxonomyHooks(Taxonomy $obj)
+    {
+        self::taxonomyFormContent($obj);
+
+        if($custom_templates = $obj->getTemplates()) {
+            foreach(['taxonomy', 'category', 'tag'] as $template_hook) {
+                add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
+                    /** @var \WP_Term $term */
+                    $term = get_queried_object();
+
+                    if($term->taxonomy == $this->getId()) {
+                        $template = $custom_templates['archive'];
+                    }
+
+                    return $template;
+                }, $obj), 0, 2);
+            }
+        }
+    }
+
+    /**
+     * Post Type Hooks
+     *
+     * @param PostType $obj
+     */
+    public static function postTypeHooks(PostType $obj)
+    {
+        if (is_string( $obj->getTitlePlaceholder() )) {
+            add_filter( 'enter_title_here', function($title) use ($obj) {
+                global $post;
+
+                if(!empty($post)) {
+                    if ( $post->post_type == $obj->getId() ) {
+                        return $obj->getTitlePlaceholder();
+                    }
+                }
+
+                return $title;
+
+            } );
+        }
+
+        if( !empty($obj->getArchiveQuery()) ) {
+            add_action('pre_get_posts', \Closure::bind(function( \WP_Query $main_query ) {
+                if($main_query->is_main_query() && $main_query->is_post_type_archive($this->getId())) {
+                    $query = $this->getArchiveQuery();
+                    foreach ($query as $key => $value) {
+                        $main_query->set($key, $value);
+                    }
+                }
+            }, $obj));
+        }
+
+        if($custom_templates = $obj->getTemplates()) {
+            foreach(['single', 'archive', 'page'] as $template_hook) {
+                if(!empty($custom_templates[$template_hook])) {
+                    add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
+                        /** @var \WP_Post $post */
+                        global $post;
+
+                        if($post->post_type == $this->getId()) {
+                            $template = $custom_templates[$type];
+                        }
+
+                        return $template;
+                    }, $obj), 0, 2);
+                }
+            }
+        }
+
+        self::setPostTypeColumns($obj);
+        self::postTypeFormContent($obj);
     }
 
     /**
@@ -326,7 +340,7 @@ class Registry
 
         $model = WPPost::class;
 
-        add_action('init', function() use (&$model, $pt) {
+        add_action('wp_loaded', function() use (&$model, $pt) {
             $resource = Registry::getPostTypeResource($pt);
             if($resource) {
                 if (class_exists($resource[2])) {
@@ -334,7 +348,7 @@ class Registry
                     $model = $resource[2];
                 }
             }
-        });
+        }, 9);
 
         add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($new_columns) {
             foreach ($new_columns as $key => $new_column) {

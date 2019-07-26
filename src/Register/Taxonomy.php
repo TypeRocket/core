@@ -17,6 +17,7 @@ class Taxonomy extends Registrable
     protected $form = [];
     protected $resource = null;
     protected $existing = null;
+    protected $hooksAttached = false;
 
     /**
      * Make Taxonomy. Do not use before init.
@@ -35,8 +36,12 @@ class Taxonomy extends Registrable
 
             if($existing) {
                 $this->existing = $existing;
+
+                $singular = Sanitize::underscore( $singular );
+                $plural  = Sanitize::underscore( $plural );
+
                 $this->id = $this->existing->name;
-                $this->resource = Registry::getTaxonomyResource($this->id);
+                $this->resource = Registry::getTaxonomyResource($this->id) ?? [$singular, $plural, null, null];
                 $this->postTypes = $this->existing->object_type;
                 $this->args = array_merge($this->args, (array) $this->existing, $settings);
 
@@ -233,6 +238,7 @@ class Taxonomy extends Registrable
         do_action( 'tr_register_taxonomy_' . $this->id, $this );
         register_taxonomy( $this->id, $this->postTypes, $this->args );
         Registry::addTaxonomyResource($this->id, $this->resource);
+        $this->attachHooks();
 
         return $this;
     }
@@ -261,6 +267,17 @@ class Taxonomy extends Registrable
 
         return $this;
 
+    }
+
+    /**
+     * Attach Hooks
+     */
+    public function attachHooks()
+    {
+        if(!$this->hooksAttached) {
+            Registry::taxonomyHooks($this);
+            $this->hooksAttached = true;
+        }
     }
 
 }

@@ -20,6 +20,7 @@ class PostType extends Registrable
     protected $icon = null;
     protected $resource = null;
     protected $existing = null;
+    protected $hooksAttached = false;
 
     /**
      * Make or Modify Post Type.
@@ -42,7 +43,11 @@ class PostType extends Registrable
             if($this->existing) {
                 $this->id = $this->existing->name;
                 $this->args = (array) $this->existing;
-                $this->resource = Registry::getPostTypeResource($this->id);
+
+                $singular = Sanitize::underscore( $singular );
+                $plural  = Sanitize::underscore( $plural );
+
+                $this->resource = Registry::getPostTypeResource($this->id) ?? [$singular, $plural, null, null];
                 $this->args['supports'] = array_keys(get_all_post_type_supports($this->id));
                 $this->args = array_merge($this->args, $settings);
 
@@ -530,6 +535,7 @@ class PostType extends Registrable
         do_action('tr_post_type_register_' . $this->id, $this);
         register_post_type( $this->id, $this->args );
         Registry::addPostTypeResource($this->id, $this->resource);
+        $this->attachHooks();
 
         return $this;
     }
@@ -581,6 +587,17 @@ class PostType extends Registrable
 
         return $this;
 
+    }
+
+    /**
+     * Attach Hooks
+     */
+    public function attachHooks()
+    {
+        if(!$this->hooksAttached) {
+            Registry::postTypeHooks($this);
+            $this->hooksAttached = true;
+        }
     }
 
 }
