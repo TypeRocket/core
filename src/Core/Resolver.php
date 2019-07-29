@@ -9,7 +9,7 @@ class Resolver
     /**
      * Resolve Class
      *
-     * @param $class
+     * @param string $class
      *
      * @return object
      * @throws \Exception
@@ -36,7 +36,7 @@ class Resolver
     /**
      * Get Dependencies
      *
-     * @param $parameters
+     * @param string $parameters
      *
      * @return array
      */

@@ -30,7 +30,7 @@ class Tabs
     /**
      * Set Tabs
      *
-     * @param $tabs
+     * @param string $tabs
      *
      * @return $this
      */
@@ -132,7 +132,7 @@ class Tabs
      * - string   - content  - Help tab content in plain text or HTML. Optional.
      * - callback - callback - A callback to generate the tab content. Optional.
      *
-     * @param null|string|callback $content
+     * @param null|string|callable $content
      * @param bool $icon
      *
      * @return $this
@@ -162,7 +162,7 @@ class Tabs
     /**
      * Add tabs using array format
      *
-     * @param $settings
+     * @param string $settings
      *
      * @return $this
      */
@@ -283,7 +283,7 @@ class Tabs
     /**
      * Get Icon HTML
      *
-     * @param $tab
+     * @param string $tab
      *
      * @return string
      */

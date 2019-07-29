@@ -28,7 +28,7 @@ class Response {
     /**
      * Set HTTP status code
      *
-     * @param $status
+     * @param string $status
      *
      * @return $this
      */
@@ -45,7 +45,7 @@ class Response {
      *
      * This is the message seen in the flash alert.
      *
-     * @param $message
+     * @param string $message
      *
      * @return $this
      */
@@ -62,7 +62,7 @@ class Response {
      * Redirect the user to a new url. This only works when using AJAX
      * REST API on a Form.
      *
-     * @param $url
+     * @param string $url
      *
      * @return $this
      */
@@ -117,7 +117,7 @@ class Response {
     /**
      * Get Error by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return array
      */
@@ -135,8 +135,8 @@ class Response {
     /**
      * Set Error by key
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      *
      * @return $this
      */
@@ -149,7 +149,7 @@ class Response {
     /**
      * Remove Error by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return $this
      */
@@ -170,8 +170,8 @@ class Response {
      * be data used to describe what was updated or created for
      * example.
      *
-     * @param $key
-     * @param $data
+     * @param string $key
+     * @param string $data
      */
     public function setData( $key, $data ) {
         $this->data[$key] = $data;
@@ -261,7 +261,7 @@ class Response {
     }
 
     /**
-     * @param $data
+     * @param string $data
      *
      * @return Response $this
      */
@@ -276,7 +276,7 @@ class Response {
     }
 
     /**
-     * @param $fields
+     * @param string $fields
      *
      * @return Response $this
      */
@@ -295,8 +295,8 @@ class Response {
     }
 
     /**
-     * @param $message
-     * @param $type
+     * @param string $message
+     * @param string $type
      *
      * @return \TypeRocket\Http\Response $this
      */

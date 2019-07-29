@@ -115,7 +115,7 @@ class Location extends Field
     /**
      * Set labels
      *
-     * @param $labels
+     * @param array $labels
      *
      * @return $this
      */
@@ -127,8 +127,6 @@ class Location extends Field
 
     /**
      * Get labels
-     *
-     * @param $labels
      *
      * @return $this
      */

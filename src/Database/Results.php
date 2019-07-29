@@ -13,7 +13,7 @@ class Results extends \ArrayObject implements Formable
     /**
      * Add item to top of collection
      *
-     * @param $value
+     * @param string $value
      */
     public function prepend( $value )
     {

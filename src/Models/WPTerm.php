@@ -114,7 +114,7 @@ class WPTerm extends Model
     /**
      * Get comment by ID
      *
-     * @param $id
+     * @param string $id
      *
      * @return $this
      */
@@ -238,7 +238,7 @@ class WPTerm extends Model
      * the field by the base value is used by Fields to populate
      * their values.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return null
      */
@@ -255,7 +255,7 @@ class WPTerm extends Model
     }
 
     /**
-     * @param $builtin
+     * @param string $builtin
      * @return mixed
      */
     public function slashBuiltinFields( $builtin ) {

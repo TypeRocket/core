@@ -4,8 +4,8 @@ if( ! function_exists('str_starts') ) {
     /**
      * String starts with
      *
-     * @param $needle
-     * @param $subject
+     * @param string $needle
+     * @param string $subject
      *
      * @return bool
      */
@@ -19,8 +19,8 @@ if( ! function_exists('str_ends') ) {
     /**
      * String ends with
      *
-     * @param $needle
-     * @param $subject
+     * @param string $needle
+     * @param string $subject
      *
      * @return bool
      */
@@ -33,8 +33,8 @@ if( ! function_exists('str_contains') ) {
     /**
      * String ends with
      *
-     * @param $needle
-     * @param $subject
+     * @param string $needle
+     * @param string $subject
      *
      * @return bool
      */
@@ -47,7 +47,7 @@ if( ! function_exists('dd') ) {
     /**
      * Die and Dump Vars
      *
-     * @param $param
+     * @param string $param
      */
     function dd($param) {
         call_user_func_array('var_dump', func_get_args());
@@ -206,7 +206,7 @@ if ( ! function_exists('resolve_method_map')) {
     /**
      * Resolve Method Map
      *
-     * @param $method_map
+     * @param string $method_map
      *
      * @return mixed
      */

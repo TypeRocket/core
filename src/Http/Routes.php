@@ -68,7 +68,7 @@ class Routes
     /**
      * Spoof Rewrite Rules
      *
-     * @param $value
+     * @param string $value
      *
      * @return array
      */
@@ -152,7 +152,7 @@ class Routes
      *
      * Return a model or result object as json.
      *
-     * @param $returned
+     * @param string $returned
      */
     public static function resultsToJson($returned)
     {

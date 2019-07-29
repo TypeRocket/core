@@ -7,7 +7,7 @@ class Redirect
     public $url;
 
     /**
-     * @param $data
+     * @param string $data
      *
      * @return Redirect $this
      */
@@ -22,7 +22,7 @@ class Redirect
     }
 
     /**
-     * @param $fields
+     * @param string $fields
      *
      * @param array $notFields
      *
@@ -59,8 +59,8 @@ class Redirect
     }
 
     /**
-     * @param $resource
-     * @param $action
+     * @param string $resource
+     * @param string $action
      * @param null $item_id
      *
      * @return Redirect $this
@@ -83,7 +83,7 @@ class Redirect
     /**
      * Redirect to URL
      *
-     * @param $url
+     * @param string $url
      *
      * @return Redirect $this
      */

@@ -187,7 +187,7 @@ class Model implements Formable
      *
      * Add a fillable field.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return $this
      */
@@ -205,7 +205,7 @@ class Model implements Formable
      *
      * Add a field to guard if not set to fillable.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return $this
      */
@@ -242,7 +242,7 @@ class Model implements Formable
      *
      * Remove field from guard.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return $this
      */
@@ -260,7 +260,7 @@ class Model implements Formable
      *
      * Remove field from fillable.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return $this
      */
@@ -278,7 +278,7 @@ class Model implements Formable
      *
      * Remove field from format.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return $this
      */
@@ -296,7 +296,7 @@ class Model implements Formable
      *
      * Unlock field by adding it to fillable and removing it from guard.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return $this
      */
@@ -318,7 +318,7 @@ class Model implements Formable
      *
      * Get any errors that have been logged
      *
-     * @param $value
+     * @param string $value
      *
      * @return null
      */
@@ -392,8 +392,8 @@ class Model implements Formable
      *
      * By key
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      *
      * @return $this
      */
@@ -550,7 +550,7 @@ class Model implements Formable
     /**
      * Get value from database from typeRocket bracket syntax
      *
-     * @param $field
+     * @param string $field
      *
      * @return array|mixed|null|string
      */
@@ -615,8 +615,8 @@ class Model implements Formable
     /**
      * Parse data by walking through keys
      *
-     * @param $data
-     * @param $keys
+     * @param string $data
+     * @param string $keys
      *
      * @return array|mixed|null|string
      */
@@ -671,8 +671,8 @@ class Model implements Formable
      * Used to format fields
      *
      * @param array|ArrayObject $arr
-     * @param $path
-     * @param $fn
+     * @param string $path
+     * @param string $fn
      *
      * @return array|null
      */
@@ -723,7 +723,7 @@ class Model implements Formable
     /**
      * Get keys from TypeRocket brackets
      *
-     * @param $str
+     * @param string $str
      *
      * @return mixed
      */
@@ -739,7 +739,7 @@ class Model implements Formable
      * If the field is null, undefined or and empty string it will
      * return null.
      *
-     * @param $value
+     * @param string $value
      *
      * @return null
      */
@@ -811,8 +811,8 @@ class Model implements Formable
      * This method is not sanitized before it is run. Do not
      * use this method with user provided input.
      *
-     * @param $condition string|null
-     * @param $sql string
+     * @param string $condition string|null
+     * @param string $sql string
      * @return $this
      */
     public function appendRawWhere($condition, $sql)
@@ -948,7 +948,7 @@ class Model implements Formable
     /**
      * Find resource by ID
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */
@@ -962,7 +962,7 @@ class Model implements Formable
     /**
      * Find by ID or die
      *
-     * @param $id
+     * @param string $id
      *
      * @return object
      */
@@ -974,7 +974,7 @@ class Model implements Formable
     /**
      * Find Or Create
      *
-     * @param $id
+     * @param string $id
      * @param array $fields
      * @return mixed|Model
      */
@@ -990,7 +990,7 @@ class Model implements Formable
     /**
      * Find Or New
      *
-     * @param $id
+     * @param string $id
      * @return mixed|Model
      */
     public function findOrNew($id)
@@ -1024,8 +1024,8 @@ class Model implements Formable
     /**
      * Find first where of die
      *
-     * @param $column
-     * @param $arg1
+     * @param string $column
+     * @param string $arg1
      * @param null $arg2
      * @param string $condition
      *
@@ -1040,7 +1040,7 @@ class Model implements Formable
     /**
      * Fetch Result
      *
-     * @param $result
+     * @param string $result
      *
      * @return mixed
      */
@@ -1108,7 +1108,7 @@ class Model implements Formable
     /**
      * Select only specific columns
      *
-     * @param $args
+     * @param string $args
      *
      * @return $this
      */
@@ -1126,7 +1126,7 @@ class Model implements Formable
     /**
      * Reselect
      *
-     * @param $args
+     * @param string $args
      * @return $this
      */
     public function reselect($args)
@@ -1150,7 +1150,7 @@ class Model implements Formable
      * This method must be implemented to return the base value
      * of a field if it is saved as a bracket group.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return null
      */
@@ -1233,7 +1233,7 @@ class Model implements Formable
     /**
      * Cast Properties
      *
-     * @param $properties
+     * @param string $properties
      *
      * @return $this
      */
@@ -1258,7 +1258,7 @@ class Model implements Formable
      *
      * Get the cast value of a property
      *
-     * @param $property
+     * @param string $property
      *
      * @return mixed
      */
@@ -1399,7 +1399,7 @@ class Model implements Formable
      *
      * This is for Many to Many relationships.
      *
-     * @param $modelClass
+     * @param string $modelClass
      * @param string $junction_table
      * @param null|string $id_column
      * @param null|string $id_foreign
@@ -1621,7 +1621,7 @@ class Model implements Formable
     /**
      * Get the Query result
      *
-     * @param $results
+     * @param string $results
      *
      * @return Model|Results|null|object
      *
@@ -1633,7 +1633,7 @@ class Model implements Formable
     /**
      * Get attribute as property
      *
-     * @param $key
+     * @param string $key
      *
      * @return mixed
      */
@@ -1645,7 +1645,7 @@ class Model implements Formable
     /**
      * Property Exists
      *
-     * @param $key
+     * @param string $key
      *
      * @return bool
      */
@@ -1657,7 +1657,7 @@ class Model implements Formable
     /**
      * Unset Property
      *
-     * @param $key
+     * @param string $key
      */
     public function __unset($key)
     {
@@ -1669,7 +1669,7 @@ class Model implements Formable
     /**
      * Set attribute as property
      *
-     * @param $key
+     * @param string $key
      * @param null $value
      */
     public function __set($key, $value = null)
@@ -1815,7 +1815,7 @@ class Model implements Formable
     /**
      * Eager Load With
      *
-     * @param $name
+     * @param string $name
      * @return $this
      */
     public function with($name)
@@ -1828,8 +1828,8 @@ class Model implements Formable
     /**
      * Set Relationship
      *
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param string $value
      */
     public function setRelationship($name, $value)
     {

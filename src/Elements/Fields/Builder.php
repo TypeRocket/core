@@ -160,10 +160,10 @@ class Builder extends Matrix
     /**
      * Get the component thumbnail
      *
-     * @param $name
-     * @param $type
+     * @param string $name
+     * @param string $type
      *
-     * @param $value
+     * @param string $value
      * @return string
      */
     private function getComponentThumbnail($name, $type, $value) {

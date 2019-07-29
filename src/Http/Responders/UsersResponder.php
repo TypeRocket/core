@@ -12,7 +12,7 @@ class UsersResponder extends Responder {
      *
      * Create proper request and run through Kernel
      *
-     * @param $args
+     * @param string $args
      */
     public function respond( $args ) {
         $controller = tr_app("Controllers\\UserController");

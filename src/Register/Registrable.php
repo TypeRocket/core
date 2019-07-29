@@ -94,7 +94,7 @@ abstract class Registrable
     /**
      * Set the Registrable ID for WordPress to use. Don't use reserved names.
      *
-     * @param $id
+     * @param string $id
      *
      * @return $this
      */
@@ -143,7 +143,7 @@ abstract class Registrable
     /**
      * Get Argument by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return string
      */
@@ -159,8 +159,8 @@ abstract class Registrable
     /**
      * Set Argument by key
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      *
      * @return $this
      */
@@ -175,7 +175,7 @@ abstract class Registrable
     /**
      * Remove Argument by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return $this
      */

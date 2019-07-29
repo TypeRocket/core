@@ -17,7 +17,7 @@ class EagerLoader
      * Eager Load
      *
      * @param array $load
-     * @param $results
+     * @param array|Results $results
      * @param string|null $with
      * @return mixed
      */
@@ -32,7 +32,7 @@ class EagerLoader
     /**
      * With Eager
      *
-     * @param $result
+     * @param array|Results $result
      * @return mixed
      */
     protected function withEager($result) {
@@ -101,7 +101,7 @@ class EagerLoader
     /**
      * Belongs To
      *
-     * @param $result
+     * @param array|Results $result
      * @return mixed
      * @throws \Exception
      */
@@ -145,7 +145,7 @@ class EagerLoader
     /**
      * Has One
      *
-     * @param $result
+     * @param array|Results $result
      * @return mixed
      * @throws \Exception
      */
@@ -186,7 +186,7 @@ class EagerLoader
     /**
      * Has Many
      *
-     * @param $result
+     * @param array|Results $result
      * @return mixed
      * @throws \Exception
      */
@@ -228,7 +228,7 @@ class EagerLoader
     /**
      * Belong To Many
      *
-     * @param $result
+     * @param array|Results $result
      * @return mixed
      * @throws \Exception
      */

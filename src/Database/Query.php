@@ -37,7 +37,7 @@ class Query
     /**
      * Set the ID Column
      *
-     * @param $id
+     * @param string $id
      *
      * @return Query $this
      */
@@ -51,7 +51,7 @@ class Query
     /**
      * Set table
      *
-     * @param $name
+     * @param string $name
      *
      * @return Query $this
      */
@@ -144,8 +144,8 @@ class Query
      * This method is not sanitized before it is run. Do not
      * use this method with user provided input.
      *
-     * @param $condition string|null
-     * @param $sql string
+     * @param string $condition string|null
+     * @param string $sql string
      * @return $this
      */
     public function appendRawWhere($condition, $sql)
@@ -208,7 +208,7 @@ class Query
     /**
      * Group By
      *
-     * @param $column
+     * @param string $column
      *
      * @return $this
      */
@@ -313,7 +313,7 @@ class Query
     /**
      * Find resource by ID
      *
-     * @param $id
+     * @param string $id
      *
      * @return $this
      */
@@ -326,7 +326,7 @@ class Query
     /**
      * Find by ID or die
      *
-     * @param $id
+     * @param string $id
      *
      * @return object
      */
@@ -341,8 +341,8 @@ class Query
     /**
      * Find first where or die
      *
-     * @param $column
-     * @param $arg1
+     * @param string $column
+     * @param string $arg1
      * @param null $arg2
      * @param string $condition
      *
@@ -377,7 +377,7 @@ class Query
     /**
      * Select only specific columns
      *
-     * @param $args
+     * @param string $args
      *
      * @return $this
      */
@@ -397,7 +397,7 @@ class Query
     /**
      * Reset Select
      *
-     * @param $args
+     * @param string $args
      * @return Query
      */
     public function reselect($args)
@@ -880,8 +880,8 @@ class Query
     /**
      * Setup the Inserts
      *
-     * @param $data
-     * @param $inserts
+     * @param string $data
+     * @param string $inserts
      *
      * @return $this
      */
@@ -893,7 +893,7 @@ class Query
     /**
      * Prepare Value
      *
-     * @param $value
+     * @param string $value
      *
      * @return int|null|string
      */

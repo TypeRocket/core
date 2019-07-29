@@ -33,7 +33,7 @@ class Registry
     /**
      * Get the post type resource
      *
-     * @param $id
+     * @param string $id
      *
      * @return null
      */
@@ -44,7 +44,7 @@ class Registry
     /**
      * Get the taxonomy resource
      *
-     * @param $id
+     * @param string $id
      *
      * @return null
      */
@@ -75,7 +75,7 @@ class Registry
     /**
      * Get the custom resource
      *
-     * @param $id
+     * @param string $id
      *
      * @return null
      */
@@ -149,7 +149,7 @@ class Registry
     /**
      * Taxonomy Hooks
      *
-     * @param $obj
+     * @param Taxonomy $obj
      */
     public static function taxonomyHooks(Taxonomy $obj)
     {

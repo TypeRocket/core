@@ -93,7 +93,7 @@ class Links extends Field
     /**
      * Search by post type only
      *
-     * @param $type
+     * @param string $type
      *
      * @return $this
      */
@@ -107,7 +107,7 @@ class Links extends Field
     /**
      * Search by taxonomy only
      *
-     * @param $taxonomy
+     * @param string $taxonomy
      *
      * @return $this
      */

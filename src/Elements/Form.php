@@ -87,7 +87,7 @@ class Form
      * config of the form: $post, $comment, $user_id,
      * $taxonomy, $tag_ID, and $screen
      *
-     * @param $model
+     * @param string $model
      * @return $this
      */
     protected function autoConfig($model)
@@ -223,8 +223,8 @@ class Form
     /**
      * Use a URL
      *
-     * @param $method
-     * @param $url
+     * @param string $method
+     * @param string $url
      *
      * @return $this
      */
@@ -736,7 +736,7 @@ class Form
 	/**
 	 * Add text between fields in row
 	 *
-	 * @param $content
+	 * @param string $content
 	 *
 	 * @return Generator
 	 */

@@ -72,7 +72,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Output error line
      *
-     * @param $content
+     * @param string $content
      */
     protected function error( $content )
     {
@@ -82,7 +82,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Output success line
      *
-     * @param $content
+     * @param string $content
      */
     protected function success($content)
     {
@@ -92,7 +92,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Output warning line
      *
-     * @param $content
+     * @param string $content
      */
     protected function warning($content)
     {
@@ -102,7 +102,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Output line
      *
-     * @param $content
+     * @param string $content
      */
     protected function line($content)
     {
@@ -112,7 +112,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Get Argument
      *
-     * @param $name
+     * @param string $name
      *
      * @return mixed
      */
@@ -123,7 +123,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Get Option
      *
-     * @param $name
+     * @param string $name
      *
      * @return mixed
      */

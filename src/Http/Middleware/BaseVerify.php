@@ -40,7 +40,7 @@ class BaseVerify extends Middleware  {
     /**
      * Check for excluded paths
      *
-     * @param $path
+     * @param string $path
      *
      * @return bool
      */

@@ -53,7 +53,7 @@ abstract class BaseWidget extends WP_Widget
     /**
      * Get New Field Value
      *
-     * @param $name
+     * @param string $name
      * @return string
      */
     public function getNewFieldValue($name)
@@ -64,7 +64,7 @@ abstract class BaseWidget extends WP_Widget
     /**
      * Get Old Field Value
      *
-     * @param $name
+     * @param string $name
      * @return string
      */
     public function getOldFieldValue($name)

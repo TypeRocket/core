@@ -13,7 +13,7 @@ class File
     /**
      * File constructor.
      *
-     * @param $file
+     * @param string $file
      */
     public function __construct( $file )
     {
@@ -28,8 +28,8 @@ class File
     /**
      * Replace
      *
-     * @param $needle
-     * @param $replacement
+     * @param string $needle
+     * @param string $replacement
      *
      * @param bool $regex
      * @return bool
@@ -70,7 +70,7 @@ class File
     /**
      * Copy Template
      *
-     * @param $new
+     * @param string $new
      * @param array $tags
      * @param array $replacements
      *
@@ -93,7 +93,7 @@ class File
     /**
      * Download URL
      *
-     * @param $url
+     * @param string $url
      */
     public function download( $url )
     {

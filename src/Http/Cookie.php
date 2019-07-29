@@ -10,8 +10,8 @@ class Cookie
     /**
      * Set a transient with cookie to persist across page loads
      *
-     * @param $name
-     * @param $data
+     * @param string $name
+     * @param string $data
      * @param int $time
      *
      * @return $this
@@ -27,7 +27,7 @@ class Cookie
     /**
      * Get the transient and delete it
      *
-     * @param $name
+     * @param string $name
      * @param bool $delete
      *
      * @return mixed|null
@@ -54,8 +54,8 @@ class Cookie
     /**
      * Set a cookie
      *
-     * @param $name
-     * @param $data
+     * @param string $name
+     * @param string $data
      * @param int $time
      *
      * @return $this
@@ -71,7 +71,7 @@ class Cookie
      *
      * Only call if headers are not sent yet
      *
-     * @param $name
+     * @param string $name
      *
      * @return $this
      */
@@ -84,7 +84,7 @@ class Cookie
     /**
      * Get a cookie
      *
-     * @param $name
+     * @param string $name
      *
      * @return null
      */
@@ -101,7 +101,7 @@ class Cookie
     /**
      * Get old stored fields
      *
-     * @param bool $load_only_old
+     * @return string|null
      */
     public function oldFields() {
         if( !empty($_COOKIE['tr_old_fields']) ) {

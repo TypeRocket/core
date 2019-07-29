@@ -63,7 +63,7 @@ abstract class Kernel
     /**
      * Compile middleware from controller, router and kernel
      *
-     * @param $middleware
+     * @param string $middleware
      *
      * @return mixed|void
      */

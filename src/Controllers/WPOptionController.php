@@ -12,7 +12,7 @@ class WPOptionController extends Controller
     /**
      * Update option
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed|void
      */

@@ -64,9 +64,9 @@ class MakeModel extends Command
     /**
      * Make file
      *
-     * @param $model
-     * @param $directive
-     * @param $id
+     * @param string $model
+     * @param string $directive
+     * @param string $id
      */
     private function makeFile( $model, $directive, $id ) {
 

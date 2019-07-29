@@ -48,8 +48,8 @@ class WpRestApi
     /**
      * Posts search hook
      *
-     * @param $search
-     * @param $wp_query
+     * @param string $search
+     * @param string $wp_query
      *
      * @return string
      */

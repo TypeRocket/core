@@ -44,7 +44,7 @@ class {{controller}} extends Controller
     /**
      * The edit page for admin
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */
@@ -58,7 +58,7 @@ class {{controller}} extends Controller
      *
      * AJAX requests and normal requests can be made to this action
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */
@@ -70,7 +70,7 @@ class {{controller}} extends Controller
     /**
      * The show page for admin
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */
@@ -82,7 +82,7 @@ class {{controller}} extends Controller
     /**
      * The delete page for admin
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */
@@ -96,7 +96,7 @@ class {{controller}} extends Controller
      *
      * AJAX requests and normal requests can be made to this action
      *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */

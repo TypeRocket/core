@@ -11,7 +11,7 @@ class Notice
      *
      * Notice can be closed
      *
-     * @param $data
+     * @param string $data
      */
     public static function dismissible( $data )
     {
@@ -35,7 +35,7 @@ class Notice
      *
      *  Notice can not be closed
      *
-     * @param $data
+     * @param string $data
      */
     public static function permanent( $data )
     {

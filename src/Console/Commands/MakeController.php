@@ -60,9 +60,9 @@ class MakeController extends Command
     /**
      * Make file
      *
-     * @param $controller
-     * @param $directive
-     * @param $model
+     * @param string $controller
+     * @param string $directive
+     * @param string $model
      */
     private function makeFile( $controller, $directive, $model ) {
 

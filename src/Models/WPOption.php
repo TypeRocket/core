@@ -10,7 +10,7 @@ class WPOption extends Model
     /**
      * Do nothing since options are not true resources
      *
-     * @param $id
+     * @param string $id
      *
      * @return $this
      */
@@ -85,7 +85,7 @@ class WPOption extends Model
      * the field by the base value is used by Fields to populate
      * their values.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return null
      */

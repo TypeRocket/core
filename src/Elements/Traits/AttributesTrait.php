@@ -33,8 +33,8 @@ trait AttributesTrait
     /**
      * Set Attribute by key
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      *
      * @return $this
      */
@@ -63,7 +63,7 @@ trait AttributesTrait
     /**
      * Remove Attribute by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return $this
      */

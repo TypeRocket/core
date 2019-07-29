@@ -63,7 +63,7 @@ class SSL
 	/**
 	 * Fix SSL URL
 	 *
-	 * @param $url
+	 * @param string $url
 	 *
 	 * @return mixed
 	 */

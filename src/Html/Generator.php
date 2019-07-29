@@ -25,7 +25,7 @@ class Generator
     /**
      * Create new Tag
      *
-     * @param $tag
+     * @param string $tag
      * @param array $attributes
      * @param string $text
      *
@@ -78,9 +78,9 @@ class Generator
     /**
      * Create new input
      *
-     * @param $type
-     * @param $name
-     * @param $value
+     * @param string $type
+     * @param string $name
+     * @param string $value
      * @param array $attributes
      *
      * @return $this

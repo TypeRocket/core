@@ -61,8 +61,8 @@ trait MacroTrait
     /**
      * Call Macro
      *
-     * @param $method
-     * @param $parameters
+     * @param string $method
+     * @param string $parameters
      *
      * @return mixed
      */

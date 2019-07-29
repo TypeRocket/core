@@ -20,7 +20,7 @@ class TaxonomiesResponder extends Responder
      * Detect the post types registered resource and run the Kernel
      * against that resource.
      *
-     * @param $args
+     * @param string $args
      * @throws \ReflectionException
      */
     public function respond( $args )

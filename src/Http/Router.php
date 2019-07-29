@@ -145,7 +145,7 @@ class Router
     /**
      * Validate Controller
      *
-     * @param $caller
+     * @param string $caller
      * @return bool
      */
     public function validController($caller)
