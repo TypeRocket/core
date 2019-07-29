@@ -124,9 +124,9 @@ class Validator
      * Used to format fields
      *
      * @param array $arr
-     * @param $path
-     * @param $handle
-     * @param $fullPath
+     * @param string $path
+     * @param string $handle
+     * @param string $fullPath
      *
      * @return array|null
      * @throws \Exception
@@ -170,9 +170,9 @@ class Validator
      *
      * Pulls message override from $errorMessages
      *
-     * @param $name
-     * @param $type
-     * @param $message
+     * @param string $name
+     * @param string $type
+     * @param string $message
      */
     protected function setErrorMessage($name, $type, $message) {
         $this->errors[$name] = $message;
@@ -210,9 +210,9 @@ class Validator
     /**
      * Validate the Field
      *
-     * @param $handle
-     * @param $value
-     * @param $name
+     * @param string $handle
+     * @param string $value
+     * @param string $name
      * @throws \Exception
      */
     protected function validateField( $handle, $value, $name ) {

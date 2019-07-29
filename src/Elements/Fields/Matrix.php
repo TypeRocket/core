@@ -163,7 +163,7 @@ class Matrix extends Field implements ScriptField {
     /**
      * Sanitize the file name for component
      *
-     * @param $name
+     * @param string $name
      *
      * @return string
      */
@@ -378,7 +378,7 @@ class Matrix extends Field implements ScriptField {
     /**
      * Hide Item Control
      *
-     * @param $name
+     * @param string $name
      * @return $this
      */
     public function hideControl($name)
@@ -390,7 +390,7 @@ class Matrix extends Field implements ScriptField {
     /**
      * Show Item Control
      *
-     * @param $name
+     * @param string $name
      * @return $this
      */
     public function showControl($name)

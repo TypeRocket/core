@@ -204,7 +204,7 @@ class Repeater extends Field implements ScriptField
     /**
      * Append field
      *
-     * @param $field
+     * @param string $field
      *
      * @return $this
      */
@@ -253,7 +253,7 @@ class Repeater extends Field implements ScriptField
     /**
      * Hide Item Control
      *
-     * @param $name
+     * @param string $name
      * @return $this
      */
     public function hideControl($name)
@@ -265,7 +265,7 @@ class Repeater extends Field implements ScriptField
     /**
      * Show Item Control
      *
-     * @param $name
+     * @param string $name
      * @return $this
      */
     public function showControl($name)

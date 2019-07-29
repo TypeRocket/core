@@ -19,7 +19,7 @@ class ResourceResponder extends Responder
      *
      * Create proper request and run through Kernel
      *
-     * @param $args
+     * @param string $args
      */
     public function respond( $args )
     {
@@ -44,7 +44,7 @@ class ResourceResponder extends Responder
     /**
      * Set the resource use to construct the Request
      *
-     * @param $resource
+     * @param string $resource
      *
      * @return $this
      */
@@ -58,7 +58,7 @@ class ResourceResponder extends Responder
     /**
      * Set the action
      *
-     * @param $action
+     * @param string $action
      *
      * @return $this
      */
@@ -71,7 +71,7 @@ class ResourceResponder extends Responder
     /**
      * Set the route
      *
-     * @param $route
+     * @param string $route
      *
      * @return $this
      */
@@ -84,7 +84,7 @@ class ResourceResponder extends Responder
     /**
      * Set Handler
      *
-     * @param $handler
+     * @param string $handler
      * @return $this
      */
     public function setHandler($handler)
@@ -97,7 +97,7 @@ class ResourceResponder extends Responder
     /**
      * Set Middleware Groups
      *
-     * @param $groups
+     * @param string $groups
      * @return $this
      */
     public function setMiddlewareGroups($groups)

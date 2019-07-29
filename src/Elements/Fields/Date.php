@@ -51,7 +51,7 @@ class Date extends Field implements ScriptField
      * The format should correspond to the jQuery datepicker format.
      * @link http://api.jqueryui.com/datepicker/#option-dateFormat
      *
-     * @param $format
+     * @param string $format
      * @return $this
      */
     public function setFormat($format)

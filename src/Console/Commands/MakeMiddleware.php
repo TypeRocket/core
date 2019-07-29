@@ -35,7 +35,7 @@ class MakeMiddleware extends Command
     /**
      * Make file
      *
-     * @param $middleware
+     * @param string $middleware
      */
     private function makeFile( $middleware ) {
 

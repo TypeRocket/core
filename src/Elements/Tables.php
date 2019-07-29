@@ -60,7 +60,7 @@ class Tables
     /**
      * Set table limit
      *
-     * @param $limit
+     * @param string $limit
      *
      * @return $this
      */
@@ -87,7 +87,7 @@ class Tables
     /**
      * Set table sorting
      *
-     * @param $column
+     * @param string $column
      * @param string $direction
      *
      * @return $this
@@ -208,7 +208,7 @@ class Tables
      * Add the ability to append other input fields and HTML
      * inside the search section of the filter table area.
      *
-	 * @param $callback
+	 * @param string $callback
 	 *
 	 * @return $this
 	 */
@@ -524,12 +524,12 @@ class Tables
     /**
      * Pagination Links
      *
-     * @param $page
-     * @param $prev
-     * @param $next
-     * @param $first
-     * @param $last
-     * @param $pages
+     * @param string $page
+     * @param string $prev
+     * @param string $next
+     * @param string $first
+     * @param string $last
+     * @param string $pages
      */
     protected function paginationLinks($page, $prev, $next, $first, $last, $pages) {
         echo "<span class=\"pagination-links\">";

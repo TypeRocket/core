@@ -43,7 +43,7 @@ class WPUser extends Model
     /**
      * Users Posts
      *
-     * @param $modelClass
+     * @param string $modelClass
      *
      * @return null|Model
      */
@@ -58,7 +58,7 @@ class WPUser extends Model
     /**
      * Find post by ID
      *
-     * @param $id
+     * @param string $id
      *
      * @return $this
      * @throws ModelNotFoundException
@@ -188,7 +188,7 @@ class WPUser extends Model
      * the field by the base value is used by Fields to populate
      * their values.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return null
      */

@@ -61,7 +61,7 @@ trait FormConnectorTrait
     /**
      * Set Group into dot notation
      *
-     * @param $group
+     * @param string $group
      *
      * @return $this
      */
@@ -112,7 +112,7 @@ trait FormConnectorTrait
      * Set whether to populate Field from database. If set to false fields will
      * always be left empty and with their default values.
      *
-     * @param $populate
+     * @param string $populate
      *
      * @return $this
      */
@@ -161,7 +161,7 @@ trait FormConnectorTrait
      * Set Form setting by key
      *
      * @param string $key
-     * @param $value
+     * @param string $value
      *
      * @return $this
      */
@@ -179,7 +179,7 @@ trait FormConnectorTrait
 	 *
 	 * @param string $setting
 	 * @param string $key
-	 * @param $value
+	 * @param string $value
 	 *
 	 * @return $this
 	 */
@@ -210,7 +210,7 @@ trait FormConnectorTrait
     /**
      * Remove setting bby key
      *
-     * @param $key
+     * @param string $key
      *
      * @return $this
      */
@@ -271,7 +271,7 @@ trait FormConnectorTrait
      * as the default value `tr` is required for some fields
      * and features to work.
      *
-     * @param $name
+     * @param string $name
      *
      * @return $this
      */

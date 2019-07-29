@@ -17,8 +17,8 @@ class Tag
     /**
      * Make New Tag
      *
-     * @param $tag
-     * @param $attributes
+     * @param string $tag
+     * @param string $attributes
      * @param string $text
      *
      * @return \TypeRocket\Html\Tag
@@ -32,8 +32,8 @@ class Tag
     /**
      * Html constructor.
      *
-     * @param $tag
-     * @param $attributes
+     * @param string $tag
+     * @param string $attributes
      * @param string $text
      */
     public function __construct( $tag, $attributes, $text = '')
@@ -96,7 +96,7 @@ class Tag
     /**
      * Get attribute
      *
-     * @param $attribute
+     * @param string $attribute
      *
      * @return null
      */
@@ -122,7 +122,7 @@ class Tag
     /**
      * Set tag text
      *
-     * @param $text
+     * @param string $text
      *
      * @return $this
      */
@@ -136,7 +136,7 @@ class Tag
     /**
      * Set Tag name
      *
-     * @param $tag
+     * @param string $tag
      *
      * @return $this
      */
@@ -166,8 +166,8 @@ class Tag
     /**
      * Set attribute
      *
-     * @param $attribute
-     * @param $value
+     * @param string $attribute
+     * @param string $value
      *
      * @return $this
      */
@@ -195,7 +195,7 @@ class Tag
     /**
      * Remove attribute
      *
-     * @param $attribute
+     * @param string $attribute
      *
      * @return $this
      */

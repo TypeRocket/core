@@ -96,7 +96,7 @@ class Items extends Field
     /**
      * Set Input Type
      *
-     * @param $type
+     * @param string $type
      * @return $this
      */
     public function setInputType($type)

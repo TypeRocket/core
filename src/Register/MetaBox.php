@@ -55,7 +55,7 @@ class MetaBox extends Registrable
     /**
      * Set the meta box label
      *
-     * @param $label
+     * @param string $label
      *
      * @return MetaBox $this
      */
@@ -235,7 +235,7 @@ class MetaBox extends Registrable
     /**
      * Set Callback
      *
-     * @param $callback
+     * @param string $callback
      * @return MetaBox $this
      */
     public function setCallback( $callback )

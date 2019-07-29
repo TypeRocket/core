@@ -11,8 +11,8 @@ trait OptionsTrait
     /**
      * Set option
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      *
      * @return $this
      */
@@ -26,7 +26,7 @@ trait OptionsTrait
     /**
      * Set all options
      *
-     * @param $options
+     * @param string $options
      * @param string $style options include standard, flat, flip
      *
      * @return $this
@@ -51,7 +51,7 @@ trait OptionsTrait
     /**
      * Get option by key
      *
-     * @param $key
+     * @param string $key
      * @param null $default
      *
      * @return null
@@ -78,7 +78,7 @@ trait OptionsTrait
     /**
      * Remove option by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return $this
      */

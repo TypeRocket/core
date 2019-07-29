@@ -119,7 +119,7 @@ class Controller
     }
 
     /**
-     * @param $group
+     * @param string $group
      *
      * @param array $settings
      *
@@ -153,6 +153,7 @@ class Controller
             $validator->flashErrors($this->response);
             return true;
         }
+        return false;
     }
 
 }

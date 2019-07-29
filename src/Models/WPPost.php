@@ -136,7 +136,7 @@ class WPPost extends Model
     /**
      * Find post by ID
      *
-     * @param $id
+     * @param string $id
      *
      * @return $this
      */
@@ -147,7 +147,7 @@ class WPPost extends Model
     /**
      * Find by ID with Where
      *
-     * @param $id
+     * @param string $id
      * @return mixed|object|\TypeRocket\Database\Results|Model|null
      * @throws \Exception
      */
@@ -161,7 +161,7 @@ class WPPost extends Model
     /**
      * Find by ID and Remove Where
      *
-     * @param $id
+     * @param string $id
      * @return mixed|object|\TypeRocket\Database\Results|Model|null
      */
     public function findById($id)
@@ -301,7 +301,7 @@ class WPPost extends Model
      * the field by the base value is used by Fields to populate
      * their values.
      *
-     * @param $field_name
+     * @param string $field_name
      *
      * @return null
      */
@@ -327,7 +327,7 @@ class WPPost extends Model
     /**
      * Slash Builtin Fields
      *
-     * @param $builtin
+     * @param string $builtin
      * @return mixed
      */
     public function slashBuiltinFields( $builtin ) {

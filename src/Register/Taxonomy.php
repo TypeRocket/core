@@ -138,7 +138,7 @@ class Taxonomy extends Registrable
     /**
      * Set the url slug used for rewrite rules
      *
-     * @param $slug
+     * @param string $slug
      *
      * @return Taxonomy $this
      */
@@ -152,7 +152,7 @@ class Taxonomy extends Registrable
     /**
      * Set the resource
      *
-     * @param $resource
+     * @param array $resource
      *
      * @return Taxonomy $this
      */
@@ -166,7 +166,7 @@ class Taxonomy extends Registrable
     /**
      * Get the form hook value by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return mixed
      */

@@ -66,7 +66,7 @@ if ( ! function_exists('tr_taxonomy')) {
     /**
      * Register taxonomy
      *
-     * @param $singular
+     * @param string $singular
      * @param null $plural
      * @param array $settings
      *
@@ -121,9 +121,9 @@ if ( ! function_exists('tr_meta_box')) {
 
 if ( ! function_exists('tr_page')) {
     /**
-     * @param $resource
-     * @param $action
-     * @param $title
+     * @param string $resource
+     * @param string $action
+     * @param string $title
      * @param array $settings
      *
      * @return \TypeRocket\Register\Page
@@ -613,7 +613,7 @@ if ( ! function_exists('tr_is_json')) {
     /**
      * Detect is JSON
      *
-     * @param $string
+     * @param string $string
      *
      * @return bool
      */
@@ -872,7 +872,7 @@ if ( ! function_exists('tr_resolve')) {
      *
      * Inject all class dependencies
      *
-     * @param $class_name
+     * @param string $class_name
      * @return object
      * @throws Exception
      */
@@ -885,7 +885,7 @@ if ( ! function_exists('tr_file')) {
     /**
      * File Utility
      *
-     * @param $file
+     * @param string $file
      * @return object
      * @throws Exception
      */

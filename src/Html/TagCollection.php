@@ -6,7 +6,7 @@ class TagCollection extends \ArrayObject
     /**
      * Add item to top of collection
      *
-     * @param $value
+     * @param string $value
      */
     public function prepend( $value )
     {

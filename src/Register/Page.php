@@ -70,7 +70,7 @@ class Page extends Registrable
      *
      * Add the CSS needed to create the icon for the menu
      *
-     * @param $name
+     * @param string $name
      *
      * @return Page $this
      */
@@ -125,7 +125,7 @@ class Page extends Registrable
     /**
      * Set the slug
      *
-     * @param $slug
+     * @param string $slug
      *
      * @return Page $this
      */
@@ -170,7 +170,7 @@ class Page extends Registrable
     /**
      * Set Title
      *
-     * @param $title
+     * @param string $title
      *
      * @return Page $this
      */
@@ -297,7 +297,7 @@ class Page extends Registrable
      *
      * The class name of the controller for the page to use.
      *
-     * @param $handler
+     * @param string $handler
      * @return Page $this
      */
     public function setHandler($handler)
@@ -417,7 +417,7 @@ class Page extends Registrable
     /**
      * Add Admin Bar Menu Item
      *
-     * @param $id
+     * @param string $id
      * @param null $title
      * @param string $parent_id
      *
@@ -470,7 +470,7 @@ class Page extends Registrable
      * page=? to act as a single route that can respond
      * to any number of HTTP request methods.
      *
-     * @param $map ['POST' => 'create', 'GET' => 'add', 'DELETE' => 'destroy']
+     * @param string $map ['POST' => 'create', 'GET' => 'add', 'DELETE' => 'destroy']
      * @return Page $this
      */
     public function mapActions($map)

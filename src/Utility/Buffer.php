@@ -24,7 +24,7 @@ class Buffer
     /**
      * Index Buffered output
      *
-     * @param $index
+     * @param string $index
      *
      * @return $this
      */
@@ -43,7 +43,7 @@ class Buffer
     /**
      * Getting Index output by key
      *
-     * @param $index
+     * @param string $index
      *
      * @return mixed
      */

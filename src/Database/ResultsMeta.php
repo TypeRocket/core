@@ -48,7 +48,7 @@ class ResultsMeta extends Results
     /**
      * Get attribute as property
      *
-     * @param $key
+     * @param string $key
      *
      * @return mixed
      */
@@ -60,7 +60,7 @@ class ResultsMeta extends Results
     /**
      * Property Exists
      *
-     * @param $key
+     * @param string $key
      *
      * @return bool
      */

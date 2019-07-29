@@ -48,7 +48,7 @@ class Fields extends \ArrayObject
      * Validate fields
      *
      * @param array|null $rules
-     * @param $modelClass
+     * @param string $modelClass
      *
      * @return \TypeRocket\Utility\Validator
      * @throws \Exception

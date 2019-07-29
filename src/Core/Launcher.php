@@ -242,7 +242,7 @@ class Launcher
     /**
      * Set custom post type messages
      *
-     * @param $messages
+     * @param string $messages
      *
      * @return mixed
      */
@@ -289,8 +289,8 @@ class Launcher
     /**
      * Set custom post type bulk messages to make more since.
      *
-     * @param $bulk_messages
-     * @param $bulk_counts
+     * @param string $bulk_messages
+     * @param string $bulk_counts
      *
      * @return mixed
      */

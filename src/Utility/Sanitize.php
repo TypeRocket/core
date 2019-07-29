@@ -7,7 +7,7 @@ class Sanitize
     /**
      * Sanitize a textarea input field. Removes bad html like <script> and <html>.
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -22,7 +22,7 @@ class Sanitize
     /**
      * Sanitize nothing.
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -34,7 +34,7 @@ class Sanitize
     /**
      * Sanitize Attribute.
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -46,7 +46,7 @@ class Sanitize
     /**
      * Sanitize URL
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -58,7 +58,7 @@ class Sanitize
     /**
      * Sanitize SQL
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -70,7 +70,7 @@ class Sanitize
     /**
      * Sanitize text as plaintext.
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -85,7 +85,7 @@ class Sanitize
      * Sanitize editor data. Much like textarea remove <script> and <html>.
      * However, if the user can create unfiltered HTML allow it.
      *
-     * @param $input
+     * @param string $input
      *
      * @return string
      */
@@ -106,7 +106,7 @@ class Sanitize
      *
      * If the hex does not validate return a default instead.
      *
-     * @param $hex
+     * @param string $hex
      * @param string $default
      *
      * @return string
@@ -129,7 +129,7 @@ class Sanitize
      *
      * ` --"2_ _e''X  AM!pl'e-"-1_@` -> _2_ex_ample_1_
      *
-     * @param $name
+     * @param string $name
      *
      * @return mixed|string
      */
@@ -154,7 +154,7 @@ class Sanitize
      *
      * ` --"2_ _e\'\'X  AM!pl\'e-"-1_@` -> -2-ex-ample-1-
      *
-     * @param $name
+     * @param string $name
      *
      * @return mixed|string
      */

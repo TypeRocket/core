@@ -101,7 +101,7 @@ abstract class Field
     /**
      * Require Form
      *
-     * @param $args
+     * @param string $args
      *
      * @return mixed
      */
@@ -309,7 +309,7 @@ abstract class Field
     /**
      * Set whether label should be displayed
      *
-     * @param $label
+     * @param string $label
      *
      * @return $this
      */
@@ -410,7 +410,7 @@ abstract class Field
     /**
      * Sanitize field value
      *
-     * @param $value
+     * @param string $value
      * @param null $default
      *
      * @return mixed

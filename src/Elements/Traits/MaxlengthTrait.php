@@ -10,8 +10,8 @@ trait MaxlengthTrait
     /**
      * Get the max length for text type fields
      *
-     * @param $value
-     * @param $maxLength
+     * @param string $value
+     * @param string $maxLength
      *
      * @return string|\TypeRocket\Html\Generator
      */

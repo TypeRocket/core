@@ -7,8 +7,8 @@ class Str
     /**
      * String Ends
      *
-     * @param $needle
-     * @param $subject
+     * @param string $needle
+     * @param string $subject
      *
      * @return bool
      */
@@ -25,8 +25,8 @@ class Str
     /**
      * String Contains
      *
-     * @param $needle
-     * @param $subject
+     * @param string $needle
+     * @param string $subject
      *
      * @return bool
      */
@@ -38,8 +38,8 @@ class Str
     /**
      * String Starts
      *
-     * @param $needle
-     * @param $subject
+     * @param string $needle
+     * @param string $subject
      *
      * @return bool
      */

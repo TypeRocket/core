@@ -16,13 +16,11 @@ class FlushRewrites extends Command
      * Execute Command
      *
      * Example command: php galaxy wp:flush
-     *
-     * @return int|null|void
      */
     protected function exec()
     {
-        $this->success('Flushed the WordPress rewrites');
         flush_rewrite_rules( true );
+        $this->success('Flushed the WordPress rewrites');
     }
 
 }
