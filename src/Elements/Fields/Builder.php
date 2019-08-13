@@ -135,6 +135,14 @@ class Builder extends Matrix
 
             foreach ($options as $name => $value) {
 
+                if($value == null) {
+                    $li = new Generator();
+                    $li->newElement('li', ['class' => 'builder-select-divider'], '<div>' . __($name) . '</div>');
+
+                    $generator->appendInside( $li );
+                    continue;
+                }
+
                 $attr['data-value'] = $value;
                 $attr['data-thumbnail'] = $this->getComponentThumbnail($folder, $value, null);
                 $attr['class'] = 'builder-select-option';

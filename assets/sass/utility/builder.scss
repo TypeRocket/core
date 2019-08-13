@@ -189,7 +189,14 @@
             border-bottom-color: #ccc;
         }
 
-        li {
+        .builder-select-divider {
+            width: 100%;
+            margin: 5px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .builder-select-option {
             width: 120px;
             vertical-align: top;
             display: inline-block;
