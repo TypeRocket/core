@@ -118,7 +118,12 @@ class Builder extends Matrix
         $folder = $this->getComponentFolder();
         $options = $this->getOptions();
         $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
+        $options = array_merge($options, $this->staticOptions);
         $options = apply_filters('tr_component_select_list', $options, $folder, $name);
+
+        if($this->sort) {
+            ksort($options);
+        }
 
         if ($options) {
             $generator = new Generator();

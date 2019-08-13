@@ -15,8 +15,10 @@ class Matrix extends Field implements ScriptField {
     use OptionsTrait, DefaultSetting, ControlsSetting;
 
     protected $mxid = null;
+    protected $staticOptions = [];
     protected $componentFolder = null;
     protected $paths;
+    protected $sort = true;
     protected $hide = [
         'move' => false,
         'remove' => false,
@@ -46,6 +48,45 @@ class Matrix extends Field implements ScriptField {
     {
         $this->mxid = md5( microtime( true ) ); // set id for matrix random
         $this->setType( 'matrix' );
+    }
+
+    /**
+     * Add Static Options
+     *
+     * Name => file-name (do not use file extension)
+     *
+     * @param array $options
+     * @return Matrix
+     */
+    public function addStaticOptions(array $options)
+    {
+        $this->staticOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * Enable Sort
+     *
+     * @return $this
+     */
+    public function enableSort()
+    {
+        $this->sort = true;
+
+        return $this;
+    }
+
+    /**
+     * Disable Sort
+     *
+     * @return $this
+     */
+    public function disableSort()
+    {
+        $this->sort = false;
+
+        return $this;
     }
 
     /**
@@ -187,7 +228,13 @@ class Matrix extends Field implements ScriptField {
         $folder = $this->getComponentFolder();
         $options = $this->getOptions();
         $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
+        $options = array_merge($options, $this->staticOptions);
         $options = apply_filters('tr_component_select_list', $options, $folder, $name);
+
+        if($this->sort) {
+            ksort($options);
+        }
+
 
         if ($options) {
             $generator = new Generator();
