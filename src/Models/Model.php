@@ -1468,13 +1468,21 @@ class Model implements Formable
         $rows = [];
         $query = new Query();
         $junction = $this->getJunction();
+        $columns = $junction['columns'];
         $id_foreign = $junction['id_foreign'];
 
         foreach ( $args as $id ) {
-            $rows[] = [ $id, $id_foreign ];
+            if( is_array($id) ) {
+                $attach_id = array_shift($id);
+                $names = array_keys($id);
+                $rows[] = array_merge([ $attach_id, $id_foreign ], $id);
+                $columns = array_merge($columns, $names);
+            } else {
+                $rows[] = [ $id, $id_foreign ];
+            }
         }
 
-        $result = $query->table( $junction['table'] )->create($junction['columns'], $rows);
+        $result = $query->table( $junction['table'] )->create($columns, $rows);
 
         return [$result, $query];
     }
