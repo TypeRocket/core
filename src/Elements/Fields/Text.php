@@ -30,7 +30,7 @@ class Text extends Field
         $default = $this->getDefault();
         $this->setupInputId();
 
-        $value = !empty($value) ? $value : $default;
+        $value = !empty($value) || $value == '0' ? $value : $default;
         $value = $this->sanitize($value, 'raw');
         $max = $this->getMaxlength( $value, $this->getAttribute('maxlength'));
 
