@@ -79,4 +79,27 @@ class Results extends \ArrayObject implements Formable
 
         return $result;
     }
+
+    /**
+     * To Array
+     *
+     * Get array of model and loaded relationships
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $results = [];
+        $items = $this->getArrayCopy();
+
+        foreach ($items as $item) {
+            if( $item instanceof Model) {
+                $results[] = $item->toArray();
+            } else {
+                $results[] = (array) $item;
+            }
+        }
+
+        return $results;
+    }
 }

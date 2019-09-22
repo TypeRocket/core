@@ -1070,8 +1070,14 @@ class Model implements Formable
                 $withList = $this->with ?? [];
             }
 
+            $compiledWithList = [];
+
             foreach ($withList as $withArg) {
                 list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
+                $compiledWithList[$name][] = $with;
+            }
+
+            foreach ($compiledWithList as $name => $with) {
                 $loader = new EagerLoader();
                 $relation = $this->{$name}();
                 $result = $loader->load([
@@ -1703,6 +1709,16 @@ class Model implements Formable
     }
 
     /**
+     * Get Relationships
+     *
+     * @return array
+     */
+    public function getRelationships()
+    {
+        return $this->relationships;
+    }
+
+    /**
      * Get a relationship.
      *
      * If the "attribute" exists as a method on the model, we will just assume
@@ -1823,12 +1839,18 @@ class Model implements Formable
     /**
      * Eager Load With
      *
-     * @param string $name
+     * @param string|array $name
      * @return $this
      */
     public function with($name)
     {
-        $this->with = $name;
+        $with = func_get_args();
+
+        if(is_array($name)) {
+            $with = $name;
+        }
+
+        $this->with = array_filter($with);
 
         return $this;
     }
@@ -1858,6 +1880,25 @@ class Model implements Formable
             $rel = $rel->relationships[$name];
         }
         return $rel;
+    }
+
+    /**
+     * To Array
+     *
+     * Get array of model and loaded relationships
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $relationships = [];
+
+        foreach($this->relationships as $key => $rel) {
+            $value = $rel ? $rel->toArray() : null;
+            $relationships[$key] = $value;
+        }
+
+        return array_merge($this->properties, $relationships);
     }
 
 }
