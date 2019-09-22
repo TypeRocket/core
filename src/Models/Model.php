@@ -1901,4 +1901,12 @@ class Model implements Formable
         return array_merge($this->properties, $relationships);
     }
 
+    /**
+     * To JSON
+     */
+    public function toJson()
+    {
+        return json_encode($this->toArray());
+    }
+
 }
