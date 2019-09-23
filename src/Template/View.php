@@ -128,17 +128,16 @@ class View
             return;
         }
 
-        $templateEngine = Config::locate('app.template.engine');
+        $templateEngine = Config::locate('app.template_engine.front', TemplateEngine::class);
         (new $templateEngine(self::$view, self::$data))->load();
     }
 
     /**
      * Load Page
-     * @param null|Page $page
      */
-    public static function loadPage($page = null)
+    public static function loadPage()
     {
-        $templateEngine = Config::locate('app.template.engine');
+        $templateEngine = Config::locate('app.template_engine.admin', TemplateEngine::class);
         (new $templateEngine(self::$view, self::$data))->load();
     }
 

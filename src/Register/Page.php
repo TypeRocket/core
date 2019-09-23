@@ -565,6 +565,6 @@ class Page extends Registrable
             $GLOBALS['_tr_resource'] = new $class;
         }
 
-        View::loadPage($this);
+        View::loadPage();
     }
 }
