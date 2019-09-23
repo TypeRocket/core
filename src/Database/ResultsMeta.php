@@ -7,6 +7,7 @@ namespace TypeRocket\Database;
 class ResultsMeta extends Results
 {
     protected $storedValues = [];
+    protected $loadStoredValues = true;
 
     /**
      * Get Meta Sorted
