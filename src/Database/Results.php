@@ -102,4 +102,22 @@ class Results extends \ArrayObject implements Formable
 
         return $results;
     }
+
+    /**
+     * To JSON
+     */
+    public function toJson()
+    {
+        return json_encode($this->toArray());
+    }
+
+    /**
+     * Convert the model to its string representation.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toJson();
+    }
 }
