@@ -3,6 +3,7 @@ namespace TypeRocket\Models;
 
 use ArrayObject;
 use ReflectionClass;
+use ReflectionException;
 use TypeRocket\Database\EagerLoader;
 use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
@@ -60,8 +61,8 @@ class Model implements Formable
 
         try {
             $type = (new ReflectionClass( $this ))->getShortName();
-        } catch (\ReflectionException $e) {
-            wp_die('Model failed');
+        } catch (ReflectionException $e) {
+            wp_die('Model failed: ' . $e->getMessage());
         }
 
         if( ! $this->resource && $type ) {

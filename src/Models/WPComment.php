@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use TypeRocket\Exceptions\ModelException;
+use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPCommentMeta;
 
 class WPComment extends Model
@@ -35,7 +36,7 @@ class WPComment extends Model
     /**
      * Get Comment Meta
      *
-     * @return null|\TypeRocket\Models\Model
+     * @return null|Model
      */
     public function meta()
     {
@@ -45,10 +46,10 @@ class WPComment extends Model
     /**
      * Create comment from TypeRocket fields
      *
-     * @param array|\TypeRocket\Http\Fields $fields
+     * @param array|Fields $fields
      *
      * @return $this
-     * @throws \TypeRocket\Exceptions\ModelException
+     * @throws ModelException
      */
     public function create( $fields = [] )
     {
@@ -82,10 +83,10 @@ class WPComment extends Model
     /**
      * Update comment from TypeRocket fields
      *
-     * @param array|\TypeRocket\Http\Fields $fields
+     * @param array|Fields $fields
      *
      * @return $this
-     * @throws \TypeRocket\Exceptions\ModelException
+     * @throws ModelException
      */
     public function update( $fields = [] )
     {

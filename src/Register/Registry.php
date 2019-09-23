@@ -2,6 +2,7 @@
 namespace TypeRocket\Register;
 
 use TypeRocket\Core\Config;
+use TypeRocket\Models\Model;
 use TypeRocket\Models\WPPost;
 
 class Registry
@@ -373,6 +374,7 @@ class Registry
                         'post' => $post,
                         'post_id' => $post_id
                     ];
+                    /** @var Model $post_temp */
                     $post_temp = (new $model);
                     $value = $post_temp
                         ->setProperty($post_temp->getIdColumn(), $post_id)
