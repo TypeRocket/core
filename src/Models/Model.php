@@ -1239,7 +1239,7 @@ class Model implements Formable
     /**
      * Cast Properties
      *
-     * @param string $properties
+     * @param array $properties
      *
      * @return $this
      */
@@ -1898,7 +1898,7 @@ class Model implements Formable
             $relationships[$key] = $value;
         }
 
-        return array_merge($this->properties, $relationships);
+        return array_merge($this->getProperties(), $relationships);
     }
 
     /**

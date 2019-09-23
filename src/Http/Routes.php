@@ -156,17 +156,12 @@ class Routes
      */
     public static function resultsToJson($returned)
     {
-        $result = [];
-
         if( $returned instanceof Model ) {
-            wp_send_json( $returned->getProperties() );
+            wp_send_json( $returned->toArray() );
         }
 
         if( $returned instanceof Results ) {
-            foreach ($returned as $record) {
-                $result[] = $record->getProperties();
-            }
-            wp_send_json($result);
+            wp_send_json($returned->toArray());
         }
 
         if( is_array($returned) ) {
