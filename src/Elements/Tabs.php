@@ -30,7 +30,7 @@ class Tabs
     /**
      * Set Tabs
      *
-     * @param string $tabs
+     * @param array $tabs
      *
      * @return $this
      */

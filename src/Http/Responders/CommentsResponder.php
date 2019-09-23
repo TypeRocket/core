@@ -12,7 +12,7 @@ class CommentsResponder extends Responder {
      *
      * Create proper request and run through Kernel
      *
-     * @param string $args
+     * @param array $args
      */
     public function respond( $args ) {
         $controller = tr_app("Controllers\\CommentController");

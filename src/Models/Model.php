@@ -10,12 +10,15 @@ use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Contract\Formable;
+use TypeRocket\Models\Traits\Searchable;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
 use wpdb;
 
 class Model implements Formable
 {
+    use Searchable;
+
     protected $fillable = [];
     protected $closed = false;
     protected $guard = ['id'];
@@ -1907,6 +1910,28 @@ class Model implements Formable
     public function toJson()
     {
         return json_encode($this->toArray());
+    }
+
+    /**
+     * Handle dynamic static method calls into the method.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public static function __callStatic($method, $parameters)
+    {
+        return (new static)->$method(...$parameters);
+    }
+
+    /**
+     * Convert the model to its string representation.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toJson();
     }
 
 }

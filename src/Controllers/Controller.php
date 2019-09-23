@@ -17,9 +17,9 @@ use \TypeRocket\Http\Response;
 class Controller
 {
 
-    /** @var \TypeRocket\Http\Response */
+    /** @var Response */
     protected $response = null;
-    /** @var \TypeRocket\Http\Request */
+    /** @var Request */
     protected $request = null;
 
     protected $fields = [];
@@ -28,8 +28,11 @@ class Controller
     protected $modelClass = Model::class;
     protected $validation = [];
 
-    /*
+    /**
      * Construct Controller
+     *
+     * @param Request $request
+     * @param Response $response
      */
     public function __construct( Request $request, Response $response )
     {

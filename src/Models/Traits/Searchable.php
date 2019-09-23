@@ -2,12 +2,16 @@
 
 namespace TypeRocket\Models\Traits;
 
-use TypeRocket\Models\WPPost;
-
 trait Searchable
 {
     protected $searchable = true;
+    protected $searchColumn = null;
 
+    /**
+     * Get Search Results
+     *
+     * @return array
+     */
     public function getSearchResults()
     {
         $results = $this->get();
@@ -22,15 +26,21 @@ trait Searchable
         return $return;
     }
 
+    /**
+     * Get Search Column
+     *
+     * @return string
+     */
     public function getSearchColumn()
     {
-        if($this instanceof WPPost) {
-            return 'post_title';
-        }
-
-        return $this->getIdColumn();
+        return $this->searchColumn ?? $this->getIdColumn();
     }
 
+    /**
+     * Get Search Result
+     *
+     * @return array
+     */
     public function getSearchResult() {
         return [
             'title' => $this->{$this->getSearchColumn()},

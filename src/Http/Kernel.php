@@ -29,6 +29,9 @@ abstract class Kernel
         do_action('tr_kernel', $this);
     }
 
+    /**
+     * Run Kernel
+     */
     public function runKernel()
     {
         $groups = $this->handler->getMiddlewareGroups();
@@ -63,7 +66,7 @@ abstract class Kernel
     /**
      * Compile middleware from controller, router and kernel
      *
-     * @param string $middleware
+     * @param array $middleware
      *
      * @return mixed|void
      */

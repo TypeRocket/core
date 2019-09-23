@@ -145,9 +145,11 @@ class Form
 
         return $this;
     }
-    
+
     /**
      * Set Form method
+     *
+     * @param string $method POST, PUT, DELETE
      *
      * @return Form $this
      */
@@ -238,6 +240,24 @@ class Form
     }
 
     /**
+     * To Admin URL
+     *
+     * @param string $path
+     * @param array $query
+     * @return Form
+     */
+    public function useAdminUrl($path, $query = [])
+    {
+        $this->formUrl = admin_url() . $path;
+
+        if(!empty($query)) {
+            $this->formUrl .= '?' . http_build_query($query);
+        }
+
+        return $this;
+    }
+
+    /**
      * Use TypeRocket Rest to submit form
      *
      * @return Form $this
@@ -309,7 +329,6 @@ class Form
      * @param array $data
      *
      * @return $this
-     * @throws \ReflectionException
      */
     public function useExternal($data = [])
     {
@@ -324,7 +343,6 @@ class Form
      * @param array $data
      *
      * @return $this
-     * @throws \ReflectionException
      */
     public function useWidget(\WP_Widget $widget, $data = [])
     {
@@ -374,9 +392,6 @@ class Form
 
         if( ! $this->method ) {
             switch ($this->action) {
-                case 'update' :
-                    $this->method = 'PUT';
-                    break;
                 case 'create' :
                     $this->method = 'POST';
                     break;
@@ -656,6 +671,7 @@ class Form
         $obj = $this;
 
         $config_field = function($field) use ($obj) {
+            /** @var Field $clone_field */
             $clone_field = clone $field;
             $clone_field->configureToForm($obj);
             return $clone_field;

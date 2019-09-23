@@ -19,7 +19,7 @@ class ResourceResponder extends Responder
      *
      * Create proper request and run through Kernel
      *
-     * @param string $args
+     * @param array $args
      */
     public function respond( $args )
     {
@@ -97,7 +97,7 @@ class ResourceResponder extends Responder
     /**
      * Set Middleware Groups
      *
-     * @param string $groups
+     * @param string|array $groups
      * @return $this
      */
     public function setMiddlewareGroups($groups)

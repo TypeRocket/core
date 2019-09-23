@@ -5,7 +5,6 @@ namespace TypeRocket\Http;
 use TypeRocket\Database\Results;
 use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Models\Model;
-use TypeRocket\Template\View;
 use TypeRocket\Utility\Str;
 
 /**
@@ -18,6 +17,7 @@ use TypeRocket\Utility\Str;
 class Routes
 {
     public static $routes = [];
+    /** @var array $vars */
     public $vars = [];
     public static $request;
     public $match = [];

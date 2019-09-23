@@ -11,7 +11,7 @@ class Cookie
      * Set a transient with cookie to persist across page loads
      *
      * @param string $name
-     * @param string $data
+     * @param string|array $data
      * @param int $time
      *
      * @return $this

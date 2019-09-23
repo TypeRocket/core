@@ -50,12 +50,23 @@ class Redirect
      *
      * @return Redirect $this
      */
-    public function onHome( $path )
+    public function toHome( $path )
     {
         $scheme = is_ssl() ? 'https' : 'http';
         $this->url = esc_url_raw( home_url( $path ), $scheme );
 
         return $this;
+    }
+
+    /**
+     * To Home
+     *
+     * @param string $path
+     * @return Redirect
+     * @deprecated 4.0.46
+     */
+    public function onHome( $path ) {
+        return $this->toHome($path);
     }
 
     /**
@@ -74,8 +85,25 @@ class Redirect
             $query['route_id'] = (int) $item_id;
         }
 
-        $scheme = is_ssl() ? 'https' : 'http';
-        $this->url = admin_url('/', $scheme) . 'admin.php?' . http_build_query($query);
+        $this->url = admin_url('/') . 'admin.php?' . http_build_query($query);
+
+        return $this;
+    }
+
+    /**
+     * To Admin
+     *
+     * @param string $path
+     * @param array $query
+     * @return Redirect
+     */
+    public function toAdmin($path, $query = [])
+    {
+        $this->url = admin_url('/') . $path;
+
+        if(!empty($query)) {
+            $this->url .= '?' . http_build_query($query);
+        }
 
         return $this;
     }

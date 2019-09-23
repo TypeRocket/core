@@ -211,6 +211,12 @@ class WPUser extends Model
         return $this->getValueOrNull( $data );
     }
 
+    /**
+     * Builtin
+     *
+     * @param array $builtin
+     * @return mixed
+     */
     public function slashBuiltinFields( $builtin ) {
 
         $fields = [

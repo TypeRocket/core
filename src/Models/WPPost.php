@@ -11,6 +11,7 @@ class WPPost extends Model
     protected $idColumn = 'ID';
     protected $resource = 'posts';
     protected $postType = 'post';
+    protected $searchColumn = 'post_title';
 
     protected $builtin = [
         'post_author',
@@ -327,7 +328,7 @@ class WPPost extends Model
     /**
      * Slash Builtin Fields
      *
-     * @param string $builtin
+     * @param array $builtin
      * @return mixed
      */
     public function slashBuiltinFields( $builtin ) {

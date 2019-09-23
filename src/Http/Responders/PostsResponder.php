@@ -19,8 +19,7 @@ class PostsResponder extends Responder
      * Detect the post types registered resource and run the Kernel
      * against that resource.
      *
-     * @param string $args
-     * @throws \ReflectionException
+     * @param array $args
      */
     public function respond( $args )
     {

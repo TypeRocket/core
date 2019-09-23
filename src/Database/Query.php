@@ -880,8 +880,8 @@ class Query
     /**
      * Setup the Inserts
      *
-     * @param string $data
-     * @param string $inserts
+     * @param string|array|object $data
+     * @param array $inserts
      *
      * @return $this
      */
@@ -893,7 +893,7 @@ class Query
     /**
      * Prepare Value
      *
-     * @param string $value
+     * @param string|array|object $value
      *
      * @return int|null|string
      */

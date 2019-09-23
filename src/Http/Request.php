@@ -24,6 +24,7 @@ class Request
      * @param string $method the method PUT, POST, GET, DELETE
      * @param bool $hook
      * @param bool $rest
+     * @param bool $custom
      * @internal param int $id the resource ID
      */
     public function __construct( $method = null, $hook = false, $rest = false, $custom = false )
@@ -47,7 +48,7 @@ class Request
     }
 
     /**
-     * Get the HTTP protocall
+     * Get the HTTP protocol
      *
      * @return string
      */

@@ -132,6 +132,7 @@ class Launcher
                 remove_menu_page( 'edit.php' );
             });
             add_action( 'admin_bar_menu', function() {
+                /** @var $wp_admin_bar \WP_Admin_Bar */
                 global $wp_admin_bar;
                 $wp_admin_bar->remove_node( 'new-post' );
             }, 999 );

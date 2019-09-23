@@ -271,11 +271,16 @@ class Page extends Registrable
     /**
      * Make the page use a TypeRocket controller and routing
      *
+     * @param null|string $handler the class name of the controller for the page to use.
      * @return Page $this
      */
-    public function useController()
+    public function useController($handler = null)
     {
         $this->useController = true;
+
+        if($handler) {
+            $this->setHandler($handler);
+        }
 
         return $this;
     }
@@ -383,7 +388,7 @@ class Page extends Registrable
             if( file_exists($this->args['view_file']) ) {
                 /** @noinspection PhpIncludeInspection */
                 include( $this->args['view_file'] );
-            } elseif (file_exists( View::$page )) {
+            } elseif ( View::isReady('admin') ) {
                 $this->loadView();
             } elseif( Config::locate('app.debug') == true ) {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by creating or setting a view.</div>";
@@ -538,7 +543,6 @@ class Page extends Registrable
      */
     public function addPage( $s )
     {
-
         if ( $s instanceof Page && ! in_array( $s, $this->pages )) {
             $this->pages[] = $s;
             $s->setParent( $this );
@@ -549,7 +553,6 @@ class Page extends Registrable
         }
 
         return $this;
-
     }
 
     /**
@@ -561,10 +564,7 @@ class Page extends Registrable
         if( class_exists( $class ) ) {
             $GLOBALS['_tr_resource'] = new $class;
         }
-        unset($class);
 
-        extract( View::$data );
-        /** @noinspection PhpIncludeInspection */
-        include( View::$page );
+        View::loadPage($this);
     }
 }

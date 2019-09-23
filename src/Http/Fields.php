@@ -16,6 +16,7 @@ class Fields extends \ArrayObject
      * @param array $fields
      */
     public function __construct( $fields = [] ) {
+        parent::__construct();
 
         if( empty($fields) ) {
             $fields = (new Request())->getFields();
@@ -50,7 +51,7 @@ class Fields extends \ArrayObject
      * @param array|null $rules
      * @param string $modelClass
      *
-     * @return \TypeRocket\Utility\Validator
+     * @return Validator
      * @throws \Exception
      */
     public function validate($rules = null, $modelClass = null)

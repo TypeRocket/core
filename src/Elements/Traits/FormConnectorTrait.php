@@ -112,7 +112,7 @@ trait FormConnectorTrait
      * Set whether to populate Field from database. If set to false fields will
      * always be left empty and with their default values.
      *
-     * @param string $populate
+     * @param bool $populate
      *
      * @return $this
      */

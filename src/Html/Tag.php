@@ -18,10 +18,10 @@ class Tag
      * Make New Tag
      *
      * @param string $tag
-     * @param string $attributes
+     * @param array $attributes
      * @param string $text
      *
-     * @return \TypeRocket\Html\Tag
+     * @return Tag
      */
     public static function make($tag, $attributes, $text = '')
     {
@@ -33,7 +33,7 @@ class Tag
      * Html constructor.
      *
      * @param string $tag
-     * @param string $attributes
+     * @param array $attributes
      * @param string $text
      */
     public function __construct( $tag, $attributes, $text = '')
@@ -211,7 +211,7 @@ class Tag
     /**
      * Append Inner Tag
      *
-     * @param \TypeRocket\Html\Tag $tag
+     * @param Tag $tag
      *
      * @return $this
      */
@@ -225,7 +225,7 @@ class Tag
     /**
      * Prepend inner tag
      *
-     * @param \TypeRocket\Html\Tag $tag
+     * @param Tag $tag
      *
      * @return $this
      */

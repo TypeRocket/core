@@ -11,6 +11,9 @@ namespace TypeRocket\Http;
 class SSL
 {
 
+    /**
+     * Force Content SSL
+     */
     public function forceContentSSL()
     {
         add_filter( 'wp_calculate_image_srcset_meta', '__return_null' );
@@ -20,6 +23,12 @@ class SSL
         }
     }
 
+    /**
+     * Fix Content
+     *
+     * @param $content
+     * @return mixed
+     */
     public function fixContent($content) {
         static $searches = array(
             '#<(?:img|iframe) .*?src=[\'"]\Khttp://[^\'"]+#i',		// fix image and iframe elements

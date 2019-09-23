@@ -29,23 +29,29 @@ abstract class Field
      * @param array $settings the settings of the field
      * @param bool|true $label show the label
      *
-     * @throws \ReflectionException
      * @internal A Form must be passed for the field to work
      */
     public function __construct( $name, $attr = [], $settings = [], $label = true )
     {
         $args = func_get_args();
         $this->init();
-        $setup = new \ReflectionMethod( $this, 'setup' );
-        $setup->setAccessible( true );
-        $args = $this->assignAutoArgs($args);
 
-        if ($this instanceof ScriptField) {
-            $this->enqueueScripts();
+        try {
+            $setup = new \ReflectionMethod( $this, 'setup' );
+            $setup->setAccessible( true );
+            $args = $this->assignAutoArgs($args);
+
+            if ($this instanceof ScriptField) {
+                $this->enqueueScripts();
+            }
+
+            $setup->invokeArgs( $this, $args );
+            $setup->setAccessible( false );
+
+        } catch(\ReflectionException $e) {
+            wp_die($e->getMessage());
         }
 
-        $setup->invokeArgs( $this, $args );
-        $setup->setAccessible( false );
         do_action('tr_after_field_element_init', $this);
     }
 
@@ -101,7 +107,7 @@ abstract class Field
     /**
      * Require Form
      *
-     * @param string $args
+     * @param array $args
      *
      * @return mixed
      */

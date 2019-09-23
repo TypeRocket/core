@@ -255,7 +255,7 @@ class WPTerm extends Model
     }
 
     /**
-     * @param string $builtin
+     * @param array $builtin
      * @return mixed
      */
     public function slashBuiltinFields( $builtin ) {

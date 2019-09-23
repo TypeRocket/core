@@ -34,7 +34,7 @@ class Tables
      * Tables constructor.
      *
      * @param int $limit
-     * @param \TypeRocket\Models\Model $model
+     * @param Model $model
      *
      */
     public function __construct( $limit = 25, $model = null )
@@ -108,7 +108,7 @@ class Tables
      * @param string $primary set the main column
      * @param array $columns
      *
-     * @return \TypeRocket\Elements\Tables
+     * @return Tables
      */
     public function setColumns( $primary, array $columns)
     {
@@ -121,7 +121,7 @@ class Tables
     /**
      * Set the page the table is connected to.
      *
-     * @param \TypeRocket\Register\Page $page
+     * @param Page $page
      *
      * @return $this
      */
@@ -134,7 +134,7 @@ class Tables
     /**
      * Set Model
      *
-     * @param \TypeRocket\Models\Model $model
+     * @param Model $model
      *
      * @return $this
      */
@@ -524,12 +524,12 @@ class Tables
     /**
      * Pagination Links
      *
-     * @param string $page
+     * @param string|int $page
      * @param string $prev
      * @param string $next
      * @param string $first
      * @param string $last
-     * @param string $pages
+     * @param string|int $pages
      */
     protected function paginationLinks($page, $prev, $next, $first, $last, $pages) {
         echo "<span class=\"pagination-links\">";

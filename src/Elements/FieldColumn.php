@@ -21,8 +21,6 @@ class FieldColumn
      * Array of fields or args of fields
      *
      * @param array|Field $fields
-     *
-     * @return FieldRow
      */
     public function __construct( $fields )
     {

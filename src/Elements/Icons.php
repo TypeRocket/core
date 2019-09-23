@@ -237,6 +237,8 @@ class Icons extends \ArrayObject
      * Load icons and their font encoding
      */
     public function __construct() {
+        parent::__construct();
+
         $this->exchangeArray($this->icons);
     }
 }

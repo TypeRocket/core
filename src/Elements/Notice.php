@@ -11,10 +11,11 @@ class Notice
      *
      * Notice can be closed
      *
-     * @param string $data
+     * @param array $data
      */
     public static function dismissible( $data )
     {
+
         $classes = 'notice-' . $data['type'];
         if( !empty($data) ) {
             if( Str::starts('<ul>', $data['message']) ) {
@@ -35,7 +36,7 @@ class Notice
      *
      *  Notice can not be closed
      *
-     * @param string $data
+     * @param array $data
      */
     public static function permanent( $data )
     {

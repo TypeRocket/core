@@ -9,6 +9,12 @@ class Injector
 
     protected static $list = [];
 
+    /**
+     * Resolve Class
+     *
+     * @param string $class_name
+     * @return mixed|null
+     */
     public static function resolve($class_name) {
         if(array_key_exists($class_name, self::$list)) {
             $singleton = !empty(self::$list[$class_name]['make_singleton']);
@@ -30,6 +36,13 @@ class Injector
         return null;
     }
 
+    /**
+     * Register Class
+     *
+     * @param string $class_name
+     * @param callable $callback
+     * @param bool $singleton
+     */
     public static function register($class_name, $callback, $singleton = false)
     {
         self::$list[$class_name] = [

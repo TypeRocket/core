@@ -108,7 +108,7 @@ class Generator
     /**
      * Get Tag
      *
-     * @return \TypeRocket\Html\Tag
+     * @return Tag
      */
     public function getTag()
     {
@@ -118,7 +118,7 @@ class Generator
     /**
      * Set Tag
      *
-     * @param \TypeRocket\Html\Tag $tag
+     * @param Tag $tag
      *
      * @return $this
      */

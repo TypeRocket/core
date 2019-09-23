@@ -39,6 +39,7 @@ class Resolver
      * @param string $parameters
      *
      * @return array
+     * @throws \Exception
      */
     public function getDependencies($parameters)
     {
