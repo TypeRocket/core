@@ -42,7 +42,7 @@ class Config
      *
      * @return array|mixed|null
      */
-    private static function jitLocate($dots, $default)
+    private static function jitLocate($dots, $default = null)
     {
         list($root, $rest) = array_pad(explode('.', $dots, 2), 2, null);
         if(!isset(self::$config[$root]) && is_file(self::$root . '/' . $root . '.php')) {
@@ -55,7 +55,7 @@ class Config
             return dots_walk($rest, self::$config[$root], $default);
         }
 
-        return null;
+        return $default;
     }
 
     /**
@@ -75,6 +75,6 @@ class Config
             return self::jitLocate($dots, $default);
         }
 
-        return $value;
+        return $value ?? $default;
     }
 }

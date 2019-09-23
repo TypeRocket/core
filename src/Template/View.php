@@ -128,7 +128,7 @@ class View
             return;
         }
 
-        $templateEngine = Config::locate('app.template_engine.front', TemplateEngine::class);
+        $templateEngine = Config::locate('app.template_engine.front') ?? TemplateEngine::class;
         (new $templateEngine(self::$view, self::$data))->load();
     }
 
@@ -137,8 +137,8 @@ class View
      */
     public static function loadPage()
     {
-        $templateEngine = Config::locate('app.template_engine.admin', TemplateEngine::class);
-        (new $templateEngine(self::$view, self::$data))->load();
+        $templateEngine = Config::locate('app.template_engine.admin') ??  TemplateEngine::class;
+        (new $templateEngine(self::$page, self::$data))->load();
     }
 
 }
