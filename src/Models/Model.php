@@ -1085,25 +1085,7 @@ class Model implements Formable
         // Eager Loader
         if(!empty($this->with)) {
 
-            if(is_string($this->with)) {
-                $withList = [$this->with];
-            } else {
-                $withList = $this->with ?? [];
-            }
-
-            $compiledWithList = [];
-
-            foreach ($withList as $withName => $withArg) {
-
-                if(is_callable($withArg)) {
-                    $name = $withName;
-                    $compiledWithList[$name][] = $withArg;
-                } else {
-                    list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
-                    $compiledWithList[$name][] = $with;
-                }
-
-            }
+            $compiledWithList = $this->getWithCompiled();
 
             foreach ($compiledWithList as $name => $with) {
                 $loader = new EagerLoader();
@@ -1889,6 +1871,36 @@ class Model implements Formable
         $this->with = array_filter($with);
 
         return $this;
+    }
+
+    /**
+     * Get With Compiled
+     *
+     * @return array
+     */
+    public function getWithCompiled()
+    {
+        if(is_string($this->with)) {
+            $withList = [$this->with];
+        } else {
+            $withList = $this->with ?? [];
+        }
+
+        $compiledWithList = [];
+
+        foreach ($withList as $withName => $withArg) {
+
+            if(is_callable($withArg)) {
+                $name = $withName;
+                $compiledWithList[$name][] = $withArg;
+            } else {
+                list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
+                $compiledWithList[$name][] = $with;
+            }
+
+        }
+
+        return $compiledWithList;
     }
 
     /**
