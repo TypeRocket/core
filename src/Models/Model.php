@@ -753,6 +753,23 @@ class Model implements Formable
     }
 
     /**
+     * Find by ID or IDs
+     *
+     * @param mixed ...$ids
+     * @return mixed|Model
+     */
+    public function find(...$ids)
+    {
+        $ids = is_array($ids[0]) ? $ids[0] : $ids;
+
+        if(count($ids) > 1) {
+            return $this->findAll($ids);
+        }
+
+        return $this->findById($ids[0]);
+    }
+
+    /**
      * Find all
      *
      * @param array|ArrayObject $ids
