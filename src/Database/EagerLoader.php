@@ -124,7 +124,7 @@ class EagerLoader
         }
 
         $on = $relation->getIdColumn();
-        $items = $relation->removeTake()->removeWhere()->where($on, 'IN', $ids)->with($this->with)->get();
+        $items = $relation->where($on, 'IN', $ids)->with($this->with)->get();
 
         $set = $this->compileItems($items, $on, false, $relation->getResultsClass());
 
@@ -166,7 +166,7 @@ class EagerLoader
             $ids[] = $result->getId();
         }
 
-        $items = $relation->removeTake()->removeWhere()->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
+        $items = $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
 
         $set = $this->compileItems($items, $query['id_foreign'], false, $relation->getResultsClass());
 
@@ -207,7 +207,7 @@ class EagerLoader
             $ids[] = $result->getId();
         }
 
-        $items = $relation->removeTake()->removeWhere()->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
+        $items = $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
 
         $set = $this->compileItems($items, $query['id_foreign'], true, $relation->getResultsClass() );
 
@@ -252,8 +252,6 @@ class EagerLoader
 
         $items = $relation
             ->select($query['where_column'] . ' as the_relationship_id')
-            ->removeTake()
-            ->removeWhere()
             ->where($query['where_column'], 'IN', $ids)
             ->with($this->with)
             ->get();

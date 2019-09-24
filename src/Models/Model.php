@@ -1058,7 +1058,7 @@ class Model implements Formable
         // Cast Results
         if( $result instanceof Results ) {
             if( $result->class == null ) {
-               $result->class = static::class;
+                $result->class = static::class;
             }
             $result->castResults();
         } else {
@@ -1076,14 +1076,29 @@ class Model implements Formable
 
             $compiledWithList = [];
 
-            foreach ($withList as $withArg) {
-                list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
-                $compiledWithList[$name][] = $with;
+            foreach ($withList as $withName => $withArg) {
+
+                if(is_callable($withArg)) {
+                    $name = $withName;
+                    $compiledWithList[$name][] = $withArg;
+                } else {
+                    list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
+                    $compiledWithList[$name][] = $with;
+                }
+
             }
 
             foreach ($compiledWithList as $name => $with) {
                 $loader = new EagerLoader();
-                $relation = $this->{$name}();
+                $relation = $this->{$name}()->removeTake()->removeWhere();
+
+                foreach ($with as $index => $value) {
+                    if(is_callable($value)) {
+                        $value($relation);
+                        unset($with[$index]);
+                    }
+                }
+
                 $result = $loader->load([
                     'name' => $name,
                     'relation' => $relation,
