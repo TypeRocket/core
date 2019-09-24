@@ -62,7 +62,7 @@ class WPPost extends Model
         $meta = $this->hasMany( WPPostMeta::class, 'post_id' );
 
         if( ! $withPrivate ) {
-            $meta->where('meta_key', 'NOT LIKE', '\_%');
+            $meta->notPrivate();
         }
 
         return $meta;

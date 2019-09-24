@@ -26,4 +26,9 @@ class WPPostMeta extends Model
     public function post( $modelClass = null ) {
         return $this->belongsTo( $modelClass ?? WPPost::class, 'post_id' );
     }
+
+    public function notPrivate()
+    {
+        return $this->where('meta_key', 'NOT LIKE', '\_%');
+    }
 }
