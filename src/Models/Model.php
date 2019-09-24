@@ -1891,8 +1891,14 @@ class Model implements Formable
         foreach ($withList as $withName => $withArg) {
 
             if(is_callable($withArg)) {
-                $name = $withName;
-                $compiledWithList[$name][] = $withArg;
+                list($name, $with) = array_pad(explode('.', $withName, 2), 2, null);
+
+                if($with) {
+                    $compiledWithList[$name][$with] = $withArg;
+                } else {
+                    $compiledWithList[$name][] = $withArg;
+                }
+
             } else {
                 list($name, $with) = array_pad(explode('.', $withArg, 2), 2, null);
                 $compiledWithList[$name][] = $with;
