@@ -561,17 +561,23 @@ class Query
      *
      * @param int $number
      * @param int|null $page automatically set to $_GET['paged'] or $_GET['page']
-     * @return ResultsPaged
+     * @return ResultsPaged|null
      */
     public function paginate($number = 25, $page = null)
     {
         $count_clone = clone $this;
         $page = $page ?? $_GET['paged'] ?? $_GET['page'];
 
-        $this->take($number, $page < 2 ? 0 : $page);
+        $this->take($number, $page < 2 ? 0 : $number * ( $page - 1) );
         $this->returnOne = false;
 
-        return new ResultsPaged($this->get(), $page < 2 ? 1 : $page, $count_clone->count());
+        $results = $this->get();
+
+        if($results) {
+            return new ResultsPaged($results, $page < 2 ? 1 : $page, $count_clone->count());
+        }
+
+        return null;
     }
 
     /**

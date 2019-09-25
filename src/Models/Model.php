@@ -1941,7 +1941,7 @@ class Model implements Formable
      *
      * @param int $number
      * @param null|int $page
-     * @return \TypeRocket\Database\ResultsPaged
+     * @return \TypeRocket\Database\ResultsPaged|null
      */
     public function paginate($number = 25, $page = null)
     {

@@ -47,4 +47,19 @@ class SelectTest extends TestCase
         $this->assertInstanceOf( \TypeRocket\Database\Results::class , $result );
     }
 
+    public function testSelectWithPagination()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID';
+        $query->select('post_title', 'ID');
+
+        $clone = clone $query;
+        $first = $query->paginate(25, 1);
+        $last = $clone->paginate(25, 10000);
+
+        $this->assertTrue( is_null($last) );
+        $this->assertInstanceOf( \TypeRocket\Database\Results::class , $first->getResults() );
+    }
+
 }
