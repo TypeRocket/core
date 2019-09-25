@@ -83,7 +83,7 @@ class Query
     /**
      * Get results from find methods
      *
-     * @return array|null|object
+     * @return array|null|object|Results
      */
     public function get() {
         $this->setQueryType();
@@ -557,6 +557,24 @@ class Query
     }
 
     /**
+     * Paginate
+     *
+     * @param int $number
+     * @param int|null $page automatically set to $_GET['paged'] or $_GET['page']
+     * @return ResultsPaged
+     */
+    public function paginate($number = 25, $page = null)
+    {
+        $count_clone = clone $this;
+        $page = $page ?? $_GET['paged'] ?? $_GET['page'];
+
+        $this->take($number, $page < 2 ? 0 : $page);
+        $this->returnOne = false;
+
+        return new ResultsPaged($this->get(), $page < 2 ? 1 : $page, $count_clone->count());
+    }
+
+    /**
      * Set Query Type
      *
      * @param string|null $type
@@ -591,7 +609,7 @@ class Query
      *
      * @param array|\ArrayObject $query
      *
-     * @return array|bool|false|int|null|object
+     * @return array|bool|false|int|null|Results|object
      */
     protected function runQuery( $query = [] ) {
         /** @var \wpdb $wpdb */

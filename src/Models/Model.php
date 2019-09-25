@@ -1937,6 +1937,18 @@ class Model implements Formable
     }
 
     /**
+     * Paginate
+     *
+     * @param int $number
+     * @param null|int $page
+     * @return \TypeRocket\Database\ResultsPaged
+     */
+    public function paginate($number = 25, $page = null)
+    {
+        return $this->query->paginate($number, $page);
+    }
+
+    /**
      * To Array
      *
      * Get array of model and loaded relationships
