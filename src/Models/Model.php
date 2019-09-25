@@ -1945,7 +1945,11 @@ class Model implements Formable
      */
     public function paginate($number = 25, $page = null)
     {
-        return $this->query->paginate($number, $page);
+        $obj = $this;
+
+        return $this->query->paginate($number, $page, function($results) use ($obj) {
+            return $obj->getQueryResult($results);
+        });
     }
 
     /**

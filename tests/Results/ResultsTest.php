@@ -80,4 +80,14 @@ class ResultsTest extends TestCase
         }
     }
 
+    public function testResultsPagedIterator()
+    {
+
+        $posts = (new WPPost())->findAll()->published()->paginate(25, 1);
+
+        foreach ($posts as $post) {
+            $this->assertTrue( $post instanceof WPPost );
+        }
+    }
+
 }

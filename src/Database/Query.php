@@ -561,9 +561,10 @@ class Query
      *
      * @param int $number
      * @param int|null $page automatically set to $_GET['paged'] or $_GET['page']
+     * @param callable|null $callback
      * @return ResultsPaged|null
      */
-    public function paginate($number = 25, $page = null)
+    public function paginate($number = 25, $page = null, $callback = null)
     {
         $count_clone = clone $this;
         $page = $page ?? $_GET['paged'] ?? $_GET['page'];
@@ -572,6 +573,10 @@ class Query
         $this->returnOne = false;
 
         $results = $this->get();
+
+        if(is_callable($callback, true)) {
+            $results = $callback($results);
+        }
 
         if($results) {
             return new ResultsPaged($results, $page < 2 ? 1 : $page, $count_clone->count());
