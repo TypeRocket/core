@@ -201,6 +201,18 @@ class Request
     }
 
     /**
+     * Get URI Query as Array
+     *
+     * @return mixed
+     */
+    public function getQueryAsArray()
+    {
+        parse_str(parse_url($this->uri, PHP_URL_QUERY), $request_params);
+
+        return $request_params;
+    }
+
+    /**
      * Get the $_COOKIE data
      *
      * @param null $key
