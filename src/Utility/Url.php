@@ -113,9 +113,10 @@ class Url
 
     /**
      * Build Instance
+     * @return Url
      */
     public static function build()
     {
-        new static(new Request());
+        return new static(new Request());
     }
 }
