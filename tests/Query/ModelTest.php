@@ -134,9 +134,9 @@ class ModelTest extends TestCase
                 ],
                 'AND',
                 [   // index based lookup
-                    'meta_value',
-                    'like',
-                    'Hello%',
+                    'column' => 'meta_value',
+                    'operator' =>'like',
+                    'value' => 'Hello%',
                 ]
             ])
             ->join('wp_postmeta', 'wp_posts.ID', 'wp_postmeta.post_id')->getQuery();

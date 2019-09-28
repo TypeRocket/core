@@ -1053,17 +1053,17 @@ class Query
 
         if( !empty($query) ) {
             foreach( $query as $where ) {
-                if( is_array($where) && isset($where[0]['column']) )
+                if( is_array($where) && ( isset($where[0]['column']) || isset($where[0][0]) ) )
                 {
                     $sql .= ' ( ' . $this->composeWhereSql($where) . ' ) ';
                 }
                 elseif( is_array($where) )
                 {
                     $where = [
-                        'condition' => $where['condition'] ?? $where[3] ?? null,
-                        'column' => $where['column'] ?? $where[0],
-                        'operator' => $where['operator'] ?? $where[1] ?? '=',
-                        'value' => $where['value'] ?? $where[2] ?? null,
+                        'condition' => $where['condition'] ?? null,
+                        'column' => $where['column'],
+                        'operator' => $where['operator'] ?? '=',
+                        'value' => $where['value'] ?? null,
                     ];
 
                     if( is_array($where['value']) ) {

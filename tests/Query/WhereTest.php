@@ -107,6 +107,30 @@ class WhereTest extends TestCase
         $this->assertTrue( $composed == $sql);
     }
 
+    public function testComposeWhereSqlGroupedDeepToString()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $sql = 'SELECT * FROM wp_posts WHERE (  (  wp_posts.ID = 1 OR wp_posts.ID = \'2\' )  OR (  wp_posts.ID = 1 OR wp_posts.ID = \'2\' )  ) ';
+
+        $where = [
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => 1
+            ],
+            'OR',
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => '2'
+            ]
+        ];
+
+        $composed = (string) $query->where([$where, 'OR', $where]);
+
+        $this->assertTrue( $composed == $sql);
+    }
+
     public function testRawWhere()
     {
         $query = new \TypeRocket\Database\Query();

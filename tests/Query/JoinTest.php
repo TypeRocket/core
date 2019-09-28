@@ -50,9 +50,9 @@ class JoinTest extends TestCase
                 ],
                 'AND',
                 [   // index based lookup
-                    'meta_value',
-                    'like',
-                    'Hello%',
+                    'column' => 'meta_value',
+                    'operator' => 'like',
+                    'value' => 'Hello%',
                 ]
             ])
             ->distinct()
