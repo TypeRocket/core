@@ -18,6 +18,16 @@ class SelectTest extends TestCase
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
+    public function testSelectTable()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $query->setSelectTable('wp_posts');
+        $query->idColumn = 'ID'; // uppercase
+        $compiled = (string) $query->where('ID', 1);
+        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1";
+        $this->assertTrue( $compiled == $sql);
+    }
+
     public function testSelectWithTake()
     {
         $query = new \TypeRocket\Database\Query();

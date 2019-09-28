@@ -61,6 +61,7 @@ class WPTerm extends Model
             /** @var \wpdb $wpdb */
             global $wpdb;
             $tt = $wpdb->prefix . 'term_taxonomy';
+            $query->setSelectTable(null);
             $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
             $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
             $query->where($tt.'.taxonomy', $this->taxonomy);

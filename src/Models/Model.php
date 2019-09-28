@@ -796,14 +796,14 @@ class Model implements Formable
     /**
      * Where
      *
-     * @param string $column
-     * @param string $arg1
+     * @param string|array $column
+     * @param string|null $arg1
      * @param null|string $arg2
      * @param string $condition
      *
      * @return $this
      */
-    public function where($column, $arg1, $arg2 = null, $condition = 'AND')
+    public function where($column, $arg1 = null, $arg2 = null, $condition = 'AND')
     {
         $this->query->where($column, $arg1, $arg2, $condition);
 
@@ -978,6 +978,27 @@ class Model implements Formable
         $results = $this->query->findById($id)->get();
 
         return $this->getQueryResult($results);
+    }
+
+    /**
+     * Join
+     *
+     * Only selects distinctly the current model's table columns
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $arg1 column or operator
+     * @param null|string $arg2 column if arg1 is set to operator
+     * @param string $type INNER (default), LEFT, RIGHT
+     *
+     * @return $this
+     */
+    public function join($table, $column, $arg1, $arg2 = null, $type = 'INNER')
+    {
+        $this->query->setSelectTable()->distinct();
+        $this->query->join($table, $column, $arg1, $arg2 = null, $type = 'INNER');
+
+        return $this;
     }
 
     /**

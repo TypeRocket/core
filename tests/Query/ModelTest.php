@@ -119,4 +119,28 @@ class ModelTest extends TestCase
         $this->assertTrue($passing);
         $this->assertTrue( $guards == ['id'] );
     }
+
+    public function testSelectTableJoinWhere()
+    {
+        $model = new Model();
+        $model->getQuery()->table('wp_posts');
+        $compiled = (string)
+        $model->where('ID', 1)
+            ->where([
+                [   // index name based lookup
+                    'value' => 'meta_key',
+                    'operator' => '=',
+                    'column' => 'meta_key',
+                ],
+                'AND',
+                [   // index based lookup
+                    'meta_value',
+                    'like',
+                    'Hello%',
+                ]
+            ])
+            ->join('wp_postmeta', 'wp_posts.ID', 'wp_postmeta.post_id')->getQuery();
+        $sql = "SELECT DISTINCT `wp_posts`.* FROM wp_posts INNER JOIN wp_postmeta ON wp_posts.ID = wp_postmeta.post_id WHERE ID = 1 AND (  meta_key = 'meta_key' AND meta_value like 'Hello%' ) ";
+        $this->assertTrue( $compiled == $sql);
+    }
 }

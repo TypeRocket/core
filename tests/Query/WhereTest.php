@@ -9,6 +9,104 @@ use PHPUnit\Framework\TestCase;
 class WhereTest extends TestCase
 {
 
+    public function testComposeWhereSqlSimple()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $sql = ' wp_posts.ID = 1 AND wp_posts.ID = \'2\'';
+        $composed = $query->composeWhereSql([
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => 1
+            ],
+            'AND',
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => '2'
+            ]
+        ]);
+
+        $this->assertTrue( $composed == $sql);
+    }
+
+    public function testComposeWhereSqlGrouped()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $sql = ' (  wp_posts.ID = 1 OR wp_posts.ID = \'2\' ) ';
+        $composed = $query->composeWhereSql([[
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => 1
+            ],
+            'OR',
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => '2'
+            ]
+        ]]);
+
+        $this->assertTrue( $composed == $sql);
+    }
+
+    public function testWhereUsingArray()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $sql = 'SELECT * FROM wp_posts WHERE wp_posts.ID = 1';
+
+        $where = [
+            'column' => 'wp_posts.ID',
+            'operator' => '=',
+            'value' => 1
+        ];
+
+        $composed = (string) $query->where($where);
+
+        $this->assertTrue( $composed == $sql);
+    }
+
+    public function testWhereGrouped()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $sql = 'SELECT * FROM wp_posts WHERE (  wp_posts.ID = 1 && wp_posts.ID = 1 ) ';
+
+        $where = [
+            'column' => 'wp_posts.ID',
+            'operator' => '=',
+            'value' => 1
+        ];
+
+        $composed = (string) $query->where([$where, '&&', $where]);
+
+        $this->assertTrue( $composed == $sql);
+    }
+
+    public function testComposeWhereSqlGroupedDeep()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $sql = ' (  wp_posts.ID = 1 OR wp_posts.ID = \'2\' )  OR (  wp_posts.ID = 1 OR wp_posts.ID = \'2\' ) ';
+
+        $where = [
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => 1
+            ],
+            'OR',
+            [
+                'column' => 'wp_posts.ID',
+                'operator' => '=',
+                'value' => '2'
+            ]
+        ];
+
+        $composed = $query->composeWhereSql([$where, 'OR', $where]);
+
+        $this->assertTrue( $composed == $sql);
+    }
+
     public function testRawWhere()
     {
         $query = new \TypeRocket\Database\Query();

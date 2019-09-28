@@ -69,6 +69,35 @@ class WPPost extends Model
     }
 
     /**
+     * Where Meta
+     *
+     * @param string $key
+     * @param string $operator
+     * @param string|int|null $value
+     * @return WPPost
+     */
+    public function whereSingleMeta($key, $operator, $value)
+    {
+        $table = $this->getTable();
+        $meta_table = (new WPPostMeta())->getTable();
+
+        return $this->where([
+                [
+                    'column' => "`{$meta_table}`.`{$key}`",
+                    'operator' => '=',
+                    'value' => 'meta_key',
+                ],
+                'AND',
+                [
+                    'column' => "`{$meta_table}`.`meta_value`",
+                    'operator' => $operator,
+                    'value' => $value,
+                ]
+            ])
+            ->join($meta_table, "`{$table}`.`ID`", "`{$meta_table}`.`post_id`");
+    }
+
+    /**
      * Author
      *
      * @return $this|null
