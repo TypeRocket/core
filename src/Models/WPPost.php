@@ -83,6 +83,8 @@ class WPPost extends Model
         $meta_table = (new WPPostMeta())->getTable();
 
         if(is_array($key)) {
+            $operator = strtoupper($operator);
+            $condition = in_array($operator, ['AND', 'OR', '||', '&&']) ? $operator : 'AND';
             $where = array_map(function($value) use ($meta_table) {
 
                 if(is_string($value)) {
