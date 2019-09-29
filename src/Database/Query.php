@@ -150,7 +150,7 @@ class Query
         if(is_array($column)) {
 
             if( !empty($this->query['where']) ) {
-                $this->query['where'][] = $arg1 ? strtoupper($condition) : 'AND';
+                $this->query['where'][] = $arg1 ? strtoupper($arg1) : 'AND';
             }
 
             $this->query['where'][] = $column;

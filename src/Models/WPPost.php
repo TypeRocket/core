@@ -71,17 +71,44 @@ class WPPost extends Model
     /**
      * Where Meta
      *
-     * @param string $key
+     * @param string|array $key
      * @param string $operator
-     * @param string|int|null $value
+     * @param string|int|null|bool $value
+     * @param string $condition
      * @return WPPost
      */
-    public function whereSingleMeta($key, $operator, $value)
+    public function whereMeta($key, $operator = '!=', $value = null, $condition = 'AND')
     {
         $table = $this->getTable();
         $meta_table = (new WPPostMeta())->getTable();
 
-        return $this->where([
+        if(is_array($key)) {
+            $where = array_map(function($value) use ($meta_table) {
+
+                if(is_string($value)) {
+                    return strtoupper($value);
+                }
+
+                $key = $value['column'];
+                $operator = $value['operator'];
+                $value = $value['value'];
+
+                return [
+                    [
+                        'column' => "`{$meta_table}`.`{$key}`",
+                        'operator' => '=',
+                        'value' => 'meta_key',
+                    ],
+                    'AND',
+                    [
+                        'column' => "`{$meta_table}`.`meta_value`",
+                        'operator' => $operator,
+                        'value' => $value,
+                    ]
+                ];
+            }, $key);
+        } else {
+            $where = [
                 [
                     'column' => "`{$meta_table}`.`{$key}`",
                     'operator' => '=',
@@ -93,7 +120,10 @@ class WPPost extends Model
                     'operator' => $operator,
                     'value' => $value,
                 ]
-            ])
+            ];
+        }
+
+        return $this->where($where, $condition)
             ->join($meta_table, "`{$table}`.`ID`", "`{$meta_table}`.`post_id`");
     }
 
