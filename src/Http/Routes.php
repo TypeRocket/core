@@ -20,16 +20,19 @@ class Routes
 {
     /** @var array $vars */
     public $vars = [];
+    public $config = [];
     public $request;
     public $match = [];
 
     /**
      * Routes constructor.
      * @param Request $request
+     * @param null $config
      */
-    public function __construct($request)
+    public function __construct($request, $config = null)
     {
         $this->request = $request;
+        $this->config = $config;
     }
 
     /**
@@ -175,13 +178,13 @@ class Routes
 
     /**
      * Route request through registered routes if these is a match
-     * @param null|array $config
      * @param null|string $root
      * @return Routes
      */
-    public function detectRoute($config = null, $root = null)
+    public function detectRoute()
     {
         $request = $this->request;
+        $root = $this->config['root'] ?? null;
 
         $path = $request->getPath();
         $routesRegistered = RouteCollection::getRegisteredRoutes($this->request->getFormMethod());
@@ -191,7 +194,7 @@ class Routes
         /**
          * Match routes with the site sub folder removed from the URL
          */
-        if( !empty($config) && $config['match'] == 'site_url' ) {
+        if( $root || (!empty($this->config['match']) && $this->config['match'] == 'site_url') ) {
             $site_path =  trim(parse_url($root ?? get_site_url(), PHP_URL_PATH), '/');
             $toMatchUrl = ltrim( Str::trimStart($requestPath, $site_path), '/');
         }

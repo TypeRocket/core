@@ -76,7 +76,7 @@ class Launcher
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
         }
-        (new Routes(new Request))->detectRoute($routes_config)->initHooks();
+        (new Routes(new Request, $routes_config))->detectRoute()->initHooks();
     }
 
     /**

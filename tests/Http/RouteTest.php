@@ -21,6 +21,26 @@ class RouteTest extends TestCase
         $this->assertTrue($route instanceof Route);
     }
 
+    public function testRouteDoWithArg()
+    {
+        tr_route()->get()->match('about/(.*)', ['id'])->do(function($id) {
+            return $id;
+        });
+
+        $request = new CustomRequest([
+            'path' => 'wordpress/about/1',
+            'method' => 'GET'
+        ]);
+
+        $route = (new Routes($request, [
+            'root' => 'https://example.com/wordpress/'
+        ]))->detectRoute();
+
+        $id = call_user_func_array($route->match[1]->do, $route->match[2]);
+
+        $this->assertTrue($id == '1');
+    }
+
     public function testRoutesMatch()
     {
         $request = new CustomRequest([
@@ -28,9 +48,9 @@ class RouteTest extends TestCase
             'method' => 'GET'
         ]);
 
-        $route = (new Routes($request))->detectRoute([
-            'match' => 'site_url'
-        ], 'https://example.com/wordpress/');
+        $route = (new Routes($request, [
+            'root' => 'https://example.com/wordpress/'
+        ]))->detectRoute();
 
         $matched_route = $route->match[0];
 
@@ -44,7 +64,9 @@ class RouteTest extends TestCase
             'method' => 'GET'
         ]);
 
-        $route = (new Routes($request))->detectRoute(null, 'https://example.com/wordpress/');
+        $route = (new Routes($request, [
+            'root' => 'https://example.com/wordpress/'
+        ]))->detectRoute();
 
         $matched_route = $route->match[0];
 
