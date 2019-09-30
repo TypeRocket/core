@@ -3,19 +3,38 @@
 
 namespace TypeRocket\Http;
 
-
-class RouteCollection
+/**
+ * Class RouteCollection
+ *
+ * This class is added to the Injector
+ *
+ * @package TypeRocket\Http
+ */
+abstract class RouteCollection
 {
-    public static $routes = [];
+    public $routes = [];
 
     /**
      * Add Route
      *
      * @param Route $route
+     * @return mixed
      */
-    public static function addRoute( $route )
+    public function addRoute( $route )
     {
-        self::$routes[] = $route;
+        $this->routes[] = $route;
+
+        return $this;
+    }
+
+    /**
+     * Count Routes
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->routes);
     }
 
     /**
@@ -24,13 +43,13 @@ class RouteCollection
      * @param string $method POST, PUT, DELETE, GET
      * @return array
      */
-    public static function getRegisteredRoutes($method)
+    public function getRegisteredRoutes($method)
     {
         $method = strtoupper($method);
         $routesRegistered = [];
 
         /** @var Route $route */
-        foreach (self::$routes as $route) {
+        foreach ($this->routes as $route) {
             if (in_array($method, $route->methods)) {
                 $routesRegistered[] = $route->match;
             }

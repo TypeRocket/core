@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Http;
 
+use TypeRocket\Core\Injector;
+
 class Route
 {
     public $match;
@@ -70,6 +72,8 @@ class Route
 
     /**
      * Add Get Route
+     *
+     * @return $this
      */
     public function get()
     {
@@ -79,6 +83,8 @@ class Route
 
     /**
      * Add Post Route
+     *
+     * @return $this
      */
     public function post()
     {
@@ -88,6 +94,8 @@ class Route
 
     /**
      * Add Put Route
+     *
+     * @return $this
      */
     public function put()
     {
@@ -97,6 +105,8 @@ class Route
 
     /**
      * Add Delete Route
+     *
+     * @return $this
      */
     public function delete()
     {
@@ -106,6 +116,8 @@ class Route
 
     /**
      * Add Patch Route
+     *
+     * @return $this
      */
     public function patch()
     {
@@ -115,6 +127,8 @@ class Route
 
     /**
      * Add Options Route
+     *
+     * @return $this
      */
     public function options()
     {
@@ -124,6 +138,8 @@ class Route
 
     /**
      * Add Any Route
+     *
+     * @return $this
      */
     public function any()
     {
@@ -133,9 +149,16 @@ class Route
 
     /**
      * Register the route
+     *
+     * @param null|RouteCollection $routes
+     * @return $this
      */
-    protected function registerRoute() {
-        RouteCollection::addRoute($this);
+    public function registerRoute($routes = null) {
+        /** @var RouteCollection $routes */
+        $routes = $routes instanceof RouteCollection ? $routes : Injector::resolve(RouteCollection::class);
+        $routes->addRoute($this);
+
+        return $this;
     }
 
 }

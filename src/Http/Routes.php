@@ -3,6 +3,7 @@
 namespace TypeRocket\Http;
 
 use Closure;
+use TypeRocket\Core\Injector;
 use TypeRocket\Database\Results;
 use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Models\Model;
@@ -22,17 +23,20 @@ class Routes
     public $vars = [];
     public $config = [];
     public $request;
+    public $routes;
     public $match = [];
 
     /**
      * Routes constructor.
      * @param Request $request
-     * @param null $config
+     * @param null|array $config
+     * @param RouteCollection $routes
      */
-    public function __construct($request, $config = null)
+    public function __construct($request, $config, RouteCollection $routes)
     {
         $this->request = $request;
         $this->config = $config;
+        $this->routes = $routes;
     }
 
     /**
@@ -187,7 +191,7 @@ class Routes
         $root = $this->config['root'] ?? null;
 
         $path = $request->getPath();
-        $routesRegistered = RouteCollection::getRegisteredRoutes($this->request->getFormMethod());
+        $routesRegistered = $this->routes->getRegisteredRoutes($this->request->getFormMethod());
 
         $requestPath = $toMatchUrl = ltrim($path, '/');
 

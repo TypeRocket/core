@@ -17,7 +17,6 @@ class Injector
      */
     public static function resolve($class_name) {
         if(array_key_exists($class_name, self::$list)) {
-            $singleton = !empty(self::$list[$class_name]['make_singleton']);
             $single = self::$list[$class_name]['singleton_instance'];
 
             if($single) {
@@ -26,7 +25,7 @@ class Injector
 
             $instance = call_user_func(self::$list[$class_name]['callback']);
 
-            if($singleton) {
+            if(!empty(self::$list[$class_name]['make_singleton'])) {
                 self::$list[$class_name]['singleton_instance'] = $instance;
             }
 

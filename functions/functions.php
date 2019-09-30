@@ -127,6 +127,7 @@ if ( ! function_exists('resolve_class')) {
      *
      * @return object
      * @throws \Exception
+     * @deprecated 4.0.53
      */
     function resolve_class(string $class)
     {
@@ -169,33 +170,37 @@ if ( ! function_exists('resolve_method_args')) {
      */
     function resolve_method_args($call, $map = [], $stub = true)
     {
-        if (is_array($call)) {
-            $ref = new \ReflectionMethod($call[0], $call[1]);
-        } else {
-            $ref = new \ReflectionFunction($call);
-        }
-        $params = $ref->getParameters();
-        $args   = [];
-        foreach ($params as $param) {
-            $default = null;
-            $class   = $param->getClass() ?? null;
-            if ($class) {
-                $class = resolve_class($class->getName());
-            }
-            if ($param->isDefaultValueAvailable()) {
-                $default = $param->getDefaultValue();
-            }
-            $param_name = $param->getName();
-            $loaded_obj = isset($map[$param_name]) && is_object($map[$param_name]) ? $map[$param_name] : null;
-            $args[]     = $loaded_obj ?? $class ?? $map[$param_name] ?? $default ?? null;
-        }
-        $method_map = ['args' => $args, 'method' => $ref, 'caller' => $call];
-        if ($stub && $ref instanceof \ReflectionMethod) {
-            if ( ! is_object($call[0])) {
-                $method_map['caller'][] = resolve_class($call[0]);
+        try {
+            if (is_array($call)) {
+                $ref = new \ReflectionMethod($call[0], $call[1]);
             } else {
-                $method_map['caller'][] = $call[0];
+                $ref = new \ReflectionFunction($call);
             }
+            $params = $ref->getParameters();
+            $args   = [];
+            foreach ($params as $param) {
+                $default = null;
+                $class   = $param->getClass() ?? null;
+                if ($class) {
+                    $class = (new \TypeRocket\Core\Resolver())->resolve($class->getName());
+                }
+                if ($param->isDefaultValueAvailable()) {
+                    $default = $param->getDefaultValue();
+                }
+                $param_name = $param->getName();
+                $loaded_obj = isset($map[$param_name]) && is_object($map[$param_name]) ? $map[$param_name] : null;
+                $args[]     = $loaded_obj ?? $class ?? $map[$param_name] ?? $default ?? null;
+            }
+            $method_map = ['args' => $args, 'method' => $ref, 'caller' => $call];
+            if ($stub && $ref instanceof \ReflectionMethod) {
+                if ( ! is_object($call[0])) {
+                    $method_map['caller'][] = (new \TypeRocket\Core\Resolver())->resolve($call[0]);
+                } else {
+                    $method_map['caller'][] = $call[0];
+                }
+            }
+        } catch (\Exception $e) {
+            $method_map = ['args' => null, 'method' => null, 'caller' => null];
         }
 
         return $method_map;
@@ -206,7 +211,7 @@ if ( ! function_exists('resolve_method_map')) {
     /**
      * Resolve Method Map
      *
-     * @param string $method_map
+     * @param array $method_map
      *
      * @return mixed
      */

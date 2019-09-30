@@ -1,12 +1,14 @@
 <?php
 namespace TypeRocket\Core;
 
+use TypeRocket\Http\ApplicationRoutes;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Rewrites\Builder;
 use TypeRocket\Http\Rewrites\Matrix;
 use TypeRocket\Http\Rewrites\Rest;
 use TypeRocket\Elements\Notice;
+use TypeRocket\Http\RouteCollection;
 use TypeRocket\Http\Routes;
 use TypeRocket\Http\SSL;
 use TypeRocket\Register\Registry;
@@ -22,6 +24,11 @@ class Launcher
     public function initCore()
     {
         $this->typerocket = Config::locate('typerocket');
+
+        Injector::register(RouteCollection::class, function() {
+            return new ApplicationRoutes();
+        }, true);
+
         $this->initHooks();
         $this->loadPlugins();
         $this->loadResponders();
@@ -76,7 +83,9 @@ class Launcher
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
         }
-        (new Routes(new Request, $routes_config))->detectRoute()->initHooks();
+        /** @var RouteCollection $routes */
+        $routes = Injector::resolve(RouteCollection::class);
+        (new Routes(new Request, $routes_config, $routes))->detectRoute()->initHooks();
     }
 
     /**

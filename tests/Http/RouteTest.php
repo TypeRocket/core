@@ -5,8 +5,10 @@ namespace Http;
 
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Core\Injector;
 use TypeRocket\Http\CustomRequest;
 use TypeRocket\Http\Route;
+use TypeRocket\Http\RouteCollection;
 use TypeRocket\Http\Routes;
 
 class RouteTest extends TestCase
@@ -21,24 +23,48 @@ class RouteTest extends TestCase
         $this->assertTrue($route instanceof Route);
     }
 
+    public function testRouteNewCollection()
+    {
+        tr_route()->get()->match('/app-test')->do(function() {
+            return 'Hi';
+        });
+
+        $count = Injector::resolve(RouteCollection::class)->count();
+
+        $route = new Route;
+
+        $route->registerRoute(new class extends RouteCollection {});
+
+        $count_new = Injector::resolve(RouteCollection::class)->count();
+
+        $this->assertTrue($count_new == $count);
+    }
+
     public function testRouteDoWithArg()
     {
-        tr_route()->get()->match('about/(.*)', ['id'])->do(function($id) {
-            return $id;
+        tr_route()->get()->match('about/([^\/]+)', ['id'])->do(function($id, RouteCollection $routes) {
+            return [$id, $routes->count()];
         });
 
         $request = new CustomRequest([
-            'path' => 'wordpress/about/1',
+            'path' => 'wordpress/about/1/',
             'method' => 'GET'
         ]);
 
         $route = (new Routes($request, [
             'root' => 'https://example.com/wordpress/'
-        ]))->detectRoute();
+        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
 
-        $id = call_user_func_array($route->match[1]->do, $route->match[2]);
+        $map = resolve_method_args($route->match[1]->do,  $route->match[2]);
+        $response = resolve_method_map($map);
 
-        $this->assertTrue($id == '1');
+        $this->assertTrue($response[0] == '1' && $response[1] >= 2);
+    }
+
+    public function testRoutesCount()
+    {
+        $count = Injector::resolve(RouteCollection::class)->count();
+        $this->assertTrue($count >= '2');
     }
 
     public function testRoutesMatch()
@@ -50,7 +76,7 @@ class RouteTest extends TestCase
 
         $route = (new Routes($request, [
             'root' => 'https://example.com/wordpress/'
-        ]))->detectRoute();
+        ], Injector::resolve(RouteCollection::class)))->detectRoute();
 
         $matched_route = $route->match[0];
 
@@ -66,7 +92,7 @@ class RouteTest extends TestCase
 
         $route = (new Routes($request, [
             'root' => 'https://example.com/wordpress/'
-        ]))->detectRoute();
+        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
 
         $matched_route = $route->match[0];
 
