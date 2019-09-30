@@ -97,9 +97,9 @@ class WPPost extends Model
 
                 return [
                     [
-                        'column' => "`{$meta_table}`.`{$key}`",
+                        'column' => "`{$meta_table}`.`meta_key`",
                         'operator' => '=',
-                        'value' => 'meta_key',
+                        'value' => $key,
                     ],
                     'AND',
                     [
@@ -112,9 +112,9 @@ class WPPost extends Model
         } else {
             $where = [
                 [
-                    'column' => "`{$meta_table}`.`{$key}`",
+                    'column' => "`{$meta_table}`.`meta_key`",
                     'operator' => '=',
-                    'value' => 'meta_key',
+                    'value' => $key,
                 ],
                 'AND',
                 [
