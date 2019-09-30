@@ -1,4 +1,9 @@
 <?php
+
+use TypeRocket\Core\Injector;
+use TypeRocket\Http\ApplicationRoutes;
+use TypeRocket\Http\RouteCollection;
+
 require __DIR__.'/../vendor/autoload.php';
 date_default_timezone_set('UTC');
 
@@ -30,6 +35,10 @@ if( ! file_exists($wp_load) ) {
     define('BASE_WP', $wp_load);
     define('WP_USE_THEMES', false);
     new \TypeRocket\Core\Config( __DIR__ . '/config');
+
+    Injector::register(RouteCollection::class, function() {
+        return new ApplicationRoutes();
+    }, true);
 
     // Disable email
     function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) { return true; }
