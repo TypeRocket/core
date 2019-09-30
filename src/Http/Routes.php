@@ -18,7 +18,6 @@ use WP_Query;
  */
 class Routes
 {
-    public static $routes = [];
     /** @var array $vars */
     public $vars = [];
     public $request;
@@ -94,16 +93,6 @@ class Routes
             }
         }
         return $value;
-    }
-
-    /**
-     * Add Route
-     *
-     * @param Route $route
-     */
-    public static function addRoute( $route )
-    {
-        self::$routes[] = $route;
     }
 
     /**
@@ -195,7 +184,7 @@ class Routes
         $request = $this->request;
 
         $path = $request->getPath();
-        $routesRegistered = $this->getRegisteredRoutes();
+        $routesRegistered = RouteCollection::getRegisteredRoutes($this->request->getFormMethod());
 
         $requestPath = $toMatchUrl = ltrim($path, '/');
 
@@ -266,26 +255,6 @@ class Routes
             $args[$arg] = $m[$i + 1];
         }
         return [$r, $args];
-    }
-
-    /**
-     * Get Registered Routes
-     *
-     * @return array
-     */
-    public function getRegisteredRoutes()
-    {
-        $method = strtoupper($this->request->getFormMethod());
-        $routesRegistered = [];
-
-        /** @var Route $route */
-        foreach (self::$routes as $route) {
-            if (in_array($method, $route->methods)) {
-                $routesRegistered[] = $route->match;
-            }
-        }
-
-        return $routesRegistered;
     }
 
 }

@@ -135,7 +135,7 @@ class Route
      * Register the route
      */
     protected function registerRoute() {
-        Routes::addRoute($this);
+        RouteCollection::addRoute($this);
     }
 
 }
