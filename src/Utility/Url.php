@@ -46,7 +46,20 @@ class Url
      */
     public function front($schema = null)
     {
-        $this->root = home_url('', $schema ?: (is_ssl() ? 'https' : 'http') );
+        $this->root = get_site_url(null, '', $schema ?: (is_ssl() ? 'https' : 'http') );
+
+        return $this;
+    }
+
+    /**
+     * Home as Root
+     *
+     * @param null|string $schema
+     * @return $this
+     */
+    public function home($schema = null)
+    {
+        $this->root = get_home_url(null, '', $schema ?: (is_ssl() ? 'https' : 'http') );
 
         return $this;
     }

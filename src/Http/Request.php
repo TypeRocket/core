@@ -29,7 +29,7 @@ class Request
      */
     public function __construct( $method = null, $hook = false, $rest = false, $custom = false )
     {
-        $this->method = $method ? $method : $this->getFormMethod();
+        $this->method = is_string($method) ? $method : $this->getFormMethod();
         $this->protocol = get_http_protocol();
         $this->post = !empty ($_POST) ? wp_unslash($_POST) : null;
         $this->fields = !empty ($this->post['tr']) ? $this->post['tr'] : [];

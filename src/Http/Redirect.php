@@ -44,29 +44,43 @@ class Redirect
     }
 
     /**
-     * Redirect to home url
+     * Redirect to Home URL
      *
      * @param string $path
      *
+     * @param null|string $schema
      * @return Redirect $this
      */
-    public function toHome( $path )
+    public function toHome( $path = '', $schema = null)
     {
-        $scheme = is_ssl() ? 'https' : 'http';
-        $this->url = esc_url_raw( home_url( $path ), $scheme );
+        $this->url = esc_url_raw( home_url( $path ), $schema ?: (is_ssl() ? 'https' : 'http') );
 
         return $this;
     }
 
     /**
-     * To Home
+     * To Home URL
      *
      * @param string $path
      * @return Redirect
      * @deprecated 4.0.46
      */
-    public function onHome( $path ) {
+    public function onHome( $path = '') {
         return $this->toHome($path);
+    }
+
+    /**
+     * To Site URL
+     *
+     * @param string $path
+     * @param null|string $schema
+     * @return $this
+     */
+    public function toSite($path = '', $schema = null)
+    {
+        $this->url = get_site_url(null, $path, $schema ?: (is_ssl() ? 'https' : 'http') );
+
+        return $this;
     }
 
     /**

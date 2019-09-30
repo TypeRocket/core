@@ -182,15 +182,39 @@ class Routes
 
     /**
      * Route request through registered routes if these is a match
+     * @param null|array $config
+     * @param null|Request $request
+     * @param null|string $root
+     * @return Routes
      */
-    public function detectRoute()
+    public function detectRoute($config = null, $request = null, $root = null)
     {
-        $path = self::$request->getPath();
-        $requestPath = ltrim($path, '/');
-        $requestPath = apply_filters('tr_routes_path', $requestPath );
+        $request = $request ?: self::$request;
+
+        $path = $request->getPath();
+        $uri = $request->getUri();
         $routesRegistered = $this->getRegisteredRoutes();
 
-        list($match, $args) = $this->matchRoute(rtrim($requestPath, '/'), $routesRegistered);
+        $requestPath = $toMatchUrl = ltrim($path, '/');
+
+        /**
+         * Match routes with the site sub folder removed from the URL
+         */
+        if( !empty($config) && $config['match'] == 'site_url' ) {
+            $site_path =  trim(parse_url($root ?? get_site_url(), PHP_URL_PATH), '/');
+            $toMatchUrl = ltrim( Str::trimStart($requestPath, $site_path), '/');
+        }
+
+        /**
+         * Match routes using full URL with query string
+         */
+        if( !empty($config) && $config['match'] == 'request_uri' ) {
+            $toMatchUrl = ltrim($uri, '/');
+        }
+
+        $toMatchUrl = apply_filters('tr_routes_path', $toMatchUrl );
+
+        list($match, $args) = $this->matchRoute($toMatchUrl, $routesRegistered);
 
         if($match) {
             $this->match = [$requestPath, $match[2], $args];
