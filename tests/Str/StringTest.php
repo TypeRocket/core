@@ -22,4 +22,14 @@ class StringTest extends TestCase
     {
         $this->assertTrue( Str::contains('typerocket is!', 'What is the name of the game? typerocket is!') );
     }
+
+    public function testRemoveStartsWith()
+    {
+        $this->assertTrue( Str::trimStart('root-folder/new-path', 'root-folder') == '/new-path' );
+
+        $root = trim('/root-folder/new-path/', '/');
+        $trimmed = Str::trimStart('root-folder/new-path/nested',  $root);
+
+        $this->assertTrue( ltrim( $trimmed, '/') == 'nested' );
+    }
 }

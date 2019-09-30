@@ -68,4 +68,20 @@ class Str
         return $str;
     }
 
+    /**
+     * Trim Start
+     *
+     * @param string $subject
+     * @param string $trim
+     * @return string
+     */
+    public static function trimStart($subject, $trim = '/')
+    {
+        if (substr($subject, 0, strlen($trim)) == $trim) {
+            $subject = substr($subject, strlen($trim));
+        }
+
+        return $subject;
+    }
+
 }
