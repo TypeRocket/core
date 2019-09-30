@@ -1295,6 +1295,17 @@ class Model implements Formable
         }
         $this->properties = apply_filters( 'tr_model_cast_fields', $cast, $this );
 
+        $this->afterCastProperties();
+
+        return $this;
+    }
+
+    /**
+     * Run After Cast Properties
+     *
+     * @return $this
+     */
+    protected function afterCastProperties() {
         return $this;
     }
 

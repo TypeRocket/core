@@ -5,6 +5,7 @@ use TypeRocket\Core\Config;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
+use WP_Post;
 
 class WPPost extends Model
 {
@@ -12,6 +13,7 @@ class WPPost extends Model
     protected $resource = 'posts';
     protected $postType = 'post';
     protected $searchColumn = 'post_title';
+    protected $wp_post = null;
 
     protected $builtin = [
         'post_author',
@@ -48,6 +50,31 @@ class WPPost extends Model
     {
         if($postType) { $this->postType = $postType; }
         parent::__construct();
+    }
+
+    /**
+     * After Properties Are Cast
+     *
+     * Create an Instance of WP_Post
+     *
+     * @return Model
+     */
+    protected function afterCastProperties()
+    {
+        if(!$this->wp_post) {
+            $this->wp_post = new WP_Post((object) $this->properties);
+        }
+
+        return parent::afterCastProperties();
+    }
+
+    /**
+     * Get WP_Post Instance
+     *
+     * @return WP_Post
+     */
+    public function WP_Post() {
+        return $this->wp_post;
     }
 
     /**
