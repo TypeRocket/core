@@ -53,7 +53,6 @@ class Route
     public function do($handle)
     {
         $this->do = $handle;
-        $this->registerRoute();
         return $this;
     }
 
