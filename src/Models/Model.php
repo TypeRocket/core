@@ -805,7 +805,7 @@ class Model implements Formable
      */
     public function where($column, $arg1 = null, $arg2 = null, $condition = 'AND')
     {
-        $this->query->where($column, $arg1, $arg2, $condition);
+        $this->query->where($column, $arg1, $arg2, $condition, func_num_args());
 
         return $this;
     }
@@ -821,7 +821,7 @@ class Model implements Formable
      */
     public function orWhere($column, $arg1, $arg2 = null)
     {
-        $this->query->where($column, $arg1, $arg2, 'OR');
+        $this->query->orWhere($column, $arg1, $arg2, func_num_args());
 
         return $this;
     }

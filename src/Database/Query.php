@@ -142,10 +142,10 @@ class Query
      * @param string|null $arg1
      * @param null|string $arg2
      * @param string $condition
-     *
+     * @param null|int $num
      * @return $this
      */
-    public function where($column, $arg1 = null, $arg2 = null, $condition = 'AND')
+    public function where($column, $arg1 = null, $arg2 = null, $condition = 'AND', $num = null)
     {
         if(is_array($column)) {
 
@@ -166,11 +166,13 @@ class Query
             $whereQuery['condition'] = null;
         }
 
+        $num = $num ?? func_num_args();
         $whereQuery['column'] = $column;
-        $whereQuery['operator'] = '=';
-        $whereQuery['value'] = $arg1;
 
-        if( isset($arg2) ) {
+        if( $num < 3 ) {
+            $whereQuery['operator'] = '=';
+            $whereQuery['value'] = $arg1;
+        } else {
             $whereQuery['operator'] = $arg1;
             $whereQuery['value'] = $arg2;
         }
@@ -186,12 +188,13 @@ class Query
      * @param string $column
      * @param string $arg1
      * @param null|string $arg2
-     *
+     * @param null $num
      * @return Query
      */
-    public function orWhere($column, $arg1, $arg2 = null)
+    public function orWhere($column, $arg1, $arg2 = null, $num = null)
     {
-        return $this->where($column, $arg1, $arg2, 'OR');
+        $num = $num ?? func_num_args();
+        return $this->where($column, $arg1, $arg2, 'OR', $num);
     }
 
     /**
@@ -1065,6 +1068,16 @@ class Query
                         'operator' => $where['operator'] ?? '=',
                         'value' => $where['value'] ?? null,
                     ];
+
+                    if($where['value'] === null) {
+                        if($where['operator'] == '=') {
+                            $where['operator'] = 'IS';
+                        }
+
+                        if($where['operator'] == '!=') {
+                            $where['operator'] = 'IS NOT';
+                        }
+                    }
 
                     if( is_array($where['value']) ) {
                         $where['value'] = array_map(\Closure::bind(function($value) {

@@ -221,6 +221,22 @@ class WhereTest extends TestCase
         $this->assertTrue( $last == $sql);
     }
 
+    public function testWhereNulls()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts', null, 'ID');
+        $compiled = (string) $query
+            ->where('ID', null)
+            ->where('ID', null)
+            ->where('ID', 0)
+            ->where('ID', '!=', NULL)
+            ->where('ID', '!=', "\0")
+            ->where('ID', '!=', 0)
+            ->where('ID', '=', null);
+
+        $sql = "SELECT * FROM wp_posts WHERE ID IS NULL AND ID IS NULL AND ID = 0 AND ID IS NOT NULL AND ID != '\\0' AND ID != 0 AND ID IS NULL";
+        $this->assertTrue( $compiled == $sql);
+    }
+
     public function testWhereResetAfter()
     {
         $query = new \TypeRocket\Database\Query();
