@@ -2,6 +2,7 @@
 namespace TypeRocket\Core;
 
 use TypeRocket\Http\Cookie;
+use TypeRocket\Http\Request;
 use TypeRocket\Http\Rewrites\Builder;
 use TypeRocket\Http\Rewrites\Matrix;
 use TypeRocket\Http\Rewrites\Rest;
@@ -75,7 +76,7 @@ class Launcher
             /** @noinspection PhpIncludeInspection */
             require( $routeFile );
         }
-        (new Routes())->detectRoute($routes_config)->initHooks();
+        (new Routes(new Request))->detectRoute($routes_config)->initHooks();
     }
 
     /**

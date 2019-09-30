@@ -6,25 +6,31 @@ namespace Http;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Http\CustomRequest;
+use TypeRocket\Http\Route;
 use TypeRocket\Http\Routes;
 
 class RouteTest extends TestCase
 {
 
-    public function testRoutesMatch()
+    public function testMakeGetRoute()
     {
-        tr_route()->get()->match('/app-test')->do(function() {
+        $route = tr_route()->get()->match('/app-test')->do(function() {
             return 'Hi';
         });
 
+        $this->assertTrue($route instanceof Route);
+    }
+
+    public function testRoutesMatch()
+    {
         $request = new CustomRequest([
             'path' => 'wordpress/app-test',
             'method' => 'GET'
         ]);
 
-        $route = (new Routes())->detectRoute([
+        $route = (new Routes($request))->detectRoute([
             'match' => 'site_url'
-        ], $request, 'https://example.com/wordpress/');
+        ], 'https://example.com/wordpress/');
 
         $matched_route = $route->match[0];
 
@@ -38,7 +44,7 @@ class RouteTest extends TestCase
             'method' => 'GET'
         ]);
 
-        $route = (new Routes())->detectRoute(null, $request, 'https://example.com/wordpress/');
+        $route = (new Routes($request))->detectRoute(null, 'https://example.com/wordpress/');
 
         $matched_route = $route->match[0];
 
