@@ -53,6 +53,33 @@ class MetaBox extends Registrable
     }
 
     /**
+     * Set Gutenberg Compatibility
+     *
+     * @param bool $editor
+     * @param bool $compat
+     * @return $this
+     */
+    public function gutenbergCompatibility($editor = true, $compat = true)
+    {
+        $this->args = array_merge($this->args, [
+            '__block_editor_compatible_meta_box' => $editor,
+            '__back_compat_meta_box'             => $compat,
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Disable In Gutenberg
+     *
+     * @return $this
+     */
+    public function gutenbergOff()
+    {
+        return $this->gutenbergCompatibility(false, false);
+    }
+
+    /**
      * Set the meta box label
      *
      * @param string $label
@@ -176,7 +203,8 @@ class MetaBox extends Registrable
                     $callback,
                     $isPageTemplate || $isFrontPage || $isPostsPage ? $postType : $screen,
                     $this->context,
-                    $this->priority
+                    $this->priority,
+                    $this->args
                 );
             }
         }
