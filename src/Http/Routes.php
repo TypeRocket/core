@@ -192,7 +192,6 @@ class Routes
         $request = $request ?: self::$request;
 
         $path = $request->getPath();
-        $uri = $request->getUri();
         $routesRegistered = $this->getRegisteredRoutes();
 
         $requestPath = $toMatchUrl = ltrim($path, '/');
@@ -203,13 +202,6 @@ class Routes
         if( !empty($config) && $config['match'] == 'site_url' ) {
             $site_path =  trim(parse_url($root ?? get_site_url(), PHP_URL_PATH), '/');
             $toMatchUrl = ltrim( Str::trimStart($requestPath, $site_path), '/');
-        }
-
-        /**
-         * Match routes using full URL with query string
-         */
-        if( !empty($config) && $config['match'] == 'request_uri' ) {
-            $toMatchUrl = ltrim($uri, '/');
         }
 
         $toMatchUrl = apply_filters('tr_routes_path', $toMatchUrl );
