@@ -809,7 +809,7 @@ if ( ! function_exists('tr_route')) {
      */
     function tr_route()
     {
-        return (new \TypeRocket\Http\Route())->registerRoute();
+        return (new \TypeRocket\Http\Route())->register();
     }
 }
 

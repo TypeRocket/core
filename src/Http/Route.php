@@ -152,7 +152,7 @@ class Route
      * @param null|RouteCollection $routes
      * @return $this
      */
-    public function registerRoute($routes = null) {
+    public function register($routes = null) {
         /** @var RouteCollection $routes */
         $routes = $routes instanceof RouteCollection ? $routes : Injector::resolve(RouteCollection::class);
         $routes->addRoute($this);

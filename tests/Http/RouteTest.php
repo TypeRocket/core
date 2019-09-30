@@ -33,7 +33,7 @@ class RouteTest extends TestCase
 
         $route = new Route;
 
-        $route->registerRoute(new class extends RouteCollection {});
+        $route->register(new class extends RouteCollection {});
 
         $count_new = Injector::resolve(RouteCollection::class)->count();
 
