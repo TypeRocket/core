@@ -62,7 +62,17 @@ class WPPost extends Model
     protected function afterCastProperties()
     {
         if(!$this->wp_post) {
-            $this->wp_post = new WP_Post((object) $this->properties);
+
+            $post = (object) array_map(function($value) {
+                return is_null($value) ? '' : $value;
+            }, $this->properties);
+
+            $post->ID = !empty($post->ID) ? (int) $post->ID : 0;
+            $post->post_parent = !empty($post->post_parent) ? (int) $post->post_parent : 0;
+            $post->menu_order = !empty($post->menu_order) ? (int) $post->menu_order : 0;
+            $post->filter = 'raw';
+
+            $this->wp_post = new WP_Post($post);
         }
 
         return parent::afterCastProperties();
