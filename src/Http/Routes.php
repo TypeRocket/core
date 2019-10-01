@@ -47,6 +47,10 @@ class Routes
     public function initHooks()
     {
         if( ! is_admin() ) {
+            add_action( 'init', function() {
+                $this->route();
+            } );
+
             add_filter('template_include', Closure::bind(function( $template ) {
                 $this->route();
                 return $template;
