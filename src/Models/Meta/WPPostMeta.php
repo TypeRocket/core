@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Models\Meta;
 
-use TypeRocket\Database\ResultsMeta;
+use TypeRocket\Database\ResultsPostMeta;
 use TypeRocket\Models\Model;
 use TypeRocket\Models\WPPost;
 
@@ -10,7 +10,7 @@ class WPPostMeta extends Model
 {
     protected $idColumn = 'meta_id';
     protected $resource = 'postmeta';
-    protected $resultsClass = ResultsMeta::class;
+    protected $resultsClass = ResultsPostMeta::class;
 
     protected $builtin = [
         'meta_id',

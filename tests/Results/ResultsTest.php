@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Results;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\ResultsPostMeta;
 use TypeRocket\Models\WPPost;
 
 class ResultsTest extends TestCase
@@ -87,6 +88,16 @@ class ResultsTest extends TestCase
 
         foreach ($posts as $post) {
             $this->assertTrue( $post instanceof WPPost );
+        }
+    }
+
+    public function testResultsPostMeta()
+    {
+        $posts = (new WPPost('post'))->with('meta')->get();
+
+        foreach ($posts as $post) {
+            $post->meta->initKeyStore();
+            $this->assertTrue( $post->meta instanceof ResultsPostMeta );
         }
     }
 
