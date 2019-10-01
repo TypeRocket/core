@@ -233,7 +233,7 @@ class Registry
         }
 
         if($obj->getRootSlug()) {
-            self::$aggregate_collection['post_type']['root_slug'][] = $obj->getId();
+            self::$aggregateCollection['post_type']['root_slug'][] = $obj->getId();
         }
 
         self::setPostTypeColumns($obj);
