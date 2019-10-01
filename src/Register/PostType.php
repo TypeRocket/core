@@ -21,6 +21,7 @@ class PostType extends Registrable
     protected $resource = null;
     protected $existing = null;
     protected $hooksAttached = false;
+    protected $rootSlug = false;
 
     /**
      * Make or Modify Post Type.
@@ -333,6 +334,32 @@ class PostType extends Registrable
         $this->args['rewrite'] = ['slug' => Sanitize::dash( $slug )];
 
         return $this;
+    }
+
+    /**
+     * Set Root Slug
+     *
+     * Force slug to use the base URL instead of the archive page.
+     * This will not disabled the archive page for the post type.
+     *
+     * @return $this
+     */
+    public function setRootSlugNoConflict()
+    {
+        $this->args['rewrite']['with_front'] = false;
+        $this->rootSlug = true;
+
+        return $this;
+    }
+
+    /**
+     * Get Root Slug
+     *
+     * @return bool
+     */
+    public function getRootSlug()
+    {
+        return $this->rootSlug;
     }
 
     /**

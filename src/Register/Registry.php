@@ -1,14 +1,20 @@
 <?php
 namespace TypeRocket\Register;
 
+use Closure;
 use TypeRocket\Core\Config;
 use TypeRocket\Models\Model;
 use TypeRocket\Models\WPPost;
+use WP_Post;
+use WP_Query;
+use WP_Term;
 
 class Registry
 {
 
     public static $collection = [];
+    public static $aggregateCollection = [];
+
     public static $postTypes = [
         'post' => ['post', 'posts', null, null],
         'page' => ['page', 'pages', null, null]
@@ -145,6 +151,10 @@ class Registry
                 add_action( 'admin_menu', [$obj, 'register']);
             }
         }
+
+        add_action( 'init', function() {
+            self::setAggregatePostTypeHooks();
+        });
     }
 
     /**
@@ -158,8 +168,8 @@ class Registry
 
         if($custom_templates = $obj->getTemplates()) {
             foreach(['taxonomy', 'category', 'tag'] as $template_hook) {
-                add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
-                    /** @var \WP_Term $term */
+                add_filter($template_hook . '_template', Closure::bind(function($template) use ($custom_templates) {
+                    /** @var WP_Term $term */
                     $term = get_queried_object();
 
                     if($term->taxonomy == $this->getId()) {
@@ -167,7 +177,7 @@ class Registry
                     }
 
                     return $template;
-                }, $obj), 0, 2);
+                }, $obj), 0, 1);
             }
         }
     }
@@ -195,7 +205,7 @@ class Registry
         }
 
         if( !empty($obj->getArchiveQuery()) ) {
-            add_action('pre_get_posts', \Closure::bind(function( \WP_Query $main_query ) {
+            add_action('pre_get_posts', Closure::bind(function( WP_Query $main_query ) {
                 if($main_query->is_main_query() && $main_query->is_post_type_archive($this->getId())) {
                     $query = $this->getArchiveQuery();
                     foreach ($query as $key => $value) {
@@ -208,8 +218,8 @@ class Registry
         if($custom_templates = $obj->getTemplates()) {
             foreach(['single', 'archive', 'page'] as $template_hook) {
                 if(!empty($custom_templates[$template_hook])) {
-                    add_filter($template_hook . '_template', \Closure::bind(function($template, $type) use ($custom_templates) {
-                        /** @var \WP_Post $post */
+                    add_filter($template_hook . '_template', Closure::bind(function($template, $type) use ($custom_templates) {
+                        /** @var WP_Post $post */
                         global $post;
 
                         if($post->post_type == $this->getId()) {
@@ -222,6 +232,10 @@ class Registry
             }
         }
 
+        if($obj->getRootSlug()) {
+            self::$aggregate_collection['post_type']['root_slug'][] = $obj->getId();
+        }
+
         self::setPostTypeColumns($obj);
         self::postTypeFormContent($obj);
     }
@@ -229,7 +243,7 @@ class Registry
     /**
      * Add taxonomy form hooks
      *
-     * @param \TypeRocket\Register\Taxonomy $obj
+     * @param Taxonomy $obj
      */
     public static function taxonomyFormContent( Taxonomy $obj ) {
 
@@ -272,7 +286,7 @@ class Registry
     public static function postTypeFormContent( PostType $obj) {
 
         /**
-         * @param \WP_Post $post
+         * @param WP_Post $post
          * @param string $type
          * @param PostType $obj
          */
@@ -331,7 +345,7 @@ class Registry
     /**
      * Add post type admin table columns hooks
      *
-     * @param \TypeRocket\Register\PostType $post_type
+     * @param PostType $post_type
      */
     public static function setPostTypeColumns( PostType $post_type)
     {
@@ -452,5 +466,69 @@ class Registry
                 } );
             }
         }
+    }
+
+    /**
+     * Run agrogate
+     */
+    public static function setAggregatePostTypeHooks()
+    {
+        /**
+         * Post Type Hooks
+         */
+        $root_slugs = self::$aggregateCollection['post_type']['root_slug'] ?? [];
+
+        if(!$root_slugs) {
+            return;
+        }
+
+        add_filter( 'post_type_link', function ( $post_link, $post ) use ($root_slugs) {
+            if ( in_array($post->post_type, $root_slugs) && 'publish' === $post->post_status ) {
+                $post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
+            }
+            return $post_link;
+        }, 10, 2 );
+
+        add_action( 'pre_get_posts', function ( $query ) use ($root_slugs) {
+            /** @var WP_Query $query */
+            if ( ! $query->is_main_query() ) {
+                return;
+            }
+
+            if ( ! isset( $query->query['page'] ) || 2 !== count( $query->query ) ) {
+                return;
+            }
+
+            if ( empty( $query->query['name'] ) ) {
+                return;
+            }
+
+            $query->set( 'post_type', array_merge(['post', 'page'], $root_slugs) );
+        } );
+
+        add_filter('wp_unique_post_slug', function($slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug) use ($root_slugs) {
+            global $wpdb, $wp_rewrite;
+
+            $post_types = array_merge(['post', 'page'], $root_slugs);
+            $types = "'" . implode("','", $post_types) . "'";
+
+            if ( in_array($post_type, ['symbol', 'post', 'page']) || in_array( $slug, $wp_rewrite->feeds ) || 'embed' === $slug || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
+                $suffix = 2;
+                $check_sql = "SELECT post_name FROM {$wpdb->posts} WHERE post_type IN ({$types}) AND post_name = %s AND ID != %d LIMIT 1";
+                do {
+                    $post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_ID ) );
+                    $alt_post_name   = _truncate_post_slug( $slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
+
+                    if($post_name_check) {
+                        $slug = $alt_post_name;
+                    }
+
+                    $suffix++;
+                } while ( $post_name_check );
+            }
+
+            return $slug;
+
+        }, 0, 6);
     }
 }
