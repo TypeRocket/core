@@ -453,10 +453,14 @@ class PostType extends Registrable
 
     /**
      * Force Disable Gutenberg
+     *
+     * @return PostType
      */
     public function forceDisableGutenberg()
     {
-        return $this->forceDisableGutenberg = true;
+        $this->forceDisableGutenberg = true;
+
+        return $this;
     }
 
     /**
