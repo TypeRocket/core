@@ -22,6 +22,7 @@ class PostType extends Registrable
     protected $existing = null;
     protected $hooksAttached = false;
     protected $rootSlug = false;
+    protected $forceDisableGutenberg = false;
 
     /**
      * Make or Modify Post Type.
@@ -84,6 +85,7 @@ class PostType extends Registrable
             'public'      => true,
             'supports'    => [ 'title', 'editor' ],
             'has_archive' => true,
+            'show_in_rest' => false,
             'taxonomies'  => [ ]
         ];
 
@@ -323,6 +325,46 @@ class PostType extends Registrable
     }
 
     /**
+     * Set Supports
+     *
+     * Options include: 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks',
+     * 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats'
+     *
+     * @param array $args
+     */
+    public function setSupports(array $args)
+    {
+        $this->args['supports'] = $args;
+    }
+
+    /**
+     * Add Support
+     *
+     * Options include: 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks',
+     * 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats'
+     *
+     * @param string $type support option
+     * @return $this
+     */
+    public function addSupport($type)
+    {
+        $this->args['supports'][] = $type;
+        $this->args['supports'] = array_unique($this->args['supports']);
+
+        return $this;
+    }
+
+    /**
+     * Get Supports
+     *
+     * @return array|bool
+     */
+    public function getSupports()
+    {
+        return $this->args['supports'];
+    }
+
+    /**
      * Set the rewrite slug for the post type
      *
      * @param string $slug
@@ -396,6 +438,35 @@ class PostType extends Registrable
         $this->args['has_archive'] = false;
 
         return $this;
+    }
+
+    /**
+     * Enable Gutenberg
+     *
+     * @return PostType
+     */
+    public function enableGutenberg()
+    {
+        $this->forceDisableGutenberg = false;
+        return $this->addSupport('editor')->setArgument('show_in_rest', true);
+    }
+
+    /**
+     * Force Disable Gutenberg
+     */
+    public function forceDisableGutenberg()
+    {
+        return $this->forceDisableGutenberg = true;
+    }
+
+    /**
+     * Get Force Disable Gutenberg
+     *
+     * @return bool
+     */
+    public function getForgeDisableGutenberg()
+    {
+        return $this->forceDisableGutenberg;
     }
 
     /**

@@ -236,6 +236,10 @@ class Registry
             self::$aggregateCollection['post_type']['root_slug'][] = $obj->getId();
         }
 
+        if($obj->getForgeDisableGutenberg()) {
+            self::$aggregateCollection['post_type']['use_gutenberg'][] = $obj->getId();
+        }
+
         self::setPostTypeColumns($obj);
         self::postTypeFormContent($obj);
     }
@@ -476,59 +480,66 @@ class Registry
         /**
          * Post Type Hooks
          */
-        $root_slugs = self::$aggregateCollection['post_type']['root_slug'] ?? [];
+        $use_gutenberg = self::$aggregateCollection['post_type']['use_gutenberg'] ?? null;
 
-        if(!$root_slugs) {
-            return;
+        if($use_gutenberg) {
+            add_filter('use_block_editor_for_post_type', function ($current_status, $post_type) use ($use_gutenberg) {
+                if (in_array($post_type, $use_gutenberg)) return false;
+                return $current_status;
+            }, 10, 2);
         }
 
-        add_filter( 'post_type_link', function ( $post_link, $post ) use ($root_slugs) {
-            if ( in_array($post->post_type, $root_slugs) && 'publish' === $post->post_status ) {
-                $post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
-            }
-            return $post_link;
-        }, 10, 2 );
+        $root_slugs = self::$aggregateCollection['post_type']['root_slug'] ?? null;
 
-        add_action( 'pre_get_posts', function ( $query ) use ($root_slugs) {
-            /** @var WP_Query $query */
-            if ( ! $query->is_main_query() ) {
-                return;
-            }
+        if($root_slugs) {
+            add_filter( 'post_type_link', function ( $post_link, $post ) use ($root_slugs) {
+                if ( in_array($post->post_type, $root_slugs) && 'publish' === $post->post_status ) {
+                    $post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
+                }
+                return $post_link;
+            }, 10, 2 );
 
-            if ( ! isset( $query->query['page'] ) || 2 !== count( $query->query ) ) {
-                return;
-            }
+            add_action( 'pre_get_posts', function ( $query ) use ($root_slugs) {
+                /** @var WP_Query $query */
+                if ( ! $query->is_main_query() ) {
+                    return;
+                }
 
-            if ( empty( $query->query['name'] ) ) {
-                return;
-            }
+                if ( ! isset( $query->query['page'] ) || 2 !== count( $query->query ) ) {
+                    return;
+                }
 
-            $query->set( 'post_type', array_merge(['post', 'page'], $root_slugs) );
-        } );
+                if ( empty( $query->query['name'] ) ) {
+                    return;
+                }
 
-        add_filter('wp_unique_post_slug', function($slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug) use ($root_slugs) {
-            global $wpdb, $wp_rewrite;
+                $query->set( 'post_type', array_merge(['post', 'page'], $root_slugs) );
+            } );
 
-            $post_types = array_merge(['post', 'page'], $root_slugs);
-            $types = "'" . implode("','", $post_types) . "'";
+            add_filter('wp_unique_post_slug', function($slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug) use ($root_slugs) {
+                global $wpdb, $wp_rewrite;
 
-            if ( in_array($post_type, ['symbol', 'post', 'page']) || in_array( $slug, $wp_rewrite->feeds ) || 'embed' === $slug || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
-                $suffix = 2;
-                $check_sql = "SELECT post_name FROM {$wpdb->posts} WHERE post_type IN ({$types}) AND post_name = %s AND ID != %d LIMIT 1";
-                do {
-                    $post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_ID ) );
-                    $alt_post_name   = _truncate_post_slug( $slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
+                $post_types = array_merge(['post', 'page'], $root_slugs);
+                $types = "'" . implode("','", $post_types) . "'";
 
-                    if($post_name_check) {
-                        $slug = $alt_post_name;
-                    }
+                if ( in_array($post_type, ['symbol', 'post', 'page']) || in_array( $slug, $wp_rewrite->feeds ) || 'embed' === $slug || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
+                    $suffix = 2;
+                    $check_sql = "SELECT post_name FROM {$wpdb->posts} WHERE post_type IN ({$types}) AND post_name = %s AND ID != %d LIMIT 1";
+                    do {
+                        $post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_ID ) );
+                        $alt_post_name   = _truncate_post_slug( $slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
 
-                    $suffix++;
-                } while ( $post_name_check );
-            }
+                        if($post_name_check) {
+                            $slug = $alt_post_name;
+                        }
 
-            return $slug;
+                        $suffix++;
+                    } while ( $post_name_check );
+                }
 
-        }, 0, 6);
+                return $slug;
+
+            }, 0, 6);
+        }
     }
 }
