@@ -337,12 +337,22 @@ class PostType extends Registrable
     }
 
     /**
+     * Get the rewrite slug
+     *
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->args['rewrite']['slug'];
+    }
+
+    /**
      * Set Root Slug
      *
      * Force slug to use the base URL instead of the archive page.
      * This will not disabled the archive page for the post type.
      *
-     * @return $this
+     * @return PostType $this
      */
     public function setRootSlugNoConflict()
     {
@@ -363,24 +373,27 @@ class PostType extends Registrable
     }
 
     /**
-     * Get the rewrite slug
-     *
-     * @return mixed
-     */
-    public function getSlug()
-    {
-        return $this->args['rewrite']['slug'];
-    }
-
-    /**
      * @param bool|string $rest_base the REST API base path
-     *
+     * @param null|string $controller the REST controller default is \WP_REST_Posts_Controller::class
      * @return PostType $this
      */
-    public function setRest( $rest_base = false )
+    public function setRest( $rest_base = false, $controller = null )
     {
         $this->args['rest_base'] = $rest_base ? $rest_base : $this->id;
         $this->args['show_in_rest'] = true;
+        $controller ? $this->args['rest_controller_class'] = $controller : null;
+
+        return $this;
+    }
+
+    /**
+     * Disable the Archive Page
+     *
+     * @return PostType $this
+     */
+    public function disableArchivePage()
+    {
+        $this->args['has_archive'] = false;
 
         return $this;
     }
@@ -541,6 +554,19 @@ class PostType extends Registrable
         $this->args['show_ui'] = true;
 
         return $this;
+    }
+
+    /**
+     * Set As Root
+     *
+     * This will make the post type use the root URL for
+     * single posts and disable the archive page.
+     *
+     * @return PostType
+     */
+    public function setRootOnly()
+    {
+        return $this->setRootSlugNoConflict()->disableArchivePage();
     }
 
     /**
