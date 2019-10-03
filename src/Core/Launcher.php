@@ -84,7 +84,7 @@ class Launcher
         }
         /** @var RouteCollection $routes */
         $routes = Injector::resolve(RouteCollection::class);
-        (new Routes(new Request, $this->typerocket['routes'], $routes))->detectRoute()->initHooks();
+        (new Routes(new Request, $this->typerocket['routes'] ?? ['match' => 'site_url'], $routes))->detectRoute()->initHooks();
     }
 
     /**
