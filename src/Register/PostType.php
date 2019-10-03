@@ -331,10 +331,14 @@ class PostType extends Registrable
      * 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats'
      *
      * @param array $args
+     *
+     * @return PostType
      */
     public function setSupports(array $args)
     {
         $this->args['supports'] = $args;
+
+        return $this;
     }
 
     /**
