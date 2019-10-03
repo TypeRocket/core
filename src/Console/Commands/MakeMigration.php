@@ -18,6 +18,7 @@ class MakeMigration extends Command
     protected function config()
     {
         $this->addArgument('name', self::REQUIRED, 'The migration name.');
+        $this->addArgument('index', self::OPTIONAL, 'The the array index of the migration folder to use.');
     }
 
     /**
@@ -30,7 +31,9 @@ class MakeMigration extends Command
     protected function exec()
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
+        $index = $this->getArgument('name') ?: 0;
         $root = Config::locate('paths.migrate.migrations');
+        $root = is_array($root) ? $root[$index] : $root;
 
         // Make directories if needed
         if( ! file_exists($root) ) {
