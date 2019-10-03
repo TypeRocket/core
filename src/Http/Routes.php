@@ -3,7 +3,6 @@
 namespace TypeRocket\Http;
 
 use Closure;
-use TypeRocket\Core\Injector;
 use TypeRocket\Database\Results;
 use TypeRocket\Http\Responders\ResourceResponder;
 use TypeRocket\Models\Model;
