@@ -124,7 +124,13 @@ class EagerLoader
         }
 
         $on = $relation->getIdColumn();
-        $items = $relation->where($on, 'IN', $ids)->with($this->with)->get();
+        $relation->where($on, 'IN', $ids)->with($this->with);
+
+        if(is_callable($query['scope'])) {
+            $query['scope']($relation);
+        }
+
+        $items = $relation->get();
 
         $set = $this->compileItems($items, $on, false, $relation->getResultsClass());
 
@@ -166,7 +172,13 @@ class EagerLoader
             $ids[] = $result->getId();
         }
 
-        $items = $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
+        $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with);
+
+        if(is_callable($query['scope'])) {
+            $query['scope']($relation);
+        }
+
+        $items = $relation->get();
 
         $set = $this->compileItems($items, $query['id_foreign'], false, $relation->getResultsClass());
 
@@ -207,7 +219,13 @@ class EagerLoader
             $ids[] = $result->getId();
         }
 
-        $items = $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with)->get();
+        $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with);
+
+        if(is_callable($query['scope'])) {
+            $query['scope']($relation);
+        }
+
+        $items = $relation->get();
 
         $set = $this->compileItems($items, $query['id_foreign'], true, $relation->getResultsClass() );
 
@@ -250,11 +268,16 @@ class EagerLoader
             $ids[] = $result->getId();
         }
 
-        $items = $relation
+        $relation
             ->select($query['where_column'] . ' as the_relationship_id')
             ->where($query['where_column'], 'IN', $ids)
-            ->with($this->with)
-            ->get();
+            ->with($this->with);
+
+        if(is_callable($query['scope'])) {
+            $query['scope']($relation);
+        }
+
+        $items = $relation->get();
 
         $set = $this->compileItems($items, 'the_relationship_id', true, $relation->getResultsClass());
 
