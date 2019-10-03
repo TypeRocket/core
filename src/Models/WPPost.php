@@ -98,6 +98,29 @@ class WPPost extends Model
     }
 
     /**
+     * Belongs To Taxonomy
+     *
+     * @param string $modelClass
+     * @param string $taxonomy_id the registered taxonomy id: category, post_tag, etc.
+     * @param null|callable $scope
+     *
+     * @return Model|null
+     */
+    public function belongsToTaxonomy($modelClass, $taxonomy_id, $scope = null)
+    {
+        global $wpdb;
+
+        return $this->belongsToMany($modelClass, $wpdb->term_relationships, 'object_id', 'term_taxonomy_id', function($rel) use ($scope, $taxonomy_id) {
+            global $wpdb;
+            $rel->where($wpdb->term_taxonomy .'.taxonomy', $taxonomy_id);
+
+            if(is_callable($scope)) {
+                $scope($rel);
+            }
+        });
+    }
+
+    /**
      * Where Meta
      *
      * @param string|array $key
