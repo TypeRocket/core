@@ -48,6 +48,9 @@ class Model implements Formable
     protected $junction = null;
     protected $with = null;
 
+    /** @var array use this for your own custom caching at the model level */
+    protected $dataCache = [];
+
     /**
      * Construct Model based on resource
      */
