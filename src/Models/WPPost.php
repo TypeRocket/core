@@ -82,19 +82,29 @@ class WPPost extends Model
     /**
      * Posts Meta Fields
      *
-     * @param bool $withPrivate
+     * @param bool $withoutPrivate
      *
      * @return null|\TypeRocket\Models\Model
      */
-    public function meta( $withPrivate = false )
+    public function meta( $withoutPrivate = false )
     {
-        $meta = $this->hasMany( WPPostMeta::class, 'post_id' );
-
-        if( ! $withPrivate ) {
-            $meta->notPrivate();
-        }
+        $meta = $this->hasMany( WPPostMeta::class, 'post_id', function($rel) use ($withoutPrivate) {
+            if( $withoutPrivate ) {
+                $rel->notPrivate();
+            }
+        } );
 
         return $meta;
+    }
+
+    /**
+     * Posts Meta Fields Without Private
+     *
+     * @return null|\TypeRocket\Models\Model
+     */
+    public function metaWithoutPrivate()
+    {
+        return $this->meta( true );
     }
 
     /**
