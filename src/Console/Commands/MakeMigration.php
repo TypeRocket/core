@@ -31,7 +31,7 @@ class MakeMigration extends Command
     protected function exec()
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
-        $index = $this->getArgument('name') ?: 0;
+        $index = $this->getArgument('index') ?: 0;
         $root = Config::locate('paths.migrate.migrations');
         $root = is_array($root) ? $root[$index] : $root;
 
