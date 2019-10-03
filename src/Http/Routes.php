@@ -47,6 +47,7 @@ class Routes
     public function initHooks()
     {
         if( ! is_admin() ) {
+            // template_include is needed to keep admin bar
             add_filter('template_include', Closure::bind(function( $template ) {
                 $this->route();
                 return $template;
@@ -62,6 +63,8 @@ class Routes
                     $q->query_vars['cache_results'] = false;
                     $q->query_vars['update_post_meta_cache'] = false;
                     $q->query_vars['update_post_term_cache'] = false;
+
+                    add_filter('body_class', function($classes) { array_push($classes, 'custom-route'); return $classes; });
                     return false;
                 }
                 return $sql;
@@ -87,7 +90,7 @@ class Routes
         $match = $this->match;
         $add = [];
         if( !empty($match)) {
-            $key = '^' . $this->match[0] . '/?$';
+            $key = '^' . rtrim($this->match[0], '/') . '/?$';
             if( !empty($value[$key]) ) {
                 unset($value[$key]);
             }
