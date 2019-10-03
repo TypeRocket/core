@@ -7,6 +7,7 @@ use ReflectionException;
 use TypeRocket\Database\EagerLoader;
 use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
+use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\Fields;
@@ -1099,6 +1100,10 @@ class Model implements Formable
                 $result->class = static::class;
             }
             $result->castResults();
+
+            if($result instanceof ResultsMeta) {
+                $result->initKeyStore();
+            }
         } else {
             $result = $this->castProperties( (array) $result );
         }
