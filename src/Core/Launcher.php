@@ -77,7 +77,6 @@ class Launcher
     {
         do_action( 'tr_load_routes' );
         $base_dir = Config::locate('paths.base');
-        $routes_config = Config::locate('app.routes');
         $routeFile = $base_dir . '/routes.php';
         if( file_exists($routeFile) ) {
             /** @noinspection PhpIncludeInspection */
@@ -85,7 +84,7 @@ class Launcher
         }
         /** @var RouteCollection $routes */
         $routes = Injector::resolve(RouteCollection::class);
-        (new Routes(new Request, $routes_config, $routes))->detectRoute()->initHooks();
+        (new Routes(new Request, $this->typerocket['routes'], $routes))->detectRoute()->initHooks();
     }
 
     /**
