@@ -22,7 +22,23 @@ class WPTermMeta extends Model
         'meta_id'
     ];
 
+    /**
+     * Term
+     *
+     * @param $modelClass
+     * @return WPTermMeta|null
+     */
     public function term( $modelClass ) {
         return $this->belongsTo( $modelClass, 'term_id' );
+    }
+
+    /**
+     * Not Private
+     *
+     * @return WPTermMeta
+     */
+    public function notPrivate()
+    {
+        return $this->where('meta_key', 'NOT LIKE', '\_%');
     }
 }

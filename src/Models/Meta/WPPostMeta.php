@@ -23,10 +23,21 @@ class WPPostMeta extends Model
         'meta_id'
     ];
 
+    /**
+     * Post
+     *
+     * @param null $modelClass
+     * @return WPPostMeta|null
+     */
     public function post( $modelClass = null ) {
         return $this->belongsTo( $modelClass ?? WPPost::class, 'post_id' );
     }
 
+    /**
+     * Not Private
+     *
+     * @return WPPostMeta
+     */
     public function notPrivate()
     {
         return $this->where('meta_key', 'NOT LIKE', '\_%');

@@ -4,9 +4,12 @@ namespace TypeRocket\Models;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPTermMeta;
+use TypeRocket\Models\Traits\MetaData;
 
 class WPTerm extends Model
 {
+    use MetaData;
+
     protected $idColumn = 'term_id';
     protected $resource = 'terms';
     protected $taxonomy = null;
@@ -31,6 +34,29 @@ class WPTerm extends Model
     {
         if($taxonomy) { $this->taxonomy = $taxonomy; }
         parent::__construct();
+    }
+
+    /**
+     * Get Meta Model Class
+     *
+     * @return string
+     */
+    protected function getMetaModelClass()
+    {
+        return WPTermMeta::class;
+    }
+
+    /**
+     * Get ID Columns
+     *
+     * @return array
+     */
+    protected function getMetaIdColumns()
+    {
+        return [
+            'local' => 'term_id',
+            'foreign' => 'term_id',
+        ];
     }
 
     /**
@@ -68,16 +94,6 @@ class WPTerm extends Model
         }
 
         return $query;
-    }
-
-    /**
-     * Get Term Meta
-     *
-     * @return null|\TypeRocket\Models\Model
-     */
-    public function meta()
-    {
-        return $this->hasMany( WPTermMeta::class, 'term_id' );
     }
 
     /**

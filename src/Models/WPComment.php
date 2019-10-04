@@ -4,9 +4,11 @@ namespace TypeRocket\Models;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPCommentMeta;
+use TypeRocket\Models\Traits\MetaData;
 
 class WPComment extends Model
 {
+    use MetaData;
 
     protected $idColumn = 'comment_ID';
     protected $resource = 'comments';
@@ -34,13 +36,26 @@ class WPComment extends Model
     ];
 
     /**
-     * Get Comment Meta
+     * Get Meta Model Class
      *
-     * @return null|Model
+     * @return string
      */
-    public function meta()
+    protected function getMetaModelClass()
     {
-        return $this->hasMany( WPCommentMeta::class, 'comment_id' );
+        return WPCommentMeta::class;
+    }
+
+    /**
+     * Get ID Columns
+     *
+     * @return array
+     */
+    protected function getMetaIdColumns()
+    {
+        return [
+            'local' => 'comment_ID',
+            'foreign' => 'comment_id',
+        ];
     }
 
     /**

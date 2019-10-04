@@ -22,7 +22,23 @@ class WPCommentMeta extends Model
         'meta_id'
     ];
 
+    /**
+     * Comment
+     *
+     * @param $modelClass
+     * @return WPCommentMeta|null
+     */
     public function comment( $modelClass ) {
         return $this->belongsTo( $modelClass, 'comment_id' );
+    }
+
+    /**
+     * Not Private
+     *
+     * @return WPCommentMeta
+     */
+    public function notPrivate()
+    {
+        return $this->where('meta_key', 'NOT LIKE', '\_%');
     }
 }

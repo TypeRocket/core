@@ -22,7 +22,23 @@ class WPUserMeta extends Model
         'meta_id'
     ];
 
+    /**
+     * User
+     *
+     * @param $modelClass
+     * @return WPUserMeta|null
+     */
     public function user( $modelClass ) {
         return $this->belongsTo( $modelClass, 'user_id' );
+    }
+
+    /**
+     * Not Private
+     *
+     * @return WPUserMeta
+     */
+    public function notPrivate()
+    {
+        return $this->where('meta_key', 'NOT LIKE', '\_%');
     }
 }

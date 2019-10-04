@@ -6,10 +6,13 @@ use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Exceptions\ModelNotFoundException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPUserMeta;
+use TypeRocket\Models\Traits\MetaData;
 use WP_Error;
 
 class WPUser extends Model
 {
+    use MetaData;
+
     protected $idColumn = 'ID';
     protected $resource = 'users';
 
@@ -31,13 +34,26 @@ class WPUser extends Model
     ];
 
     /**
-     * Get User Meta
+     * Get Meta Model Class
      *
-     * @return null|Model
+     * @return string
      */
-    public function meta()
+    protected function getMetaModelClass()
     {
-        return $this->hasMany( WPUserMeta::class, 'user_id' );
+        return WPUserMeta::class;
+    }
+
+    /**
+     * Get ID Columns
+     *
+     * @return array
+     */
+    protected function getMetaIdColumns()
+    {
+        return [
+            'local' => 'ID',
+            'foreign' => 'user_id',
+        ];
     }
 
     /**

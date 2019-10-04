@@ -5,10 +5,13 @@ use TypeRocket\Core\Config;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
+use TypeRocket\Models\Traits\MetaData;
 use WP_Post;
 
 class WPPost extends Model
 {
+    use MetaData;
+
     protected $idColumn = 'ID';
     protected $resource = 'posts';
     protected $postType = 'post';
@@ -50,6 +53,29 @@ class WPPost extends Model
     {
         if($postType) { $this->postType = $postType; }
         parent::__construct();
+    }
+
+    /**
+     * Get Meta Model Class
+     *
+     * @return string
+     */
+    protected function getMetaModelClass()
+    {
+        return WPPostMeta::class;
+    }
+
+    /**
+     * Get ID Columns
+     *
+     * @return array
+     */
+    protected function getMetaIdColumns()
+    {
+        return [
+            'local' => 'ID',
+            'foreign' => 'post_id',
+        ];
     }
 
     /**
@@ -128,67 +154,6 @@ class WPPost extends Model
                 $scope($rel);
             }
         });
-    }
-
-    /**
-     * Where Meta
-     *
-     * @param string|array $key
-     * @param string $operator
-     * @param string|int|null|bool $value
-     * @param string $condition
-     * @return WPPost
-     */
-    public function whereMeta($key, $operator = '!=', $value = null, $condition = 'AND')
-    {
-        $table = $this->getTable();
-        $meta_table = (new WPPostMeta())->getTable();
-
-        if(is_array($key)) {
-            $operator = strtoupper($operator);
-            $condition = in_array($operator, ['AND', 'OR', '||', '&&']) ? $operator : 'AND';
-            $where = array_map(function($value) use ($meta_table) {
-
-                if(is_string($value)) {
-                    return strtoupper($value);
-                }
-
-                $key = $value['column'];
-                $operator = $value['operator'];
-                $value = $value['value'];
-
-                return [
-                    [
-                        'column' => "`{$meta_table}`.`meta_key`",
-                        'operator' => '=',
-                        'value' => $key,
-                    ],
-                    'AND',
-                    [
-                        'column' => "`{$meta_table}`.`meta_value`",
-                        'operator' => $operator,
-                        'value' => $value,
-                    ]
-                ];
-            }, $key);
-        } else {
-            $where = [
-                [
-                    'column' => "`{$meta_table}`.`meta_key`",
-                    'operator' => '=',
-                    'value' => $key,
-                ],
-                'AND',
-                [
-                    'column' => "`{$meta_table}`.`meta_value`",
-                    'operator' => $operator,
-                    'value' => $value,
-                ]
-            ];
-        }
-
-        return $this->where($where, $condition)
-            ->join($meta_table, "`{$table}`.`ID`", "`{$meta_table}`.`post_id`");
     }
 
     /**

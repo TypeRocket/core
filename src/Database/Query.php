@@ -817,7 +817,7 @@ class Query
 
             if($selectTable) {
                 $query['select'] = array_map(function($value) use ($selectTable) {
-                   return "`{$selectTable}`.{$value}";
+                   return mb_strpos( $value, '.' ) !== false ? $value : "`{$selectTable}`.{$value}";
                 }, $query['select']);
             }
 

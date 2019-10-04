@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Query;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\Results;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\WPTermTaxonomy;
 
@@ -17,5 +18,15 @@ class WPTermTest extends TestCase
             $taxonomies = $term->termTaxonomies()->first();
             $this->assertTrue( $taxonomies instanceof WPTermTaxonomy);
         }
+    }
+
+    public function testPostTypeSelectWhereMeta()
+    {
+        $term = new WPTerm('category');
+        $compiled = (string) $term->whereMeta('meta_key', 'like', 'Hello%')->getQuery();
+        $sql = 'SELECT DISTINCT wp_terms.*,wp_term_taxonomy.taxonomy,wp_term_taxonomy.term_taxonomy_id,wp_term_taxonomy.description FROM wp_terms INNER JOIN wp_term_taxonomy ON wp_term_taxonomy.term_id = wp_terms.term_id INNER JOIN wp_termmeta ON `wp_terms`.`term_id` = `wp_termmeta`.`term_id` WHERE wp_term_taxonomy.taxonomy = \'category\' AND (  `wp_termmeta`.`meta_key` = \'meta_key\' AND `wp_termmeta`.`meta_value` like \'Hello%\' ) ';
+        $terms = $term->get();
+        $this->assertTrue( $terms instanceof Results);
+        $this->assertTrue( $sql === $compiled);
     }
 }
