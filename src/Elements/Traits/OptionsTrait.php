@@ -26,7 +26,7 @@ trait OptionsTrait
     /**
      * Set all options
      *
-     * @param string $options
+     * @param array $options
      * @param string $style options include standard, flat, flip
      *
      * @return $this
