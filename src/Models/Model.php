@@ -804,12 +804,13 @@ class Model implements Formable
      * @param string|null $arg1
      * @param null|string $arg2
      * @param string $condition
+     * @param null|int $num
      *
      * @return $this
      */
-    public function where($column, $arg1 = null, $arg2 = null, $condition = 'AND')
+    public function where($column, $arg1 = null, $arg2 = null, $condition = 'AND', $num = null)
     {
-        $this->query->where($column, $arg1, $arg2, $condition, func_num_args());
+        $this->query->where($column, $arg1, $arg2, $condition, $num ?? func_num_args());
 
         return $this;
     }
@@ -819,13 +820,14 @@ class Model implements Formable
      *
      * @param string $column
      * @param string $arg1
-     * @param null|string $arg2
+     * @param null|string $arg2\
+     * @param null|int $num
      *
      * @return Model $this
      */
-    public function orWhere($column, $arg1, $arg2 = null)
+    public function orWhere($column, $arg1, $arg2 = null, $num = null)
     {
-        $this->query->orWhere($column, $arg1, $arg2, func_num_args());
+        $this->query->orWhere($column, $arg1, $arg2, $num ?? func_num_args());
 
         return $this;
     }
@@ -1055,12 +1057,13 @@ class Model implements Formable
      * @param string $arg1
      * @param null|string $arg2
      * @param string $condition
+     * @param null|int $num
      *
      * @return Model
      */
-    public function findFirstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND')
+    public function findFirstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND', $num = null)
     {
-        if($item = $this->where($column, $arg1, $arg2, $condition)->first()) {
+        if($item = $this->where($column, $arg1, $arg2, $condition, $num ?? func_num_args())->first()) {
             return $item;
         };
 
@@ -1074,12 +1077,13 @@ class Model implements Formable
      * @param string $arg1
      * @param null $arg2
      * @param string $condition
+     * @param null|int $num
      *
      * @return object
      * @internal param $id
      */
-    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
-        $results = $this->query->findFirstWhereOrDie( $column, $arg1, $arg2, $condition);
+    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND', $num = null) {
+        $results = $this->query->findFirstWhereOrDie( $column, $arg1, $arg2, $condition, $num ?? func_num_args());
         return $this->fetchResult( $results );
     }
 

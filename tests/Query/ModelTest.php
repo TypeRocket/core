@@ -143,4 +143,33 @@ class ModelTest extends TestCase
         $sql = "SELECT DISTINCT `wp_posts`.* FROM wp_posts INNER JOIN wp_postmeta ON wp_posts.ID = wp_postmeta.post_id WHERE ID = 1 AND (  meta_key = 'meta_key' AND meta_value like 'Hello%' ) ";
         $this->assertTrue( $compiled == $sql);
     }
+
+    public function testFindOrNew()
+    {
+        $model = new Model();
+        $model->getQuery()->table('wp_posts')->run = false;
+        $model->findFirstWhereOrNew('ID', 1); // returns a new item for test only
+        $compiled = $model->getQuery()->lastCompiledSQL;
+
+        $sql = "SELECT * FROM wp_posts WHERE ID = 1 LIMIT 1 OFFSET 0";
+        $this->assertTrue( $compiled == $sql);
+    }
+
+    public function testFindOrNewCheckForNewModel()
+    {
+        $model = new Model();
+        $model->getQuery()->table('wp_posts')->run = false;
+        $new = $model->findFirstWhereOrNew('ID', 1); // returns a new item for test only
+
+        $sql = "SELECT * FROM wp_posts WHERE ID = 1 LIMIT 1 OFFSET 0";
+        $this->assertTrue( empty($new->post_title) );
+    }
+
+    public function testFindOrDie()
+    {
+        $model = new Model();
+        $model->getQuery()->table('wp_posts');
+        $found = $model->findFirstWhereOrDie('ID', 1); // returns a new item for test only
+        $this->assertTrue( !empty($found->post_title) );
+    }
 }

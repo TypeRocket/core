@@ -404,12 +404,13 @@ class Query
      * @param string $arg1
      * @param null $arg2
      * @param string $condition
+     * @param null|int $num
      *
      * @return object
      * @internal param $id
      */
-    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND') {
-        if( ! $data = $this->where( $column, $arg1, $arg2, $condition)->first() ) {
+    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND', $num = null) {
+        if( ! $data = $this->where( $column, $arg1, $arg2, $condition, $num ?? func_num_args())->first() ) {
             wp_die('Something went wrong');
         }
 
