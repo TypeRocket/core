@@ -393,22 +393,6 @@ class PostType extends Registrable
     }
 
     /**
-     * Set Root Slug
-     *
-     * Force slug to use the base URL instead of the archive page.
-     * This will not disabled the archive page for the post type.
-     *
-     * @return PostType $this
-     */
-    public function setRootSlugNoConflict()
-    {
-        $this->args['rewrite']['with_front'] = false;
-        $this->rootSlug = true;
-
-        return $this;
-    }
-
-    /**
      * Get Root Slug
      *
      * @return bool
@@ -645,7 +629,13 @@ class PostType extends Registrable
      */
     public function setRootOnly()
     {
-        return $this->setRootSlugNoConflict()->disableArchivePage();
+        $this->setArgument('publicly_queryable', true);
+        $this->setArgument('query_var', true);
+        $this->setArgument('rewrite', false);
+        $this->disableArchivePage();
+        $this->rootSlug = true;
+
+        return $this;
     }
 
     /**

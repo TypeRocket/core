@@ -477,6 +477,8 @@ class Registry
      */
     public static function setAggregatePostTypeHooks()
     {
+        global $wp_rewrite;
+
         /**
          * Post Type Hooks
          */
@@ -492,6 +494,11 @@ class Registry
         $root_slugs = self::$aggregateCollection['post_type']['root_slug'] ?? null;
 
         if($root_slugs) {
+            foreach ($root_slugs as $pt) {
+                $wp_rewrite->add_rewrite_tag("%{$pt}%", '([^/]+)', "{$pt}=");
+                $wp_rewrite->add_permastruct("{$pt}", "%{$pt}%", false);
+            }
+
             add_filter( 'post_type_link', function ( $post_link, $post ) use ($root_slugs) {
                 if ( in_array($post->post_type, $root_slugs) && 'publish' === $post->post_status ) {
                     $post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
