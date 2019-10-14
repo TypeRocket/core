@@ -528,7 +528,7 @@ class Registry
                 $post_types = array_merge(['post', 'page'], $root_slugs);
                 $types = "'" . implode("','", $post_types) . "'";
 
-                if ( in_array($post_type, ['symbol', 'post', 'page']) || in_array( $slug, $wp_rewrite->feeds ) || 'embed' === $slug || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
+                if ( in_array($post_type, $post_types) || in_array( $slug, $wp_rewrite->feeds ) || 'embed' === $slug || apply_filters( 'wp_unique_post_slug_is_bad_flat_slug', false, $slug, $post_type ) ) {
                     $suffix = 2;
                     $check_sql = "SELECT post_name FROM {$wpdb->posts} WHERE post_type IN ({$types}) AND post_name = %s AND ID != %d LIMIT 1";
                     do {
