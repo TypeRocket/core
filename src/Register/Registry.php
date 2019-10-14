@@ -495,28 +495,32 @@ class Registry
 
         if($root_slugs) {
             add_filter( 'post_type_link', function ( $post_link, $post ) use ($root_slugs) {
-                if ( in_array($post->post_type, $root_slugs) && 'publish' === $post->post_status ) {
+                if ( in_array($post->post_type, $root_slugs) ) {
                     $post_link = str_replace( '?' . $post->post_type . '=', '', $post_link );
                 }
                 return $post_link;
             }, 10, 2 );
 
             add_action( 'pre_get_posts', function ( $query ) use ($root_slugs) {
+                global $wpdb;
+
                 /** @var WP_Query $query */
-                if ( ! $query->is_main_query() ) {
+                if ( ! $query->is_main_query() || empty( $query->query['name'] ) ) {
                     return;
                 }
 
-                if ( ! isset($query->query['feed']) && ( ! isset( $query->query['page'] ) || 2 !== count( $query->query ) ) ) {
+                if (! isset($query->query['feed']) && ( ! isset( $query->query['page'] ) || 2 !== count( $query->query ) ) ) {
                     return;
                 }
 
-                if ( empty( $query->query['name'] ) ) {
-                    return;
+                $types = "'" . implode("','", $root_slugs) . "'";
+                $check_sql = "SELECT ID FROM {$wpdb->posts} WHERE post_type IN ({$types}) AND post_name = %s AND post_status IN ('publish','private') LIMIT 1";
+
+                if( $wpdb->get_var( $wpdb->prepare( $check_sql, $query->query['name'] ) ) ) {
+                    $query->set( 'post_type', $root_slugs );
                 }
 
-                $query->set( 'post_type', array_merge(['post', 'page'], $root_slugs) );
-            } );
+            });
 
             add_filter('wp_unique_post_slug', function($slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug) use ($root_slugs) {
                 global $wpdb, $wp_rewrite;
