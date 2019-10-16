@@ -102,23 +102,28 @@ class RouteTest extends TestCase
         $this->assertTrue($matched_route == 'app-test/');
     }
 
-    public function testRouteNamed()
+    public function testRouteNamedWithHelpers()
     {
         /** @var RouteCollection $routes */
-        $routes = Injector::resolve(RouteCollection::class);
         tr_route()
             ->get()
             ->match('/about/me/(.+)', ['id'])
             ->name('about.me', '/about/me/:id/:given-name');
 
-        $located = $routes->getNamedRoute('about.me');
+        $located = tr_route_lookup('about.me');
 
         $built = $located->buildUrlFromPattern([
             ':id' => 123,
             'given-name' => 'kevin'
         ], false);
 
+        $built_helper = tr_route_url_lookup('about.me', [
+            ':id' => 987,
+            'given-name' => 'ben'
+        ], false);
+
         $this->assertTrue($built == '/about/me/123/kevin');
+        $this->assertTrue($built_helper == '/about/me/987/ben');
 
         $form = new Form('post', 'update', 1, WPPost::class);
 
