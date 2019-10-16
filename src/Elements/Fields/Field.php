@@ -73,6 +73,13 @@ abstract class Field
         return $string;
     }
 
+    /**
+     * Set Cast
+     *
+     * @param callable $callback
+     * @param array $args
+     * @return $this
+     */
     public function setCast($callback, array $args = [])
     {
         $this->cast = [
@@ -83,6 +90,12 @@ abstract class Field
         return $this;
     }
 
+    /**
+     * Get Cast
+     *
+     * @param $value
+     * @return mixed
+     */
     public function getCast($value)
     {
         if( is_array($this->cast) && is_callable($this->cast['callback']) ) {
@@ -263,7 +276,12 @@ abstract class Field
      */
     public function setName( $name )
     {
-        $this->name = Sanitize::underscore( $name );
+        $name_parts = explode('.', strrev($name), 2);
+        $this->name = Sanitize::underscore( strrev($name_parts[0]) );
+
+        if(!empty($name_parts[1])) {
+            $this->appendToGroup( strrev($name_parts[1]) );
+        }
 
         return $this;
     }

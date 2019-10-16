@@ -130,14 +130,23 @@ class Sanitize
      * ` --"2_ _e''X  AM!pl'e-"-1_@` -> _2_ex_ample_1_
      *
      * @param string $name
+     * @param bool $keep_dots
      *
      * @return mixed|string
      */
-    public static function underscore( $name )
+    public static function underscore( $name, $keep_dots = false )
     {
         if (is_string( $name )) {
-            $name = preg_replace( '/[\.]+/', '_', $name );
-            $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
+
+            if($keep_dots) {
+                $name = preg_replace( '/[\.]+/', '.', $name );
+                $name = preg_replace("/[^A-Za-z0-9\.\\s\\-\\_?]/",'', strtolower(trim($name)) );
+            } else {
+                $name = preg_replace( '/[\.]+/', '_', $name );
+                $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
+            }
+
+
             $name = preg_replace( '/[-\\s]+/', '_', $name );
             $name = preg_replace( '/_+/', '_', $name );
         }

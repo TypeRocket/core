@@ -21,6 +21,16 @@ class FormTest extends TestCase
         $this->assertInstanceOf( Form::class, $form);
     }
 
+    public function testSimpleMetaPostForm()
+    {
+        add_post_meta(1, 'deep_test', 'nested value', true);
+
+        $form = new Form('post', 'update', 1, WPPost::class);
+        $value = $form->text('meta.Deep Test')->getValue();
+
+        $this->assertTrue('nested value' == $value );
+    }
+
     public function testUseURL()
     {
         $form = new Form('post', 'update', 1, WPPost::class);

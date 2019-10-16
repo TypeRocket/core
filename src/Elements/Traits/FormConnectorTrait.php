@@ -2,6 +2,8 @@
 
 namespace TypeRocket\Elements\Traits;
 
+use TypeRocket\Utility\Sanitize;
+
 trait FormConnectorTrait
 {
 
@@ -90,7 +92,8 @@ trait FormConnectorTrait
      */
     public function appendToGroup($append)
     {
-        $this->group = $this->group . '.' . $append;
+        $append = Sanitize::underscore($append, true);
+        $this->group = $this->group ? $this->group . '.' . $append : $append;
 
         return $this;
     }

@@ -20,4 +20,11 @@ class SanitizeTest extends TestCase
         $sanitized = \TypeRocket\Utility\Sanitize::underscore($string);
         $this->assertTrue( $sanitized == '_2_ex_ample_1_' );
     }
+
+    public function testSanitizeUnderscoreKeepDots()
+    {
+        $string = ' --"..2_ ._e\'\'X  AM!pl\'e-"-1_@';
+        $sanitized = \TypeRocket\Utility\Sanitize::underscore($string, true);
+        $this->assertTrue( $sanitized == '_.2_._ex_ample_1_' );
+    }
 }
