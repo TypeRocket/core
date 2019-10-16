@@ -37,7 +37,7 @@ class PostsResponder extends Responder
         $controller = apply_filters('tr_posts_responder_controller', $controller);
 
         $resource = $registered[0] ?? 'post';
-        $response = (new Response())->blockFlash();
+        $response = tr_response()->blockFlash();
         $request = new Request('PUT', $this->hook);
         $middlewareGroup = [ $resource ,'post'];
 

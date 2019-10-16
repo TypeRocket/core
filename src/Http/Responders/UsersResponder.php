@@ -18,7 +18,7 @@ class UsersResponder extends Responder {
         $controller = tr_app("Controllers\\UserController");
         $controller  = apply_filters('tr_users_responder_controller', $controller);
         $request = new Request('PUT', $this->hook);
-        $response = (new Response())->blockFlash();
+        $response = tr_response()->blockFlash();
 
         $handler = (new Handler())
             ->setAction('update')

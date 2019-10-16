@@ -12,6 +12,17 @@ if( ! function_exists('tr_app') ) {
     }
 }
 
+if( ! function_exists('tr_response') ) {
+    /**
+     * Get Main Response
+     *
+     * @return \TypeRocket\Http\Response
+     */
+    function tr_response() {
+        return \TypeRocket\Core\Injector::findOrNewSingleton(\TypeRocket\Http\Response::class);;
+    }
+}
+
 if( ! function_exists('tr_assets_url') ) {
     /**
      * Get Assets URL

@@ -24,7 +24,7 @@ class ResourceResponder extends Responder
     public function respond( $args )
     {
         $request  = new Request(null, $this->hook, $this->rest, $this->custom);
-        $response = new Response();
+        $response = tr_response();
 
         $handler = (new Handler())
             ->setAction($this->action)

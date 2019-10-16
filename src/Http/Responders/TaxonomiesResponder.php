@@ -31,7 +31,7 @@ class TaxonomiesResponder extends Responder
         $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
 
         $resource = $registered[0] ?? 'category';
-        $response = (new Response())->blockFlash();
+        $response = tr_response()->blockFlash();
         $request = new Request( 'PUT', $this->hook );
         $middlewareGroup = [$resource, 'term', 'category', 'tag'];
 

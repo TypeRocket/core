@@ -131,8 +131,7 @@ class Routes
         }
 
         if (is_callable($handle->do)) {
-            $response = new Response();
-            $args[2]['response'] = $response;
+            $args[2]['response'] = tr_response();
             $map = resolve_method_args($handle->do, $args[2]);
             tr_http_response(resolve_method_map($map), $args[2]['response']);
         } else {

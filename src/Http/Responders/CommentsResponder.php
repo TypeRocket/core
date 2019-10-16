@@ -3,7 +3,6 @@ namespace TypeRocket\Http\Responders;
 
 use TypeRocket\Http\Handler;
 use \TypeRocket\Http\Request;
-use \TypeRocket\Http\Response;
 
 class CommentsResponder extends Responder {
 
@@ -18,7 +17,7 @@ class CommentsResponder extends Responder {
         $controller = tr_app("Controllers\\CommentController");
         $controller  = apply_filters('tr_comments_responder_controller', $controller);
         $request = new Request('PUT', $this->hook);
-        $response = (new Response())->blockFlash();
+        $response = tr_response()->blockFlash();
 
         $handler = (new Handler())
             ->setAction('update')
