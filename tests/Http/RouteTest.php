@@ -106,14 +106,10 @@ class RouteTest extends TestCase
     {
         /** @var RouteCollection $routes */
         $routes = Injector::resolve(RouteCollection::class);
-        $route = new Route();
-
-        $route
+        tr_route()
             ->get()
-            ->post()
             ->match('/about/me/(.+)', ['id'])
-            ->name('about.me', '/about/me/:id/:given-name')
-            ->register($routes);
+            ->name('about.me', '/about/me/:id/:given-name');
 
         $located = $routes->getNamedRoute('about.me');
 
