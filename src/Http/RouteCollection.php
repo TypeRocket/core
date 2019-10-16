@@ -23,11 +23,25 @@ abstract class RouteCollection
      */
     public function addRoute( $route )
     {
-        if($route->name) {
-            $this->named[$route->name] = $route;
-        }
+        $this->registerNamedRoute($route);
 
         $this->routes[] = $route;
+
+        return $this;
+    }
+
+    /**
+     * Register Named Route
+     *
+     * @param Route|null $route
+     * @return $this
+     */
+    public function registerNamedRoute($route)
+    {
+        if($route->name && empty($this->named[$route->name]) ) {
+            $this->named[$route->name] = $route;
+            $route->registeredNamedRoute = true;
+        }
 
         return $this;
     }

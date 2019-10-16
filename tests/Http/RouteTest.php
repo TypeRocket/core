@@ -130,4 +130,26 @@ class RouteTest extends TestCase
         $this->assertContains('/about/me/1/:given-name', $formUrl);
     }
 
+    public function testRouteNamedNoPatternAutoDetect()
+    {
+        $routes = new ApplicationRoutes();
+        $route = new Route();
+
+        $route
+            ->get()
+            ->post()
+            ->match('/user/(.+)/job/([^\/]+)/', ['id', 'job'])
+            ->name('testing.no.pattern')
+            ->register($routes);
+
+        $located = $routes->getNamedRoute('testing.no.pattern');
+
+        $built = $located->buildUrlFromPattern([
+            ':id' => 123,
+            ':job' => 987,
+        ]);
+
+        $this->assertContains('/user/123/job/987', $built);
+    }
+
 }

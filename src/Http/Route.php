@@ -9,6 +9,7 @@ class Route
     public $match;
     public $name;
     public $pattern;
+    public $registeredNamedRoute = false;
     public $do;
     public $middleware;
     public $methods;
@@ -153,12 +154,19 @@ class Route
      *
      * @param string $name my.custom.route.name
      * @param string $pattern url-path/:id/create
+     * @param null|RouteCollection $routes
      * @return $this
      */
-    public function name($name, $pattern)
+    public function name($name, $pattern = null, $routes = null)
     {
-        $this->name = $name;
-        $this->pattern = $pattern;
+        if(!$this->registeredNamedRoute) {
+            $this->name = $name;
+            $this->pattern = $pattern;
+
+            /** @var RouteCollection $routes */
+            $routes = $routes instanceof RouteCollection ? $routes : Injector::resolve(RouteCollection::class);
+            $routes->registerNamedRoute($this);
+        }
 
         return $this;
     }
@@ -172,11 +180,24 @@ class Route
      */
     public function buildUrlFromPattern(array $values = [], $site = true)
     {
+        $pattern = $this->pattern;
+
+        if(!$pattern) {
+            $keys = array_map(function($value) {
+                return strtolower($value[0] == ':' ? $value : ':' . $value);
+            }, $this->match[1]);
+
+            $match = array_map(function($v) { return '/\(.+\)/U'; }, $keys);
+            $pattern = preg_replace($match, $keys, $this->match[0] ?? null, 1);
+        }
+
         $keys = array_keys($values);
+
         $keys = array_map(function($value) {
             return strtolower($value[0] == ':' ? $value : ':' . $value);
         }, $keys);
-        $built = str_replace($keys, $values, $this->pattern);
+
+        $built = str_replace($keys, $values, $pattern);
 
         return $site ? site_url( ltrim($built, '/') ) : $built;
     }
