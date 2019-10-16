@@ -54,18 +54,7 @@ class ResultsMeta extends Results
      */
     public function getFormFields()
     {
-        $data = $this->storedValues;
-        $result = [];
-
-        foreach ($data as $key => $item) {
-            if($item instanceof Formable) {
-                $result[$key] = $item->getFormFields();
-            } else {
-                $result[$key] = $item;
-            }
-        }
-
-        return $result;
+        return $this->storedValues;
     }
 
     /**
