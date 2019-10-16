@@ -841,7 +841,7 @@ if ( ! function_exists('tr_http_response')) {
      * Http Response
      *
      * @param string $returned the constant variable name
-     * @param null|mixed $response The default value
+     * @param null|\TypeRocket\Http\Response $response The default value
      *
      * @return mixed
      */
