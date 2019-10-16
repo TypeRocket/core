@@ -41,14 +41,57 @@ class Injector
      * @param string $class_name
      * @param callable $callback
      * @param bool $singleton
+     *
+     * @return bool
      */
     public static function register($class_name, $callback, $singleton = false)
     {
+        if(!empty(self::$list[$class_name])) {
+            return false;
+        }
+
         self::$list[$class_name] = [
             'callback' => $callback,
             'make_singleton' => $singleton,
             'singleton_instance' => null
         ];
+
+        return true;
+    }
+
+    /**
+     * Resolve Singleton
+     *
+     * @param string $class_name
+     *
+     * @return mixed|null
+     */
+    public static function findOrNewSingleton($class_name)
+    {
+        self::register($class_name, function() use ($class_name) {
+            return new $class_name;
+        }, true);
+
+        return self::resolve($class_name);
+    }
+
+    /**
+     * Destroy By Key
+     *
+     * @param string $class_name
+     *
+     * @return bool
+     */
+    public static function destroy($class_name)
+    {
+        if(array_key_exists($class_name, self::$list)) {
+            unset(self::$list[$class_name]['singleton_instance']);
+            unset(self::$list[$class_name]);
+
+            return true;
+        }
+
+        return false;
     }
 
 }
