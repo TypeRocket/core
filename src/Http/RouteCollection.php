@@ -13,6 +13,7 @@ namespace TypeRocket\Http;
 abstract class RouteCollection
 {
     public $routes = [];
+    protected $named = [];
 
     /**
      * Add Route
@@ -22,6 +23,10 @@ abstract class RouteCollection
      */
     public function addRoute( $route )
     {
+        if($route->name) {
+            $this->named[$route->name] = $route;
+        }
+
         $this->routes[] = $route;
 
         return $this;
@@ -56,5 +61,16 @@ abstract class RouteCollection
         }
 
         return $routesRegistered;
+    }
+
+    /**
+     * Get Named Route
+     *
+     * @param $name
+     * @return Route|null
+     */
+    public function getNamedRoute($name)
+    {
+        return $this->named[$name] ?? null;
     }
 }

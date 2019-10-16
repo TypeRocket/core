@@ -7,6 +7,8 @@ use TypeRocket\Core\Injector;
 class Route
 {
     public $match;
+    public $name;
+    public $pattern;
     public $do;
     public $middleware;
     public $methods;
@@ -144,6 +146,39 @@ class Route
     {
         $this->methods = ['PUT', 'POST', 'GET', 'DELETE', 'PATCH', 'OPTIONS'];
         return $this;
+    }
+
+    /**
+     * Name Route
+     *
+     * @param string $name my.custom.route.name
+     * @param string $pattern url-path/:id/create
+     * @return $this
+     */
+    public function name($name, $pattern)
+    {
+        $this->name = $name;
+        $this->pattern = $pattern;
+
+        return $this;
+    }
+
+    /**
+     * Build Url From Pattern
+     *
+     * @param array $values
+     * @param bool $site
+     * @return mixed
+     */
+    public function buildUrlFromPattern(array $values, $site = true)
+    {
+        $keys = array_keys($values);
+        $keys = array_map(function($value) {
+            return strtolower($value[0] == ':' ? $value : ':' . $value);
+        }, $keys);
+        $built = str_replace($keys, $values, $this->pattern);
+
+        return $site ? site_url( ltrim($built, '/') ) : $built;
     }
 
     /**

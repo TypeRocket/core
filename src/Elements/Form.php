@@ -2,11 +2,14 @@
 namespace TypeRocket\Elements;
 
 use TypeRocket\Core\Config;
+use TypeRocket\Core\Injector;
 use TypeRocket\Elements\Fields\Submit;
 use TypeRocket\Elements\Traits\MacroTrait;
 use TypeRocket\Html\Generator;
 use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Http\ApplicationRoutes;
+use TypeRocket\Http\RouteCollection;
 use TypeRocket\Models\WPComment;
 use TypeRocket\Models\WPOption;
 use TypeRocket\Models\WPPost;
@@ -37,7 +40,6 @@ class Form
      * @param string $action update or create
      * @param null|int $itemId you can set this to null or an integer
      * @param null|Model|string $model
-     * @throws \Exception
      */
     public function __construct( $resource = 'auto', $action = 'update', $itemId = null, $model = null )
     {
@@ -63,7 +65,6 @@ class Form
      * @param Model|string $model
      *
      * @return $this
-     * @throws \Exception
      */
     public function setModel( $model )
     {
@@ -227,16 +228,43 @@ class Form
      *
      * @param string $method
      * @param string $url
+     * @param bool $home
      *
-     * @return $this
+     * @return Form $this
      */
-    public function useUrl($method, $url)
+    public function useUrl($method, $url, $home = true)
     {
-        $url_parts     = explode('/', trim($url, '/') );
-        $this->formUrl = home_url(implode('/', $url_parts ) . '/', get_http_protocol() );
-        $this->method  = strtoupper($method);
+        $this->formUrl = $home ? home_url( trim($url, '/') . '/', get_http_protocol() ) : $url;
+        $this->method  = $method ? strtoupper($method) : $this->method;
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param null|array $values
+     * @param null|string $method
+     *
+     * @return Form
+     */
+    public function useRoute($name, $values = null, $method = null)
+    {
+        /** @var ApplicationRoutes $routes */
+        $routes = Injector::resolve(RouteCollection::class);
+        $located = $routes->getNamedRoute($name);
+
+        $url = $located->buildUrlFromPattern($values ?? $this->model->getProperties());
+        return $this->useUrl($method, $url, false);
+    }
+
+    /**
+     * Get Form URL
+     *
+     * @return mixed
+     */
+    public function getFormUrl()
+    {
+        return $this->formUrl;
     }
 
     /**
