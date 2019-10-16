@@ -170,7 +170,7 @@ class Route
      * @param bool $site
      * @return mixed
      */
-    public function buildUrlFromPattern(array $values, $site = true)
+    public function buildUrlFromPattern(array $values = [], $site = true)
     {
         $keys = array_keys($values);
         $keys = array_map(function($value) {
