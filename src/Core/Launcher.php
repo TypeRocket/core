@@ -85,6 +85,8 @@ class Launcher
             return $wpdb;
         }, true, 'database');
 
+        do_action('typerocket_boot_container');
+
         self::$containerLoaded = true;
     }
 
