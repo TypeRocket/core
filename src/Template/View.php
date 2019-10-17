@@ -138,7 +138,7 @@ class View
     public static function loadPage()
     {
         $templateEngine = Config::locate('app.template_engine.admin') ??  TemplateEngine::class;
-        (new $templateEngine(self::$page, self::$data))->load();
+        (new $templateEngine(self::$page, self::$data, 'admin'))->load();
     }
 
 }
