@@ -35,7 +35,6 @@ if( ! file_exists($wp_load) ) {
     define('BASE_WP', $wp_load);
     define('WP_USE_THEMES', false);
     new \TypeRocket\Core\Config( __DIR__ . '/config');
-    \TypeRocket\Core\Launcher::bootContainer();
 
     // Disable email
     function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) { return true; }
@@ -43,6 +42,8 @@ if( ! file_exists($wp_load) ) {
     require BASE_WP . '/wp-load.php';
     require BASE_WP . '/wp-admin/includes/user.php';
     require BASE_WP . '/wp-admin/includes/upgrade.php';
+
+    \TypeRocket\Core\Launcher::bootContainer();
 
     // Create Mock Tables
     dbDelta('CREATE TABLE `posts_terms` (
