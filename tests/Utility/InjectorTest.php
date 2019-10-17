@@ -5,6 +5,7 @@ namespace Utility;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Core\Injector;
+use TypeRocket\Http\ApplicationRoutes;
 use TypeRocket\Http\Response;
 
 class InjectorTest extends TestCase
@@ -29,6 +30,15 @@ class InjectorTest extends TestCase
         $response = Injector::resolve('test.response.404');
 
         $this->assertTrue( !$response );
+    }
+
+    public function testInjectorHelper()
+    {
+        $routes = tr_container('routes');
+        $db = tr_container('database');
+
+        $this->assertTrue($routes instanceof ApplicationRoutes);
+        $this->assertTrue($db instanceof \wpdb);
     }
 
 }

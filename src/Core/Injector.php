@@ -8,6 +8,7 @@ class Injector
 {
 
     protected static $list = [];
+    protected static $alias = [];
 
     /**
      * Resolve Class
@@ -30,6 +31,8 @@ class Injector
             }
 
             return $instance;
+        } elseif(!empty(self::$alias[$class_name])) {
+            return self::resolve(self::$alias[$class_name]);
         }
 
         return null;
@@ -42,9 +45,10 @@ class Injector
      * @param callable $callback
      * @param bool $singleton
      *
+     * @param null $alias
      * @return bool
      */
-    public static function register($class_name, $callback, $singleton = false)
+    public static function register($class_name, $callback, $singleton = false, $alias = null)
     {
         if(!empty(self::$list[$class_name])) {
             return false;
@@ -56,7 +60,21 @@ class Injector
             'singleton_instance' => null
         ];
 
+        if($alias && empty(self::$alias[$alias])) {
+            self::$alias[$alias] = $class_name;
+        }
+
         return true;
+    }
+
+    /**
+     * Get Aliases
+     *
+     * @return array
+     */
+    public function aliases()
+    {
+        return self::$alias;
     }
 
     /**

@@ -17,6 +17,7 @@ use TypeRocket\Utility\ImageSizer;
 class Launcher
 {
     public $typerocket = [];
+    public static $containerLoaded = false;
 
     /**
      * Core Init
@@ -25,9 +26,9 @@ class Launcher
     {
         $this->typerocket = Config::locate('typerocket');
 
-        Injector::register(RouteCollection::class, function() {
-            return new ApplicationRoutes();
-        }, true);
+        if(!self::$containerLoaded) {
+            self::bootContainer();
+        }
 
         $this->initHooks();
         $this->loadPlugins();
@@ -68,6 +69,23 @@ class Launcher
         $this->initEndpoints();
 
         return $this;
+    }
+
+    /**
+     * Boot Container
+     */
+    public static function bootContainer()
+    {
+        Injector::register(RouteCollection::class, function() {
+            return new ApplicationRoutes();
+        }, true, 'routes');
+
+        Injector::register(\wpdb::class, function() {
+            global $wpdb;
+            return $wpdb;
+        }, true, 'database');
+
+        self::$containerLoaded = true;
     }
 
     /**

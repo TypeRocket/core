@@ -931,6 +931,21 @@ if ( ! function_exists('tr_resolve')) {
     }
 }
 
+if ( ! function_exists('tr_container')) {
+    /**
+     * Resolve Class From DI Container
+     *
+     * Inject all class dependencies
+     *
+     * @param string $class_name or alias
+     * @return object|null
+     */
+    function tr_container($class_name) {
+        return \TypeRocket\Core\Injector::resolve($class_name);
+    }
+}
+
+
 if ( ! function_exists('tr_file')) {
     /**
      * File Utility

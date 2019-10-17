@@ -35,10 +35,7 @@ if( ! file_exists($wp_load) ) {
     define('BASE_WP', $wp_load);
     define('WP_USE_THEMES', false);
     new \TypeRocket\Core\Config( __DIR__ . '/config');
-
-    Injector::register(RouteCollection::class, function() {
-        return new ApplicationRoutes();
-    }, true);
+    \TypeRocket\Core\Launcher::bootContainer();
 
     // Disable email
     function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) { return true; }
