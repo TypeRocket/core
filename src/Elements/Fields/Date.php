@@ -46,6 +46,16 @@ class Date extends Field implements ScriptField
     }
 
     /**
+     * Set Format Year-Month-Day
+     *
+     * @return $this
+     */
+    public function setFormatYearMonthDay()
+    {
+        return $this->setFormat('yy-mm-dd');
+    }
+
+    /**
      * Set Format
      *
      * The format should correspond to the jQuery datepicker format.
