@@ -19,9 +19,6 @@ class Config
         }
 
         self::$root = $root;
-        if(is_file($root . '/app.php')) {
-            self::$config['app'] = require( $root . '/app.php' );
-        }
     }
 
     /**
