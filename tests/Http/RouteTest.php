@@ -9,6 +9,7 @@ use TypeRocket\Core\Injector;
 use TypeRocket\Elements\Form;
 use TypeRocket\Http\ApplicationRoutes;
 use TypeRocket\Http\CustomRequest;
+use TypeRocket\Http\Redirect;
 use TypeRocket\Http\Route;
 use TypeRocket\Http\RouteCollection;
 use TypeRocket\Http\Routes;
@@ -151,6 +152,17 @@ class RouteTest extends TestCase
         ]);
 
         $this->assertContains('/user/123/job/987', $built);
+    }
+
+    public function testRedirectToRoute()
+    {
+        $redirect = new Redirect();
+        $redirect->toRoute('about.me', [
+            'id' => 345,
+            'given-name' => 'kevin'
+        ]);
+
+        $this->assertContains('/about/me/345/kevin', $redirect->url);
     }
 
 }

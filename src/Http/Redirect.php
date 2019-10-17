@@ -2,6 +2,9 @@
 
 namespace TypeRocket\Http;
 
+use TypeRocket\Core\Injector;
+use TypeRocket\Models\Model;
+
 class Redirect
 {
     public $url;
@@ -131,6 +134,31 @@ class Redirect
      */
     public function toUrl( $url ) {
         $this->url = esc_url_raw($url);
+
+        return $this;
+    }
+
+    /**
+     * To Named Route
+     *
+     * @param string $name
+     * @param array|Model $values
+     * @param bool $site
+     * @param null|RouteCollection $routes
+     *
+     * @return $this
+     */
+    public function toRoute($name, $values, $site = true, $routes = null)
+    {
+        /** @var ApplicationRoutes $routes */
+        $routes = $routes ?? Injector::resolve(RouteCollection::class);
+        $located = $routes->getNamedRoute($name);
+
+        if($values instanceof Model) {
+            $values = $values->getProperties();
+        }
+
+        $this->url = $located->buildUrlFromPattern($values, $site);
 
         return $this;
     }
