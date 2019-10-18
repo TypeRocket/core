@@ -34,7 +34,7 @@ class ClearCache extends Command
     {
         $folder = Sanitize::underscore($this->getArgument('folder'));
 
-        $cache_path = Config::locate('paths.cache');
+        $cache_path = Config::locate('paths.cache') ?? TR_PATH . '/storage/cache';
 
         if(!$cache_path) {
             $this->error('Error no cache path found. Define in paths.php as "cache" using TR_PATH as root.');
