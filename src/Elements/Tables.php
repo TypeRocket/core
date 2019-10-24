@@ -226,10 +226,10 @@ class Tables
     public function render($action_key = '')
     {
         if($action_key) {
-	        $action_key = '_' . $action_key;
+            $action_key = '_' . $action_key;
         }
 
-	    do_action('tr_table_search_model'.$action_key, $this->model, $this);
+        do_action('tr_table_search_model'.$action_key, $this->model, $this);
         $count_model = clone $this->model;
         $results = $this->results = $this->model->findAll()->useResultsClass()->take($this->limit, $this->offset)->get();
         $count = $this->count = $count_model->removeTake()->count();
@@ -254,11 +254,11 @@ class Tables
         $th_row = new Generator();
         $th_row->newElement('tr', ['class' => 'manage-column']);
 
-	    if($addCheckbox) {
-		    $th = new Generator();
-		    $th->newElement('td', ['class' => 'manage-column column-cb check-column'], '<input type="checkbox" class="check-all" />');
-		    $th_row->appendInside($th);
-	    }
+        if($addCheckbox) {
+            $th = new Generator();
+            $th->newElement('td', ['class' => 'manage-column column-cb check-column'], '<input type="checkbox" class="check-all" />');
+            $th_row->appendInside($th);
+        }
 
         foreach ( $columns as $column => $data ) {
             $th = new Generator();
@@ -311,11 +311,11 @@ class Tables
                 $row_id = 'result-row-' . $columnValue;
                 $td_row->newElement('tr', ['class' => 'manage-column', 'id' => $row_id]);
 
-	            if($addCheckbox) {
-		            $td = new Generator();
-		            $td->newElement('th', ['class' => 'check-column'], '<input type="checkbox" name="bulk[]" value="'.$columnValue.'" />');
-		            $td_row->appendInside($td);
-	            }
+                if($addCheckbox) {
+                    $td = new Generator();
+                    $td->newElement('th', ['class' => 'check-column'], '<input type="checkbox" name="bulk[]" value="'.$columnValue.'" />');
+                    $td_row->appendInside($td);
+                }
 
                 foreach ($columns as $column => $data) {
                     $show_url = $edit_url = $delete_url = '';
@@ -362,20 +362,23 @@ class Tables
                                 }
                                 switch ($action) {
                                     case 'edit' :
-                                        $text .= "<span class=\"edit\"><a href=\"{$edit_url}\">Edit</a></span>";
+                                        $edit_text = __('Edit');
+                                        $text .= "<span class=\"edit\"><a href=\"{$edit_url}\">{$edit_text}</a></span>";
                                         break;
                                     case 'delete' :
                                         if( $delete_ajax ) {
-                                            $delete_url = wp_nonce_url($delete_url, 'form_' . Config::locate('app.seed'), '_tr_nonce_form');
+                                            $delete_url = wp_nonce_url($delete_url, 'form_' . tr_config('app.seed'), '_tr_nonce_form');
                                             $delete_class = 'class="tr-delete-row-rest-button"';
                                         }
-                                        $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" {$delete_class} href=\"{$delete_url}\">Delete</a></span>";
+                                        $del_text = __('Delete');
+                                        $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" {$delete_class} href=\"{$delete_url}\">{$del_text}</a></span>";
                                         break;
                                     case 'view' :
+                                        $view_text = __('View');
                                         if( !empty($data['view_url']) && is_callable($data['view_url']) ) {
                                             $show_url = call_user_func_array($data['view_url'], [$show_url, $result]);
                                         }
-                                        $text .= "<span class=\"view\"><a href=\"{$show_url}\">View</a></span>";
+                                        $text .= "<span class=\"view\"><a href=\"{$show_url}\">{$view_text}</a></span>";
                                 }
                             }
                             $text .= "</div>";
@@ -385,7 +388,8 @@ class Tables
                     $classes = null;
                     if($this->primary == $column) {
                         $classes = 'column-primary';
-                        $text .= "<button type=\"button\" class=\"toggle-row\"><span class=\"screen-reader-text\">Show more details</span></button>";
+                        $details_text = __('Show more details');
+                        $text .= "<button type=\"button\" class=\"toggle-row\"><span class=\"screen-reader-text\">{$details_text}</span></button>";
                     }
 
                     $td = new Generator();
@@ -396,7 +400,8 @@ class Tables
             }
         } else {
             $td_row = new Generator();
-            $td_row->newElement('tr', [], '<td>No results.</td>');
+            $results_text = __('No results.');
+            $td_row->newElement('tr', [], "<td>{$results_text}</td>");
             $body->appendInside($td_row);
         }
 
@@ -440,8 +445,8 @@ class Tables
         $get_condition_current = !empty($_GET['condition']) ? wp_unslash($_GET['condition']) : '';
         $get_on_current = !empty($_GET['on']) ? wp_unslash($_GET['on']) : '';
         $select_condition = [
-            'like' => 'Contains',
-            'equals' => 'Is Exactly'
+            'like' => __('Contains'),
+            'equals' => __('Is Exactly')
         ];
 
         $searchColumns = $this->searchColumns ? $this->searchColumns : $this->columns;
@@ -449,12 +454,12 @@ class Tables
         ?>
         <form action="<?php echo $current; ?>">
             <div class="tablenav top">
-	            <?php if(is_callable($this->searchFormFilters )) {
-		            echo '<div class="alignleft actions">';
-		            call_user_func($this->searchFormFilters);
-		            echo '</div>';
-	            } ?>
-	            <?php do_action('tr_table_search_form'.$action_key, $this_table); ?>
+                <?php if(is_callable($this->searchFormFilters )) {
+                    echo '<div class="alignleft actions">';
+                    call_user_func($this->searchFormFilters);
+                    echo '</div>';
+                } ?>
+                <?php do_action('tr_table_search_form'.$action_key, $this_table); ?>
                 <div class="alignleft actions">
                     <select class="alignleft" name="on">
                         <?php foreach ($searchColumns as $column_name => $column) :
@@ -483,7 +488,7 @@ class Tables
                     </select>
                 </div>
                 <div class="alignleft actions">
-                    <label class="screen-reader-text" for="post-search-input">Search Pages:</label>
+                    <label class="screen-reader-text" for="post-search-input"><?php _e('Search Pages:'); ?></label>
                     <input type="hidden" name="page" value="<?php echo esc_attr($get_page); ?>">
                     <input type="hidden" name="paged" value="1">
                     <?php if (!empty($_GET['orderby'])) : ?>
@@ -533,12 +538,14 @@ class Tables
      */
     protected function paginationLinks($page, $prev, $next, $first, $last, $pages) {
         echo "<span class=\"pagination-links\">";
+        $last_text = __('Last page');
+        $next_text = __('Next page');
 
         if($first && $pages > 2) {
             if( (int) $page === 1 ) {
                 echo ' <span class="tablenav-pages-navspan  button disabled" aria-hidden="true">&laquo;</span> ';
             } else {
-                echo " <a class=\"last-page button\" href=\"{$first}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&laquo;</span></a> ";
+                echo " <a class=\"last-page button\" href=\"{$first}\"><span class=\"screen-reader-text\">{$last_text}</span><span aria-hidden=\"true\">&laquo;</span></a> ";
             }
         }
 
@@ -549,7 +556,7 @@ class Tables
         }
         echo " <span id=\"table-paging\" class=\"paging-input\">{$page} of <span class=\"total-pages\">{$pages}</span></span> ";
         if( $page < $pages ) {
-            echo " <a class=\"next-page button\" href=\"{$next}\"><span class=\"screen-reader-text\">Next page</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
+            echo " <a class=\"next-page button\" href=\"{$next}\"><span class=\"screen-reader-text\">{$next_text}</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
         } else {
             echo " <span class=\"tablenav-pages-navspan button disabled\" aria-hidden=\"true\">&rsaquo;</span> ";
         }
@@ -558,7 +565,7 @@ class Tables
             if( (int) $pages === $page  ) {
                 echo ' <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span> ';
             } else {
-                echo " <a class=\"last-page button\" href=\"{$last}\"><span class=\"screen-reader-text\">Last page</span><span aria-hidden=\"true\">&raquo;</span></a> ";
+                echo " <a class=\"last-page button\" href=\"{$last}\"><span class=\"screen-reader-text\">{$last_text}</span><span aria-hidden=\"true\">&raquo;</span></a> ";
             }
 
         }
