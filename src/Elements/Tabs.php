@@ -6,6 +6,7 @@ use TypeRocket\Utility\Sanitize;
 class Tabs
 {
 
+    private $activeTabIndex = 0;
     private $tabs = [];
     private $sidebar = null;
     public $iconAppend = '<i class="tr-icon-';
@@ -30,13 +31,26 @@ class Tabs
     /**
      * Set Tabs
      *
-     * @param array $tabs
+     * @param string $tabs
      *
      * @return $this
      */
     public function setTabs( $tabs )
     {
         $this->tabs = $tabs;
+        return $this;
+    }
+
+    /**
+     * Set active Tab
+     *
+     * @param integer $tabs
+     *
+     * @return $this
+     */
+    public function setActiveTab( $index )
+    {
+        $this->activeTabIndex = $index;
         return $this;
     }
 
@@ -315,9 +329,11 @@ class Tabs
             <div class="tabbed-sections">
                 <ul class="tr-tabs alignleft">
                     <?php
-                    $class = ' class="active"';
+                    $i = 0;
                     $tabs  = $this->getTabs();
                     foreach ($tabs as $tab) :
+                        $class   = ($i == $this->activeTabIndex)? ' class="active"' : '';
+
                         $icon = $this->getIconHtml($tab);
                         $link_id = "tab-link-{$tab['id']}";
                         $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
@@ -329,7 +345,7 @@ class Tabs
                             </a>
                         </li>
                         <?php
-                        $class   = '';
+                        $i++;
                     endforeach;
                     ?>
                 </ul>
@@ -404,9 +420,11 @@ class Tabs
                     <div class="contextual-help-tabs">
                         <ul>
                             <?php
-                            $class = ' class="active"';
+                            $i = 0;
                             $tabs  = $this->getTabs();
                             foreach ($tabs as $tab) :
+                                $class   = ($i == $this->activeTabIndex)? ' class="active"' : '';
+
                                 $icon = $this->getIconHtml($tab);
                                 $link_id = "tab-link-{$tab['id']}";
                                 $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
@@ -418,7 +436,8 @@ class Tabs
                                     </a>
                                 </li>
                                 <?php
-                                $class   = '';
+
+                                $i++;
                             endforeach;
                             ?>
                         </ul>
