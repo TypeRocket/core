@@ -1342,6 +1342,13 @@ class Model implements Formable
 
                 $value = (int) $value;
             }
+            
+            
+            // Boolean
+            if( $handle == 'bool' || $handle == 'boolean') {
+                
+                $value = ($value == "1")? true : (($value == "0")? false : null);
+            }
 
             // Priority Array
             if ( $handle == 'array' ) {
