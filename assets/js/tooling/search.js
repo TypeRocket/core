@@ -53,7 +53,7 @@ const { __ } = wp.i18n;
                         id = $(this).data('id');
                         title = $(this).text();
                         $(this).parent().prev().html('Selection: <b>' + title + '</b> <a class="tr-link-search-remove-selection" href="#remove-selection">remove</a>');
-                        that.next().val(id);
+                        that.next().val(id).trigger('change');
                         that.focus().val('');
                         return $(this).parent().html('');
                     }
