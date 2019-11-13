@@ -82,7 +82,7 @@ $('.typerocket-container').on('click', '.tr-link-search-remove-selection', funct
     var parent;
     e.preventDefault();
     parent = $(this).parent();
-    parent.prev().val('');
+    parent.prev().val('').trigger('change');
     parent.prev().prev().focus();
     parent.text(__('No selection... Search and click on a result', 'typerocket-domain'));
 });
