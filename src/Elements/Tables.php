@@ -1,24 +1,18 @@
 <?php
-
 namespace TypeRocket\Elements;
-
 use TypeRocket\Core\Config;
 use TypeRocket\Html\Generator;
 use TypeRocket\Models\Model;
 use TypeRocket\Register\Page;
 use TypeRocket\Utility\Sanitize;
-
 class Tables
 {
-
     public $results;
     public $columns;
     public $count;
-
     /** @var Model|null $model */
     public $model;
     public $primary = 'id';
-
     /** @var null|Page  */
     public $page = null;
     protected $searchColumns;
@@ -29,7 +23,6 @@ class Tables
     public $offset = 0;
     public $formWrapTable = false;
     public $settings = ['update_column' => 'id'];
-
     /**
      * Tables constructor.
      *
@@ -40,23 +33,18 @@ class Tables
     public function __construct( $limit = 25, $model = null )
     {
         global $_tr_page, $_tr_resource;
-
         if(!empty($_tr_page) && $_tr_page instanceof Page ) {
             $this->page = $_tr_page;
         }
-
         if( $model instanceof Model) {
             $this->setModel($model);
         } elseif(!empty($_tr_resource) && $_tr_resource instanceof Model ) {
             $this->setModel($_tr_resource);
         }
-
         $this->paged = !empty($_GET['paged']) ? (int) $_GET['paged'] : 1;
         $this->setLimit($limit);
-
         do_action('tr_after_table_element_init', $this);
     }
-
     /**
      * Set table limit
      *
@@ -67,10 +55,8 @@ class Tables
     public function setLimit( $limit ) {
         $this->limit = (int) $limit;
         $this->offset = ( $this->paged - 1 ) * $this->limit;
-
         return $this;
     }
-
     /**
      * Set table search columns
      *
@@ -80,10 +66,8 @@ class Tables
      */
     public function setSearchColumns( $columns ) {
         $this->searchColumns = $columns;
-
         return $this;
     }
-
     /**
      * Set table sorting
      *
@@ -98,10 +82,8 @@ class Tables
         if( empty( $_GET['order'] ) && empty( $_GET['orderby'] ) ) {
             $this->model->orderBy($column, $direction);
         }
-
         return $this;
     }
-
     /**
      * Set the tables columns
      *
@@ -114,10 +96,8 @@ class Tables
     {
         $this->primary = $primary;
         $this->columns = $columns;
-
         return $this;
     }
-
     /**
      * Set the page the table is connected to.
      *
@@ -127,10 +107,8 @@ class Tables
      */
     public function setPage( Page $page) {
         $this->page = $page;
-
         return $this;
     }
-
     /**
      * Set Model
      *
@@ -142,12 +120,9 @@ class Tables
     {
         /** @var \wpdb $wpdb */
         global $wpdb;
-
         $this->model = clone $model;
-
         if( $this->isValidSearch() ) {
             $condition = $_GET['condition'] == 'like' ? 'LIKE' : '=';
-
             $search = wp_unslash($_GET['s']);
             if($condition == 'LIKE') {
                 $search = '%' . $wpdb->esc_like($search) . '%';
@@ -156,15 +131,12 @@ class Tables
             }
             $model->where( Sanitize::underscore($_GET['on']) , $condition, $search );
         }
-
         $this->count = null;
         if( !empty( $_GET['order'] ) && !empty( $_GET['orderby'] ) ) {
             $this->model->orderBy($_GET['orderby'], $_GET['order']);
         }
-
         return $this;
     }
-
 	/**
      * Add Checkboxes
      *
@@ -172,10 +144,8 @@ class Tables
 	 */
 	public function addCheckboxes() {
         $this->checkboxes = true;
-
 		return $this;
     }
-
 	/**
      * Remove Checkboxes
      *
@@ -183,10 +153,8 @@ class Tables
 	 */
 	public function removeCheckboxes() {
 		$this->checkboxes = false;
-
 		return $this;
     }
-
     /**
      * Form Wrap Table
      *
@@ -201,7 +169,6 @@ class Tables
         $this->formWrapTable = $wrap;
         return $this;
     }
-
 	/**
      * Append Search From Filters
      *
@@ -216,7 +183,6 @@ class Tables
         $this->searchFormFilters = $callback;
         return $this;
     }
-
     /**
      * Render table
      *
@@ -228,7 +194,6 @@ class Tables
         if($action_key) {
             $action_key = '_' . $action_key;
         }
-
         do_action('tr_table_search_model'.$action_key, $this->model, $this);
         $count_model = clone $this->model;
         $results = $this->results = $this->model->findAll()->useResultsClass()->take($this->limit, $this->offset)->get();
@@ -241,32 +206,26 @@ class Tables
         $foot = new Generator();
         $columnId = $this->model->getIdColumn();
         $addCheckbox = $this->checkboxes ? $columnId : false;
-
         if( empty($columns) ) {
             $columns = array_keys(get_object_vars($results[0]));
         }
-
         $table->newElement('table', ['class' => 'tr-list-table wp-list-table widefat striped']);
         $head->newElement('thead');
         $body->newElement('tbody', ['class' => 'the-list']);
         $foot->newElement('tfoot');
-
         $th_row = new Generator();
         $th_row->newElement('tr', ['class' => 'manage-column']);
-
         if($addCheckbox) {
             $th = new Generator();
             $th->newElement('td', ['class' => 'manage-column column-cb check-column'], '<input type="checkbox" class="check-all" />');
             $th_row->appendInside($th);
         }
-
         foreach ( $columns as $column => $data ) {
             $th = new Generator();
             $classes = 'manage-column';
             if($this->primary == $column) {
                 $classes .= ' column-primary';
             }
-
             if( ! is_string($column) ) {
                 $th->newElement('th', ['class' => $classes], ucfirst($data));
             } else {
@@ -274,9 +233,7 @@ class Tables
                 if( !empty($data['sort']) && $this->page && strpos($column, '.') === false) {
                     $order_direction = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'DESC' : 'ASC';
                     $order_direction_now = !empty( $_GET['order'] ) && $_GET['order'] == 'ASC' ? 'ASC' : 'DESC';
-
                     $url_params = ['orderby' => $column, 'order' => $order_direction];
-
                     if( $this->isValidSearch() ) {
                         $url_params = array_merge($url_params, [
                             's' => wp_unslash($_GET['s']),
@@ -284,25 +241,20 @@ class Tables
                             'on' => wp_unslash($_GET['on']),
                         ]);
                     }
-
                     $order_link = $this->page->getUrl($url_params);
                     if( !empty($_GET['orderby']) &&  $column == $_GET['orderby']) {
                         $classes .= ' sorted ' . strtolower($order_direction_now);
                     } else {
                         $classes .= ' sortable ' . strtolower($order_direction_now);
                     }
-
                     $label = "<a href=\"{$order_link}\"><span>$label</span><span class=\"sorting-indicator\"></span></a>";
                 }
-
                 $th->newElement('th', ['class' => $classes],$label);
             }
-
             $th_row->appendInside($th);
         }
         $head->appendInside($th_row);
         $foot->appendInside($th_row);
-
         if( !empty($results)) {
             /** @var Model $result */
             foreach ($results as $result) {
@@ -310,43 +262,34 @@ class Tables
                 $columnValue = Sanitize::dash($result->getProperty($columnId));
                 $row_id = 'result-row-' . $columnValue;
                 $td_row->newElement('tr', ['class' => 'manage-column', 'id' => $row_id]);
-
                 if($addCheckbox) {
                     $td = new Generator();
                     $td->newElement('th', ['class' => 'check-column'], '<input type="checkbox" name="bulk[]" value="'.$columnValue.'" />');
                     $td_row->appendInside($td);
                 }
-
                 foreach ($columns as $column => $data) {
                     $show_url = $edit_url = $delete_url = '';
-
                     // get columns if none set
                     if ( ! is_string($column)) {
                         $column = $data;
                     }
-
                     $text = $result->getDeepValue($column);
-
                     if( !empty($data['callback']) && is_callable($data['callback']) ) {
                         $text = call_user_func_array($data['callback'], [$text, $result] );
                     }
-
                     if ($this->page instanceof Page && ! empty($this->page->pages)) {
                         foreach ($this->page->pages as $page) {
                             /** @var Page $page */
                             if ($page->action == 'edit') {
                                 $edit_url = $page->getUrl(['route_id' => (int)$result->{$columnId}]);
                             }
-
                             if ($page->action == 'show') {
                                 $show_url = $page->getUrl(['route_id' => (int)$result->{$columnId}]);
                             }
-
                             if ($page->action == 'delete') {
                                 $delete_url = $page->getUrl(['route_id' => (int)$result->{$columnId}]);
                             }
                         }
-
                         if ( ! empty($data['actions'])) {
                             $text = "<strong><a href=\"{$edit_url}\">{$text}</a></strong>";
                             $text .= "<div class=\"row-actions\">";
@@ -356,7 +299,6 @@ class Tables
                                 $delete_ajax = false;
                             }
                             foreach ($data['actions'] as $index => $action) {
-
                                 if ($index > 0) {
                                     $text .= ' | ';
                                 }
@@ -384,14 +326,12 @@ class Tables
                             $text .= "</div>";
                         }
                     }
-
                     $classes = null;
                     if($this->primary == $column) {
                         $classes = 'column-primary';
                         $details_text = __('Show more details');
                         $text .= "<button type=\"button\" class=\"toggle-row\"><span class=\"screen-reader-text\">{$details_text}</span></button>";
                     }
-
                     $td = new Generator();
                     $td->newElement('td', ['class' => $classes], $text);
                     $td_row->appendInside($td);
@@ -404,26 +344,20 @@ class Tables
             $td_row->newElement('tr', [], "<td>{$results_text}</td>");
             $body->appendInside($td_row);
         }
-
         $table->appendInside('thead', [], $head );
         $table->appendInside('tbody', [], $body );
         $table->appendInside('tfoot', [], $foot );
-
         // Pagination
         $pages = ceil($count / $this->limit);
-        $item_word = 'items';
-
+        $item_word = __('items');
         if($count < 2) {
-            $item_word = 'item';
+            $item_word = __('item');
         }
-
         $page = $this->paged;
         $previous_page = $this->paged - 1;
         $next_page = $this->paged + 1;
-
         $current = $this->page->getUrlWithParams(['paged' => (int) $page]);
         $get_page = !empty($_GET['page']) ? $_GET['page']: '';
-
         if($this->page instanceof Page) {
             $next = $this->page->getUrlWithParams(['paged' => (int) $next_page]);
             $prev = $this->page->getUrlWithParams(['paged' => (int) $previous_page]);
@@ -440,7 +374,6 @@ class Tables
             $last = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_last);
             $first = $_SERVER['PHP_SELF'] . '?' . http_build_query($query_first);
         }
-
         $get_search_current = !empty($_GET['s']) ? wp_unslash($_GET['s']) : '';
         $get_condition_current = !empty($_GET['condition']) ? wp_unslash($_GET['condition']) : '';
         $get_on_current = !empty($_GET['on']) ? wp_unslash($_GET['on']) : '';
@@ -448,9 +381,7 @@ class Tables
             'like' => __('Contains'),
             'equals' => __('Is Exactly')
         ];
-
         $searchColumns = $this->searchColumns ? $this->searchColumns : $this->columns;
-
         ?>
         <form action="<?php echo $current; ?>">
             <div class="tablenav top">
@@ -463,11 +394,9 @@ class Tables
                 <div class="alignleft actions">
                     <select class="alignleft" name="on">
                         <?php foreach ($searchColumns as $column_name => $column) :
-
                             if(strpos($column_name, '.') !== false) {
                                 continue;
                             }
-
                             $selected = $get_on_current == $column_name ? 'selected="selected"' : '';
                             ?>
                             <option <?php echo $selected; ?> value="<?php echo esc_attr($column_name); ?>">
@@ -498,7 +427,7 @@ class Tables
                         <input type="hidden" name="order" value="<?php echo esc_attr($_GET['order']); ?>">
                     <?php endif; ?>
                     <input type="search" id="post-search-input" name="s" value="<?php echo esc_attr($get_search_current); ?>">
-                    <button id="search-submit" class="button">Search</button>
+                    <button id="search-submit" class="button"><? _e('Search')?></button>
                 </div>
 
                 <div class="tablenav-pages">
@@ -525,7 +454,6 @@ class Tables
         </div>
         <?php
     }
-
     /**
      * Pagination Links
      *
@@ -540,7 +468,6 @@ class Tables
         echo "<span class=\"pagination-links\">";
         $last_text = __('Last page');
         $next_text = __('Next page');
-
         if($first && $pages > 2) {
             if( (int) $page === 1 ) {
                 echo ' <span class="tablenav-pages-navspan  button disabled" aria-hidden="true">&laquo;</span> ';
@@ -548,46 +475,37 @@ class Tables
                 echo " <a class=\"last-page button\" href=\"{$first}\"><span class=\"screen-reader-text\">{$last_text}</span><span aria-hidden=\"true\">&laquo;</span></a> ";
             }
         }
-
         if( $page < 2 ) {
             echo " <span class=\"tablenav-pages-navspan button disabled\" aria-hidden=\"true\">&lsaquo;</span> ";
         } else {
             echo " <a class=\"prev-page button\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a> ";
         }
-        echo " <span id=\"table-paging\" class=\"paging-input\">{$page} of <span class=\"total-pages\">{$pages}</span></span> ";
+        echo " <span id=\"table-paging\" class=\"paging-input\">{$page} ".__('of')." <span class=\"total-pages\">{$pages}</span></span> ";
         if( $page < $pages ) {
             echo " <a class=\"next-page button\" href=\"{$next}\"><span class=\"screen-reader-text\">{$next_text}</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
         } else {
             echo " <span class=\"tablenav-pages-navspan button disabled\" aria-hidden=\"true\">&rsaquo;</span> ";
         }
-
         if($last && $pages > 2) {
             if( (int) $pages === $page  ) {
                 echo ' <span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span> ';
             } else {
                 echo " <a class=\"last-page button\" href=\"{$last}\"><span class=\"screen-reader-text\">{$last_text}</span><span aria-hidden=\"true\">&raquo;</span></a> ";
             }
-
         }
-
         echo "</span>";
     }
-
     /**
      * Is Valid Search
      *
      * @return bool
      */
     protected function isValidSearch() {
-
         if( !empty($_GET['s']) && !empty($_GET['on'] && !empty($_GET['condition'])) ) {
             if(is_string($_GET['s']) && is_string($_GET['on']) && is_string($_GET['condition'])) {
                 return true;
             }
         }
-
         return false;
-
     }
-
 }
