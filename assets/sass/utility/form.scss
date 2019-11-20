@@ -9,19 +9,20 @@
     textarea {
         box-sizing: border-box;
         width: 100%;
-        padding: 6px;
+        max-width: 100%;
         margin: 0;
     }
 
     select {
         margin: 0 0 5px;
-        padding: 3px;
         box-sizing: border-box;
         width: 100%;
+        max-width: 100%;
     }
 
     textarea {
         min-height: 120px;
+        padding: 6px;
     }
 
     .tr-form-field-help p {
