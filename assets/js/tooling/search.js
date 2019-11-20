@@ -53,7 +53,7 @@ const { __ } = wp.i18n;
                         id = $(this).data('id');
                         title = $(this).text();
                         $(this).parent().prev().html('Selection: <b>' + title + '</b> <a class="tr-link-search-remove-selection" href="#remove-selection">remove</a>');
-                        that.next().val(id);
+                        that.next().val(id).trigger('change');
                         that.focus().val('');
                         return $(this).parent().html('');
                     }
@@ -82,7 +82,7 @@ $('.typerocket-container').on('click', '.tr-link-search-remove-selection', funct
     var parent;
     e.preventDefault();
     parent = $(this).parent();
-    parent.prev().val('');
+    parent.prev().val('').trigger('change');
     parent.prev().prev().focus();
     parent.text(__('No selection... Search and click on a result', 'typerocket-domain'));
 });
