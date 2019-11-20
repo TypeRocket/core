@@ -1379,10 +1379,11 @@ class Model implements Formable
      *
      * @param string $modelClass
      * @param null|string $id_foreign
+     * @param null|callable $scope
      *
      * @return mixed|null
      */
-    public function hasOne($modelClass, $id_foreign = null)
+    public function hasOne($modelClass, $id_foreign = null, $scope = null)
     {
         $id = $this->getID();
 
