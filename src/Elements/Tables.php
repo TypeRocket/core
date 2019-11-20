@@ -411,10 +411,10 @@ class Tables
 
         // Pagination
         $pages = ceil($count / $this->limit);
-        $item_word = 'items';
+        $item_word = __('items');
 
         if($count < 2) {
-            $item_word = 'item';
+            $item_word = __('item');
         }
 
         $page = $this->paged;
@@ -498,7 +498,7 @@ class Tables
                         <input type="hidden" name="order" value="<?php echo esc_attr($_GET['order']); ?>">
                     <?php endif; ?>
                     <input type="search" id="post-search-input" name="s" value="<?php echo esc_attr($get_search_current); ?>">
-                    <button id="search-submit" class="button">Search</button>
+                    <button id="search-submit" class="button"><?php _e('Search') ?></button>
                 </div>
 
                 <div class="tablenav-pages">
@@ -554,7 +554,7 @@ class Tables
         } else {
             echo " <a class=\"prev-page button\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a> ";
         }
-        echo " <span id=\"table-paging\" class=\"paging-input\">{$page} of <span class=\"total-pages\">{$pages}</span></span> ";
+        echo " <span id=\"table-paging\" class=\"paging-input\">{$page} ".__('of')." <span class=\"total-pages\">{$pages}</span></span> ";
         if( $page < $pages ) {
             echo " <a class=\"next-page button\" href=\"{$next}\"><span class=\"screen-reader-text\">{$next_text}</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
         } else {
