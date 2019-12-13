@@ -196,9 +196,12 @@ class Form
      * Use TypeRocket Rest to submit form
      *
      * @param null|string $resource override resource name useful for setting custom post type IDs etc.
+     * @param null $id override the itemId value from the model
+     * @param bool $site_url use site_url instead of home_url
+     *
      * @return Form $this
      */
-    public function useJson($resource = null)
+    public function useJson($resource = null, $id = null, $site_url = false)
     {
         if( $this->useAjax === null ) {
             $this->useAjax();
@@ -218,7 +221,10 @@ class Form
 
         $the_resource = $resource ?? $the_resource;
 
-        $this->formUrl = home_url('/', get_http_protocol() ) . 'tr_json_api/v1/' . $the_resource . '/' . $this->itemId;
+        $root = $site_url ? site_url('/', get_http_protocol()) : home_url('/', get_http_protocol() );
+        $id = $id ?? $this->itemId;
+
+        $this->formUrl = rtrim($root, '/') . '/tr_json_api/v1/' . $the_resource . '/' . $id;
 
         return $this;
     }
