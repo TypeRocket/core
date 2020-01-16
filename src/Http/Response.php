@@ -171,7 +171,7 @@ class Response {
      * example.
      *
      * @param string $key
-     * @param string $data
+     * @param array $data
      */
     public function setData( $key, $data ) {
         $this->data[$key] = $data;
@@ -261,7 +261,7 @@ class Response {
     }
 
     /**
-     * @param string $data
+     * @param array $data
      *
      * @return Response $this
      */
@@ -276,7 +276,7 @@ class Response {
     }
 
     /**
-     * @param string $fields
+     * @param array|Fields $fields
      *
      * @return Response $this
      */
@@ -321,6 +321,12 @@ class Response {
         return $this;
     }
 
+    /**
+     * @param string $message
+     * @param string $type
+     *
+     * @return $this
+     */
     public function flashNow($message, $type)
     {
         if( ! $this->blockFlash ) {

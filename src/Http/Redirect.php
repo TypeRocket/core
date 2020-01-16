@@ -10,7 +10,7 @@ class Redirect
     public $url;
 
     /**
-     * @param string $data
+     * @param array $data
      *
      * @return Redirect $this
      */
@@ -25,8 +25,7 @@ class Redirect
     }
 
     /**
-     * @param string $fields
-     *
+     * @param array|Fields $fields
      * @param array $notFields
      *
      * @return \TypeRocket\Http\Redirect $this
