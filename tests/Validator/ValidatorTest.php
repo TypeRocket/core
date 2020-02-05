@@ -173,6 +173,28 @@ class ValidatorTest extends TestCase
         $this->assertEquals(1, count($validator->getErrors()) );
     }
 
+    public function testRequiredMissing()
+    {
+        $validator = new Validator([
+            'email' => 'required'
+        ], ['email' => null]);
+
+        $errors = $validator->getErrors();
+
+        $this->assertEquals(1, count($errors) );
+    }
+
+    public function testRequiredNoFields()
+    {
+        $validator = tr_validator([
+            'email' => 'required'
+        ], []);
+
+        $errors = $validator->getErrors();
+
+        $this->assertEquals(1, count($errors) );
+    }
+
     public function testMinPassing()
     {
         $fields['person'] = 'Kevin';

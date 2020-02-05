@@ -20,14 +20,14 @@ class Validator
      * Validate data mapped to fields
      *
      * @param array $rules the rules and validation handler
-     * @param array|\ArrayObject $fields the fields to be validated
+     * @param array|\ArrayObject|null $fields the fields to be validated
      * @param null $modelClass must be a class of Model
      * @param bool $run run validation on new
      */
     public function __construct($rules, $fields, $modelClass = null, $run = true)
     {
         $this->modelClass = $modelClass;
-        $this->fields = $fields;
+        $this->fields = $fields ?? [];
         $this->rules = $rules;
 
         if($run) {
