@@ -6,6 +6,8 @@ use TypeRocket\Models\Model;
 trait MetaData
 {
 
+    protected $metaQueries = 0;
+
     /**
      * Get Meta Model Class
      *
@@ -65,10 +67,19 @@ trait MetaData
      * @param string|int|null|bool $value
      * @param string $condition
      *
-     * @return Model
+     * @return Model|MetaData
      */
-    public function whereMeta($key, $operator = '!=', $value = null, $condition = 'AND')
+    public function whereMeta($key, $operator = '=', $value = null, $condition = 'AND')
     {
+        $counter = &$this->metaQueries;
+
+        $num = func_num_args();
+
+        if($num == 2) {
+            $value = $operator;
+            $operator = '=';
+        }
+
         $table = $this->getTable();
         $idColumns = $this->getMetaIdColumns();
         $modelMetaClass = $this->getMetaModelClass();
@@ -77,11 +88,19 @@ trait MetaData
         if(is_array($key)) {
             $operator = strtoupper($operator);
             $condition = in_array($operator, ['AND', 'OR', '||', '&&']) ? $operator : 'AND';
-            $where = array_map(function($value) use ($meta_table) {
+            $where = array_map(function($value) use ($meta_table, &$counter, $table, $idColumns) {
 
                 if(is_string($value)) {
                     return strtoupper($value);
                 }
+
+                $table_alias = 'tr_mt' . $counter++;
+
+                $this->join(
+                    $meta_table . ' AS ' . $table_alias,
+                    "`{$table}`.`{$idColumns['local']}`",
+                    "`{$table_alias}`.`{$idColumns['foreign']}`"
+                );
 
                 $key = $value['column'];
                 $operator = $value['operator'];
@@ -89,39 +108,41 @@ trait MetaData
 
                 return [
                     [
-                        'column' => "`{$meta_table}`.`meta_key`",
+                        'column' => "`{$table_alias}`.`meta_key`",
                         'operator' => '=',
                         'value' => $key,
                     ],
                     'AND',
                     [
-                        'column' => "`{$meta_table}`.`meta_value`",
+                        'column' => "`{$table_alias}`.`meta_value`",
                         'operator' => $operator,
                         'value' => $value,
                     ]
                 ];
             }, $key);
         } else {
+            $table_alias = 'tr_mt' . $counter++;
+
+            $this->join(
+                $meta_table . ' AS ' . $table_alias,
+                "`{$table}`.`{$idColumns['local']}`",
+                "`{$table_alias}`.`{$idColumns['foreign']}`"
+            );
+
             $where = [
                 [
-                    'column' => "`{$meta_table}`.`meta_key`",
+                    'column' => "`{$table_alias}`.`meta_key`",
                     'operator' => '=',
                     'value' => $key,
                 ],
                 'AND',
                 [
-                    'column' => "`{$meta_table}`.`meta_value`",
+                    'column' => "`{$table_alias}`.`meta_value`",
                     'operator' => $operator,
                     'value' => $value,
                 ]
             ];
         }
-
-        $this->join(
-            $meta_table,
-            "`{$table}`.`{$idColumns['local']}`",
-            "`{$meta_table}`.`{$idColumns['foreign']}`"
-        );
 
         return $this->where($where, $condition);
     }

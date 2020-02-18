@@ -472,7 +472,7 @@ class Query
     }
 
     /**
-     * Count results
+     * Count
      *
      * @param string $column
      *
@@ -481,6 +481,17 @@ class Query
     public function count( $column = '*' )
     {
         $this->setQueryType('function', [ 'count' => $column]);
+
+        return $this->runQuery();
+    }
+
+    /**
+     * Count Derived
+     *
+     * @return array|bool|false|int|null
+     */
+    public function countDerived() {
+        $this->setQueryType('function', [ 'countDerived' => '*']);
 
         return $this->runQuery();
     }
@@ -726,7 +737,7 @@ class Query
             $result = false;
             if( $wpdb->query( $sql ) ) {
                 $result = $wpdb->insert_id;
-            };
+            }
         } elseif( array_key_exists('update', $query) ) {
             $result = $wpdb->query( $sql );
         } elseif( array_key_exists('function', $query) ) {
@@ -787,6 +798,8 @@ class Query
             $sql = 'INSERT INTO ' . $table . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
         } elseif( array_key_exists('update', $this->query) ) {
             $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
+        } elseif( $this->query['function']['countDerived'] ?? null ) {
+            $sql = $this->compileCountDerived('SELECT ' . $distinct . $sql_select_columns . 'FROM '. $table . $sql_select);
         } elseif( array_key_exists('function', $this->query) ) {
             $sql = 'SELECT ' . $distinct . $sql_function . 'FROM '. $table . $sql_select;
         } else {
@@ -796,6 +809,20 @@ class Query
         $this->lastCompiledSQL = $sql;
 
         return $this->lastCompiledSQL;
+    }
+
+    /**
+     * Compile Count Derived
+     *
+     * @param $sql
+     *
+     * @return string
+     */
+    public function compileCountDerived($sql)
+    {
+        static $counter = 1;
+
+        return "SELECT COUNT(*) FROM ({$sql}) as tr_count_derived" . $counter++;
     }
 
     /**

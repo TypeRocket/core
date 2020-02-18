@@ -93,12 +93,15 @@ class ResultsTest extends TestCase
 
     public function testResultsPostMeta()
     {
-        $posts = (new WPPost('post'))->with('meta')->get();
+        update_post_meta(1, 'k1', 1);
+        $posts = (new WPPost('post'))->where('id', 1)->with('meta')->get();
 
         foreach ($posts as $post) {
             $post->meta->initKeyStore();
             $this->assertTrue( $post->meta instanceof ResultsPostMeta );
         }
+
+        delete_post_meta(1, 'k1');
     }
 
 }

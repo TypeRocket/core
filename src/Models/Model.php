@@ -1155,11 +1155,17 @@ class Model implements Formable
     /**
      * Count results
      *
+     * @param string $column
+     *
      * @return array|bool|false|int|null|object
      */
-    public function count()
+    public function count($column = null)
     {
-        return $this->query->count();
+        if(!$column) {
+            return $this->query->countDerived();
+        }
+
+        return $this->query->count($column);
     }
 
     /**
