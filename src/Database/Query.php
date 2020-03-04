@@ -15,6 +15,7 @@ class Query
     protected $query = [];
     protected $selectTable = null;
     protected $joinAs = null;
+    protected $tableAs = null;
 
     /**
      * Query constructor.
@@ -74,12 +75,14 @@ class Query
      * Set table
      *
      * @param string $name
+     * @param null $as
      *
      * @return Query $this
      */
-    public function table( $name )
+    public function table($name, $as = null)
     {
         $this->query['table'] = $name;
+        $this->tableAs = $as;
 
         return $this;
     }
@@ -113,13 +116,20 @@ class Query
      * @param array|\ArrayObject $ids
      *
      * @param null $table
+     * @param null|int $num
+     *
      * @return Query $this
      */
-    public function findAll( $ids = [], $table = null )
+    public function findAll( $ids = [], $table = null, $num = null )
     {
+        $num = $num ?? func_num_args();
+
         if(!empty($ids)) {
             if(!$table) { $table = $this->query['table']; }
             $this->where( $table . '.' .$this->idColumn , 'IN', $ids);
+        } elseif($num) {
+            // block query from getting results if values provided is empty
+            $this->where( 1 , 0);
         }
 
         return $this;
@@ -388,10 +398,11 @@ class Query
      * @param string $id
      *
      * @return object
+     * @throws \Exception
      */
     public function findOrDie($id) {
         if( ! $data = $this->findById($id)->get() ) {
-            wp_die('Something went wrong');
+            throw new \Exception("Model not found: {$id} " . get_class($this));
         }
 
         return $data;
@@ -407,11 +418,12 @@ class Query
      * @param null|int $num
      *
      * @return object
+     * @throws \Exception
      * @internal param $id
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND', $num = null) {
         if( ! $data = $this->where( $column, $arg1, $arg2, $condition, $num ?? func_num_args())->first() ) {
-            wp_die('Something went wrong');
+            throw new \Exception("Model not found: on {$column} " . get_class($this));
         }
 
         return $data;
@@ -420,14 +432,18 @@ class Query
     /**
      * Delete
      *
-     * @param array|\ArrayObject $ids
+     * @param array|\ArrayObject|int $ids
      *
      * @return array|false|int|null|object
      */
-    public function delete( $ids = [] ) {
+    public function delete( $ids = null ) {
         $this->setQueryType('delete');
 
-        if(!empty($ids)) {
+        if(is_int($ids)) {
+            $this->where( $this->idColumn , $ids);
+        }
+
+        if(is_array($ids)) {
             $this->where( $this->idColumn , 'IN', $ids);
         }
 
@@ -577,6 +593,30 @@ class Query
     }
 
     /**
+     * From As
+     *
+     * @param $as
+     *
+     * @return $this;
+     */
+    public function setTableAs($as)
+    {
+        $this->tableAs = $as;
+
+        return $this;
+    }
+
+    /**
+     * Get From As
+     *
+     * @return null|string
+     */
+    public function getTableAs()
+    {
+        return $this->tableAs;
+    }
+
+    /**
      * Join
      *
      * @param string|callable|Query $table
@@ -662,9 +702,9 @@ class Query
     public function paginate($number = 25, $page = null, $callback = null)
     {
         $count_clone = clone $this;
-        $page = $page ?? $_GET['paged'] ?? $_GET['page'];
+        $page = $page ?? $_GET['paged'] ?? $_GET['page'] ?? 1;
 
-        $this->take($number, $page < 2 ? 0 : $number * ( $page - 1) );
+        $this->take($number, $page < 2 ? 0 : $number * ( $page - 1), false);
         $this->returnOne = false;
 
         $results = $this->get();
@@ -674,7 +714,7 @@ class Query
         }
 
         if($results) {
-            return new ResultsPaged($results, $page < 2 ? 1 : $page, $count_clone->count());
+            return new ResultsPaged($results, $page < 2 ? 1 : $page, $count_clone->removeTake()->count(), $number);
         }
 
         return null;
@@ -692,7 +732,7 @@ class Query
     protected function setQueryType( $type = null , $args = true ) {
 
         $actions = [
-          'function', 'update', 'delete', 'create'
+            'function', 'update', 'delete', 'create'
         ];
 
         foreach ($actions as $action ) {
@@ -768,10 +808,6 @@ class Query
      * @return string|null
      */
     public function compileFullQuery() {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-
-        $table = $this->query['table'];
         $sql_insert_columns = $sql_union = $sql_insert_values = $distinct = '';
 
         // compilers
@@ -785,25 +821,26 @@ class Query
         $sql_grouping = $this->compileGrouping();
         $sql_join = $this->compileJoins();
         $sql_union = $this->compileUnion();
+        $sql_table = $this->compileTable();
 
         if( array_key_exists('distinct', $this->query) ) {
             $distinct = 'DISTINCT ';
         }
 
-        $sql_select = $sql_join . $sql_where . $sql_grouping . $sql_order . $sql_limit . $sql_union;
+        $sql_select = $sql_table . $sql_join . $sql_where . $sql_grouping . $sql_order . $sql_limit . $sql_union;
 
         if( array_key_exists('delete', $this->query) ) {
-            $sql = 'DELETE FROM ' . $table . $sql_where;
+            $sql = 'DELETE FROM ' . $sql_table . $sql_where;
         } elseif( array_key_exists('create', $this->query) ) {
-            $sql = 'INSERT INTO ' . $table . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
+            $sql = 'INSERT INTO ' . $sql_table . $sql_insert_columns . ' VALUES ' . $sql_insert_values;
         } elseif( array_key_exists('update', $this->query) ) {
-            $sql = 'UPDATE ' . $table . ' SET ' . $sql_update . $sql_where;
+            $sql = 'UPDATE ' . $sql_table . ' SET ' . $sql_update . $sql_where;
         } elseif( $this->query['function']['countDerived'] ?? null ) {
-            $sql = $this->compileCountDerived('SELECT ' . $distinct . $sql_select_columns . 'FROM '. $table . $sql_select);
+            $sql = $this->compileCountDerived('SELECT ' . $distinct . $sql_select_columns . 'FROM ' . $sql_select);
         } elseif( array_key_exists('function', $this->query) ) {
-            $sql = 'SELECT ' . $distinct . $sql_function . 'FROM '. $table . $sql_select;
+            $sql = 'SELECT ' . $distinct . $sql_function . 'FROM '. $sql_select;
         } else {
-            $sql = 'SELECT ' . $distinct . $sql_select_columns .' FROM '. $table . $sql_select;
+            $sql = 'SELECT ' . $distinct . $sql_select_columns .' FROM '. $sql_select;
         }
 
         $this->lastCompiledSQL = $sql;
@@ -845,7 +882,7 @@ class Query
 
             if($selectTable) {
                 $query['select'] = array_map(function($value) use ($selectTable) {
-                   return mb_strpos( $value, '.' ) !== false ? $value : "`{$selectTable}`.{$value}";
+                    return mb_strpos( $value, '.' ) !== false ? $value : "`{$selectTable}`.{$value}";
                 }, $query['select']);
             }
 
@@ -1185,6 +1222,17 @@ class Query
         }
 
         return $sql;
+    }
+
+    /**
+     * Compile Table
+     *
+     * @return string
+     */
+    protected function compileTable() {
+        $table = $this->query['table'];
+        $as = $this->tableAs ? " AS {$this->tableAs} " : '';
+        return $table . $as;
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use ArrayObject;
+use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
 use TypeRocket\Database\EagerLoader;
@@ -17,7 +18,7 @@ use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
 use wpdb;
 
-class Model implements Formable
+class Model implements JsonSerializable, Formable
 {
     use Searchable;
 
@@ -29,7 +30,9 @@ class Model implements Formable
     protected $static = [];
     protected $builtin = [];
     protected $metaless = [];
+    protected $private = [];
     protected $resource = null;
+    protected $routeResource = null;
     protected $table = null;
     protected $errors = null;
     /** @var mixed|Query  */
@@ -47,12 +50,17 @@ class Model implements Formable
     protected $relationships = [];
     protected $junction = null;
     protected $with = null;
+    protected $fieldOptions = [
+        'key' => null,
+        'value' => null,
+    ];
 
     /** @var array use this for your own custom caching at the model level */
     protected $dataCache = [];
 
     /**
      * Construct Model based on resource
+     * @throws \Exception
      */
     public function __construct()
     {
@@ -60,23 +68,22 @@ class Model implements Formable
         /** @var wpdb $wpdb */
         global $wpdb;
 
-        $this->table = $this->initTable( $wpdb );
         $type = null;
 
         try {
             $type = (new ReflectionClass( $this ))->getShortName();
         } catch (ReflectionException $e) {
-            wp_die('Model failed: ' . $e->getMessage());
+            throw new \Exception('Model failed: ' . $e->getMessage());
         }
 
         if( ! $this->resource && $type ) {
             $this->resource = strtolower( Inflect::pluralize($type) );
         }
 
-        $this->query = $this->initQuery( new Query() );
+        $this->table = $this->initTable( $wpdb );
+        $this->query = $this->initQuery( new Query );
         $this->query->resultsClass = $this->resultsClass;
-        $table = $this->getTable();
-        $this->query->table($table);
+        $this->query->table($this->getTable());
         $this->query->setIdColumn($this->idColumn);
 
         $suffix  = '';
@@ -111,7 +118,7 @@ class Model implements Formable
      */
     protected function initTable($wpdb)
     {
-        return $this->table;
+        return $this->table ?? $wpdb->prefix . $this->resource;
     }
 
     /**
@@ -209,6 +216,32 @@ class Model implements Formable
     }
 
     /**
+     * Might Need to Be Fillable
+     *
+     * Use this to detect if fillable fields are active
+     * and if so add more to the list.
+     *
+     * @param $field_name
+     * @return $this
+     */
+    public function mightNeedFillable($field_name)
+    {
+        $fields = $field_name;
+
+        if(!is_array($field_name)) {
+            $fields = [$field_name];
+        }
+
+        if ( ! empty( $this->fillable )) {
+            foreach ($fields as $field) {
+                $this->appendFillableField( $field );
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Append Guard
      *
      * Add a field to guard if not set to fillable.
@@ -240,6 +273,24 @@ class Model implements Formable
     {
         if ( ! array_key_exists( $field_name, $this->format )) {
             $this->format[$field_name] = $callback;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Append Private
+     *
+     * Add a field to guard if not set to fillable.
+     *
+     * @param string $field_name
+     *
+     * @return $this
+     */
+    public function appendPrivateField( string $field_name )
+    {
+        if ( ! in_array( $field_name, $this->private ) ) {
+            $this->private[] = $field_name;
         }
 
         return $this;
@@ -319,6 +370,22 @@ class Model implements Formable
         }
 
         return $this;
+    }
+
+    /**
+     * Get Route Resource
+     *
+     * @return string|null
+     * @throws ReflectionException
+     */
+    public function getRouteResource()
+    {
+        if($this->routeResource) {
+            return $this->routeResource;
+        }
+
+        $class = new \ReflectionClass($this);
+        return Str::snake($class->getShortName());
     }
 
     /**
@@ -408,7 +475,7 @@ class Model implements Formable
     public function setProperty( $key, $value = null )
     {
         if($this->hasSetMutator($key)) {
-             $value = $this->mutatePropertySet($key, $value);
+            $value = $this->mutatePropertySet($key, $value);
         }
 
         $this->properties[$key] = $value;
@@ -422,7 +489,7 @@ class Model implements Formable
      *
      * @param array $properties
      *
-     * @return array
+     * @return $this
      */
     public function setProperties( array $properties )
     {
@@ -430,15 +497,15 @@ class Model implements Formable
             $this->setProperty($key, $value ?? null);
         }
 
-        return $this->properties;
+        return $this;
     }
 
     /**
-    * Get an attribute from the model.
-    *
-    * @param  string  $key
-    * @return mixed
-    */
+     * Get an attribute from the model.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
     public function getProperty($key)
     {
         if (array_key_exists($key, $this->properties) || $this->hasGetMutator($key)) {
@@ -459,6 +526,27 @@ class Model implements Formable
     }
 
     /**
+     * Get Properties
+     *
+     * @return array
+     */
+    public function getPublicProperties()
+    {
+        $diff = array_flip($this->private);
+        return array_diff_key($this->properties, $diff);
+    }
+
+    /**
+     * Has properties
+     *
+     * @return bool
+     */
+    public function hasProperties()
+    {
+        return !empty($this->properties);
+    }
+
+    /**
      * Get Properties Unaltered
      *
      * @return array
@@ -472,7 +560,7 @@ class Model implements Formable
      * Get only the fields that are considered to
      * be meta fields.
      *
-     * @param array|ArrayObject $fields
+     * @param array|null|ArrayObject $fields
      *
      * @return array
      */
@@ -480,7 +568,7 @@ class Model implements Formable
     {
         $diff = array_flip( array_unique( array_merge($this->builtin, $this->metaless) ) );
 
-        return array_diff_key( $fields, $diff );
+        return array_diff_key( $fields ?? [], $diff );
     }
 
     /**
@@ -598,8 +686,7 @@ class Model implements Formable
      */
     public function oldStore( $load_only_old = false) {
         if( !empty($_COOKIE['tr_old_fields']) ) {
-            $cookie = new Cookie();
-            $this->old = $cookie->getTransient('tr_old_fields');
+            $this->old = (new Cookie)->getTransient('tr_old_fields');
         }
 
         $this->onlyOld = $load_only_old;
@@ -737,9 +824,7 @@ class Model implements Formable
      */
     private function getDotKeys( $str )
     {
-        $matches = explode('.', $str);
-
-        return $matches;
+        return explode('.', $str);
     }
 
     /**
@@ -777,12 +862,13 @@ class Model implements Formable
      * Find all
      *
      * @param array|ArrayObject $ids
+     * @param int|null $num
      *
      * @return Model $this
      */
-    public function findAll( $ids = [] )
+    public function findAll( $ids = [], $num = null )
     {
-        $this->query->findAll($ids);
+        $this->query->findAll($ids, null, $num ?? func_num_args());
 
         return $this;
     }
@@ -790,7 +876,7 @@ class Model implements Formable
     /**
      * Get results from find methods
      *
-     * @return array|null|object
+     * @return array|null|object|Model|Results
      */
     public function get() {
         $results = $this->query->get();
@@ -977,7 +1063,7 @@ class Model implements Formable
      *
      * @param string $id
      *
-     * @return mixed
+     * @return mixed|Model
      */
     public function findById($id)
     {
@@ -1002,7 +1088,7 @@ class Model implements Formable
     public function join($table, $column, $arg1, $arg2 = null, $type = 'INNER')
     {
         $this->query->setSelectTable()->distinct();
-        $this->query->join($table, $column, $arg1, $arg2 = null, $type = 'INNER');
+        $this->query->join($table, $column, $arg1, $arg2, $type);
 
         return $this;
     }
@@ -1013,6 +1099,7 @@ class Model implements Formable
      * @param string $id
      *
      * @return object
+     * @throws \Exception
      */
     public function findOrDie($id) {
         $results = $this->query->findOrDie($id);
@@ -1025,12 +1112,13 @@ class Model implements Formable
      * @param string $id
      * @param array $fields
      * @return mixed|Model
+     * @throws \Exception
      */
     public function findOrCreate($id, $fields = [])
     {
         if($item = $this->findById($id)) {
             return $item;
-        };
+        }
 
         return (new static)->create($fields);
     }
@@ -1040,12 +1128,13 @@ class Model implements Formable
      *
      * @param string $id
      * @return mixed|Model
+     * @throws \Exception
      */
     public function findOrNew($id)
     {
         if($item = $this->findById($id)) {
             return $item;
-        };
+        }
 
         return new static;
     }
@@ -1060,12 +1149,13 @@ class Model implements Formable
      * @param null|int $num
      *
      * @return Model
+     * @throws \Exception
      */
     public function findFirstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND', $num = null)
     {
         if($item = $this->where($column, $arg1, $arg2, $condition, $num ?? func_num_args())->first()) {
             return $item;
-        };
+        }
 
         return new static;
     }
@@ -1080,6 +1170,7 @@ class Model implements Formable
      * @param null|int $num
      *
      * @return object
+     * @throws \Exception
      * @internal param $id
      */
     public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND', $num = null) {
@@ -1090,7 +1181,7 @@ class Model implements Formable
     /**
      * Fetch Result
      *
-     * @param string $result
+     * @param object|Model|Results $result
      *
      * @return mixed
      */
@@ -1115,13 +1206,27 @@ class Model implements Formable
             $result = $this->castProperties( (array) $result );
         }
 
-        // Eager Loader
-        if(!empty($this->with)) {
+        return $this->load(null, $result);
+    }
 
+    /**
+     * Eager Load
+     *
+     * @param string|array|null $with
+     * @param null|array|Results $result
+     *
+     * @return mixed|null|Results
+     */
+    public function load($with = null, $result = null)
+    {
+        if($with) {
+            $this->with($with);
+        }
+
+        if(!empty($this->with)) {
             $compiledWithList = $this->getWithCompiled();
 
             foreach ($compiledWithList as $name => $with) {
-                $loader = new EagerLoader();
                 $relation = $this->{$name}()->removeTake()->removeWhere();
 
                 foreach ($with as $index => $value) {
@@ -1131,10 +1236,10 @@ class Model implements Formable
                     }
                 }
 
-                $result = $loader->load([
+                $result = (new EagerLoader)->load([
                     'name' => $name,
                     'relation' => $relation,
-                ], $result, $with);
+                ], $result ?? $this, $with);
             }
         }
 
@@ -1144,11 +1249,16 @@ class Model implements Formable
     /**
      * Delete
      *
-     * @param array|ArrayObject $ids
+     * @param array|ArrayObject|int $ids
      *
      * @return array|false|int|null|object
      */
-    public function delete( $ids = [] ) {
+    public function delete( $ids = null ) {
+
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
         return $this->query->delete($ids);
     }
 
@@ -1234,15 +1344,32 @@ class Model implements Formable
      * This is best used with eager loading.
      *
      * @param string $dots
+     * @param bool $decode
+     *
      * @return mixed|Model|null
      */
-    public function getDeepValue($dots)
+    public function getDeepValue($dots, $decode = false)
     {
         $keys = explode('.', $dots);
         $result = $this;
         foreach ($keys as $property) {
-            if( !$result = $result->getProperty($property) ) {
+
+            if(method_exists($result, 'getProperty')) {
+                $result = $result->getProperty($property);
+            } else {
+                $result = $result[$property] ?? $result->{$property} ?? null;
+            }
+
+            if( !$result ) {
                 return null;
+            }
+
+            if($decode && is_string($result)) {
+                if(is_serialized($result)) {
+                    $result = unserialize($result);
+                } elseif(tr_is_json($result)) {
+                    $result = json_decode($result);
+                }
             }
         }
 
@@ -1296,7 +1423,7 @@ class Model implements Formable
     /**
      * Cast Properties
      *
-     * @param array $properties
+     * @param array|ArrayObject $properties
      *
      * @return $this
      */
@@ -1348,12 +1475,22 @@ class Model implements Formable
                 $value = (int) $value;
             }
 
+            // Float
+            if ( $handle == 'float' || $handle == 'double' || $handle == 'real') {
+                $value = (float) $value;
+            }
+
+            // String
+            if ( $handle == 'str' || $handle == 'string' ) {
+                $value = (string) $value;
+            }
+
             // Bool
             if ( $handle == 'bool' || $handle == 'boolean' ) {
                 $value = (bool) $value;
             }
 
-            // Priority Array
+            // Array
             if ( $handle == 'array' ) {
                 if ( is_string($value) && tr_is_json($value)  ) {
                     $value = json_decode( $value, true );
@@ -1362,7 +1499,7 @@ class Model implements Formable
                 }
             }
 
-            // Priority Object
+            // Object
             if ( $handle == 'object' ) {
                 if ( is_string($value) && tr_is_json($value)  ) {
                     $value = json_decode( $value );
@@ -1492,10 +1629,11 @@ class Model implements Formable
      * @param null|string $id_column
      * @param null|string $id_foreign
      * @param null|callable $scope
+     * @param bool $reselect
      *
      * @return null|Model
      */
-    public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null )
+    public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null, $reselect = true )
     {
         $id = $this->getID();
 
@@ -1542,12 +1680,14 @@ class Model implements Formable
         ];
 
         if(is_callable($scope)) {
-            $scope($relationship);
+            $scope($relationship, $reselect);
         }
 
-        return  $relationship->reselect($rel_table.'.*')
-                             ->where($where_column, $id)
-                             ->findAll();
+        if($reselect) {
+            $relationship->reselect($rel_table.'.*');
+        }
+
+        return  $relationship->where($where_column, $id)->findAll();
     }
 
     /**
@@ -1636,6 +1776,20 @@ class Model implements Formable
         global $wpdb;
 
         return  $this->table ? $this->table : $wpdb->prefix . $this->resource;
+    }
+
+    /**
+     * Set Table As
+     *
+     * @param $as
+     *
+     * @return $this
+     */
+    public function as($as)
+    {
+        $this->query->setTableAs($as);
+
+        return $this;
     }
 
     /**
@@ -1791,9 +1945,7 @@ class Model implements Formable
      */
     public function getPropertyValue($key)
     {
-      $value = $this->getPropertyFromArray($key);
-
-      return $value;
+        return $this->getPropertyFromArray($key);
     }
 
     /**
@@ -1863,7 +2015,7 @@ class Model implements Formable
      */
     protected function getRelationshipFromMethod($method)
     {
-      return $this->$method() ? $this->$method()->get() : null;
+        return $this->$method() ? $this->$method()->get() : null;
     }
 
     /**
@@ -1885,7 +2037,7 @@ class Model implements Formable
      */
     public function hasGetMutator($key)
     {
-      return method_exists($this, 'get'.Str::camelize($key).'Property');
+        return method_exists($this, 'get'.Str::camelize($key).'Property');
     }
 
     /**
@@ -1909,7 +2061,7 @@ class Model implements Formable
      */
     protected function mutatePropertyGet($key, $value)
     {
-      return $this->{'get'.Str::camelize($key).'Property'}($value);
+        return $this->{'get'.Str::camelize($key).'Property'}($value);
     }
 
     /**
@@ -1928,6 +2080,7 @@ class Model implements Formable
      * Eager Load With
      *
      * @param string|array $name
+     *
      * @return $this
      */
     public function with($name)
@@ -2007,6 +2160,16 @@ class Model implements Formable
     }
 
     /**
+     * Get Field Options
+     *
+     * @return array
+     */
+    public function getFieldOptions()
+    {
+        return $this->fieldOptions;
+    }
+
+    /**
      * Paginate
      *
      * @param int $number
@@ -2020,6 +2183,16 @@ class Model implements Formable
         return $this->query->paginate($number, $page, function($results) use ($obj) {
             return $obj->getQueryResult($results);
         });
+    }
+
+    /**
+     * Get Model Clone
+     *
+     * @return $this
+     */
+    public function clone()
+    {
+        return clone $this;
     }
 
     /**
@@ -2038,7 +2211,7 @@ class Model implements Formable
             $relationships[$key] = $value;
         }
 
-        return array_merge($this->getProperties(), $relationships);
+        return array_merge($this->getPublicProperties(), $relationships);
     }
 
     /**
@@ -2046,7 +2219,7 @@ class Model implements Formable
      */
     public function toJson()
     {
-        return json_encode($this->toArray());
+        return json_encode($this);
     }
 
     /**
@@ -2059,4 +2232,11 @@ class Model implements Formable
         return $this->toJson();
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
 }

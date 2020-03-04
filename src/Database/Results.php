@@ -1,10 +1,11 @@
 <?php
 namespace TypeRocket\Database;
 
+use JsonSerializable;
 use TypeRocket\Models\Contract\Formable;
 use TypeRocket\Models\Model;
 
-class Results extends \ArrayObject implements Formable
+class Results extends \ArrayObject implements Formable, JsonSerializable
 {
 
     public $class = null;
@@ -23,21 +24,87 @@ class Results extends \ArrayObject implements Formable
     }
 
     /**
+     * Pop
+     *
+     * @return mixed|Model
+     */
+    public function pop()
+    {
+        $array = $this->getArrayCopy();
+        $value = array_pop($array);
+        $this->exchangeArray( $array );
+
+        return $value;
+    }
+
+    /**
+     * Shift
+     *
+     * @return mixed|Model
+     */
+    public function shift()
+    {
+        $array = $this->getArrayCopy();
+        $value = array_shift($array);
+        $this->exchangeArray( $array );
+
+        return $value;
+    }
+
+    /**
+     * Eager Load Results.
+     *
+     * @param string|array $with
+     *
+     * @return mixed|Results|null
+     */
+    public function load($with)
+    {
+        if($first = $this->offsetGet(0)) {
+            if($first instanceof Model) {
+                return $first->clone()->load($with, $this);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Exchange and Cast
+     *
+     * @param array $results
+     * @param null|string $class
+     *
+     * @return $this
+     */
+    public function exchangeAndCast($results, $class = null)
+    {
+        $this->exchangeArray( $results );
+        $this->castResults($class);
+
+        return $this;
+    }
+
+    /**
      * Cast results
      *
      * Casting is normally to a Model class
+     *
+     * @param null|string $class
+     *
+     * @return $this
      */
-    public function castResults()
+    public function castResults($class = null)
     {
+        $this->class = $class ?? $this->class;
+
         if( ! $this->class ) {
-            return;
+            return null;
         }
 
-        $array = $this->getArrayCopy();
-        $models = [];
-        if(!empty($array)) {
-            foreach ( $array as $item ) {
-                $model = (new $this->class);
+        if($this->count() > 0) {
+            foreach ( $this as &$item ) {
+                $model = new $this->class;
 
                 if( $model instanceof Model ) {
                     $model->castProperties( (array) $item );
@@ -46,10 +113,32 @@ class Results extends \ArrayObject implements Formable
                     $model->$property = (array) $item;
                 }
 
-                $models[] = $model;
+                $item = $model;
             }
         }
-        $this->exchangeArray( $models );
+
+        return $this;
+    }
+
+    /**
+     * Index Results
+     *
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function indexWith($column)
+    {
+        $data = $this->getArrayCopy();
+        $result = [];
+
+        foreach ($data as $item) {
+            $result[$item->{$column}] = $item;
+        }
+
+        $this->exchangeArray( $result );
+
+        return $this;
     }
 
     /**
@@ -69,11 +158,11 @@ class Results extends \ArrayObject implements Formable
         $data = $this->getArrayCopy();
         $result = [];
 
-        foreach ($data as $item) {
+        foreach ($data as $i => $item) {
             if($item instanceof Formable) {
-                $result[] = $item->getFormFields();
+                $result[$i] = $item->getFormFields();
             } else {
-                $result[] = $item;
+                $result[$i] = $item;
             }
         }
 
@@ -100,11 +189,11 @@ class Results extends \ArrayObject implements Formable
             }
         }
 
-        foreach ($items as $item) {
+        foreach ($items as $i => $item) {
             if( $item instanceof Model) {
-                $results[] = $item->toArray();
+                $results[$i] = $item->toArray();
             } else {
-                $results[] = (array) $item;
+                $results[$i] = (array) $item;
             }
         }
 
@@ -116,7 +205,7 @@ class Results extends \ArrayObject implements Formable
      */
     public function toJson()
     {
-        return json_encode($this->toArray());
+        return json_encode($this);
     }
 
     /**
@@ -127,5 +216,13 @@ class Results extends \ArrayObject implements Formable
     public function __toString()
     {
         return $this->toJson();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

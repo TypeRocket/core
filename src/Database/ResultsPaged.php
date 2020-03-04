@@ -1,26 +1,29 @@
 <?php
-
-
 namespace TypeRocket\Database;
 
+use JsonSerializable;
+use TypeRocket\Html\Generator;
+use TypeRocket\Http\Request;
 
-class ResultsPaged implements \Iterator
+class ResultsPaged implements \Iterator, JsonSerializable
 {
 
     /** @var Results */
     protected $results;
+    protected $number;
     protected $page;
     protected $count;
     protected $pages;
 
     private $position = 0;
 
-    public function __construct(Results $results, $page, $count)
+    public function __construct(Results $results, $page, $count, $number)
     {
         $this->results = $results;
+        $this->number = $number;
         $this->count = $count;
         $this->page = $page;
-        $this->pages = ceil($count / $page);
+        $this->pages = ceil($count / $number);
     }
 
     /**
@@ -34,13 +37,33 @@ class ResultsPaged implements \Iterator
     }
 
     /**
+     * Get Number
+     *
+     * @return mixed
+     */
+    public function getNumberPerPage()
+    {
+        return $this->number;
+    }
+
+    /**
      * Get Current Page
+     *
+     * @return mixed
+     */
+    public function getCurrentPage()
+    {
+        return $this->page;
+    }
+
+    /**
+     * @deprecated
      *
      * @return mixed
      */
     public function getPage()
     {
-        return $this->page;
+        return $this->getCurrentPage();
     }
 
     /**
@@ -64,6 +87,117 @@ class ResultsPaged implements \Iterator
     }
 
     /**
+     * Get Next
+     *
+     * @return int|null
+     */
+    public function getNextPage()
+    {
+        $next = $this->page + 1;
+        return $next > $this->pages ? null : $next;
+    }
+
+    /**
+     * Get Previous
+     *
+     * @return int|null
+     */
+    public function getPreviousPage()
+    {
+        $prev = $this->page - 1;
+        return $prev < 1 ? null : $prev;
+    }
+
+    /**
+     * Get Last
+     *
+     * @return float
+     */
+    public function getLastPage()
+    {
+        return $this->pages;
+    }
+
+    /**
+     * Get First
+     *
+     * @return int
+     */
+    public function getFirstPage()
+    {
+        return 1;
+    }
+
+    /**
+     * Get links
+     *
+     * @return array
+     */
+    public function getLinks()
+    {
+        $request = (new Request);
+        $current = $this->getCurrentPage();
+        $next = $this->getNextPage();
+        $prev = $this->getPreviousPage();
+        $last = $this->getLastPage();
+        $first = $this->getFirstPage();
+
+        return [
+            'current' => $next ? $request->getModifiedUri(['paged' => $current]) : null,
+            'next' => $next ? $request->getModifiedUri(['paged' => $next]) : null,
+            'previous' => $prev ? $request->getModifiedUri(['paged' => $prev]) : null,
+            'first' => $prev || $next ? $request->getModifiedUri(['paged' => $first]) : null,
+            'last' => $prev || $next ? $request->getModifiedUri(['paged' => $last]) : null,
+        ];
+    }
+
+    /**
+     * Get Next Link
+     *
+     * Get <a> tag with correct URL
+     *
+     * @param string|null $label
+     * @param array $attributes
+     *
+     * @return string|null
+     */
+    public function linkNext($label = null, $attributes = [])
+    {
+        $label = $label ?: __( 'Next Page &raquo;' );
+
+        if($next = $this->getNextPage()) {
+            $url = (new Request)->getModifiedUri(['paged' => $next]);
+
+            return (string) (new Generator)->newLink($label, $url, $attributes);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get Previous Link
+     *
+     * Get <a> tag with correct URL
+     *
+     * @param string|null $label
+     * @param array $attributes
+     *
+     * @return string|null
+     */
+    public function linkPrevious($label = null, $attributes = [])
+    {
+        $label = $label ?: __( '&laquo; Previous Page' );
+
+        if($next = $this->getPreviousPage()) {
+            $url = (new Request)->getModifiedUri(['paged' => $next]);
+
+            return (string) (new Generator)->newLink($label, $url, $attributes);
+        }
+
+        return null;
+    }
+
+    /**
      * To Array
      *
      * @return array
@@ -73,8 +207,10 @@ class ResultsPaged implements \Iterator
         return [
             'items' => $this->results->toArray(),
             'page' => $this->page,
+            'current' => $this->page,
             'pages' => $this->pages,
             'count' => $this->count,
+            'links' => $this->getLinks(),
         ];
     }
 
@@ -83,7 +219,7 @@ class ResultsPaged implements \Iterator
      */
     public function toJson()
     {
-        return json_encode($this->toArray());
+        return json_encode($this);
     }
 
     /**
@@ -150,5 +286,13 @@ class ResultsPaged implements \Iterator
     public function rewind()
     {
         $this->position = 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

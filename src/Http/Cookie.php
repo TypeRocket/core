@@ -61,7 +61,7 @@ class Cookie
      * @return $this
      */
     public function set( $name, $data, $time = MINUTE_IN_SECONDS ) {
-        setcookie($name, $data, time() + $time, '/', null, isset($_SERVER["HTTPS"]), true);
+        setcookie($name, $data, time() + $time, '/', null, is_ssl());
 
         return $this;
     }

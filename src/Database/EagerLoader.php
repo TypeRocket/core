@@ -32,12 +32,12 @@ class EagerLoader
     /**
      * With Eager
      *
-     * @param array|Results $result
+     * @param array|Results $results
      * @return mixed
      */
-    protected function withEager($result) {
-        if(empty($this->load) || empty($result)) {
-            return $result;
+    protected function withEager($results) {
+        if(empty($this->load) || empty($results)) {
+            return $results;
         }
 
         /** @var Model $relation */
@@ -45,23 +45,23 @@ class EagerLoader
         $name = $this->load['name'];
 
         if(is_null($relation)) {
-            /** @var Model $result */
-            if($result instanceof Results) {
-                foreach($result as $key => $value) {
+            /** @var Model|Results $results */
+            if($results instanceof Results) {
+                foreach($results as $key => $value) {
                     /** @var Model $value */
                     $value->setRelationship($name, null);
                 }
             } else {
-                $result->setRelationship($name, null);
+                $results->setRelationship($name, null);
             }
 
-            return $result;
+            return $results;
         }
 
         $type = $relation->getRelatedBy()['type'];
-        $result = $this->{$type}($result);
+        $results = $this->{$type}($results);
 
-        return $result;
+        return $results;
     }
 
     /**

@@ -12,6 +12,7 @@ class Request
     protected $post = null;
     protected $get = null;
     protected $files = null;
+    protected $input = null;
     protected $cookies = null;
     protected $hook = false;
     protected $protocol = 'http';
@@ -226,6 +227,73 @@ class Request
         }
 
         return $this->cookies;
+    }
+
+    /**
+     * Get Input
+     *
+     * @param $key
+     * @param null $default
+     *
+     * @return string|null
+     */
+    public function getInput($key = null, $default = null)
+    {
+        return $this->getDataJson($key, $default) ?? $this->post[$key] ?? $this->get[$key] ?? $default;
+    }
+
+    /**
+     * @param $key
+     * @param null $default
+     *
+     * @return mixed|null
+     */
+    public function getDataJson($key = null, $default = null)
+    {
+        if(!$this->input) {
+            $input = file_get_contents('php://input');
+            if(tr_is_json($input)) { $data = json_decode($input, true); }
+            else { parse_str($input, $data); }
+            $this->input = $data;
+        }
+
+        return is_null($key) ? $this->input : ($this->input[$key] ?? $default);
+    }
+
+    /**
+     * Get Full URL
+     *
+     * @return string
+     */
+    public function getUriFull()
+    {
+        return $this->protocol.'://'.$this->host.$this->uri;
+    }
+
+    /**
+     * Get Full URL with Merged Query
+     *
+     * @param array $request_params
+     * @return string
+     */
+    public function getModifiedUri(array $request_params = [])
+    {
+
+        tr_response();
+        $parts = parse_url($this->getUriFull());
+        parse_str($parts['query'] ?? '', $query);
+        $query = http_build_query(array_merge($query, $request_params));
+
+        $map = [
+            $parts['scheme'],
+            '://',
+            $parts['host'],
+            $parts['path'],
+            $query ? '?' : '',
+            $query,
+        ];
+
+        return implode('', $map);
     }
 
     /**
