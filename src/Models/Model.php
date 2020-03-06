@@ -633,7 +633,7 @@ class Model implements JsonSerializable, Formable
         }
 
         // Override with static values
-        $fields = array_merge( $this->explicitProperties, $fields, $this->static);
+        $fields = array_merge( $this->explicitProperties, $fields ?? [], $this->static);
 
         // Format
         if ( ! empty( $this->format ) && is_array( $this->format )) {
