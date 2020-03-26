@@ -19,7 +19,7 @@ if( ! function_exists('tr_response') ) {
      * @return \TypeRocket\Http\Response
      */
     function tr_response() {
-        return \TypeRocket\Core\Injector::findOrNewSingleton(\TypeRocket\Http\Response::class);;
+        return \TypeRocket\Core\Injector::findOrNewSingleton(\TypeRocket\Http\Response::class);
     }
 }
 
