@@ -14,9 +14,7 @@ class Sanitize
     public static function textarea( $input )
     {
         global $allowedposttags;
-        $output = wp_kses( $input, $allowedposttags );
-
-        return $output;
+        return wp_kses( $input, $allowedposttags );
     }
 
     /**
@@ -76,9 +74,7 @@ class Sanitize
      */
     public static function plaintext( $input )
     {
-        $output = wp_kses( $input, array() );
-
-        return $output;
+        return wp_kses( $input, [] );
     }
 
     /**
@@ -86,16 +82,52 @@ class Sanitize
      * However, if the user can create unfiltered HTML allow it.
      *
      * @param string $input
+     * @param bool $force_filter
+     * @param bool $auto_p
+     * @param null $allowed_tags
      *
      * @return string
      */
-    public static function editor( $input )
+    public static function editor( $input, $force_filter = false, $auto_p = false, $allowed_tags = null )
     {
-        if (current_user_can( 'unfiltered_html' )) {
-            $output = $input;
+        if (current_user_can( 'unfiltered_html' ) && !$force_filter) {
+            $output = trim($input);
         } else {
             global $allowedtags;
-            $output = wpautop( wp_kses( $input, $allowedtags ) );
+            $output =  wp_kses( trim($input), apply_filters('tr_sanitize_editor_tags', $allowed_tags ?? $allowedtags) );
+        }
+
+        if($auto_p) {
+            $output = wpautop($output);
+        }
+
+        return $output;
+    }
+
+    /**
+     *
+     *
+     * @param string $input HTML input
+     * @param null|array $allowed_tags allowed tags for wp_kses
+     * @param null|string $namespace
+     * @param bool $auto_p
+     *
+     * @return string
+     */
+    public static function html($input, $allowed_tags = null, $namespace = null, $auto_p = false) {
+        $tags = apply_filters('tr_sanitize_html_tags_' . ($namespace ?? 'default'), $allowed_tags ?? [
+                'em' => [],
+                'strong' => [],
+                'ul' => [],
+                'ol' => [],
+                'li' => [],
+                'p' => [],
+                'br' => [],
+            ]);
+        $output =  trim(wp_kses(trim($input), $tags));
+
+        if($auto_p) {
+            $output = wpautop($output);
         }
 
         return $output;
@@ -113,7 +145,7 @@ class Sanitize
      */
     public static function hex( $hex, $default = '#000000' )
     {
-        if ( preg_match("/^\#?([a-f0-9]{3}){1,2}$/", $hex ) ) {
+        if ( preg_match("/^\#?([a-fA-F0-9]{3}){1,2}$/", $hex ) ) {
             return $hex;
         }
 
