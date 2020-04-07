@@ -395,7 +395,7 @@ if ( ! function_exists('tr_posts_components_field')) {
                 $paths     = \TypeRocket\Core\Config::locate('paths');
                 $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
                 if (file_exists($file)) {
-                    $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $componnet_id) {
+                    $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id) {
                         /** @noinspection PhpIncludeInspection */
                         include($file);
                     };
@@ -498,7 +498,7 @@ if( ! function_exists('tr_components_loop')) {
             $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
             $file = apply_filters('tr_component_file', $file, ['folder' => $name, 'name' => $component, 'view' => 'visual']);
             if (file_exists($file)) {
-                $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $componnet_id) {
+                $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id) {
                     /** @noinspection PhpIncludeInspection */
                     include($file);
                 };
