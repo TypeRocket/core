@@ -381,7 +381,7 @@ if ( ! function_exists('tr_posts_components_field')) {
         if (is_array($builder_data)) {
             $i = 0;
             $len = count($builder_data);
-            foreach ($builder_data as $data) {
+            foreach ($builder_data as $hash => $data) {
                 $first_item = $last_item = false;
 
                 if ($i == 0) {
@@ -395,11 +395,11 @@ if ( ! function_exists('tr_posts_components_field')) {
                 $paths     = \TypeRocket\Core\Config::locate('paths');
                 $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
                 if (file_exists($file)) {
-                    $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id) {
+                    $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id, $hash) {
                         /** @noinspection PhpIncludeInspection */
                         include($file);
                     };
-                    $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item, $key);
+                    $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item, $key, $hash);
                 } else {
                     echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
                 }
@@ -483,7 +483,7 @@ if( ! function_exists('tr_components_loop')) {
         extract($other);
         $i = 0;
         $len = count($builder_data);
-        foreach ($builder_data as $data) {
+        foreach ($builder_data as $hash => $data) {
             $first_item = $last_item = false;
 
             if ($i == 0) {
@@ -498,11 +498,11 @@ if( ! function_exists('tr_components_loop')) {
             $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
             $file = apply_filters('tr_component_file', $file, ['folder' => $name, 'name' => $component, 'view' => 'visual']);
             if (file_exists($file)) {
-                $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id) {
+                $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id, $hash) {
                     /** @noinspection PhpIncludeInspection */
                     include($file);
                 };
-                $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item, $key);
+                $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item, $key, $hash);
             } else {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
             }
