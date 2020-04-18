@@ -100,23 +100,23 @@ class Taxonomy extends Registrable
         $lowerPlural   = $keep_case ? $plural : strtolower( $plural );
 
         $labels = [
-            'add_new_item'               => __( 'Add New ' . $upperSingular ),
-            'add_or_remove_items'        => __( 'Add or remove ' . $lowerPlural ),
-            'all_items'                  => __( 'All ' . $upperPlural ),
-            'choose_from_most_used'      => __( 'Choose from the most used ' . $lowerPlural ),
-            'edit_item'                  => __( 'Edit ' . $upperSingular ),
-            'name'                       => __( $upperPlural ),
-            'menu_name'                  => __( $upperPlural ),
-            'new_item_name'              => __( 'New ' . $upperSingular . ' Name' ),
-            'not_found'                  => __( 'No ' . $lowerPlural . ' found.' ),
-            'parent_item'                => __( 'Parent ' . $upperSingular ),
-            'parent_item_colon'          => __( 'Parent ' . $upperSingular . ':' ),
-            'popular_items'              => __( 'Popular ' . $upperPlural ),
-            'search_items'               => __( 'Search ' . $upperPlural ),
-            'separate_items_with_commas' => __( 'Separate ' . $lowerPlural . ' with commas' ),
-            'singular_name'              => __( $upperSingular ),
-            'update_item'                => __( 'Update ' . $upperSingular ),
-            'view_item'                  => __( 'View ' . $upperSingular )
+            'add_new_item'               => __( 'Add New ' . $upperSingular, 'typerocket-profile'),
+            'add_or_remove_items'        => __( 'Add or remove ' . $lowerPlural, 'typerocket-profile'),
+            'all_items'                  => __( 'All ' . $upperPlural, 'typerocket-profile' ),
+            'choose_from_most_used'      => __( 'Choose from the most used ' . $lowerPlural, 'typerocket-profile' ),
+            'edit_item'                  => __( 'Edit ' . $upperSingular, 'typerocket-profile' ),
+            'name'                       => __( $upperPlural, 'typerocket-profile' ),
+            'menu_name'                  => __( $upperPlural, 'typerocket-profile' ),
+            'new_item_name'              => __( 'New ' . $upperSingular . ' Name', 'typerocket-profile' ),
+            'not_found'                  => __( 'No ' . $lowerPlural . ' found.', 'typerocket-profile' ),
+            'parent_item'                => __( 'Parent ' . $upperSingular, 'typerocket-profile' ),
+            'parent_item_colon'          => __( 'Parent ' . $upperSingular . ':', 'typerocket-profile' ),
+            'popular_items'              => __( 'Popular ' . $upperPlural, 'typerocket-profile' ),
+            'search_items'               => __( 'Search ' . $upperPlural, 'typerocket-profile' ),
+            'separate_items_with_commas' => __( 'Separate ' . $lowerPlural . ' with commas', 'typerocket-profile' ),
+            'singular_name'              => __( $upperSingular, 'typerocket-profile' ),
+            'update_item'                => __( 'Update ' . $upperSingular, 'typerocket-profile' ),
+            'view_item'                  => __( 'View ' . $upperSingular, 'typerocket-profile' )
         ];
 
         $this->args['label'] = $upperPlural;

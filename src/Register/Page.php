@@ -50,7 +50,7 @@ class Page extends Registrable
      */
     public function __construct($resource, $action, $title, array $settings = [])
     {
-        $this->title    = $title;
+        $this->title    = __($title, 'typerocket-profile');
         $this->resource = Sanitize::underscore( $resource );
         $this->id       = Sanitize::underscore( $this->title );
         $this->action   = Sanitize::underscore( $action );
@@ -176,7 +176,7 @@ class Page extends Registrable
      */
     public function setTitle( $title )
     {
-        $this->title = $title;
+        $this->title = __($title, 'typerocket-profile');
 
         return $this;
     }

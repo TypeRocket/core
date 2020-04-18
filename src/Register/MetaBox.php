@@ -22,8 +22,8 @@ class MetaBox extends Registrable
      */
     public function __construct( $name, $screen = null, array $settings = [])
     {
-        $this->label = $this->id = $name;
-        $this->id    = Sanitize::underscore( $this->id );
+        $this->id    = Sanitize::underscore( $name );
+        $this->label = __($name, 'typerocket-profile');
 
         if ( ! empty( $screen )) {
             $screen        = (array) $screen;
@@ -34,7 +34,7 @@ class MetaBox extends Registrable
             $this->callback = $settings['callback'];
         }
         if ( ! empty( $settings['label'] )) {
-            $this->label = $settings['label'];
+            $this->label = __($settings['label'], 'typerocket-profile');
         }
 
         unset( $settings['label'] );
@@ -89,7 +89,7 @@ class MetaBox extends Registrable
     public function setLabel( $label )
     {
 
-        $this->label = (string) $label;
+        $this->label = __((string) $label, 'typerocket-profile');
 
         return $this;
     }

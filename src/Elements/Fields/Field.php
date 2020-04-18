@@ -154,7 +154,7 @@ abstract class Field
         $this->setName( $name );
 
         if (empty( $settings['label'] )) {
-            $this->settings['label'] = $name;
+            $this->settings['label'] = __($name, 'typerocket-profile');
         }
 
         return $this;
@@ -308,7 +308,7 @@ abstract class Field
     public function setLabel( $value )
     {
 
-        $this->settings['label'] = $value;
+        $this->settings['label'] = __($value, 'typerocket-profile');
 
         return $this;
     }
