@@ -55,16 +55,16 @@ class Location extends Field
         $html = '<div class="tr_field_location_fields">';
 
         $labels = $this->locationLabels = array_merge([
-            'city' => __('City'),
-            'state' => __('State'),
-            'zip' => __('Zip Code'),
-            'country' => __('Country'),
-            'address1' => __('Address'),
-            'address2' => __('Address Line 2'),
-            'lat' => __('Lat'),
-            'lng' => __('Lng'),
-            'generate' => __('Get Address Lat/Lng'),
-            'clear' => __('Clear Address Lat/Lng'),
+            'city' => __('City', 'typerocket-domain'),
+            'state' => __('State', 'typerocket-domain'),
+            'zip' => __('Zip Code', 'typerocket-domain'),
+            'country' => __('Country', 'typerocket-domain'),
+            'address1' => __('Address', 'typerocket-domain'),
+            'address2' => __('Address Line 2', 'typerocket-domain'),
+            'lat' => __('Lat', 'typerocket-domain'),
+            'lng' => __('Lng', 'typerocket-domain'),
+            'generate' => __('Get Address Lat/Lng', 'typerocket-domain'),
+            'clear' => __('Clear Address Lat/Lng', 'typerocket-domain'),
         ], $this->locationLabels);
 
         $cszc = ['city' => $labels['city'], 'state' => $labels['state'], 'zip' => $labels['zip']];

@@ -362,7 +362,7 @@ class Tables
                                 }
                                 switch ($action) {
                                     case 'edit' :
-                                        $edit_text = __('Edit');
+                                        $edit_text = __('Edit', 'typerocket-domain');
                                         $text .= "<span class=\"edit\"><a href=\"{$edit_url}\">{$edit_text}</a></span>";
                                         break;
                                     case 'delete' :
@@ -370,11 +370,11 @@ class Tables
                                             $delete_url = wp_nonce_url($delete_url, 'form_' . tr_config('app.seed'), '_tr_nonce_form');
                                             $delete_class = 'class="tr-delete-row-rest-button"';
                                         }
-                                        $del_text = __('Delete');
+                                        $del_text = __('Delete', 'typerocket-domain');
                                         $text .= "<span class=\"delete\"><a data-target=\"#{$row_id}\" {$delete_class} href=\"{$delete_url}\">{$del_text}</a></span>";
                                         break;
                                     case 'view' :
-                                        $view_text = __('View');
+                                        $view_text = __('View', 'typerocket-domain');
                                         if( !empty($data['view_url']) && is_callable($data['view_url']) ) {
                                             $show_url = call_user_func_array($data['view_url'], [$show_url, $result]);
                                         }
@@ -388,7 +388,7 @@ class Tables
                     $classes = null;
                     if($this->primary == $column) {
                         $classes = 'column-primary';
-                        $details_text = __('Show more details');
+                        $details_text = __('Show more details', 'typerocket-domain');
                         $text .= "<button type=\"button\" class=\"toggle-row\"><span class=\"screen-reader-text\">{$details_text}</span></button>";
                     }
 
@@ -400,7 +400,7 @@ class Tables
             }
         } else {
             $td_row = new Generator();
-            $results_text = __('No results.');
+            $results_text = __('No results.', 'typerocket-domain');
             $td_row->newElement('tr', [], "<td>{$results_text}</td>");
             $body->appendInside($td_row);
         }
@@ -411,10 +411,10 @@ class Tables
 
         // Pagination
         $pages = ceil($count / $this->limit);
-        $item_word = __('items');
+        $item_word = __('items', 'typerocket-domain');
 
         if($count < 2) {
-            $item_word = __('item');
+            $item_word = __('item', 'typerocket-domain');
         }
 
         $page = $this->paged;
@@ -445,8 +445,8 @@ class Tables
         $get_condition_current = !empty($_GET['condition']) ? wp_unslash($_GET['condition']) : '';
         $get_on_current = !empty($_GET['on']) ? wp_unslash($_GET['on']) : '';
         $select_condition = [
-            'like' => __('Contains'),
-            'equals' => __('Is Exactly')
+            'like' => __('Contains', 'typerocket-domain'),
+            'equals' => __('Is Exactly', 'typerocket-domain')
         ];
 
         $searchColumns = $this->searchColumns ? $this->searchColumns : $this->columns;
@@ -538,8 +538,8 @@ class Tables
      */
     protected function paginationLinks($page, $prev, $next, $first, $last, $pages) {
         echo "<span class=\"pagination-links\">";
-        $last_text = __('Last page');
-        $next_text = __('Next page');
+        $last_text = __('Last page', 'typerocket-domain');
+        $next_text = __('Next page', 'typerocket-domain');
 
         if($first && $pages > 2) {
             if( (int) $page === 1 ) {
@@ -554,7 +554,7 @@ class Tables
         } else {
             echo " <a class=\"prev-page button\" href=\"{$prev}\" aria-hidden=\"true\">&lsaquo;</a> ";
         }
-        echo " <span id=\"table-paging\" class=\"paging-input\">{$page} ".__('of')." <span class=\"total-pages\">{$pages}</span></span> ";
+        echo " <span id=\"table-paging\" class=\"paging-input\">{$page} ".__('of', 'typerocket-domain')." <span class=\"total-pages\">{$pages}</span></span> ";
         if( $page < $pages ) {
             echo " <a class=\"next-page button\" href=\"{$next}\"><span class=\"screen-reader-text\">{$next_text}</span><span aria-hidden=\"true\">&rsaquo;</span></a> ";
         } else {

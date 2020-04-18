@@ -102,7 +102,7 @@ class Repeater extends Field implements ScriptField
         $control_list = [
             'contract' => ['class' => 'collapse tr-control-icon tr-control-icon-collapse'],
             'move' => ['class' => 'move tr-control-icon tr-control-icon-move'],
-            'remove' => ['class' => 'remove tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove')],
+            'remove' => ['class' => 'remove tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove', 'typerocket-domain')],
         ];
 
         foreach ($this->hide as $control_name => $hide) {

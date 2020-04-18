@@ -137,7 +137,7 @@ class Builder extends Matrix
 
                 if($value == null) {
                     $li = new Generator();
-                    $li->newElement('li', ['class' => 'builder-select-divider'], '<div>' . __($name) . '</div>');
+                    $li->newElement('li', ['class' => 'builder-select-divider'], '<div>' . __($name, 'typerocket-profile') . '</div>');
 
                     $generator->appendInside( $li );
                     continue;
@@ -155,7 +155,7 @@ class Builder extends Matrix
                 $img->newImage($attr['data-thumbnail']);
 
                 $li = new Generator();
-                $li->newElement('li', $attr, '<span>' . __($name) . '</span>')->appendInside( $img );
+                $li->newElement('li', $attr, '<span>' . __($name, 'typerocket-profile') . '</span>')->appendInside( $img );
 
                 $generator->appendInside( $li );
             }

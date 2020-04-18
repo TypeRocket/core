@@ -28,7 +28,7 @@ class Links extends Field
         $field = '';
 
         $search_attributes = [
-            'placeholder' => __('Type to search...'),
+            'placeholder' => __('Type to search...', 'typerocket-domain'),
             'class' => 'tr-link-links-input'
         ];
 

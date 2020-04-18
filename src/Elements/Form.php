@@ -509,11 +509,8 @@ class Form
         if ($label) {
             $label = $this->currentField->getSetting( 'label' );
 
-            $label_translate = $this->getLabelTranslationDomain();
-            if($label_translate) {
+            if($label_translate = $this->getLabelTranslationDomain()) {
                 $label = __($label, $label_translate);
-            } else {
-                $label = __($label);
             }
 
             $html  = "{$open_html}{$label} {$required} {$debug}{$close_html}";

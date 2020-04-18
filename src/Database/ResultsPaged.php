@@ -163,7 +163,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      */
     public function linkNext($label = null, $attributes = [])
     {
-        $label = $label ?: __( 'Next Page &raquo;' );
+        $label = __($label ?:  'Next Page &raquo;', 'typerocket-profile' );
 
         if($next = $this->getNextPage()) {
             $url = (new Request)->getModifiedUri(['paged' => $next]);
@@ -186,7 +186,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      */
     public function linkPrevious($label = null, $attributes = [])
     {
-        $label = $label ?: __( '&laquo; Previous Page' );
+        $label = __($label ?:  '&laquo; Previous Page', 'typerocket-profile' );
 
         if($next = $this->getPreviousPage()) {
             $url = (new Request)->getModifiedUri(['paged' => $next]);

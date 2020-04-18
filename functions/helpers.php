@@ -170,8 +170,8 @@ if ( ! function_exists('tr_resource_pages')) {
 
         $menu_id = 'add_resource_' . \TypeRocket\Utility\Sanitize::underscore($singular);
 
-        $add = tr_page($resource, 'add', __('Add ' . $singular))
-            ->setArgument('menu', __('Add New'))
+        $add = tr_page($resource, 'add', 'Add ' . $singular)
+            ->setArgument('menu', __('Add New', 'typerocket-domain'))
             ->adminBar($menu_id, $singular, 'new-content')
             ->mapActions([
                 'GET' => 'add',
@@ -192,7 +192,7 @@ if ( ! function_exists('tr_resource_pages')) {
                 'GET' => 'show'
             ]);
 
-        $edit = tr_page($resource, 'edit', __('Edit ' . $singular))
+        $edit = tr_page($resource, 'edit', 'Edit ' . $singular)
             ->addNewButton()
             ->removeMenu()
             ->mapActions([

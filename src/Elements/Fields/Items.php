@@ -55,7 +55,7 @@ class Items extends Field
                 $value = esc_attr( $this->sanitize($value, 'raw') );
                 $input = $generator->newInput( $this->inputType, $name . '[]', $value )->getString();
                 $remove = '#remove';
-                $remove_title = __('Remove Item');
+                $remove_title = __('Remove Item', 'typerocket-domain');
                 $list .= $generator->newElement( 'li', ['class' => 'item'],
                     '<a class="move tr-control-icon tr-control-icon-move"></a><a href="'.$remove.'" class="remove tr-control-icon tr-control-icon-remove" title="'.$remove_title.'"></a>' . $input )->getString();
 

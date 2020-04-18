@@ -290,26 +290,26 @@ class Launcher
 
             if ($obj->public == true) :
                 /** @noinspection HtmlUnknownTarget */
-                $view    = sprintf( __( '<a href="%s">View %s</a>' ), esc_url( get_permalink( $post->ID ) ), $singular );
-                $preview = sprintf( __( '<a target="_blank" href="%s">Preview %s</a>' ),
+                $view    = sprintf( __( '<a href="%s">View %s</a>', 'typerocket-domain' ), esc_url( get_permalink( $post->ID ) ), $singular );
+                $preview = sprintf( __( '<a target="_blank" href="%s">Preview %s</a>', 'typerocket-domain' ),
                     esc_url( add_query_arg( 'preview', 'true', get_permalink( $post->ID ) ) ), $singular );
             else :
                 $view = $preview = '';
             endif;
 
             $messages[$pt] = [
-                1  => sprintf( __( '%s updated. %s' ), $singular, $view ),
-                2  => __( 'Custom field updated.' ),
-                3  => __( 'Custom field deleted.' ),
-                4  => sprintf( __( '%s updated.' ), $singular ),
-                5  => isset( $_GET['revision'] ) ? sprintf( __( '%s restored to revision from %s' ), $singular,
+                1  => sprintf( __( '%s updated. %s', 'typerocket-domain' ), $singular, $view ),
+                2  => __( 'Custom field updated.', 'typerocket-domain' ),
+                3  => __( 'Custom field deleted.', 'typerocket-domain' ),
+                4  => sprintf( __( '%s updated.', 'typerocket-domain' ), $singular ),
+                5  => isset( $_GET['revision'] ) ? sprintf( __( '%s restored to revision from %s', 'typerocket-domain' ), $singular,
                     wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-                6  => sprintf( __( '%s published. %s' ), $singular, $view ),
-                7  => sprintf( __( '%s saved.' ), $singular ),
-                8  => sprintf( __( '%s submitted. %s' ), $singular, $preview ),
-                9  => sprintf( __( '%s scheduled for: <strong>%1$s</strong>. %s' ), $singular,
+                6  => sprintf( __( '%s published. %s', 'typerocket-domain' ), $singular, $view ),
+                7  => sprintf( __( '%s saved.', 'typerocket-domain' ), $singular ),
+                8  => sprintf( __( '%s submitted. %s', 'typerocket-domain' ), $singular, $preview ),
+                9  => sprintf( __( '%s scheduled for: <strong>%1$s</strong>. %s', 'typerocket-domain' ), $singular,
                     date_i18n( 'M j, Y @ G:i', strtotime( $post->post_date ) ), $preview ),
-                10 => sprintf( __( '%s draft updated. ' ), $singular ),
+                10 => sprintf( __( '%s draft updated. ', 'typerocket-domain' ), $singular ),
             ];
 
         endif;
