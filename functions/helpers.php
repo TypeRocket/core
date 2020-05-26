@@ -1010,3 +1010,15 @@ if ( ! function_exists('tr_config')) {
     }
 }
 
+if ( ! function_exists( 'tr_optional' ) ) {
+    /**
+     * Gracefully call object properties and methods
+     *
+     * @param  object $object
+     * @return \TypeRocket\Utility\Optional
+     */
+    function tr_optional( $object )
+    {
+      return new \TypeRocket\Utility\Optional( $object );
+    }
+}
