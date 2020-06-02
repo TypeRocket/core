@@ -437,7 +437,7 @@ class Launcher
         if ( is_ssl() || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
             $scheme =  'https';
         }
-        ?><script>window.trHelpers = {site_uri: "<?php echo esc_url(home_url( '', $scheme ));?>"}</script><?php
+        ?><script>window.trHelpers = {site_uri: "<?php echo rtrim(esc_url(home_url( '', $scheme )), '/');?>"}</script><?php
     }
 
     /**
