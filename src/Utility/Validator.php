@@ -262,7 +262,7 @@ class Validator
                     break;
                 case 'email' :
                     if( ! filter_var($value, FILTER_VALIDATE_EMAIL) ) {
-                        $this->setErrorMessage($name, $type, $field_name . " must be at an email address.");
+                        $this->setErrorMessage($name, $type, $field_name . " must be an email address.");
                     } else {
                         $this->passes[$name] = $value;
                     }
