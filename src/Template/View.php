@@ -140,4 +140,21 @@ class View
         $templateEngine = Config::locate('app.template_engine.admin') ??  TemplateEngine::class;
         (new $templateEngine(self::$page, self::$data, 'admin'))->load();
     }
+
+
+  /**
+   * Render a given view template
+   *
+   * @return string
+   */
+  public function renderView()
+  {
+    $buffer = tr_buffer()->startBuffer();
+    extract( $this->getData() );
+    include $this->getView();
+    $view   = $buffer->getCurrent();
+    $buffer->cleanBuffer();
+
+    return $view;
+  }
 }
