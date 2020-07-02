@@ -273,6 +273,31 @@ if ( ! function_exists('class_names')) {
     }
 }
 
+if(! function_exists('not_blank_string')) {
+    /**
+     * Not blank string
+     *
+     * @param string|null $value
+     *
+     * @return bool
+     */
+    function not_blank_string($value) {
+        return !(!isset($value) || $value === '');
+    }
+}
+
+if ( ! function_exists('database')) {
+    /**
+     * Get WPDB
+     *
+     * @return \wpdb
+     */
+    function database() {
+        global $wpdb;
+        return $wpdb;
+    }
+}
+
 
 
 

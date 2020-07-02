@@ -121,7 +121,7 @@ class View
                 $title = self::$title;
             }
             return $title;
-        });
+        }, 101);
 
         if(is_admin()) {
             // not yet
@@ -140,6 +140,7 @@ class View
         $templateEngine = Config::locate('app.template_engine.admin') ??  TemplateEngine::class;
         (new $templateEngine(self::$page, self::$data, 'admin'))->load();
     }
+
 
   /**
    * Render a given view template
