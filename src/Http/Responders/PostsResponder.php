@@ -30,6 +30,12 @@ class PostsResponder extends Responder
         }
 
         $post_type = get_post_type($id);
+
+        if($post_type == 'nav_menu_item') {
+            return;
+        }
+
+        $post_type = get_post_type($id);
         $registered = Registry::getPostTypeResource($post_type);
         $prefix = Str::camelize($registered[0]);
 
