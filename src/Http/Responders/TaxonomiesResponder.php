@@ -24,6 +24,10 @@ class TaxonomiesResponder extends Responder
      */
     public function respond( $args )
     {
+        if('nav_menu' == $this->taxonomy) {
+            return;
+        }
+
         $registered = Registry::getTaxonomyResource($this->taxonomy);
         $prefix = Str::camelize( $registered[0] );
 
