@@ -114,9 +114,9 @@ class PostType extends Registrable
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
-        $upperSingular = $keep_case ? $singular : ucwords( $singular );
-        $upperPlural   = $keep_case ? $plural : ucwords( $plural );
-        $pluralLower   = $keep_case ? $plural : strtolower( $plural );
+        $upperSingular = $keep_case ? $singular :  mb_convert_case($singular, MB_CASE_TITLE, "UTF-8");
+        $upperPlural   = $keep_case ? $plural  : mb_convert_case($plural, MB_CASE_TITLE, "UTF-8");
+        $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $labels = [
             'add_new'            => __('Add New', 'typerocket-profile'),
@@ -130,8 +130,8 @@ class PostType extends Registrable
             'menu_name'          => __($upperPlural, 'typerocket-profile'),
             'name'               => __($upperPlural, 'typerocket-profile'),
             'new_item'           => __('New ' . $upperSingular, 'typerocket-profile'),
-            'not_found'          => __('No ' . $pluralLower . ' found', 'typerocket-profile'),
-            'not_found_in_trash' => __('No ' . $pluralLower . ' found in Trash', 'typerocket-profile'),
+            'not_found'          => __('No ' . $lowerPlural . ' found', 'typerocket-profile'),
+            'not_found_in_trash' => __('No ' . $lowerPlural . ' found in Trash', 'typerocket-profile'),
             'parent_item_colon'  => __('Parent ' . $upperSingular . ':', 'typerocket-profile'),
             'search_items'       => __('Search ' . $upperPlural, 'typerocket-profile'),
             'singular_name'      => __($upperSingular, 'typerocket-profile'),
