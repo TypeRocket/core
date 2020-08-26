@@ -95,9 +95,9 @@ class Taxonomy extends Registrable
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
-        $upperPlural   = $keep_case ? $plural : ucwords( $plural );
-        $upperSingular = $keep_case ? $singular : ucwords( $singular );
-        $lowerPlural   = $keep_case ? $plural : strtolower( $plural );
+        $upperSingular = $keep_case ? $singular :  mb_convert_case($singular, MB_CASE_TITLE, "UTF-8");
+        $upperPlural   = $keep_case ? $plural  : mb_convert_case($plural, MB_CASE_TITLE, "UTF-8");
+        $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $labels = [
             'add_new_item'               => __( 'Add New ' . $upperSingular, 'typerocket-profile'),
