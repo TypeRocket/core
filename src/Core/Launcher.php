@@ -11,6 +11,13 @@ use TypeRocket\Elements\Notice;
 use TypeRocket\Http\RouteCollection;
 use TypeRocket\Http\Routes;
 use TypeRocket\Http\SSL;
+use TypeRocket\Plugins\Dashboard;
+use TypeRocket\Plugins\Dev;
+use TypeRocket\Plugins\PageBuilder;
+use TypeRocket\Plugins\SEO;
+use TypeRocket\Plugins\Sitemap;
+use TypeRocket\Plugins\SiteOptions;
+use TypeRocket\Plugins\ThemeOptions;
 use TypeRocket\Register\Registry;
 use TypeRocket\Utility\ImageSizer;
 
@@ -239,11 +246,25 @@ class Launcher
                 if(class_exists($plugin)) {
                     (new Resolver())->resolve($plugin);
                 } else {
-                    $folder = $plugin_dir . '/' . $plugin . '/';
+                    $old = [
+                        'TypeRocketDev\Plugin' => Dev::class,
+                        'TypeRocketSEO\Plugin' => SEO::class,
+                        'TypeRocketPageBuilder\Plugin' => PageBuilder::class,
+                        'TypeRocketThemeOptions\Plugin' => ThemeOptions::class,
+                        'TypeRocketDashboard\Plugin' => Dashboard::class,
+                        'TypeRocketSitemap\Plugin' => Sitemap::class,
+                        'TypeRocketSiteOptions\Plugin' => SiteOptions::class,
+                    ];
 
-                    if (file_exists($folder . 'init.php')) {
-                        /** @noinspection PhpIncludeInspection */
-                        include $folder . 'init.php';
+                    if($class = $old[ltrim($plugin, "\\")] ?? null) {
+                        (new Resolver())->resolve($class);
+                    } else {
+                        $folder = $plugin_dir . '/' . $plugin . '/';
+
+                        if (file_exists($folder . 'init.php')) {
+                            /** @noinspection PhpIncludeInspection */
+                            include $folder . 'init.php';
+                        }
                     }
                 }
             }
