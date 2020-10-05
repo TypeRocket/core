@@ -92,7 +92,7 @@ class SEO
         $url              = get_the_permalink($object_id);
         $seo              = tr_posts_field('seo.meta', $object_id);
 
-        if(! array_key_exists('description', $seo)) {
+        if( !is_array($seo) || !array_key_exists('description', $seo)) {
             return;
         }
 
