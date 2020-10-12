@@ -37,7 +37,7 @@ class DownloadWordPress extends Command
     {
         $path = $this->getArgument('path');
         $type = $this->getArgument('type');
-        $this->type = $type ?: 'core';
+        $this->type = $type ?: 'all';
         $this->path = rtrim( $path ?  $path : tr_wp_root(), '/');
 
         switch($this->type) {
