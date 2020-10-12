@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Core;
 
+use TypeRocket\Database\Query;
 use TypeRocket\Utility\Str;
 
 class Rooter
@@ -27,13 +28,36 @@ class Rooter
         $paths = tr_config('paths');
         $urls = tr_config('urls');
         $root = tr_config('app.root.themes');
+        $themes = [
+            $paths['themes'],
+            WP_CONTENT_DIR . '/themes',
+        ];
 
-        register_theme_directory( $paths['themes'] );
-        register_theme_directory( apply_filters('tr_rooter_wp_themes', WP_CONTENT_DIR . '/themes') );
+        apply_filters('tr_rooter_wp_themes', $themes);
+
+        foreach ($themes as $loc) {
+            register_theme_directory( $loc );
+        }
 
         new \WP_Theme($root['theme'], $paths['themes']);
+        define( 'WP_DEFAULT_THEME', $root['theme'] );
 
-        // Set URLs
+        if($root['flush']) {
+            add_filter( "option_stylesheet_root", function($v, $option) use ($paths) {
+                global $wp_theme_directories, $wpdb;
+
+                if(!in_array($v, $wp_theme_directories) && !in_array(WP_CONTENT_DIR . $v, $wp_theme_directories)) {
+                    Query::new()->table($wpdb->options)->where('option_name', 'stylesheet_root')->update([
+                        'option_value' => $paths['themes']
+                    ]);
+
+                    return $paths['themes'];
+                }
+
+                return $v;
+            }, 10, 2);
+        }
+
         add_filter('stylesheet_uri', function(...$args) use ( $urls, $root ) {
             if(Str::starts($urls['assets'], $args[0])) {
                 return $args[1] . '/' . ($root['stylesheet'] ?? '/theme/theme.css');
