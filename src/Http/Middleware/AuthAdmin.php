@@ -11,16 +11,12 @@ namespace TypeRocket\Http\Middleware;
  */
 class AuthAdmin extends Middleware
 {
-
     public function handle() {
 
         if ( ! current_user_can('administrator') ) {
-            $this->response->setError('auth', false);
-            $this->response->flashNow( "Sorry, you don't have enough rights.", 'error' );
-            $this->response->exitAny(401);
+            tr_abort(401);
         }
 
         $this->next->handle();
     }
-
 }

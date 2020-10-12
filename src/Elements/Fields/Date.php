@@ -2,11 +2,19 @@
 namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\DefaultSetting;
-use \TypeRocket\Html\Generator;
+use TypeRocket\Elements\Traits\RequiredTrait;
+use TypeRocket\Html\Html;
 
+/**
+ * Class Date
+ *
+ * Safari Browser does not support HTML5 date
+ *
+ * @package TypeRocket\Elements\Fields
+ */
 class Date extends Field implements ScriptField
 {
-    use DefaultSetting;
+    use DefaultSetting, RequiredTrait;
 
     protected $labelTag = 'label';
 
@@ -22,7 +30,7 @@ class Date extends Field implements ScriptField
      * Get the scripts
      */
     public function enqueueScripts() {
-        wp_enqueue_script( 'jquery-ui-datepicker', ['jquery'], '1.0', true );
+        wp_enqueue_script( 'jquery-ui-datepicker', ['jquery'], false, true );
     }
 
     /**
@@ -30,19 +38,17 @@ class Date extends Field implements ScriptField
      */
     public function getString()
     {
+        $this->setupInputId();
+        $this->setAttribute('data-tr-field', $this->getContextId());
         $name  = $this->getNameAttributeString();
         $this->removeAttribute( 'name' );
-        $value = $this->getValue();
+        $value = $this->setCast('string')->getValue();
         $default = $this->getDefault();
-        $this->setupInputId();
         $value = !empty($value) ? $value : $default;
-
         $value = esc_attr( $this->sanitize($value, 'raw') );
+        $this->attrClass('tr-date-picker');
 
-        $this->appendStringToAttribute( 'class', ' date-picker' );
-        $input = new Generator();
-
-        return $input->newInput( 'text', $name, $value, $this->getAttributes() )->getString();
+        return (string) Html::input( 'text', $name, $value, $this->getAttributes() );
     }
 
     /**

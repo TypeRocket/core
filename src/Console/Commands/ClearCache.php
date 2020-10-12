@@ -1,11 +1,7 @@
 <?php
-
-
 namespace TypeRocket\Console\Commands;
 
-
 use TypeRocket\Console\Command;
-use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Str;
@@ -34,17 +30,24 @@ class ClearCache extends Command
     {
         $folder = Sanitize::underscore($this->getArgument('folder'));
 
-        $cache_path = Config::locate('paths.cache') ?? TR_PATH . '/storage/cache';
-
-        if(!$cache_path) {
-            $this->error('Error no cache path found. Define in paths.php as "cache" using TR_PATH as root.');
-            die();
+        $cache_path = tr_config('paths.cache');
+        if(!file_exists($cache_path)) {
+            mkdir($cache_path, 0755, true);
         }
 
-        $glob = glob( $cache_path . "/{$folder}/*");
+        if(!Str::starts( TR_ALT_PATH, $cache_path)) {
+            $this->error('Error cache path found must be define in paths.php as "cache" using TR_ALT_PATH as root.');
+        }
+
+        $location = $cache_path . "/{$folder}/*";
+        $glob = glob($location);
+
+        if(empty($glob)) {
+            $this->warning('No files found in: ' . $location);
+        }
 
         foreach ($glob as $value) {
-            if( Str::starts( TR_PATH, $value) && file_exists( $value ) ) {
+            if( Str::starts( TR_ALT_PATH, $value) && file_exists( $value ) ) {
                 ( new File($value) )->removeRecursiveDirectory();
                 $this->warning('Deleted ' . $value);
             } else {

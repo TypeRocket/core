@@ -1,7 +1,7 @@
 <?php
-namespace {{namespace}}\Models;
+namespace {{namespace}};
 
-use \TypeRocket\Models\WPPost;
+use TypeRocket\Models\WPPost;
 
 class {{model}} extends WPPost
 {

@@ -1,15 +1,15 @@
 <?php
-
 namespace TypeRocket\Models\Meta;
 
-use TypeRocket\Database\ResultsMeta;
+use TypeRocket\Database\ResultsTermMeta;
 use TypeRocket\Models\Model;
+use TypeRocket\Models\WPTerm;
 
 class WPTermMeta extends Model
 {
     protected $idColumn = 'meta_id';
     protected $resource = 'termmeta';
-    protected $resultsClass = ResultsMeta::class;
+    protected $resultsClass = ResultsTermMeta::class;
 
     protected $builtin = [
         'meta_id',
@@ -28,8 +28,9 @@ class WPTermMeta extends Model
      * @param $modelClass
      * @return WPTermMeta|null
      */
-    public function term( $modelClass ) {
-        return $this->belongsTo( $modelClass, 'term_id' );
+    public function term( $modelClass = null )
+    {
+        return $this->belongsTo( $modelClass ?? WPTerm::class, 'term_id' );
     }
 
     /**

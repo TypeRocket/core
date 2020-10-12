@@ -15,7 +15,7 @@
         margin: 4px 12px 0;
     }
 
-    label {
+    .tr-toggle-box-label {
         cursor: pointer;
         width: 50px;
         height: 24px;
@@ -24,6 +24,7 @@
         border-radius: 100px;
         position: relative;
         padding: 0;
+        line-height: 1.4em;
 
         &:focus {
             outline: none;
@@ -32,7 +33,7 @@
         }
     }
 
-    label:after {
+    .tr-toggle-box-label:after {
         content: '';
         position: absolute;
         top: 2px;
@@ -44,7 +45,7 @@
         transition: 0.3s;
     }
 
-    input:checked + label {
+    input:checked + .tr-toggle-box-label {
         border-color: transparent;
         background: #11a0d2;
         padding: 0;
@@ -54,7 +55,7 @@
         }
     }
 
-    input:checked + label:after {
+    input:checked + .tr-toggle-box-label:after {
         left: calc(100% - 2px);
         transform: translateX(-100%);
     }

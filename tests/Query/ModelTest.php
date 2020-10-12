@@ -9,6 +9,13 @@ use TypeRocket\Models\Model;
 class ModelTest extends TestCase
 {
 
+    public function testNewModelStatic()
+    {
+        $post = Model::new();
+
+        $this->assertInstanceOf(Model::class, $post);
+    }
+
     public function testModelPropertyMutation()
     {
         $class = new class extends Model {
@@ -171,5 +178,24 @@ class ModelTest extends TestCase
         $model->getQuery()->table('wp_posts');
         $found = $model->findFirstWhereOrDie('ID', 1); // returns a new item for test only
         $this->assertTrue( !empty($found->post_title) );
+    }
+
+    public function testUpdate()
+    {
+        $model = new class extends Model {
+            protected $table = 'users';
+            protected $properties = [
+                'id' => 1,
+                'name' => 'kevin'
+            ];
+        };
+        $model->getQuery()->table('users')->run = false;
+
+        $model->name = 'kevin dees';
+        $model->update();
+
+        $actual = $model->getQuery()->lastCompiledSQL;
+        $expected = "UPDATE users SET name='kevin dees' WHERE id = 1";
+        $this->assertEquals($expected, $actual);
     }
 }

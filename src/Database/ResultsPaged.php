@@ -2,7 +2,7 @@
 namespace TypeRocket\Database;
 
 use JsonSerializable;
-use TypeRocket\Html\Generator;
+use TypeRocket\Html\Html;
 use TypeRocket\Http\Request;
 
 class ResultsPaged implements \Iterator, JsonSerializable
@@ -54,16 +54,6 @@ class ResultsPaged implements \Iterator, JsonSerializable
     public function getCurrentPage()
     {
         return $this->page;
-    }
-
-    /**
-     * @deprecated
-     *
-     * @return mixed
-     */
-    public function getPage()
-    {
-        return $this->getCurrentPage();
     }
 
     /**
@@ -163,12 +153,12 @@ class ResultsPaged implements \Iterator, JsonSerializable
      */
     public function linkNext($label = null, $attributes = [])
     {
-        $label = __($label ?:  'Next Page &raquo;', 'typerocket-profile' );
+        $label = $label ?: __( 'Next Page &raquo;' );
 
         if($next = $this->getNextPage()) {
             $url = (new Request)->getModifiedUri(['paged' => $next]);
 
-            return (string) (new Generator)->newLink($label, $url, $attributes);
+            return (string) Html::a($label, $url, $attributes);
         }
 
         return null;
@@ -186,12 +176,12 @@ class ResultsPaged implements \Iterator, JsonSerializable
      */
     public function linkPrevious($label = null, $attributes = [])
     {
-        $label = __($label ?:  '&laquo; Previous Page', 'typerocket-profile' );
+        $label = $label ?: __( '&laquo; Previous Page' );
 
         if($next = $this->getPreviousPage()) {
             $url = (new Request)->getModifiedUri(['paged' => $next]);
 
-            return (string) (new Generator)->newLink($label, $url, $attributes);
+            return (string) Html::a($label, $url, $attributes);
         }
 
         return null;
@@ -206,7 +196,6 @@ class ResultsPaged implements \Iterator, JsonSerializable
     {
         return [
             'items' => $this->results->toArray(),
-            'page' => $this->page,
             'current' => $this->page,
             'pages' => $this->pages,
             'count' => $this->count,

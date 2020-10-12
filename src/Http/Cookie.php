@@ -1,16 +1,14 @@
 <?php
-
 namespace TypeRocket\Http;
 
 use TypeRocket\Utility\Sanitize;
 
 class Cookie
 {
-
     /**
      * Set a transient with cookie to persist across page loads
      *
-     * @param string $name
+     * @param string $name name of transient
      * @param string|array $data
      * @param int $time
      *
@@ -27,8 +25,8 @@ class Cookie
     /**
      * Get the transient and delete it
      *
-     * @param string $name
-     * @param bool $delete
+     * @param string $name name of transient
+     * @param bool $delete delete cookie and transient
      *
      * @return mixed|null
      */
@@ -41,10 +39,10 @@ class Cookie
 
             if($delete) {
                 delete_transient($name . '_' . $id);
-            }
 
-            if (!headers_sent()) {
-                $this->delete($name);
+                if(!headers_sent()) {
+                    $this->delete($name);
+                }
             }
         }
 
@@ -52,16 +50,41 @@ class Cookie
     }
 
     /**
+     * Get the transient and delete it
+     *
+     * @param string $name name of transient
+     *
+     * @return null|true
+     */
+    public function deleteTransient( $name ) {
+        $deleted = null;
+
+        if( !empty($_COOKIE[$name]) ) {
+            $id   = Sanitize::underscore($_COOKIE[$name]);
+            delete_transient($name . '_' . $id);
+
+            if(!headers_sent()) {
+                $this->delete($name);
+            }
+
+            $deleted = true;
+        }
+
+        return $deleted;
+    }
+
+    /**
      * Set a cookie
      *
-     * @param string $name
-     * @param string $data
-     * @param int $time
+     * @param string $name name of cookie
+     * @param string $data value of cookie
+     * @param int|null $time expire time in seconds
+     * @param string $path path cookie can be access from. `/` == all paths
      *
      * @return $this
      */
-    public function set( $name, $data, $time = MINUTE_IN_SECONDS ) {
-        setcookie($name, $data, time() + $time, '/', null, is_ssl());
+    public function set( $name, $data, $time = MINUTE_IN_SECONDS, $path = '/' ) {
+        setcookie($name, $data, $time === null ? 0 : time() + $time, $path, null, is_ssl());
 
         return $this;
     }
@@ -71,12 +94,13 @@ class Cookie
      *
      * Only call if headers are not sent yet
      *
-     * @param string $name
+     * @param string $name name of cookie
+     * @param string $path path cookie can be access from. `/` == all paths
      *
      * @return $this
      */
-    public function delete( $name ) {
-        setcookie($name, "", time() - 36000);
+    public function delete( $name, $path = '/' ) {
+        setcookie($name, "", time() - 36000, $path, null, is_ssl());
 
         return $this;
     }
@@ -84,7 +108,7 @@ class Cookie
     /**
      * Get a cookie
      *
-     * @param string $name
+     * @param string $name name of cookie
      *
      * @return null
      */
@@ -101,13 +125,25 @@ class Cookie
     /**
      * Get old stored fields
      *
+     * @param bool $delete
+     *
      * @return string|null
      */
-    public function oldFields() {
+    public function oldFields($delete = true) {
         if( !empty($_COOKIE['tr_old_fields']) ) {
-            return (new Cookie())->getTransient('tr_old_fields');
+            return (new Cookie)->getTransient('tr_old_fields', $delete);
         }
 
         return null;
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 }

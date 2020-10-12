@@ -3,22 +3,21 @@ namespace TypeRocket\Core;
 
 class Config
 {
+    public const ALIAS = 'config';
 
-    static private $root;
-    static private $config = [];
+    protected $root;
+    protected $config = [];
 
     /**
      * Set initial values
      *
      * @param string $root
+     * @param array $overrides
      */
-    public function __construct( $root )
+    public function __construct( $root, $overrides = [] )
     {
-        if(self::$root) {
-            return;
-        }
-
-        self::$root = $root;
+        $this->root = $root;
+        $this->config = $overrides;
     }
 
     /**
@@ -26,9 +25,9 @@ class Config
      *
      * @return mixed
      */
-    public static function getRoot()
+    public function getRoot()
     {
-        return self::$root;
+        return $this->root;
     }
 
     /**
@@ -39,17 +38,18 @@ class Config
      *
      * @return array|mixed|null
      */
-    private static function jitLocate($dots, $default = null)
+    private function jitLocate($dots, $default = null)
     {
         list($root, $rest) = array_pad(explode('.', $dots, 2), 2, null);
-        if(!isset(self::$config[$root]) && is_file(self::$root . '/' . $root . '.php')) {
-            self::$config[$root] = require( self::$root . '/' . $root . '.php' );
+        if(!isset($this->config[$root]) && is_file($this->root . '/' . $root . '.php')) {
+            /** @noinspection PhpIncludeInspection */
+            $this->config[$root] = require( $this->root . '/' . $root . '.php' );
 
             if(!$rest) {
-                return self::$config[$root];
+                return $this->config[$root];
             }
 
-            return dots_walk($rest, self::$config[$root], $default);
+            return dots_walk($rest, $this->config[$root], $default);
         }
 
         return $default;
@@ -65,13 +65,21 @@ class Config
      *
      * @return array|mixed|null
      */
-    public static function locate($dots, $default = null)
+    public function locate($dots, $default = null)
     {
-        $value = dots_walk($dots, self::$config);
+        $value = dots_walk($dots, $this->config);
         if( isset($dots) && is_null($value) ) {
             return self::jitLocate($dots, $default);
         }
 
         return $value ?? $default;
+    }
+
+    /**
+     * @return static
+     */
+    public static function getFromContainer()
+    {
+        return tr_container(static::ALIAS);
     }
 }

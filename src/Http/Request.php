@@ -1,51 +1,43 @@
 <?php
 namespace TypeRocket\Http;
 
+use TypeRocket\Models\WPUser;
+use TypeRocket\Utility\Str;
+
 class Request
 {
-    
     protected $method = null;
     protected $uri = null;
+    protected $referer = null;
     protected $path = null;
     protected $host = null;
     protected $fields = null;
     protected $post = null;
     protected $get = null;
-    protected $files = null;
     protected $input = null;
+    protected $files = null;
     protected $cookies = null;
-    protected $hook = false;
     protected $protocol = 'http';
-    protected $rest = false;
-    protected $custom;
 
     /**
      * Construct the request
      *
-     * @param string $method the method PUT, POST, GET, DELETE
-     * @param bool $hook
-     * @param bool $rest
-     * @param bool $custom
      * @internal param int $id the resource ID
      */
-    public function __construct( $method = null, $hook = false, $rest = false, $custom = false )
+    public function __construct()
     {
-        $this->method = is_string($method) ? $method : $this->getFormMethod();
-        $this->protocol = get_http_protocol();
-        $this->post = !empty ($_POST) ? wp_unslash($_POST) : null;
-        $this->fields = !empty ($this->post['tr']) ? $this->post['tr'] : [];
-        $this->get = !empty ($_GET) ? wp_unslash($_GET) : null;
-        $this->files = !empty ($_FILES) ? $_FILES : null;
-        $this->cookies = !empty ($_COOKIE) ? wp_unslash($_COOKIE) : null;
-        $this->uri = !empty ($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
-        $this->host = !empty ($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+        $this->method = $this->getFormMethod();
+        $this->protocol = is_ssl() ? 'https' : 'http';
+        $this->post = !empty($_POST) ? wp_unslash($_POST) : null;
+        $this->get = !empty($_GET) ? wp_unslash($_GET) : null;
+        $this->files = $_FILES ?? null;
+        $this->uri = $_SERVER['REQUEST_URI'] ?? null;
+        $this->referer = $_SERVER['HTTP_REFERER'] ?? null;
+        $this->host = $_SERVER['HTTP_HOST'] ?? null;
 
         if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
             $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
-        $this->hook = $hook;
-        $this->rest = $rest;
-        $this->custom = $custom;
     }
 
     /**
@@ -99,7 +91,7 @@ class Request
     }
 
     /**
-     * Is Delete
+     * Is Put
      *
      * @return bool
      */
@@ -109,14 +101,120 @@ class Request
     }
 
     /**
+     * Is Marked AJAX
+     *
+     * @return bool
+     */
+    public function isMarkedAjax()
+    {
+        return !empty($this->post['_tr_ajax_request']) || !empty($this->get['_tr_ajax_request']);
+    }
+
+    /**
+     * Is Maybe Ajax
+     *
+     * The JavaScript sending the request needs to have applied
+     * the custom header HTTP_X_REQUESTED_WITH.
+     *
+     * Maybe add: wp_doing_ajax()
+     *
+     * @return bool
+     */
+    public function isAjax()
+    {
+        $ajax = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+
+        if(strtolower($ajax) == 'xmlhttprequest' || $this->isMarkedAjax() ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get Agents
+     *
+     * @return array
+     */
+    public function getAccepts()
+    {
+        return explode(',', $_SERVER['HTTP_ACCEPT'] ?? '');
+    }
+
+    /**
+     * Accept Contains
+     *
+     * @param $search
+     * @return bool
+     */
+    public function acceptContains($search)
+    {
+        return Str::contains($search, $_SERVER['HTTP_ACCEPT'] ?? '');
+    }
+
+    /**
+     * Request Wants
+     *
+     * @param string $name
+     * @return bool|null
+     */
+    public function wants($name) {
+        $types = [
+            'json' => 'application/json',
+            'html' => 'text/html',
+            'xml' => 'application/xml',
+            'plain' => 'text/pain',
+            'any' => '*/*',
+            'image' => 'image/',
+        ];
+
+        $search = $types[$name] ?? $name;
+        return $search ? $this->acceptContains($search) : false;
+    }
+
+    /**
      * Get the form method
      *
      * @return string POST|DELETE|PUT|GET
      */
     public function getFormMethod()
     {
-        $method = isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : 'GET';
-        return ( isset( $_POST['_method'] ) ) ? $_POST['_method'] : $method;
+        return $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'] ?? 'GET';
+    }
+
+    /**
+     * Get Form Prefix
+     *
+     * @param string $default
+     *
+     * @return mixed|string
+     */
+    public function getFormPrefix($default = 'tr')
+    {
+        return $_POST['_tr_form_prefix'] ?? $default;
+    }
+
+    /**
+     * Get Full URL
+     *
+     * @return string
+     */
+    public function getUriFull()
+    {
+        return $this->protocol.'://'.$this->host.$this->uri;
+    }
+
+    /**
+     * Get Path Without Root
+     *
+     * @param null|string $root
+     * @return string
+     */
+    public function getPathWithoutRoot($root = null)
+    {
+        $root = $root ?? get_site_url();
+        $site =  trim( parse_url($root, PHP_URL_PATH), '/');
+        return ltrim( Str::trimStart(ltrim($this->path, '/'), $site), '/');
     }
 
     /**
@@ -127,6 +225,33 @@ class Request
     public function getUri()
     {
         return $this->uri;
+    }
+
+    /**
+     * Get Http Header
+     *
+     * @param string $header
+     *
+     * @return mixed|null
+     */
+    public function getHeader($header)
+    {
+        $header = preg_replace( '/[^A-Z0-9_]/', '', strtoupper($header));
+
+        return $_SERVER['HTTP_' . $header] ?? null;
+    }
+
+    /**
+     * Get the request referer
+     *
+     * @param bool $fallback
+     * @return null|string
+     */
+    public function getReferer($fallback = true)
+    {
+        $fallback = $fallback ? $this->getUriFull() : null;
+
+        return $this->referer ?? $fallback;
     }
 
     /**
@@ -160,35 +285,75 @@ class Request
     }
 
     /**
+     * Get Input
+     *
+     * @param null|string $key
+     * @param null|string|array $default
+     *
+     * @return string|null
+     */
+    public function input($key = null, $default = null)
+    {
+        return $this->getInput($key, $default);
+    }
+
+    /**
+     * Get Input
+     *
+     * @param null|string $key
+     * @param null|string|array $default
+     *
+     * @return string|null
+     */
+    public function getInput($key = null, $default = null)
+    {
+        return $this->getDataJson($key, $default) ?? $this->get[$key] ?? $default;
+    }
+
+    /**
+     * Get Data JSON first or POST
+     *
+     * @param null|string $key
+     * @param null|string|array $default
+     *
+     * @return mixed|null
+     */
+    public function getDataJson($key = null, $default = null)
+    {
+        if(!$this->input) {
+            $input = file_get_contents('php://input');
+            if(tr_is_json($input)) { $data = json_decode($input, true); }
+            else { $data = $this->post; /* parse_str($input, $data); */ }
+            $this->input = $data;
+        }
+
+        return is_null($key) ? $this->input : ($this->input[$key] ?? $default);
+    }
+
+    /**
      * Get the $_POST data
      *
-     * @param null $key
+     * @param null|string $key
+     * @param null|string|array $default
      *
      * @return null
      */
-    public function getDataPost( $key = null )
+    public function getDataPost( $key = null, $default = null )
     {
-        if( $key && array_key_exists($key, $this->post ?? [])) {
-            return $this->post[$key];
-        }
-
-        return !$key ? $this->post : null;
+        return is_null($key) ? $this->post : ($this->post[$key] ?? $default);
     }
 
     /**
      * Get the $_GET data
      *
-     * @param null $key
+     * @param null|string $key
+     * @param null|string|array $default
      *
      * @return null
      */
-    public function getDataGet( $key = null )
+    public function getDataGet( $key = null, $default = null )
     {
-        if( isset($key) && array_key_exists($key, $this->get ?? [])) {
-            return $this->get[$key];
-        }
-
-        return !$key ? $this->get : null;
+        return is_null($key) ? $this->get : ($this->get[$key] ?? $default);
     }
 
     /**
@@ -208,66 +373,9 @@ class Request
      */
     public function getQueryAsArray()
     {
-        parse_str(parse_url($this->uri, PHP_URL_QUERY), $request_params);
+        parse_str(parse_url($this->getUriFull(), PHP_URL_QUERY), $request_params);
 
         return $request_params;
-    }
-
-    /**
-     * Get the $_COOKIE data
-     *
-     * @param null $key
-     *
-     * @return null
-     */
-    public function getDataCookies( $key = null )
-    {
-        if( array_key_exists($key, $this->cookies)) {
-            return $this->cookies[$key];
-        }
-
-        return $this->cookies;
-    }
-
-    /**
-     * Get Input
-     *
-     * @param $key
-     * @param null $default
-     *
-     * @return string|null
-     */
-    public function getInput($key = null, $default = null)
-    {
-        return $this->getDataJson($key, $default) ?? $this->post[$key] ?? $this->get[$key] ?? $default;
-    }
-
-    /**
-     * @param $key
-     * @param null $default
-     *
-     * @return mixed|null
-     */
-    public function getDataJson($key = null, $default = null)
-    {
-        if(!$this->input) {
-            $input = file_get_contents('php://input');
-            if(tr_is_json($input)) { $data = json_decode($input, true); }
-            else { parse_str($input, $data); }
-            $this->input = $data;
-        }
-
-        return is_null($key) ? $this->input : ($this->input[$key] ?? $default);
-    }
-
-    /**
-     * Get Full URL
-     *
-     * @return string
-     */
-    public function getUriFull()
-    {
-        return $this->protocol.'://'.$this->host.$this->uri;
     }
 
     /**
@@ -278,8 +386,6 @@ class Request
      */
     public function getModifiedUri(array $request_params = [])
     {
-
-        tr_response();
         $parts = parse_url($this->getUriFull());
         parse_str($parts['query'] ?? '', $query);
         $query = http_build_query(array_merge($query, $request_params));
@@ -288,6 +394,7 @@ class Request
             $parts['scheme'],
             '://',
             $parts['host'],
+            !empty($parts['port']) ? ':'.$parts['port'] : null,
             $parts['path'],
             $query ? '?' : '',
             $query,
@@ -297,43 +404,69 @@ class Request
     }
 
     /**
+     * Get the $_COOKIE data
+     *
+     * @param null|string $key
+     * @param null|string|array $default
+     *
+     * @return null
+     */
+    public function getDataCookies($key = null, $default = null)
+    {
+        if(!$this->cookies) {
+            $this->cookies = !empty($_COOKIE) ? wp_unslash($_COOKIE) : null;
+        }
+
+        return is_null($key) ? $this->cookies : ($this->cookies[$key] ?? $default);
+    }
+
+    /**
      * Get the fields
      *
-     * @param null $key
+     * @param null|string $key
+     * @param null|string|array $default
+     * @param string $prefix
      *
      * @return array|null
      */
-    public function getFields($key = null)
+    public function fields($key = null, $default = null, $prefix = 'tr')
     {
-        if( array_key_exists($key, $this->fields)) {
-            return $this->fields[$key];
-        }
-
-        return $this->fields;
+        return $this->getFields($key, $default, $prefix);
     }
 
     /**
-     * @return bool
+     * Get the fields
+     *
+     * @param null|string $key
+     * @param null|string|array $default
+     * @param string $prefix
+     *
+     * @return array|null
      */
-    public function isHook()
+    public function getFields($key = null, $default = null, $prefix = 'tr')
     {
-        return $this->hook;
+        $fields = $this->getDataJson($prefix);
+        return is_null($key) ? $fields : ($fields[$key] ?? $default);
     }
 
     /**
-     * @return bool
+     * Get Current User
+     *
+     * @return WPUser|null
      */
-    public function isRest()
+    public function getCurrentUser()
     {
-        return $this->rest;
+        return tr_container('user');
     }
 
     /**
-     * @return bool
+     * @param mixed ...$args
+     *
+     * @return static
      */
-    public function isCustom()
+    public static function new(...$args)
     {
-        return $this->custom;
+        return new static(...$args);
     }
 
 }

@@ -1,19 +1,19 @@
 <?php
-
 namespace TypeRocket\Elements;
 
 use TypeRocket\Elements\Fields\Field;
-use TypeRocket\Elements\Traits\AttributesTrait;
-use TypeRocket\Html\Generator;
-use TypeRocket\Html\Tag;
+use TypeRocket\Elements\Traits\Attributes;
+use TypeRocket\Elements\Traits\CloneFields;
+use TypeRocket\Elements\Traits\Fieldable;
+use TypeRocket\Html\Html;
 
 class FieldColumn
 {
-    use AttributesTrait;
+    use Attributes, CloneFields, Fieldable;
 
-    public $fields = [];
-    public $size = [];
-    public $title = '';
+    protected $form;
+    protected $dots;
+    protected $contextRoot;
 
     /**
      * Get fields as row
@@ -22,15 +22,19 @@ class FieldColumn
      *
      * @param array|Field $fields
      */
-    public function __construct( $fields )
+    public function __construct( ...$fields )
     {
-        if( ! is_array( $fields) ) {
-            $fields = func_get_args();
-        }
+        $this->setFields(...$fields);
+    }
 
-        $this->setAttribute('class', '');
-        $this->fields = $fields;
-        $this->size = count($fields);
+    /**
+     * Get Context ID
+     *
+     * @return string
+     */
+    public function getContextId()
+    {
+        return trim($this->contextRoot . '.' . $this->dots, '.') . '.-row-column';
     }
 
     /**
@@ -40,40 +44,14 @@ class FieldColumn
      */
     public function __toString()
     {
-        $fieldsHtml = $title = '';
-        $class = "control-row-column";
-
-        if($this->title) {
-            $fieldsHtml .= (string) Tag::make('h4', ['class' => 'form-control-title'], $this->title);
-        }
+        $html = '';
 
         foreach( $this->fields as $field) {
-            if( $field instanceof Field ) {
-                $fieldsHtml .= (string) $field;
-            }
+            $html .= $field;
         }
 
-        if($this->title) {
-            $class .= ' control-row-column-has-title';
-        }
+        $this->attrClass('tr-control-row-column');
 
-        $this->appendStringToAttribute('class', $class);
-        $html = ( new Generator() )->newElement('div', $this->getAttributes(), $fieldsHtml)->getString();
-
-        return $html;
-    }
-
-    /**
-     * Set Title
-     *
-     * @param string $title
-     *
-     * @return FieldColumn $this
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-
-        return $this;
+        return Html::div($this->attr(), $html)->getString();
     }
 }

@@ -6,7 +6,7 @@ use TypeRocket\Models\Model;
 trait MetaData
 {
 
-    protected $metaQueries = 0;
+    protected static $metaQueries = 0;
 
     /**
      * Get Meta Model Class
@@ -60,6 +60,16 @@ trait MetaData
     }
 
     /**
+     * Get Number of Meta Queries
+     *
+     * @return int
+     */
+    public function resetNumMetaQueries()
+    {
+        return static::$metaQueries = 0;
+    }
+
+    /**
      * Where Meta
      *
      * @param string|array $key
@@ -71,7 +81,7 @@ trait MetaData
      */
     public function whereMeta($key, $operator = '=', $value = null, $condition = 'AND')
     {
-        $counter = &$this->metaQueries;
+        $counter = &static::$metaQueries;
 
         $num = func_num_args();
 

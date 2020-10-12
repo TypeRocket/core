@@ -5,7 +5,7 @@ namespace Http;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Http\Handler;
-use TypeRocket\Http\Responders\ResourceResponder;
+use TypeRocket\Http\Responders\HttpResponder;
 
 class ResponderTest extends TestCase
 {
@@ -17,39 +17,17 @@ class ResponderTest extends TestCase
             ->setMiddlewareGroups(['post', null, 'restApi'])
             ->getMiddlewareGroups();
 
-        $this->assertTrue($response == ['post', 'restapi']);
+        $this->assertTrue($response == ['post', null, 'restApi']);
     }
 
     public function testHandlerStringSetMiddlewareGroups()
     {
-        $handler = new Handler();
+        $handler = new Handler;
 
         $response = $handler
-            ->setMiddlewareGroups('TERM')
+            ->setMiddlewareGroups(['TERM'])
             ->getMiddlewareGroups();
 
-        $this->assertTrue($response == ['term']);
-    }
-
-    public function testResourceResponderStringSetMiddlewareGroups()
-    {
-        $responder = new ResourceResponder();
-
-        $response = $responder
-            ->setMiddlewareGroups('TERM')
-            ->getMiddlewareGroups();
-
-        $this->assertTrue($response == ['term']);
-    }
-
-    public function testResourceResponderArraySetMiddlewareGroups()
-    {
-        $handler = new ResourceResponder();
-
-        $response = $handler
-            ->setMiddlewareGroups(['post', null, 'rest_api'])
-            ->getMiddlewareGroups();
-
-        $this->assertTrue($response == ['post', 'rest_api']);
+        $this->assertTrue($response == ['TERM']);
     }
 }

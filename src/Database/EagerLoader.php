@@ -1,8 +1,5 @@
 <?php
-
-
 namespace TypeRocket\Database;
-
 
 use TypeRocket\Models\Model;
 
@@ -11,7 +8,6 @@ class EagerLoader
 
     protected $load = [];
     protected $with = null;
-
 
     /**
      * Eager Load

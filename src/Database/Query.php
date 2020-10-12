@@ -275,6 +275,26 @@ class Query
     }
 
     /**
+     * Reorder
+     *
+     * @param string $column
+     * @param string $direction
+     *
+     * @return $this
+     */
+    public function reorder($column = 'id', $direction = 'ASC')
+    {
+        $num = func_num_args();
+        unset($this->query['order_by']);
+
+        if($num > 0) {
+            $this->orderBy($column, $direction);
+        }
+
+        return $this;
+    }
+
+    /**
      * Group By
      *
      * @param string $column
@@ -732,7 +752,7 @@ class Query
     protected function setQueryType( $type = null , $args = true ) {
 
         $actions = [
-            'function', 'update', 'delete', 'create'
+          'function', 'update', 'delete', 'create'
         ];
 
         foreach ($actions as $action ) {
@@ -808,6 +828,9 @@ class Query
      * @return string|null
      */
     public function compileFullQuery() {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
         $sql_insert_columns = $sql_union = $sql_insert_values = $distinct = '';
 
         // compilers
@@ -882,7 +905,7 @@ class Query
 
             if($selectTable) {
                 $query['select'] = array_map(function($value) use ($selectTable) {
-                    return mb_strpos( $value, '.' ) !== false ? $value : "`{$selectTable}`.{$value}";
+                   return mb_strpos( $value, '.' ) !== false ? $value : "`{$selectTable}`.{$value}";
                 }, $query['select']);
             }
 
@@ -1243,6 +1266,16 @@ class Query
     public function __toString()
     {
         return $this->compileFullQuery();
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 
 }

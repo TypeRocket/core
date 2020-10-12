@@ -28,7 +28,6 @@ namespace TypeRocket\Utility;
 
 class Inflect
 {
-
     private static $plural = [
         '/(quiz)$/i'                     => "$1zes",
         '/^(ox)$/i'                      => "$1en",

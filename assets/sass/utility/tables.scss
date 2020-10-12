@@ -1,0 +1,62 @@
+/* Table
+----------------------------------------------------------------------- */
+.tr-table-container {
+  margin-top: 20px;
+
+  .tablenav {
+    display: flex;
+    margin: 6px 0;
+    flex-flow: wrap;
+    height: auto;
+
+    input[type="search"],
+    input[type="text"],
+    input[type="url"] {
+      width: auto;
+      max-width: none;
+    }
+
+    button {
+      margin-left: 6px;
+    }
+
+    select {
+      width: auto;
+      float: none;
+      margin: 0;
+    }
+
+    .actions {
+      float: none;
+      overflow: initial;
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 0;
+
+      @media screen and (max-width: 782px) {
+        display: none;
+
+        &.bulkactions {
+          display: flex;
+        }
+      }
+
+    }
+
+    .tablenav-pages {
+      float: none;
+      margin: 0 0 0 auto;
+      display: flex;
+      align-items: center;
+
+      @media screen and (max-width: 782px) {
+        margin: 15px 0;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+.tr-table-wrapper {
+  overflow-x: auto;
+}

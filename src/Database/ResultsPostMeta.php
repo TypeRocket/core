@@ -1,8 +1,5 @@
 <?php
-
-
 namespace TypeRocket\Database;
-
 
 class ResultsPostMeta extends ResultsMeta
 {

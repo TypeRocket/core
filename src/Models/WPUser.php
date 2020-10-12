@@ -3,18 +3,24 @@ namespace TypeRocket\Models;
 
 use ArrayObject;
 use TypeRocket\Exceptions\ModelException;
-use TypeRocket\Exceptions\ModelNotFoundException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPUserMeta;
 use TypeRocket\Models\Traits\MetaData;
 use WP_Error;
 
-class WPUser extends Model
+class WPUser extends Model implements AuthUser
 {
     use MetaData;
 
     protected $idColumn = 'ID';
     protected $resource = 'users';
+    protected $routeResource = 'user';
+    /** @var \WP_User */
+    protected $wpUser = null;
+    protected $fieldOptions = [
+        'key' => 'user_email',
+        'value' => 'ID',
+    ];
 
     protected $builtin = [
         'user_login',
@@ -32,6 +38,22 @@ class WPUser extends Model
     protected $guard = [
         'id'
     ];
+
+    protected $private = [
+        'user_pass'
+    ];
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->users;
+    }
 
     /**
      * Get Meta Model Class
@@ -65,32 +87,131 @@ class WPUser extends Model
      */
     public function posts( $modelClass = WPPost::class )
     {
-        /** @var WPPost $post */
-        $post = new $modelClass;
-        $post_type = $post->getPostType();
-        return $this->hasMany( $modelClass, 'post_author' )->where('post_type', $post_type);
+        return $this->hasMany( $modelClass, 'post_author');
     }
 
     /**
-     * Find post by ID
+     * Find WP_User Instance
      *
-     * @param string $id
+     * @param \WP_User|int|null $user
+     * @param bool $returnModel
      *
-     * @return $this
-     * @throws ModelNotFoundException
+     * @return \WP_User|$this|null
      */
-    public function getUser( $id )
+    public function wpUser( $user = null, $returnModel = false )
     {
-        $user = get_user_by( 'id', $id );
-
-        if(!$user) {
-            $class = static::class;
-            throw new ModelNotFoundException("ID $id of {$class} class not found");
+        if( !$user && $this->wpUser instanceof \WP_User ) {
+            return $this->wpUser;
         }
 
-        $this->fetchResult(  (array) $user->data );
+        if( !$user && $this->getID() ) {
+            return $this->wpUser($this->getID());
+        }
+
+        if( !$user ) {
+            return $this->wpUser;
+        }
+
+        if( is_numeric($user) ) {
+            $user = get_user_by( 'id', $user );
+        }
+
+        if( $user instanceof \WP_User) {
+            $this->wpUser = $user;
+            $this->castProperties( $user->to_array() );
+        }
+
+        return $returnModel ? $this : $this->wpUser;
+    }
+
+    /**
+     * After Properties Are Cast
+     *
+     * Create an Instance of WP_Post
+     *
+     * @return Model
+     */
+    protected function afterCastProperties()
+    {
+        if(!$this->wpUser && $this->getCache()) {
+            $_user = (object) $this->properties;
+            $this->wpUser = new \WP_User($_user);
+            update_user_caches( $this->wpUser );
+        }
+
+        return parent::afterCastProperties();
+    }
+
+    /**
+     * Is Capable
+     *
+     * @param $capability
+     * @return bool
+     */
+    public function isCapable($capability)
+    {
+        /** @var \WP_User|null $user */
+        $user = $this->wpUser();
+
+        if(!$user || !$user->has_cap($capability)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Has Role
+     *
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole($role)
+    {
+        /** @var \WP_User|null $user */
+        $user = $this->wpUser();
+
+        return in_array($role, $user->roles) ? true :  false;
+    }
+
+    /**
+     * Change Users Role
+     *
+     * WordPress is not designed to give users multiple roles.
+     *
+     * @param $role
+     * @param array $remove a blank array removes all old roles
+     * @return $this
+     * @throws \Exception
+     */
+    public function changeRoleTo($role, $remove = [])
+    {
+        /** @var \WP_User|null $user */
+        $user = $this->wpUser();
+
+        if(!wp_roles()->get_role($role)) {
+            throw new \Exception("Role {$role} does not exist. User's role can not be changed");
+        }
+
+        foreach ($user->roles as $old) {
+            if(empty($remove) || in_array($old, $remove)) {
+                $user->remove_role( $old );
+            }
+        }
+
+        $user->add_role( $role );
 
         return $this;
+    }
+
+    /**
+     * Is Current User
+     *
+     * @return bool
+     */
+    public function isCurrent()
+    {
+        return $this->getID() == tr_container('user')->getID();
     }
 
     /**
@@ -101,7 +222,7 @@ class WPUser extends Model
      * @return $this
      * @throws ModelException
      */
-    function create( $fields = [] )
+    public function create( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields( $fields );
@@ -131,9 +252,8 @@ class WPUser extends Model
      *
      * @return $this
      * @throws ModelException
-     * @throws ModelNotFoundException
      */
-    function update( $fields = [] )
+    public function update( $fields = [] )
     {
         $id = $this->getID();
         if ($id != null) {
@@ -167,13 +287,64 @@ class WPUser extends Model
     }
 
     /**
+     * Delete & Reassign User
+     *
+     * This will delete the user and resign their content to another user
+     *
+     * @param int $to_user_id
+     * @param null|int $user_id
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function deleteAndReassign($to_user_id, $user_id = null)
+    {
+        if(is_null($user_id) && $this->hasProperties()) {
+            $user_id = $this->getID();
+        }
+
+        $delete = wp_delete_user($user_id, $to_user_id);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPUser not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete User
+     *
+     * This will delete the user and all of their posts
+     *
+     * @param null|int $ids
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function delete($ids = null)
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        $delete = wp_delete_user($ids);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPUser not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
      * Save user meta fields from TypeRocket fields
      *
      * @param array|ArrayObject $fields
      *
      * @return $this
      */
-    private function saveMeta( $fields )
+    public function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields( $fields );
         $id = $this->getID();

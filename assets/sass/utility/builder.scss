@@ -1,14 +1,15 @@
 /* Builder
 ----------------------------------------------------------------------- */
-.builder-inputs {
+.tr-builder-inputs {
     background: #fff;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
-    border: 1px solid #e5e5e5;
+    border: 1px solid $gray_border;
     float: left;
     width: 100%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    transition: all .4s;
 
     &:after {
         content:'';
@@ -21,9 +22,10 @@
         h1, h2, h3, h4, h5, h6 {
             &:first-child {
                 margin: 0;
+                transition: all .4s;
                 padding: 10px;
                 box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-                border-bottom: 1px solid #e5e5e5;
+                border-bottom: 1px solid $gray_border;
                 font-weight: bold;
                 font-size: 14px;
                 line-height: 1.4;
@@ -46,14 +48,14 @@
         width: 100%;
     }
 
-    .controls {
+    .tr-builder-controls {
         float: left;
 
         .tr-components {
             width: 120px;
 
             li {
-                border: 1px solid #e5e5e5;
+                border: 1px solid $gray_border;
                 padding: 2px;
                 text-align: center;
                 position: relative;
@@ -92,15 +94,32 @@
 
                 &.active {
                     border-color: #5b9dd9;
+                    border-color: var(--tr-profile-color);
+                    box-shadow: 0 0 3px 1px #ccc;
+                    outline: none;
+                }
+
+                &:focus, &:focus-within {
                     box-shadow: 0 0 3px 1px #80b5e4;
-                    color: #5b9dd9;
+                    box-shadow: 0 0 3px 1px var(--tr-profile-color);
+                    outline: none;
+                }
+
+                &:not(:hover):not(:focus-within) a:not(:focus):not(:active) {
+                    @include visually-hidden;
+                }
+
+                &:hover, &:focus-within, &:focus, &.active {
+                    .tr-builder-component-title {
+                        display: block;
+                    }
                 }
 
                 span {
                     display: none;
                 }
 
-                .remove {
+                .remove, .clone {
                     font-family: dashicons;
                     speak: none;
                     font-style: normal;
@@ -108,31 +127,32 @@
                     font-variant: normal;
                     text-transform: none;
                     position: absolute;
-                    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
                     text-align: center;
                     text-decoration: none;
-                    color: $delete;
-                    top: -8px;
-                    right: -8px;
                     z-index: 11;
-                    border: solid #DFDFDF 1px;
+                    box-shadow: none;
+                    display: block;
                     border-radius: 25px;
-                    background: #fff;
                     font-size: 16px;
                     line-height: 16px;
                     height: 20px;
                     width: 20px;
                     padding: 3px;
                     vertical-align: middle;
-                    display: none;
+                    color: #fff;
+                    left: 5px;
+                    top: 5px;
+                    background: rgba(11, 11, 11, 0.69);
+                    backdrop-filter: blur(2px);
+
+                    &:hover, &:focus {
+                        background: $delete_hover;
+                        cursor: pointer;
+                    }
 
                     /* Better Font Rendering =========== */
                     -webkit-font-smoothing: antialiased;
                     -moz-osx-font-smoothing: grayscale;
-
-                    &:hover {
-                        color: $delete_hover;
-                    }
 
                     &:before {
                         -webkit-font-smoothing: antialiased;
@@ -142,10 +162,19 @@
 
                 }
 
-                &:hover span {
-                    display: block;
-                }
+                .clone {
+                    left: 38px;
 
+                    &:before {
+                        content: "\f316";
+                    }
+
+                    &:hover, &:focus {
+                        background: $wp_button_hover;
+                        background: var(--tr-profile-color);
+                        outline: none;
+                    }
+                }
             }
 
         }
@@ -153,6 +182,10 @@
 
     .tr-frame-fields {
         margin-left:  135px;
+
+        .tr-item-cloned {
+
+        }
     }
 
     .tr-builder-select {
@@ -168,10 +201,11 @@
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         max-width: 532px;
-        background: rgba(238, 238, 238, 1);
-        border: solid 1px #ccc;
+        background: #eee;
+        border: solid 1px $gray_border;
         box-shadow: 0 0 8px rgba(0,0,0,.3);
 
+        // top tick for triangle
         &:before, &:after {
             content: '';
             display: block;
@@ -186,7 +220,7 @@
         &:after {
             top: -24px;
             z-index: 19;
-            border-bottom-color: #ccc;
+            border-bottom-color: $gray_border;
         }
 
         .builder-select-divider {
@@ -195,43 +229,49 @@
             font-weight: 700;
             font-size: 14px;
         }
+    }
+}
 
-        .builder-select-option {
-            width: 120px;
-            vertical-align: top;
-            display: inline-block;
-            padding: 10px;
-            border-radius: 3px;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            margin: 5px;
-            box-shadow: 0 1px 1px rgba(0,0,0,.04);
-            border: 1px solid #e5e5e5;
-            background: #fff;
-            text-align: center;
-            cursor: pointer;
+.tr-builder-select-option {
+    width: 120px;
+    vertical-align: top;
+    display: inline-block;
+    padding: 10px;
+    border-radius: 3px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 5px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    border: 1px solid $gray_border;
+    background: #fff;
+    text-align: center;
+    cursor: pointer;
 
-            span {
-                display: block;
-                margin-bottom: 3px;
-                color: #444;
-            }
-
-            img {
-                max-width: 100%;
-                height: auto;
-                display: block;
-            }
-
-            &:hover {
-                span {
-                    color: $wp_button_hover;
-                }
-            }
-        }
+    &:focus {
+        box-shadow: 0 0 3px 1px #80b5e4;
+        box-shadow: 0 0 3px 1px var(--tr-profile-color);
+        outline: none;
     }
 
+    span {
+        display: block;
+        margin-bottom: 3px;
+        color: #444;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    &:hover, &:focus {
+        span {
+            color: $wp_button_hover;
+            color: var(--tr-profile-color);
+        }
+    }
 }
 
 .tr-builder-select-overlay {
@@ -250,5 +290,20 @@
 
     &.active {
         display: block;
+    }
+}
+
+.tr-cloned-item {
+    > .tr-builder-inputs {
+        border-color: #c2ddbf;
+        box-shadow: 0 1px 1px #d2f5b5;
+
+        > h1, h2, h3 {
+            &:first-child {
+                color: #2c4d29;
+                background: #d2f5b5;
+                border-color: inherit;
+            }
+        }
     }
 }

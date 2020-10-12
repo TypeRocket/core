@@ -3,7 +3,6 @@ namespace TypeRocket\Utility;
 
 class Str
 {
-
     /**
      * String Ends
      *
@@ -110,10 +109,52 @@ class Str
      * @param bool $escape
      * @return string|string[]|null
      */
-    public static function replaceFirst($pattern, $new, $subject, $escape = true)
+    public static function replaceFirstRegex($pattern, $new, $subject, $escape = true)
     {
         $pattern = $escape ? '/' . preg_quote($pattern, '/') . '/' : $pattern;
         return preg_replace($pattern, $new, $subject, 1);
+    }
+
+    /**
+     * Replace the first occurrence of a given value in the string.
+     *
+     * @param  string  $search
+     * @param  string  $new
+     * @param  string  $subject
+     * @return string
+     */
+    public static function replaceFirst($search, $new, $subject)
+    {
+        if ($search == '') {
+            return $subject;
+        }
+
+        $position = strpos($subject, $search);
+
+        if ($position !== false) {
+            return substr_replace($subject, $new, $position, strlen($search));
+        }
+
+        return $subject;
+    }
+
+    /**
+     * Replace the last occurrence of a given value in the string.
+     *
+     * @param  string  $search
+     * @param  string  $new
+     * @param  string  $subject
+     * @return string
+     */
+    public static function replaceLast($search, $new, $subject)
+    {
+        $position = strrpos($subject, $search);
+
+        if ($position !== false) {
+            return substr_replace($subject, $new, $position, strlen($search));
+        }
+
+        return $subject;
     }
 
     /**
@@ -147,7 +188,7 @@ class Str
     public static function makeWords($subject, $uppercase, $separator = '_')
     {
         $words = str_replace($separator, ' ', $subject);
-        return $uppercase ? ucwords($words) : $words;
+        return $uppercase ? mb_ucwords($words) : $words;
     }
 
 }

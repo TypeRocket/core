@@ -1,11 +1,9 @@
 <?php
-
 namespace TypeRocket\Console\Commands;
 
-
 use TypeRocket\Console\Command;
-use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Str;
 
 class MakeCommand extends Command
 {
@@ -30,28 +28,46 @@ class MakeCommand extends Command
      */
     protected function exec()
     {
-        $command = $this->getArgument('class');
+        $command = $this->getClassArgument('class');
         $name = strtolower( $this->getArgument('name') );
-        $app_path = Config::locate('paths.app');
+
+        list($namespace, $class) = Str::splitAt('\\', $command, true);
+        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Commands', $namespace]));
+
+        $tags = ['{{namespace}}', '{{command}}', '{{name}}'];
+        $replacements = [ $namespace, $class, $name ];
+        $template = __DIR__ . '/../../../templates/Command.txt';
+
+        $app_path = tr_config('paths.app');
+        $command_file = $app_path . '/Commands/' . str_replace("\\",'/', $command) . ".php";
+        $command_path = substr($command_file, 0, -1 + -strlen(basename($command_file)) ) ;
+
+        if( ! file_exists( $command_path ) ) {
+            mkdir($command_path, 0755, true);
+        }
 
         if( ! file_exists( $app_path . '/Commands' ) ) {
             mkdir($app_path . '/Commands', 0755, true);
         }
 
-        $tags = ['{{namespace}}', '{{command}}', '{{name}}'];
-        $replacements = [ TR_APP_NAMESPACE, $command, $name ];
-        $template = __DIR__ . '/../../../templates/Command.txt';
-        $new = $app_path . '/Commands/' . $command . ".php";
-
         $file = new File( $template );
-        $new = $file->copyTemplateFile( $new, $tags, $replacements );
+        $command_file = $file->copyTemplateFile( $command_file, $tags, $replacements );
 
-        if( $new ) {
+        if( $command_file ) {
             $this->success('Command created: ' . $command );
-            $this->warning('Configure Command ' . $command . ': Add your command to config/galaxy.php' );
+
+            $file = new File(TR_CORE_CONFIG_PATH . '/galaxy.php');
+
+            if($file->exists()) {
+                $eol = PHP_EOL;
+                $new = "         \\$namespace\\$class::class,{$eol}";
+
+                if(!$file->replaceOnLine("'commands' => [", "'commands' => [{$eol}{$new}")) {
+                    $this->warning('Register your new command ' . $command . ' to config/galaxy.php' );
+                };
+            }
         } else {
             $this->error('TypeRocket ' . $command . ' exists.');
         }
-
     }
 }

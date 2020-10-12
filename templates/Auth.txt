@@ -1,0 +1,29 @@
+<?php
+namespace {{namespace}};
+
+use {{user}};
+use TypeRocket\Models\AuthUser;
+use TypeRocket\Auth\Policy;
+
+class {{auth}} extends Policy
+{
+    public function delete(AuthUser $auth, $object)
+    {
+        return false;
+    }
+
+    public function update(AuthUser $auth, $object)
+    {
+        return false;
+    }
+
+    public function create(AuthUser $auth, $object)
+    {
+        return false;
+    }
+
+    public function read(AuthUser $auth, $object)
+    {
+        return false;
+    }
+}

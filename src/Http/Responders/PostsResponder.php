@@ -1,13 +1,9 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use TypeRocket\Controllers\Controller;
 use TypeRocket\Controllers\WPPostController;
-use TypeRocket\Http\Handler;
-use \TypeRocket\Http\Request;
-use \TypeRocket\Http\Response;
-use TypeRocket\Models\WPPost;
-use \TypeRocket\Register\Registry;
+use TypeRocket\Http\Request;
+use TypeRocket\Register\Registry;
 use TypeRocket\Utility\Str;
 
 class PostsResponder extends Responder
@@ -20,10 +16,11 @@ class PostsResponder extends Responder
      * against that resource.
      *
      * @param array $args
+     * @throws \Exception
      */
     public function respond( $args )
     {
-        $postId = $args['id'];
+        $postId = $args['@first'];
 
         if ( ! $id = wp_is_post_revision( $postId ) ) {
             $id = $postId;
@@ -35,37 +32,31 @@ class PostsResponder extends Responder
             return;
         }
 
-        $post_type = get_post_type($id);
         $registered = Registry::getPostTypeResource($post_type);
-        $prefix = Str::camelize($registered[0]);
+        $controller = null;
 
-        $controller = $registered[3] ?? tr_app("Controllers\\{$prefix}Controller");
-        $controller = apply_filters('tr_posts_responder_controller', $controller);
-
-        $resource = $registered[0] ?? 'post';
-        $response = tr_response()->blockFlash();
-        $request = new Request('PUT', $this->hook);
-        $middlewareGroup = [ $resource ,'post'];
-
-        if (! class_exists( $controller ) ) {
-            $model = $registered[2] ?? tr_app("Models\\{$prefix}");
-
-            if(! class_exists( $model )) {
-                $model = new WPPost($post_type);
-            }
-
-            $controller = new WPPostController($request, $response, $model);
+        if($singular = $registered['singular'] ?? null) {
+            $prefix = Str::camelize($singular);
+            $controller = $registered['controller'] ?? tr_app_class("Controllers\\{$prefix}Controller");
         }
 
-        $handler = (new Handler())
-            ->setAction('update')
+        $controller = apply_filters('tr_posts_responder_controller', $controller);
+
+        $resource = $registered['singular'] ?? 'post';
+        $response = tr_response()->blockFlash();
+        $middlewareGroup = [ $resource ,'post'];
+        $model = null;
+
+        if (! class_exists( $controller ) ) {
+            $controller = WPPostController::class;
+        }
+
+        $this->handler
             ->setArgs($args)
-            ->setHandler($controller)
-            ->setHook($this->hook)
-            ->setResource($resource)
+            ->setController([new $controller, 'update'])
             ->setMiddlewareGroups($middlewareGroup);
 
-        $this->runKernel($request, $response, $handler);
+        $this->runKernel(new Request, $response, $this->handler);
     }
 
 }

@@ -3,48 +3,60 @@
 .tr-gallery-list {
     margin: 5px -5px 0;
 
-    .image-picker-placeholder img {
+    .tr-image-picker-placeholder img {
         cursor: move;
     }
 
     .ui-sortable-helper a {
         display: none;
     }
+}
 
-    li {
-        margin: 5px;
-        position: relative;
-        list-style: none;
-        padding: 0;
-        display: inline-block;
-        vertical-align: top;
+.tr-gallery-item {
+    margin: 5px;
+    position: relative;
+    list-style: none;
+    padding: 0;
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    border: solid 1px transparent; // fixes sorting spacing placeholder bug
 
-        img {
-            margin: 0;
-            display: block;
-        }
-
-        &:hover a {
-            display: block;
-        }
+    &:focus {
+        outline: none;
+        border: solid 1px var(--tr-profile-color);
+        box-shadow: 0 0 4px #0073aa;
+        box-shadow: 0 0 4px var(--tr-profile-color);
     }
 
-    a {
-        color: $delete;
-        position: absolute;
-        right: -8px;
-        top: -8px;
-        z-index: 5;
-        text-decoration: none;
-        border: solid #DFDFDF 1px;
-        padding: 6px;
-        border-radius: 25px;
-        background: #fff;
-        display: none;
+    img {
+        margin: 0;
+        display: block;
+        cursor: move;
+    }
 
-        &:hover {
-            color: $delete_hover;
-            cursor: pointer;
-        }
+    &:not(:hover) a:not(:focus):not(:active) {
+        @include visually-hidden;
+    }
+}
+
+.tr-gallery-remove {
+    color: #fff;
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    z-index: 3;
+    text-decoration: none;
+    padding: 3px;
+    border-radius: 25px;
+    background: rgba(11, 11, 11, 0.69);
+    backdrop-filter: blur(2px);
+    box-shadow: none;
+    display: block;
+
+    &:hover, &:focus {
+        color: #fff;
+        background: $delete_hover;
+        cursor: pointer;
     }
 }

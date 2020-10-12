@@ -1,5 +1,4 @@
 <?php
-
 namespace TypeRocket\Console;
 
 use TypeRocket\Utility\Str;

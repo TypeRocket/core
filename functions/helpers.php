@@ -1,14 +1,314 @@
 <?php
-if( ! function_exists('tr_app') ) {
+if( ! function_exists('dd') ) {
+    /**
+     * Die and Dump Vars
+     *
+     * @param mixed $param
+     */
+    function dd($param) {
+        call_user_func_array('var_dump', func_get_args());
+        exit();
+    }
+}
+
+if( ! function_exists('mb_ucwords') ) {
+    /**
+     * String ends with
+     *
+     * @param string $str
+     * @param string $delimiters not used but is added for future compatibility
+     *
+     * @return bool
+     */
+    function mb_ucwords( $str, $delimiters = " \t\r\n\f\v" ) {
+        return mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
+    }
+}
+
+if( ! function_exists('dots_walk') ) {
+    /**
+     * Dots Walk
+     *
+     * Traverse array with dot notation.
+     *
+     * @param string $dots dot notation key.next.final
+     * @param array|object $array an array to traverse
+     * @param null|mixed $default
+     *
+     * @return array|mixed|null
+     */
+    function dots_walk($dots, $array, $default = null)
+    {
+        $traverse = explode('.', $dots);
+        foreach ($traverse as $step) {
+            $v = is_object($array) ? ($array->$step ?? null) : ($array[$step] ?? null);
+
+            if ( !isset($v) && ! is_string($array) ) {
+                return $default;
+            }
+            $array = $v ?? $default;
+        }
+
+        return $array;
+    }
+}
+
+if( ! function_exists('dots_set') ) {
+    /**
+     * Dots Set
+     *
+     * Set an array value using dot notation.
+     *
+     * @param string $dots dot notation path to set
+     * @param array $array the original array
+     * @param mixed $value the value to set
+     *
+     * @return array
+     */
+    function dots_set($dots, array $array, $value)
+    {
+        $set      = &$array;
+        $traverse = explode('.', $dots);
+        foreach ($traverse as $step) {
+            $set = &$set[$step];
+        }
+        $set = $value;
+
+        return $array;
+    }
+}
+
+if ( ! function_exists('immutable')) {
+    /**
+     * Get Constant Variable
+     *
+     * @param string $name the constant variable name
+     * @param null|mixed $default The default value
+     *
+     * @return mixed
+     */
+    function immutable($name, $default = null) {
+        return defined($name) ? constant($name) : $default;
+    }
+}
+
+if ( ! function_exists('array_reduce_allowed_str')) {
+
+    /**
+     * HTML class names helper
+     *
+     * @param array $array
+     *
+     * @return string
+     */
+    function array_reduce_allowed_str($array) {
+        $reduced = '';
+        array_walk($array, function($val, $key) use(&$reduced) {
+            $reduced .= $val ? " $key" : '';
+        });
+        $cleaned = implode(' ', array_unique(array_map('trim', explode(' ', trim($reduced)))));
+        return $cleaned;
+    }
+}
+
+if ( ! function_exists('class_names')) {
+
+    /**
+     * HTML class names helper
+     *
+     * @param string $defaults
+     * @param null|array $classes
+     * @param string $failed
+     * @return string
+     */
+    function class_names($defaults, $classes = null, $failed = '') {
+        if(!$result = array_reduce_allowed_str(is_array($defaults) ? $defaults : $classes)) {
+            $result = !is_array($classes) ? $classes : $failed;
+        }
+
+        $defaults = !is_array($defaults) ? $defaults : '';
+
+        return $defaults . ' ' . $result;
+    }
+}
+
+if(! function_exists('not_blank_string')) {
+    /**
+     * Not blank string
+     *
+     * @param string|null $value
+     *
+     * @return bool
+     */
+    function not_blank_string($value) {
+        return !(!isset($value) || $value === '');
+    }
+}
+
+if ( ! function_exists('database')) {
+    /**
+     * Get WPDB
+     *
+     * @return \wpdb
+     */
+    function database() {
+        global $wpdb;
+        return $wpdb;
+    }
+}
+
+if( ! function_exists('tr_app_class') ) {
     /**
      * Get Namespaced Class
      *
      * @param string $append
      * @return string
      */
-    function tr_app( $append ) {
+    function tr_app_class($append) {
         $space = "\\" . TR_APP_NAMESPACE . "\\";
-        return $space . $append;
+        return $space . ltrim($append, '\\');
+    }
+}
+
+if( ! function_exists('tr_wp_root') ) {
+    /**
+     * Get WordPress Root
+     *
+     * @return string
+     */
+    function tr_wp_root() {
+
+        if( defined('TR_ROOT_WP') ) {
+            return TR_ROOT_WP;
+        }
+
+        if( defined('TR_ROOT_INSTALL') ) {
+            return TR_PATH . '/' . trim(tr_config('app.root.wordpress', 'wordpress'), '/');
+        }
+
+        if( defined('ABSPATH') ) {
+            return ABSPATH;
+        }
+
+        $depth = TR_PATH;
+        $looking = 5;
+        while ($looking--) {
+            if(is_file($depth . '/wp-load.php')) {
+                if(is_file($depth . '/wp-includes/wp-db.php')) {
+                    return $depth;
+                }
+            }
+            $depth .= '/..';
+        }
+
+        return false;
+    }
+}
+
+if ( ! function_exists('tr_container')) {
+    /**
+     * Resolve Class From DI Container
+     *
+     * Get from DI container
+     *
+     * @param string $class_name class or alias
+     * @return mixed|null
+     */
+    function tr_container($class_name) {
+        return \TypeRocket\Core\Injector::resolve($class_name);
+    }
+}
+
+if ( ! function_exists('tr_resolve')) {
+    /**
+     * Resolve Class
+     *
+     * Inject all class dependencies
+     *
+     * @param string $class_name class or alias
+     *
+     * @return mixed|null
+     * @throws Exception
+     */
+    function tr_resolve($class_name) {
+        return (new \TypeRocket\Core\Resolver)->resolve($class_name);
+    }
+}
+
+if( ! function_exists('tr_update_site_state') ) {
+    /**
+     * Updates _site_state_changed option in database
+     *
+     * Should be called when a theme or plugin has been activated or deactivated.
+     * Used to facilitate tasks like flushing rewrite rules for the registration
+     * and de-registration of post types and taxonomies.
+     *
+     * @link https://core.trac.wordpress.org/ticket/47526
+     *
+     * @param string|array $arg single function name or list of function names
+     */
+    function tr_update_site_state($arg)
+    {
+        $value = [];
+
+        if ($state = get_option('_tr_site_state_changed')) {
+            $value = maybe_unserialize($state);
+
+            if (!is_array($value)) {
+                $value = [];
+            }
+        }
+
+        if (is_array($arg)) {
+            $value = array_merge($value, $arg);
+        } else {
+            $value[] = $arg;
+        }
+
+        update_option('_tr_site_state_changed', array_unique($value), 'yes');
+    }
+}
+
+if ( ! function_exists('tr_config')) {
+    /**
+     * Locate Config Setting
+     *
+     * Traverse array with dot notation.
+     *
+     * @param string $dots dot notation key.next.final
+     * @param null|mixed $default default value to return if null
+     *
+     * @return array|mixed|null
+     */
+    function tr_config($dots, $default = null) {
+        $config = \TypeRocket\Core\Config::getFromContainer();
+        return $config->locate($dots, $default);
+    }
+}
+
+if ( ! function_exists('tr_storage_path')) {
+    /**
+     * Storage File Path
+     *
+     * @param string|null $path storage file path
+     *
+     * @return array|mixed|null
+     */
+    function tr_storage_path($path = null) {
+        return tr_config('paths.storage') . ( $path ? '/' . ltrim($path, '/') : '' );
+    }
+}
+
+if ( ! function_exists('tr_wp_uploads_path')) {
+    /**
+     * Storage File Path
+     *
+     * @param string|null $path storage file path
+     *
+     * @return array|mixed|null
+     */
+    function tr_wp_uploads_path($path = null) {
+        return WP_CONTENT_DIR. '/uploads' . ( $path ? '/' . ltrim($path, '/') : '' );
     }
 }
 
@@ -19,7 +319,31 @@ if( ! function_exists('tr_response') ) {
      * @return \TypeRocket\Http\Response
      */
     function tr_response() {
-        return \TypeRocket\Core\Injector::findOrNewSingleton(\TypeRocket\Http\Response::class);
+        return \TypeRocket\Http\Response::getFromContainer();
+    }
+}
+
+if( ! function_exists('tr_request') ) {
+    /**
+     * Get Request
+     *
+     * @param null $method
+     * @return \TypeRocket\Http\Request
+     */
+    function tr_request() {
+        return new \TypeRocket\Http\Request;
+    }
+}
+
+if( ! function_exists('tr_debug') ) {
+    /**
+     * Get Debug
+     *
+     * @return bool
+     */
+    function tr_debug() {
+
+        return tr_config('app.debug');
     }
 }
 
@@ -31,45 +355,67 @@ if( ! function_exists('tr_assets_url') ) {
      * @return string
      */
     function tr_assets_url( $append ) {
-        $root = \TypeRocket\Core\Config::locate('paths.urls.assets');
+        $root = tr_config('urls.assets');
         return $root . '/' . ltrim($append, '/');
     }
 }
 
 
-if( ! function_exists('tr_views_dir') ) {
+if ( ! function_exists('tr_views_path') ) {
     /**
      * Get Views Directory
      *
      * @param string $append
      * @return string
      */
-    function tr_views_dir( $append ) {
-        $root = \TypeRocket\Core\Config::locate('paths.views');
+    function tr_views_path( $append ) {
+        $root = tr_config('paths.views');
         return $root . '/' . ltrim($append, '/');
     }
 }
 
-if ( ! function_exists('tr_get_model')) {
+if ( ! function_exists('tr_controller') ) {
+    /**
+     * Get controller by recourse
+     *
+     * @param string $resource use the resource name to get controller
+     *
+     * @return null|string $controller
+     */
+    function tr_controller($resource)
+    {
+        if(is_string($resource) && $resource[0] == '@') {
+            $resource = substr($resource, 1);
+        }
+
+        if(\TypeRocket\Utility\Str::ends('Controller', $resource)) {
+            $resource = substr($resource, 0, -10);
+        }
+
+        $Resource = TypeRocket\Utility\Str::camelize($resource);
+        $controller    = tr_app_class("Controllers\\{$Resource}Controller");
+        return $controller;
+    }
+}
+
+if ( ! function_exists('tr_model') ) {
     /**
      * Get model by recourse
      *
      * @param string $resource use the resource name to get model
+     * @param bool $instance
      *
-     * @return null|\TypeRocket\Models\Model $object
+     * @return null|string|\TypeRocket\Models\Model $object
      */
-    function tr_get_model($resource)
+    function tr_model($resource, $instance = true)
     {
-        $Resource = TypeRocket\Utility\Str::camelize($resource);
-        $model    = tr_app("Models\\{$Resource}");
-        $object   = null;
-
-        if (class_exists($model)) {
-            /** @var \TypeRocket\Models\Model $object */
-            $object = new $model;
+        if(is_string($resource) && $resource[0] == '@') {
+            $resource = substr($resource, 1);
         }
 
-        return $object;
+        $Resource = TypeRocket\Utility\Str::camelize($resource);
+        $model    = tr_app_class("Models\\{$Resource}");
+        return $instance ? new $model : $model;
     }
 }
 
@@ -115,8 +461,8 @@ if ( ! function_exists('tr_meta_box')) {
     /**
      * Register meta box
      *
-     * @param null $name
-     * @param null $screen
+     * @param string $name
+     * @param null|string|array $screen
      * @param array $settings
      *
      * @return \TypeRocket\Register\MetaBox
@@ -136,12 +482,13 @@ if ( ! function_exists('tr_page')) {
      * @param string $action
      * @param string $title
      * @param array $settings
+     * @param null|array|string|callable $handler
      *
      * @return \TypeRocket\Register\Page
      */
-    function tr_page($resource, $action, $title, array $settings = [])
+    function tr_page($resource, $action, $title, array $settings = [], $handler = null)
     {
-        $obj = new \TypeRocket\Register\Page($resource, $action, $title, $settings);
+        $obj = new \TypeRocket\Register\Page($resource, $action, $title, $settings, $handler);
         $obj->addToRegistry();
 
         return $obj;
@@ -151,17 +498,34 @@ if ( ! function_exists('tr_page')) {
 if ( ! function_exists('tr_resource_pages')) {
     /**
      * @param string $singular
-     * @param string $plural
+     * @param string|array $plural
      * @param array $settings
      * @param null $resource
+     * @param null $handler
      * @return \TypeRocket\Register\Page
      */
-    function tr_resource_pages($singular, $plural = null, array $settings = [], $resource = null)
+    function tr_resource_pages($singular, $plural = null, array $settings = [], $resource = null, $handler = null)
     {
-        list($singular, $handle) = array_pad(explode('@', $singular), 2, null);
+        [$singular, $handle] = array_pad(explode('@', $singular), 2, null);
+        $handler = $handler ?? $handle;
+
+        if(is_array($plural)) {
+            $settings = $plural;
+
+            if(isset($settings['plural'])) {
+                $plural = $settings['plural'];
+                unset($settings['plural']);
+            } else {
+                $plural = null;
+            }
+        }
 
         if ( ! $plural) {
             $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
+        }
+
+        if(!$handler) {
+            $handler = tr_controller($singular);
         }
 
         if( ! $resource) {
@@ -170,8 +534,8 @@ if ( ! function_exists('tr_resource_pages')) {
 
         $menu_id = 'add_resource_' . \TypeRocket\Utility\Sanitize::underscore($singular);
 
-        $add = tr_page($resource, 'add', 'Add ' . $singular)
-            ->setArgument('menu', __('Add New', 'typerocket-domain'))
+        $add = tr_page($resource, 'add', __('Add ' . $singular))
+            ->setMenuTitle(__('Add New'))
             ->adminBar($menu_id, $singular, 'new-content')
             ->mapActions([
                 'GET' => 'add',
@@ -192,7 +556,7 @@ if ( ! function_exists('tr_resource_pages')) {
                 'GET' => 'show'
             ]);
 
-        $edit = tr_page($resource, 'edit', 'Edit ' . $singular)
+        $edit = tr_page($resource, 'edit', __('Edit ' . $singular))
             ->addNewButton()
             ->removeMenu()
             ->mapActions([
@@ -202,15 +566,12 @@ if ( ! function_exists('tr_resource_pages')) {
 
         $index = tr_page($resource, 'index', $plural, $settings)
             ->apply($edit, $show, $delete, $add)
+            ->setSubMenuTitle(__('All ' . $plural))
             ->addNewButton();
 
         foreach ([$add, $edit, $delete, $show, $index] as $page) {
             /** @var \TypeRocket\Register\Page $page */
-            $page->useController();
-
-            if($handle) {
-                $page->setHandler($handle);
-            }
+            $page->setHandler($handler);
         }
 
         return $index;
@@ -229,52 +590,26 @@ if ( ! function_exists('tr_tabs')) {
     }
 }
 
-if ( ! function_exists('tr_tables')) {
-    /**
-     * Create tables
-     *
-     * @param int $limit
-     * @param \TypeRocket\Models\Model $model
-     *
-     * @return \TypeRocket\Elements\Tables
-     */
-    function tr_tables($limit = 25, $model = null)
-    {
-        return new \TypeRocket\Elements\Tables($limit, $model);
-    }
-}
-
-if ( ! function_exists('tr_buffer')) {
-    /**
-     * Create buffer
-     *
-     * @return \TypeRocket\Utility\Buffer
-     */
-    function tr_buffer()
-    {
-        return new \TypeRocket\Utility\Buffer();
-    }
-}
-
 if ( ! function_exists('tr_form')) {
     /**
      * Instance the From
      *
-     * @param string $resource posts, users, comments, options your own
-     * @param string $action update or create
+     * @param string|\TypeRocket\Interfaces\Formable|array $resource posts, users, comments, options your own
+     * @param string|null $action update, delete, or create
      * @param null|int $item_id you can set this to null or an integer
-     * @param null|Model|string $model
-     * @return \TypeRocket\Elements\Form
+     * @param mixed|null|string $model
+     *
+     * @return \TypeRocket\Elements\BaseForm|\App\Elements\Form
      */
-    function tr_form($resource = 'auto', $action = 'update', $item_id = null, $model = null)
+    function tr_form($resource = null, $action = null, $item_id = null, $model = null)
     {
-        $form = \TypeRocket\Core\Config::locate('app.class.form');
+        $form = tr_config('app.class.form');
 
         return new $form($resource, $action, $item_id, $model);
     }
 }
 
-if ( ! function_exists('tr_modify_model_value')) {
+if ( ! function_exists('tr_model_field')) {
     /**
      * Modify Model Value
      *
@@ -283,7 +618,7 @@ if ( ! function_exists('tr_modify_model_value')) {
      *
      * @return array|mixed|null|string
      */
-    function tr_modify_model_value($model, $args)
+    function tr_model_field($model, $args)
     {
         if(!empty($args[0]) && $args[0] != ':' && !is_array($args)) {
             return $model->getFieldValue($args);
@@ -295,7 +630,7 @@ if ( ! function_exists('tr_modify_model_value')) {
             return call_user_func_array($args['callback'], $callback_args);
         }
 
-        list($modifier, $arg1, $arg2) = array_pad(explode(':', ltrim($args, ':'), 3), 3, null);
+        [$modifier, $arg1, $arg2] = array_pad(explode(':', ltrim($args, ':'), 3), 3, null);
         $name = $arg2 ? $arg2 : $arg1 ;
         $value = $model->getFieldValue($name);
 
@@ -304,9 +639,23 @@ if ( ! function_exists('tr_modify_model_value')) {
                 $size = $arg2 ? $arg1 : 'thumbnail' ;
                 $modified = wp_get_attachment_image( (int) $value, $size);
                 break;
+            case 'plaintext';
+                $modified = wpautop(esc_html($value));
+                break;
+            case 'html';
+                $modified = \TypeRocket\Utility\Sanitize::editor($value, true);
+                break;
             case 'img_src';
-                $size = $arg2 ? $arg1 : 'thumbnail' ;
+                $size = $arg2 ? $arg1 : 'thumbnail';
                 $modified = wp_get_attachment_image_src( (int) $value, $size);
+                break;
+            case 'background';
+                $size = $arg2 ? $arg1 : 'full';
+                $img_src = wp_get_attachment_image_src( (int) $value['id'] ?? 0, $size)[0];
+                $img_px = $value['x'] ?? 50;
+                $img_py = $value['y'] ?? 50;
+                $img_p = "{$img_px}% {$img_py}%";
+                $modified = "background-image: url({$img_src}); background-position: {$img_p};";
                 break;
             case 'post';
                 $modified = get_post( (int) $value);
@@ -325,89 +674,46 @@ if ( ! function_exists('tr_modify_model_value')) {
     }
 }
 
-if ( ! function_exists('tr_posts_field')) {
+if ( ! function_exists('tr_post_field')) {
     /**
-     * Get the posts field
+     * Get the post's field
      *
      * @param string $name use dot notation
-     * @param null $item_id
+     * @param null|int|WP_Post $item_id
      *
      * @return array|mixed|null|string
      */
-    function tr_posts_field($name, $item_id = null)
+    function tr_post_field($name, $item_id = null)
     {
         global $post;
 
-        if (isset($post->ID) && is_null($item_id)) {
+        if (is_null($item_id) && isset($post->ID)) {
             $item_id = $post->ID;
         }
 
-        $model = new \TypeRocket\Models\WPPost();
-        $model->findById($item_id);
+        try {
+            $model = new \TypeRocket\Models\WPPost();
+            $model->wpPost($item_id);
+        } catch (\Exception $e) {
+            return null;
+        }
 
-        return tr_modify_model_value($model, $name);
+        return tr_model_field($model, $name);
     }
 }
 
-if ( ! function_exists('tr_posts_components_field')) {
+if ( ! function_exists('tr_field')) {
     /**
-     * Get components
-     *
-     * Auto binding only for post types
+     * Get the post field
      *
      * @param string $name use dot notation
-     * @param null $item_id
+     * @param null|int|WP_Post $item_id
      *
-     * @param null|string $modelClass
-     *
-     * @deprecated
      * @return array|mixed|null|string
      */
-    function tr_posts_components_field($name, $item_id = null, $modelClass = null)
+    function tr_field($name, $item_id = null)
     {
-        global $post;
-
-        if (isset($post->ID) && is_null($item_id)) {
-            $item_id = $post->ID;
-        }
-
-        /** @var \TypeRocket\Models\Model $model */
-        $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
-        $model = new $modelClass;
-        $model->findById($item_id);
-
-        $builder_data = $model->getFieldValue($name);
-
-        if (is_array($builder_data)) {
-            $i = 0;
-            $len = count($builder_data);
-            foreach ($builder_data as $hash => $data) {
-                $first_item = $last_item = false;
-
-                if ($i == 0) {
-                    $first_item = true;
-                } else if ($i == $len - 1) {
-                    $last_item = true;
-                }
-
-                $key       = key($data);
-                $component = strtolower(key($data));
-                $paths     = \TypeRocket\Core\Config::locate('paths');
-                $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
-                if (file_exists($file)) {
-                    $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id, $hash) {
-                        /** @noinspection PhpIncludeInspection */
-                        include($file);
-                    };
-                    $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item, $key, $hash);
-                } else {
-                    echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
-                }
-                $i++;
-            }
-        }
-
-        return $builder_data;
+        return tr_post_field($name, $item_id);
     }
 }
 
@@ -447,26 +753,6 @@ if ( ! function_exists('tr_components_field')) {
     }
 }
 
-if( ! function_exists('tr_get_post_type_model') ) {
-    /**
-     * Get Model Assigned To WP_Post Class
-     *
-     * @param WP_Post $wp_post
-     * @param null|string $override
-     * @return \TypeRocket\Models\WPPost
-     */
-    function tr_get_post_type_model(WP_Post $wp_post, $override = null) {
-
-        if($override) { return new $override; }
-
-        $resource_data = \TypeRocket\Register\Registry::getPostTypeResource($wp_post->post_type);
-        $Resource = \TypeRocket\Utility\Str::camelize($resource_data[0] ?? '');
-        $model = $resource_data[2] ?? tr_app("Models\\{$Resource}");
-
-        return class_exists($model) ? new $model: new \TypeRocket\Models\WPPost($wp_post->post_type);
-    }
-}
-
 if( ! function_exists('tr_components_loop')) {
     /**
      * Loop Components
@@ -479,10 +765,16 @@ if( ! function_exists('tr_components_loop')) {
          * @var $name
          * @var $item_id
          * @var $model
+         * @var $nested
          */
         extract($other);
-        $i = 0;
+        $model = $model ?? null;
+        $item_id = $item_id ?? null;
+        $nested = $nested ?? false;
+        $i = $nested ? 1 : 0;
         $len = count($builder_data);
+        $components_list = tr_config('components.registry');
+        do_action('tr_components_loop', $builder_data, $other, $len);
         foreach ($builder_data as $hash => $data) {
             $first_item = $last_item = false;
 
@@ -492,27 +784,25 @@ if( ! function_exists('tr_components_loop')) {
                 $last_item = true;
             }
 
-            $key       = key($data);
+            $component_id = key($data);
             $component = strtolower(key($data));
-            $paths     = \TypeRocket\Core\Config::locate('paths');
-            $file      = $paths['visuals'] . '/' . $name . '/' . $component . '.php';
-            $file = apply_filters('tr_component_file', $file, ['folder' => $name, 'name' => $component, 'view' => 'visual']);
-            if (file_exists($file)) {
-                $fn = function ($file, $data, $name, $item_id, $model, $first_item, $last_item, $component_id, $hash) {
-                    /** @noinspection PhpIncludeInspection */
-                    include($file);
-                };
-                $fn($file, $data[$key], $name, $item_id, $model, $first_item, $last_item, $key, $hash);
+            $info = compact('name', 'item_id', 'model', 'first_item', 'last_item', 'component_id', 'hash');
+            $component_class = $components_list[$component];
+
+            if(!$component_class) {
+                $class = (new \TypeRocket\Template\ErrorComponent)->title($component);
             } else {
-                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add builder visual here by creating: <code>{$file}</code></div>";
+                /** @var $class \TypeRocket\Template\Component */
+                $class = new $component_class;
             }
 
+            $class->render($data[$component_id], $info);
             $i++;
         }
     }
 }
 
-if ( ! function_exists('tr_users_field')) {
+if ( ! function_exists('tr_user_field')) {
     /**
      * Get users field
      *
@@ -521,26 +811,27 @@ if ( ! function_exists('tr_users_field')) {
      *
      * @return array|mixed|null|string
      */
-    function tr_users_field($name, $item_id = null)
+    function tr_user_field($name, $item_id = null)
     {
         global $user_id, $post;
 
         if (isset($user_id) && is_null($item_id)) {
             $item_id = $user_id;
         } elseif (is_null($item_id) && isset($post->ID)) {
-            $item_id = get_the_author_meta('ID');
+            $item_id = $post->post_author;
         } elseif (is_null($item_id)) {
             $item_id = get_current_user_id();
         }
 
-        $model = tr_get_model('User');
-        $model->findById($item_id);
+        /** @var \TypeRocket\Models\WPUser $model */
+        $model = tr_model('User');
+        $model->wpUser($item_id);
 
-        return tr_modify_model_value($model, $name);
+        return tr_model_field($model, $name);
     }
 }
 
-if ( ! function_exists('tr_options_field')) {
+if ( ! function_exists('tr_option_field')) {
     /**
      * Get options
      *
@@ -548,15 +839,15 @@ if ( ! function_exists('tr_options_field')) {
      *
      * @return array|mixed|null|string
      */
-    function tr_options_field($name)
+    function tr_option_field($name)
     {
-        $model = tr_get_model('Option');
+        $model = tr_model('Option');
 
-        return tr_modify_model_value($model, $name);
+        return tr_model_field($model, $name);
     }
 }
 
-if ( ! function_exists('tr_comments_field')) {
+if ( ! function_exists('tr_comment_field')) {
     /**
      * Get comments field
      *
@@ -565,7 +856,7 @@ if ( ! function_exists('tr_comments_field')) {
      *
      * @return array|mixed|null|string
      */
-    function tr_comments_field($name, $item_id = null)
+    function tr_comment_field($name, $item_id = null)
     {
         global $comment;
 
@@ -573,30 +864,35 @@ if ( ! function_exists('tr_comments_field')) {
             $item_id = $comment->comment_ID;
         }
 
-        $model = tr_get_model('Comment');
-        $model->findById($item_id);
+        /** @var \TypeRocket\Models\WPComment $model */
+        $model = tr_model('Comment');
+        $model->wpComment($item_id);
 
-        return tr_modify_model_value($model, $name);
+        return tr_model_field($model, $name);
     }
 }
 
-if ( ! function_exists('tr_taxonomies_field')) {
+if ( ! function_exists('tr_term_field')) {
     /**
      *  Get taxonomy field
      *
      * @param string $name use dot notation
-     * @param string $taxonomy taxonomy id
-     * @param null|int $item_id
+     * @param string $taxonomy taxonomy model class
+     * @param int $item_id taxonomy id
      *
      * @return array|mixed|null|string
      */
-    function tr_taxonomies_field($name, $taxonomy, $item_id = null)
+    function tr_term_field($name, $taxonomy = null, $item_id = null)
     {
-        /** @var \TypeRocket\Models\WPTerm $model */
-        $model = tr_get_model($taxonomy);
-        $model->findById($item_id);
+        try {
+            /** @var \TypeRocket\Models\WPTerm $model */
+            $model = $taxonomy ? tr_model($taxonomy) : new \TypeRocket\Models\WPTerm;
+            $model->wpTerm($item_id);
+        } catch (\Exception $e) {
+            return null;
+        }
 
-        return tr_modify_model_value($model, $name);
+        return tr_model_field($model, $name);
     }
 }
 
@@ -613,10 +909,10 @@ if ( ! function_exists('tr_resource_field')) {
     function tr_resource_field($name, $resource, $item_id = null)
     {
         /** @var \TypeRocket\Models\Model $model */
-        $model = tr_get_model($resource);
+        $model = tr_model($resource);
         $model->findById($item_id);
 
-        return tr_modify_model_value($model, $name);
+        return tr_model_field($model, $name);
     }
 }
 
@@ -624,46 +920,22 @@ if ( ! function_exists('tr_is_json')) {
     /**
      * Detect is JSON
      *
-     * @param string $string
+     * @param $args
      *
      * @return bool
      */
-    function tr_is_json($string)
+    function tr_is_json(...$args)
     {
-        $j = json_decode($string);
-        $r = $j ? true : false;
+        if(is_array($args[0]) || is_object($args[0])) {
+            return false;
+        }
 
-        return $r;
-    }
-}
+        if (trim($args[0]) === '') {
+            return false;
+        }
 
-if ( ! function_exists('tr_is_frontend')) {
-    /**
-     * Check if the frontend is being used
-     */
-    function tr_is_frontend()
-    {
-        return !is_admin();
-    }
-}
-
-if ( ! function_exists('tr_ssl')) {
-    /**
-     * SSL
-     */
-    function tr_ssl()
-    {
-        return new TypeRocket\Http\SSL();
-    }
-}
-
-if ( ! function_exists('tr_image_sizing')) {
-    /**
-     * SSL
-     */
-    function tr_image_sizing()
-    {
-        return new \TypeRocket\Utility\ImageSizer();
+        json_decode(...$args);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 }
 
@@ -677,32 +949,125 @@ if ( ! function_exists('tr_redirect')) {
     }
 }
 
-if ( ! function_exists('tr_redirect_data')) {
+if ( ! function_exists('tr_redirect_message')) {
     /**
-     * @param null $default
+     * @param null|array $default
      * @param bool $delete
      *
-     * @return \TypeRocket\Http\Redirect
+     * @return array
      */
-    function tr_redirect_data($default = null, $delete = true)
+    function tr_redirect_message($default = null, $delete = true)
     {
-        $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_redirect_data', $delete);
+        $data = (new \TypeRocket\Http\Cookie)->getTransient('tr_redirect_message', $delete);
 
         return ! is_null($data) ? $data : $default;
     }
 }
 
-if ( ! function_exists('tr_nonce_field')) {
+if ( ! function_exists('tr_redirect_errors')) {
     /**
-     * TypeRocket Nonce Field
+     * @param null $default
+     *
+     * @return array
      */
-    function tr_nonce_field()
+    function tr_redirect_errors($default = null)
     {
-        return wp_nonce_field('form_' . \TypeRocket\Core\Config::locate('app.seed'), '_tr_nonce_form', false, false);
+        /** @var \TypeRocket\Http\ErrorCollection $errors */
+        $errors = \TypeRocket\Utility\RuntimeCache::getFromContainer()->get(\TypeRocket\Http\ErrorCollection::KEY);
+        $errors = $errors->errors();
+
+        return ! is_null($errors) ? $errors : $default;
     }
 }
 
-if ( ! function_exists('tr_rest_field')) {
+if ( ! function_exists('tr_redirect_data')) {
+    /**
+     * @param null $default
+     * @param bool $delete
+     *
+     * @return array
+     */
+    function tr_redirect_data($default = null, $delete = true)
+    {
+        $data = (new \TypeRocket\Http\Cookie)->getTransient('tr_redirect_data', $delete);
+
+        return ! is_null($data) ? $data : $default;
+    }
+}
+
+if ( ! function_exists('tr_field_nonce')) {
+    /**
+     * TypeRocket Nonce Field
+     *
+     * @param string $action
+     *
+     * @return string
+     */
+    function tr_field_nonce($action = '')
+    {
+        return wp_nonce_field('form_' . $action . tr_config('app.seed'), '_tr_nonce_form' . $action, false, false);
+    }
+}
+
+if( ! function_exists('tr_nonce')) {
+    /**
+     * TypeRocket Nonce
+     *
+     * @param string $action
+     *
+     * @return false|string
+     */
+    function tr_nonce($action = '') {
+        return wp_create_nonce( 'form_' . $action . tr_config('app.seed' ) );
+    }
+}
+
+if( ! function_exists('tr_field_nonce_check')) {
+    /**
+     * TypeRocket Check Field Nonce
+     *
+     * Works the same as check_ajax_referer but also include
+     * request header checks for: X-CSRF-TOKEN and X-WP-NONCE
+     *
+     * @param string $action
+     * @param bool $die
+     *
+     * @return bool|int
+     */
+    function tr_field_nonce_check($action = '', $die = false) {
+
+        $query_arg = '_tr_nonce_form'.$action;
+        $action = 'form_' . $action . tr_config('app.seed');
+        $nonce = '';
+
+        if ( isset( $_REQUEST[$query_arg] ) ) {
+            $nonce = $_REQUEST[$query_arg];
+        } elseif ( isset( $_REQUEST['_ajax_nonce'] ) ) {
+            $nonce = $_REQUEST['_ajax_nonce'];
+        } elseif ( isset( $_REQUEST['_wpnonce'] ) ) {
+            $nonce = $_REQUEST['_wpnonce'];
+        } elseif ( isset( $_SERVER['HTTP_X_CSRF_TOKEN'] ) ) {
+            $nonce = $_SERVER['HTTP_X_CSRF_TOKEN'];
+        } elseif ( isset( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
+            $nonce = $_SERVER['HTTP_X_WP_NONCE'];
+        }
+
+        $result = wp_verify_nonce( $nonce, $action );
+        do_action( 'check_ajax_referer', $action, $result );
+
+        if ( $die && false === $result ) {
+            if ( wp_doing_ajax() ) {
+                wp_die( -1, 403 );
+            } else {
+                die( '-1' );
+            }
+        }
+
+        return $result;
+    }
+}
+
+if ( ! function_exists('tr_field_method')) {
     /**
      * TypeRocket Nonce Field
      *
@@ -710,13 +1075,13 @@ if ( ! function_exists('tr_rest_field')) {
      *
      * @return string
      */
-    function tr_rest_field($method = 'POST')
+    function tr_field_method($method = 'POST')
     {
         return "<input type=\"hidden\" name=\"_method\" value=\"{$method}\"  />";
     }
 }
 
-if ( ! function_exists('tr_hidden_form_fields')) {
+if ( ! function_exists('tr_form_hidden_fields')) {
     /**
      * TypeRocket Nonce Field
      *
@@ -724,9 +1089,19 @@ if ( ! function_exists('tr_hidden_form_fields')) {
      *
      * @return string
      */
-    function tr_hidden_form_fields($method = 'POST')
+    function tr_form_hidden_fields($method = 'POST')
     {
-        return tr_rest_field($method) . tr_nonce_field();
+        return tr_field_method($method) . tr_field_nonce();
+    }
+}
+
+if ( ! function_exists('tr_cookie')) {
+    /**
+     * @return \TypeRocket\Http\Cookie
+     */
+    function tr_cookie()
+    {
+        return new \TypeRocket\Http\Cookie();
     }
 }
 
@@ -740,7 +1115,7 @@ if ( ! function_exists('tr_old_field')) {
      */
     function tr_old_field($name, $default = '', $delete = false)
     {
-        $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', $delete);
+        $data = tr_cookie()->getTransient('tr_old_fields', $delete);
 
         return isset($data[$name]) ? $data[$name] : $default;
     }
@@ -755,7 +1130,7 @@ if ( ! function_exists('tr_old_fields')) {
      */
     function tr_old_fields($default = null, $delete = true)
     {
-        $data = (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', $delete);
+        $data = tr_cookie()->getTransient('tr_old_fields', $delete);
 
         return ! is_null($data) ? $data : $default;
     }
@@ -767,19 +1142,9 @@ if ( ! function_exists('tr_old_fields_remove')) {
      */
     function tr_old_fields_remove()
     {
-        (new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields', true);
+        tr_cookie()->getTransient('tr_old_fields', true);
 
-        return ! (bool)(new \TypeRocket\Http\Cookie())->getTransient('tr_old_fields');
-    }
-}
-
-if ( ! function_exists('tr_cookie')) {
-    /**
-     * @return \TypeRocket\Http\Cookie
-     */
-    function tr_cookie()
-    {
-        return new \TypeRocket\Http\Cookie();
+        return ! (bool) tr_cookie()->getTransient('tr_old_fields');
     }
 }
 
@@ -787,12 +1152,13 @@ if ( ! function_exists('tr_view')) {
     /**
      * @param string $dots
      * @param array $data
+     * @param string $ext
      *
      * @return \TypeRocket\Template\View
      */
-    function tr_view($dots, array $data = [])
+    function tr_view($dots, array $data = [], $ext = '.php')
     {
-        return new \TypeRocket\Template\View($dots, $data);
+        return new \TypeRocket\Template\View($dots, $data, $ext);
     }
 }
 
@@ -801,14 +1167,15 @@ if ( ! function_exists('tr_validator')) {
      * Validate fields
      *
      * @param array $options
-     * @param array $fields
+     * @param array|null $fields
      * @param null $modelClass
+     * @param bool $run
      *
      * @return \TypeRocket\Utility\Validator
      */
-    function tr_validator($options, $fields, $modelClass = null)
+    function tr_validator($options, $fields = null, $modelClass = null, $run = false)
     {
-        return new \TypeRocket\Utility\Validator($options, $fields, $modelClass);
+        return new \TypeRocket\Utility\Validator($options, $fields, $modelClass, $run);
     }
 }
 
@@ -832,23 +1199,23 @@ if ( ! function_exists('tr_routes_repo')) {
      */
     function tr_routes_repo()
     {
-        return \TypeRocket\Core\Injector::resolve(\TypeRocket\Http\RouteCollection::class);
+        return tr_container(\TypeRocket\Http\RouteCollection::ALIAS);
     }
 }
 
-if ( ! function_exists('tr_route_lookup')) {
+if ( ! function_exists('tr_route_find')) {
     /**
      * Get Routes Repo
      * @param string $name
      * @return null|\TypeRocket\Http\Route
      */
-    function tr_route_lookup($name)
+    function tr_route_find($name)
     {
         return tr_routes_repo()->getNamedRoute($name);
     }
 }
 
-if ( ! function_exists('tr_route_url_lookup')) {
+if ( ! function_exists('tr_route_url')) {
     /**
      * Get Routes Repo
      * @param string $name
@@ -857,9 +1224,9 @@ if ( ! function_exists('tr_route_url_lookup')) {
      *
      * @return null|string
      */
-    function tr_route_url_lookup($name, $values = [], $site = true)
+    function tr_route_url($name, $values = [], $site = true)
     {
-        return tr_route_lookup($name)->buildUrlFromPattern($values, $site);
+        return tr_route_find($name)->buildUrlFromPattern($values, $site);
     }
 }
 
@@ -875,77 +1242,6 @@ if ( ! function_exists('tr_query')) {
     }
 }
 
-if ( ! function_exists('tr_http_response')) {
-    /**
-     * Http Response
-     *
-     * @param string $returned the constant variable name
-     * @param null|\TypeRocket\Http\Response $response The default value
-     *
-     * @return mixed
-     */
-    function tr_http_response($returned, $response = null) {
-
-        if($response) {
-            status_header( $response->getStatus() );
-        }
-
-        if( $returned && empty($_POST['_tr_ajax_request']) ) {
-
-            if( $returned instanceof \TypeRocket\Http\Redirect ) {
-                $returned->now();
-            }
-
-            if( $returned instanceof \TypeRocket\Template\View ) {
-                \TypeRocket\Template\View::load();
-            }
-
-            if( is_string($returned) ) {
-                echo $returned;
-                die();
-            }
-
-            \TypeRocket\Http\Routes::resultsToJson( $returned );
-
-        } elseif(!empty($response)) {
-            wp_send_json( $response->getResponseArray() );
-        } else {
-            echo 'Typerocket Response Object required';
-            die();
-        }
-    }
-}
-
-if ( ! function_exists('tr_resolve')) {
-    /**
-     * Automatically Resolve Class
-     *
-     * Inject all class dependencies
-     *
-     * @param string $class_name
-     * @return object
-     * @throws Exception
-     */
-    function tr_resolve($class_name) {
-        return (new \TypeRocket\Core\Resolver())->resolve($class_name);
-    }
-}
-
-if ( ! function_exists('tr_container')) {
-    /**
-     * Resolve Class From DI Container
-     *
-     * Inject all class dependencies
-     *
-     * @param string $class_name or alias
-     * @return object|null
-     */
-    function tr_container($class_name) {
-        return \TypeRocket\Core\Injector::resolve($class_name);
-    }
-}
-
-
 if ( ! function_exists('tr_file')) {
     /**
      * File Utility
@@ -959,54 +1255,247 @@ if ( ! function_exists('tr_file')) {
     }
 }
 
-if ( ! function_exists('tr_get_url')) {
+if ( ! function_exists('tr_assets_url_build')) {
     /**
-     * URL
+     * Config URL
      *
-     * @param string $path relative path to type's location
-     * @param string $type theme, mu, or root
+     * @param string $path
+     *
      * @return string
      */
-    function tr_get_url($path, $type = 'theme') {
-        switch ($type) {
-            case 'mu' :
-            case 'mu-plugins' :
-                return WPMU_PLUGIN_URL . '/' . ltrim($path, '/');
-            case 'home' :
-                return home_url($path);
+    function tr_assets_url_build($path = '') {
+        global $wp_actions;
+
+        $path = trim('assets/' . ltrim($path, '/'), '/');
+        $plugins_loaded = $url = null;
+
+        if($wp_actions && isset($wp_actions['plugins_loaded'])) {
+            $plugins_loaded = true;
         }
 
-        return get_theme_file_uri($path);
+        if((defined('TR_THEME_INSTALL') || $plugins_loaded) && function_exists('get_theme_file_uri')) {
+            $url = get_theme_file_uri( '/typerocket/wordpress/' . $path );
+        }
+
+        if(defined('TR_PLUGIN_INSTALL') && function_exists('plugins_url')) {
+            $url = plugins_url( '/typerocket/wordpress/' . $path, TR_PATH );
+        }
+
+        if(defined('TR_ROOT_INSTALL')) {
+            $url = home_url($path);
+        }
+
+        if(!$url || defined('TR_MU_INSTALL')) {
+            $mu = immutable('TR_MU_INSTALL', '/typerocket-pro-plugin/typerocket/wordpress/');
+            $url = WPMU_PLUGIN_URL . $mu . $path;
+        }
+
+        return \TypeRocket\Http\SSL::fixSSLUrl($url);
     }
 }
 
-if ( ! function_exists('tr_asset_version')) {
+if ( ! function_exists('tr_manifest_cache')) {
     /**
      * Get Asset Version
      *
-     * @param string $fallback version number
-     * @param string|null $path file path to asset-version.json
-     * @return string
+     * @param string $path
+     * @param string $namespace
+     * @return mixed
      */
-    function tr_asset_version($fallback = '0.0.0', $path = null) {
-        $version = json_decode(file_get_contents($path ?? TR_PATH . '/asset-version.json'), true);
-        return $version['version'] ?? $fallback;
+    function tr_manifest_cache($path, $namespace) {
+        $manifest = [];
+
+        try {
+            $manifest = json_decode(file_get_contents($path), true);
+            /** @var \TypeRocket\Utility\RuntimeCache $cache */
+            $cache = tr_container('cache');
+            $cache->add('manifest', $manifest, $namespace);
+        } catch (\Exception $e) {
+            tr_report($e, true);
+        }
+
+        return $manifest;
     }
 }
 
-if ( ! function_exists('tr_config')) {
+if ( ! function_exists('tr_manifest')) {
     /**
-     * Locate Config Setting
+     * Get Asset Version
      *
-     * Traverse array with dot notation.
-     *
-     * @param string $dots dot notation key.next.final
-     * @param null|mixed $default default value to return if null
-     *
-     * @return array|mixed|null
+     * @param string $namespace
+     * @return \TypeRocket\Utility\RuntimeCache
      */
-    function tr_config($dots, $default = null) {
-        return \TypeRocket\Core\Config::locate($dots, $default);
+    function tr_manifest($namespace = 'typerocket') {
+        return \TypeRocket\Utility\RuntimeCache::getFromContainer()->get('manifest', $namespace);
+    }
+}
+
+if ( ! function_exists('tr_report')) {
+    /**
+     * Get Asset Version
+     *
+     * @param \Throwable $exception
+     * @param bool $debug
+     * @return void
+     */
+    function tr_report(\Throwable $exception, $debug = false) {
+        $class = tr_config('app.report.error', \TypeRocket\Utility\ExceptionReport::class);
+        (new $class($exception, $debug))->report();
+    }
+}
+
+if ( ! function_exists('tr_auth')) {
+    /**
+     * @param string $action
+     * @param object|string $option
+     * @param null|\TypeRocket\Models\AuthUser $user
+     * @param \TypeRocket\Auth\Policy|string $policy
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    function tr_auth($action, $option, $user = null, $policy = null) {
+        /** @var \TypeRocket\Services\AuthorizerService  $auth */
+        $auth = tr_container('auth');
+
+        if(!$user) {
+            $user = tr_container('user');
+        }
+
+        return $auth->auth($user, $option, $action, $policy);
+    }
+}
+
+if ( ! function_exists('tr_abort')) {
+    /**
+     * Throw HTTP Error
+     *
+     * @param int $code
+     *
+     * @return mixed
+     */
+    function tr_abort(int $code) {
+        throw (new \TypeRocket\Exceptions\HttpError)->getRealError($code);
+    }
+}
+
+if ( ! function_exists('tr_hash')) {
+    /**
+     * Get Numeric Hash
+     *
+     * This is not a real uuid. Will only generate a unique id per process.
+     *
+     * @return integer
+     */
+    function tr_hash() {
+        return wp_unique_id(time());
+    }
+}
+
+if ( ! function_exists('tr_system')) {
+    /**
+     * Get Routes Repo
+     *
+     * @return \TypeRocket\Http\RouteCollection
+     */
+    function tr_system()
+    {
+        return tr_container(\TypeRocket\Core\System::ALIAS);
+    }
+}
+
+if ( ! function_exists('tr_frontend_enable')) {
+    /**
+     * Enable Front-end
+     *
+     * @return bool
+     */
+    function tr_frontend_enable()
+    {
+        /** @var \TypeRocket\Core\System $system */
+        $system = tr_system();
+
+        if(!$system->frontendIsEnabled()) {
+            $system->frontendEnable();
+
+            return true;
+        }
+
+        return false;
+    }
+}
+
+if ( ! function_exists('tr_autoload_psr4')) {
+    /**
+     * Auto loader
+     *
+     * Array keys include: `init`, `map`, `prefix`, and `folder`
+     *
+     * @param array $map
+     * @param bool $prepend If true, will prepend the autoloader on the autoload stack
+     */
+    function tr_autoload_psr4(array &$map = [], $prepend = false)
+    {
+        if (isset($map['init'])) {
+            foreach ($map['init'] as $file) {
+                require $file;
+            }
+        }
+        spl_autoload_register(function ($class) use (&$map) {
+            if (isset($map['map'][$class])) {
+                require $map['map'][$class];
+                return;
+            }
+            $prefix = $map['prefix'];
+            $folder = $map['folder'];
+            $len = strlen($prefix);
+            if (strncmp($prefix, $class, $len) !== 0) {
+                return;
+            }
+            $file = $folder . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, $len)) . '.php';
+            if (is_file($file)) {
+                require $file;
+                return;
+            }
+        }, true, $prepend);
+    }
+}
+
+if ( ! function_exists('tr_sanitize_editor')) {
+    /**
+     * Sanitize Editor
+     *
+     * @param $content
+     * @param bool $force_filter
+     * @param bool $auto_p
+     *
+     * @return string
+     */
+    function tr_sanitize_editor($content, $force_filter = true, $auto_p = false)
+    {
+        return \TypeRocket\Utility\Sanitize::editor($content, $force_filter, $auto_p);
+    }
+}
+
+if ( ! function_exists('tr_flash_message')) {
+    /**
+     * @param array|null $data keys include message and type
+     * @param bool $dismissible
+     *
+     * @return false|string|null
+     */
+    function tr_flash_message($data = null, $dismissible = false)
+    {
+        if( !empty($_COOKIE['tr_admin_flash']) || !empty($data) ) {
+            $flash = (new \TypeRocket\Http\Cookie)->getTransient('tr_admin_flash');
+
+            return \TypeRocket\Elements\Notice::html([
+                'message' => $data['message'] ?? $flash['message'] ?? null,
+                'type' => $data['type'] ?? $flash['type'] ?? 'info',
+            ], $dismissible);
+        }
+
+        return null;
     }
 }
 
@@ -1019,6 +1508,18 @@ if ( ! function_exists('tr_nils')) {
     function tr_nils($value)
     {
         return \TypeRocket\Utility\Value::nils($value);
+    }
+}
+
+if ( ! function_exists('tr_cache')) {
+    /**
+     * @param string $folder
+     *
+     * @return \TypeRocket\Utility\PersistentCache
+     */
+    function tr_cache($folder = 'app')
+    {
+        return new \TypeRocket\Utility\PersistentCache($folder);
     }
 }
 
@@ -1121,4 +1622,3 @@ if ( ! function_exists('tr_cast')) {
         return $value;
     }
 }
-

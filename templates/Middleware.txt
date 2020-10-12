@@ -1,11 +1,10 @@
 <?php
-namespace {{namespace}}\Http\Middleware;
+namespace {{namespace}};
 
-use \TypeRocket\Http\Middleware\Middleware;
+use TypeRocket\Http\Middleware\Middleware;
 
 class {{middleware}} extends Middleware
 {
-
     public function handle()
     {
         $request = $this->request;

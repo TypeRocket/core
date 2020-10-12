@@ -1,6 +1,4 @@
 <?php
-
-
 namespace TypeRocket\Http;
 
 /**
@@ -10,8 +8,10 @@ namespace TypeRocket\Http;
  *
  * @package TypeRocket\Http
  */
-abstract class RouteCollection
+class RouteCollection
 {
+    public const ALIAS = 'routes';
+
     public $routes = [];
     protected $named = [];
 
@@ -86,5 +86,13 @@ abstract class RouteCollection
     public function getNamedRoute($name)
     {
         return $this->named[$name] ?? null;
+    }
+
+    /**
+     * @return static
+     */
+    public static function getFromContainer()
+    {
+        return tr_container(static::ALIAS);
     }
 }

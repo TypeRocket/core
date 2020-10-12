@@ -1,0 +1,19 @@
+<?php
+namespace {{namespace}};
+
+use TypeRocket\Services\Service;
+
+class {{service}} extends Service
+{
+    protected $singleton = true;
+
+    public function __construct()
+    {
+
+    }
+
+    public function register() : Service
+    {
+        return $this;
+    }
+}

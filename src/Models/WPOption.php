@@ -6,6 +6,23 @@ class WPOption extends Model
 
     protected $idColumn = 'option_id';
     protected $resource = 'options';
+    protected $routeResource = 'option';
+    protected $fieldOptions = [
+        'key' => 'option_name',
+        'value' => 'option_id',
+    ];
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->options;
+    }
 
     /**
      * Do nothing since options are not true resources
@@ -14,7 +31,8 @@ class WPOption extends Model
      *
      * @return $this
      */
-    public function findById( $id ) {
+    public function findById( $id )
+    {
         return $this;
     }
 
@@ -55,7 +73,7 @@ class WPOption extends Model
      *
      * @return $this
      */
-    private function saveOptions( $fields )
+    public function saveOptions( $fields )
     {
         if ( ! empty( $fields )) {
             foreach ($fields as $key => $value) :
@@ -91,7 +109,7 @@ class WPOption extends Model
      */
     public function getBaseFieldValue( $field_name )
     {
-        $data = get_option( $field_name );
+        $data = get_option( $field_name, null );
         return $this->getValueOrNull($data);
     }
 
@@ -103,7 +121,8 @@ class WPOption extends Model
      *
      * @return int
      */
-    public function getID() {
+    public function getID()
+    {
         return true;
     }
 }

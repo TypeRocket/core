@@ -2,14 +2,37 @@
 namespace TypeRocket\Database;
 
 use JsonSerializable;
-use TypeRocket\Models\Contract\Formable;
+use TypeRocket\Interfaces\Formable;
+use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Models\Model;
 
 class Results extends \ArrayObject implements Formable, JsonSerializable
 {
+    use FieldValue;
 
     public $class = null;
     public $property = 'properties';
+    public $cache = null;
+
+    /**
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function setCache($bool)
+    {
+        $this->cache = (bool) $bool;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
 
     /**
      * Add item to top of collection
@@ -107,7 +130,7 @@ class Results extends \ArrayObject implements Formable, JsonSerializable
                 $model = new $this->class;
 
                 if( $model instanceof Model ) {
-                    $model->castProperties( (array) $item );
+                    $model->setCache($this->getCache())->castProperties( (array) $item );
                 } else {
                     $property = $this->property;
                     $model->$property = (array) $item;
@@ -123,11 +146,11 @@ class Results extends \ArrayObject implements Formable, JsonSerializable
     /**
      * Index Results
      *
-     * @param string $column
+     * @param $column
      *
      * @return $this
      */
-    public function indexWith($column)
+    public function indexWith(string $column)
     {
         $data = $this->getArrayCopy();
         $result = [];

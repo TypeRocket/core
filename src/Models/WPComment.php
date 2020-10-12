@@ -12,6 +12,13 @@ class WPComment extends Model
 
     protected $idColumn = 'comment_ID';
     protected $resource = 'comments';
+    protected $routeResource = 'comment';
+    protected $wpComment;
+    protected $fieldOptions = [
+        'key' => 'comment_date',
+        'value' => 'comment_ID',
+    ];
+
 
     protected $builtin = [
         'comment_author',
@@ -36,6 +43,18 @@ class WPComment extends Model
     ];
 
     /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->comments;
+    }
+
+    /**
      * Get Meta Model Class
      *
      * @return string
@@ -56,6 +75,50 @@ class WPComment extends Model
             'local' => 'comment_ID',
             'foreign' => 'comment_id',
         ];
+    }
+
+    /**
+     * Get User ID
+     *
+     * @return string|int|null
+     */
+    public function getUserID()
+    {
+        return $this->properties['user_id'] ?? null;
+    }
+
+    /**
+     * Get WP_Comment Instance
+     *
+     * @param \WP_Comment|null|int $comment
+     * @param bool $returnModel
+     *
+     * @return \WP_Comment|$this|null
+     */
+    public function wpComment($comment = null, $returnModel = false)
+    {
+
+        if( !$comment && $this->wpComment instanceof \WP_Comment ) {
+            return $this->wpComment;
+        }
+
+        if( !$comment && $this->getID() ) {
+            return $this->wpComment($this->getID());
+        }
+
+        if(!$comment) {
+            return $this->wpComment;
+        }
+
+        $comment = get_comment($comment);
+
+        if($comment instanceof \WP_Comment) {
+            $this->wpComment = $comment;
+
+            $this->castProperties( $comment->to_array() );
+        }
+
+        return $returnModel ? $this : $this->wpComment;
     }
 
     /**
@@ -133,13 +196,63 @@ class WPComment extends Model
     }
 
     /**
+     * Delete Comment
+     *
+     * This will delete the comment
+     *
+     * @param null|int $ids
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function delete($ids = null)
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        $delete = wp_delete_comment($ids);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPComment not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete Comment Forever
+     *
+     * This will delete the comment
+     *
+     * @param null|int $ids
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function deleteForever($ids = null)
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        $delete = wp_delete_comment($ids, true);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPComment not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
      * Save comment meta fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    private function saveMeta( $fields )
+    public function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields( $fields );
         $id = $this->getID();
@@ -170,7 +283,7 @@ class WPComment extends Model
      *
      * @return array
      */
-    private function caseFieldColumns( $fields )
+    protected function caseFieldColumns( $fields )
     {
 
         if ( ! empty( $fields['comment_post_id'] )) {

@@ -1,251 +1,49 @@
 <?php
 namespace TypeRocket\Html;
 
+use TypeRocket\Elements\Traits\Attributes;
+
 class Tag
 {
+    use Attributes;
 
-    private $tag;
-    private $attributes;
-    private $text;
-
-    /** @var  TagCollection */
-    private $innerHtmlTags;
-    private $specialTags = array( 'img' => true, 'input' => true, 'hr' => true, 'br' => true );
-    private $specialTag = false;
-
-
-    /**
-     * Make New Tag
-     *
-     * @param string $tag
-     * @param array $attributes
-     * @param string $text
-     *
-     * @return Tag
-     */
-    public static function make($tag, $attributes, $text = '')
-    {
-        return new self($tag, $attributes, $text);
-    }
-
+    protected $tag;
+    protected $nest = [];
+    protected $closed = false;
 
     /**
      * Html constructor.
      *
      * @param string $tag
      * @param array $attributes
-     * @param string $text
+     * @param string|Tag|Html|array $nest
      */
-    public function __construct( $tag, $attributes, $text = '')
+    public function __construct( string $tag, $attributes = null, $nest = null)
     {
-        $this->setTag( $tag );
-        $this->setAttributes( $attributes );
-        $this->setText( $text );
-        $this->setInnerHtmlTags( new TagCollection() );
+        if(is_string($attributes) || is_numeric($attributes) || $attributes instanceof Tag || $attributes instanceof Html) {
+            $nest = $nest ?? $attributes;
+            $attributes = [];
+        }
 
-        if( array_key_exists($this->tag, $this->specialTags) ) {
-            $this->specialTag = true;
+        $attributes = $attributes ?? [];
+
+        $this->tag = $tag;
+        $this->attrReset( $attributes );
+        $this->nest($nest);
+
+        if( in_array($this->tag, ['img', 'br', 'hr', 'input']) ) {
+            $this->closed = true;
         }
 
         return $this;
     }
 
-    public function __get( $property )
-    {
-    }
-
-    public function __set( $property, $value )
-    {
-    }
-
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
         return $this->getString();
-    }
-
-    /**
-     * Get tag
-     *
-     * @return mixed
-     */
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    /**
-     * Get attributes
-     *
-     * @return mixed
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Get Special Tag
-     *
-     * @return bool
-     */
-    public function getSpecialTag()
-    {
-        return $this->specialTag;
-    }
-
-    /**
-     * Get attribute
-     *
-     * @param string $attribute
-     *
-     * @return null
-     */
-    public function getAttributeValue( $attribute )
-    {
-        $value = null;
-
-        if (array_key_exists( $attribute, $this->attributes )) {
-            $value = $this->attributes[$attribute];
-        }
-
-        return $value;
-    }
-
-    /**
-     * Get inner HTML tags
-     */
-    public function getInnerHtmlTags()
-    {
-        $this->innerHtmlTags;
-    }
-
-    /**
-     * Set tag text
-     *
-     * @param string $text
-     *
-     * @return $this
-     */
-    public function setText( $text )
-    {
-        $this->text = (string) $text;
-
-        return $this;
-    }
-
-    /**
-     * Set Tag name
-     *
-     * @param string $tag
-     *
-     * @return $this
-     */
-    public function setTag( $tag )
-    {
-        if (is_string( $tag )) {
-            $this->tag = $tag;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set attributes
-     *
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function setAttributes( $attributes )
-    {
-        $this->attributes = $attributes;
-
-        return $this;
-    }
-
-    /**
-     * Set attribute
-     *
-     * @param string $attribute
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function setAttribute( $attribute, $value )
-    {
-        $this->attributes[$attribute] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Update attributes and merge them
-     *
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function updateAttributes( $attributes )
-    {
-        $this->attributes = array_merge( $this->attributes, $attributes );
-
-        return $this;
-    }
-
-    /**
-     * Remove attribute
-     *
-     * @param string $attribute
-     *
-     * @return $this
-     */
-    public function removeAttribute( $attribute )
-    {
-        if (array_key_exists( $attribute, $this->attributes )) {
-            unset( $this->attributes[$attribute] );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Append Inner Tag
-     *
-     * @param Tag $tag
-     *
-     * @return $this
-     */
-    public function appendInnerTag( Tag $tag )
-    {
-        $this->innerHtmlTags->append( $tag );
-
-        return $this;
-    }
-
-    /**
-     * Prepend inner tag
-     *
-     * @param Tag $tag
-     *
-     * @return $this
-     */
-    public function prependInnerTag( Tag $tag )
-    {
-        $this->innerHtmlTags->prepend( $tag );
-
-        return $this;
-    }
-
-    /**
-     * @param TagCollection $collection
-     *
-     * @return $this
-     */
-    public function setInnerHtmlTags( TagCollection $collection )
-    {
-        $this->innerHtmlTags = $collection;
-
-        return $this;
     }
 
     /**
@@ -253,14 +51,62 @@ class Tag
      *
      * @return string
      */
-    public function getString() {
+    public function getString(): string {
+        return $this->open().$this->inner().$this->close();
+    }
 
-        $openTag = $this->getStringOpenTag();
-        $closeTag = $this->getStringCloseTag();
-        $innerHtmlWithTags = $this->getStringInnerHtmlWithTags();
+    /**
+     * Create Tag
+     *
+     * @param string $tag
+     * @param array|string|null $attributes
+     * @param string|array|null $nest
+     *
+     * @return $this
+     */
+    public static function el($tag, $attributes = null, $nest = null )
+    {
+        return new static( $tag, $attributes, $nest );
+    }
 
-        return $openTag.$innerHtmlWithTags.$closeTag;
+    /**
+     * Append Inner Tag
+     *
+     * @param string|Tag|Html|array $tag
+     *
+     * @return $this
+     */
+    public function nest($tag)
+    {
+        if(is_array($tag)) {
+            foreach ($tag as $t) {
+                array_push($this->nest, $t);
+            }
+        } else {
+            array_push($this->nest, $tag);
+        }
 
+        return $this;
+    }
+
+    /**
+     * Prepend inner tag
+     *
+     * @param Tag|Html|string|array $tag
+     *
+     * @return $this
+     */
+    public function nestAtTop( $tag )
+    {
+        if(is_array($tag)) {
+            foreach ($tag as $t) {
+                array_unshift($this->nest, $t);
+            }
+        } else {
+            array_unshift($this->nest, $tag);
+        }
+
+        return $this;
     }
 
     /**
@@ -268,18 +114,16 @@ class Tag
      *
      * @return string
      */
-    public function getStringOpenTag() {
+    public function open() {
         $openTag = "<{$this->tag}";
 
-        foreach($this->attributes as $attribute => $value) {
-            $openTag .= " {$attribute}=\"{$value}\"";
+        foreach($this->attr as $attribute => $value) {
+            $value = esc_attr($value);
+            $value = $value !== '' ? "=\"{$value}\"" : '';
+            $openTag .= " {$attribute}{$value}";
         }
 
-        if( $this->specialTag ) {
-            $openTag .= " />";
-        } else {
-            $openTag .= ">";
-        }
+        $openTag .= $this->closed ? " />" : ">";
 
         return $openTag;
     }
@@ -289,14 +133,8 @@ class Tag
      *
      * @return string
      */
-    public function getStringCloseTag() {
-        $closeTag = '';
-
-        if( ! $this->specialTag ) {
-            $closeTag = "</{$this->tag}>";
-        }
-
-        return $closeTag;
+    public function close() {
+        return $this->closed ? '' : "</{$this->tag}>";
     }
 
     /**
@@ -304,17 +142,28 @@ class Tag
      *
      * @return string
      */
-    public function getStringInnerHtmlWithTags() {
-        $innerHtmlTags = $innerHtml ='';
+    public function inner() {
+        $html = '';
 
-        if( ! $this->specialTag ) {
-            $innerHtml = $this->text;
-            foreach($this->innerHtmlTags as $tag) {
-                $innerHtmlTags .= $tag->getString();
+        if( ! $this->closed ) {
+            foreach($this->nest as $tag) {
+                $html .= (string) $tag;
             }
         }
 
-        return $innerHtml.$innerHtmlTags;
+        return $html;
+    }
+
+    /**
+     * @param string $tag
+     * @param null|array $attributes
+     * @param string|Tag|Html|array $nest
+     *
+     * @return static
+     */
+    public static function new(string $tag, $attributes = null, $nest = null)
+    {
+        return new static(...func_get_args());
     }
 
 }

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Register;
 
+use TypeRocket\Auth\Roles;
+use TypeRocket\Models\WPTerm;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Sanitize;
 
@@ -14,6 +16,7 @@ class Taxonomy extends Registrable
     use Resourceful;
 
     protected $postTypes = [];
+    protected $modelClass = WPTerm::class;
     protected $form = [];
     protected $resource = null;
     protected $existing = null;
@@ -41,7 +44,12 @@ class Taxonomy extends Registrable
                 $plural  = Sanitize::underscore( $plural );
 
                 $this->id = $this->existing->name;
-                $this->resource = Registry::getTaxonomyResource($this->id) ?? [$singular, $plural, null, null];
+                $this->resource = Registry::getTaxonomyResource($this->id) ?? [
+                    'singular' => $singular,
+                    'plural' => $plural,
+                    'model' => null,
+                    'controller' => null
+                ];
                 $this->postTypes = $this->existing->object_type;
                 $this->args = array_merge($this->args, (array) $this->existing, $settings);
 
@@ -51,35 +59,70 @@ class Taxonomy extends Registrable
 
         $this->applyQuickLabels($singular, $plural);
 
-        if (array_key_exists( 'hierarchical', $settings ) && $settings['hierarchical'] === true) :
-            $settings['hierarchical'] = true;
-        else :
-            $settings['hierarchical'] = false;
-        endif;
-
         // setup object for later use
         $plural       = Sanitize::underscore( $plural );
         $singular     = Sanitize::underscore( $singular );
-        $this->resource = [$singular, $plural, $this->modelClass, $this->controllerClass];
+
+        $this->resource = [
+            'singular' => $singular,
+            'plural' => $plural,
+            'model' => null,
+            'controller' => null
+        ];
+
         $this->id     = ! $this->id ? $singular : $this->id;
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
-            $settings['capabilities'] = [
-                'manage_terms' => 'manage_' . $plural,
-                'edit_terms'   => 'manage_' . $plural,
-                'delete_terms' => 'manage_' . $plural,
-                'assign_terms' => 'edit_posts',
-            ];
+            $settings['capabilities'] = (new Roles)->getTaxonomyCapabilities($singular, $plural);
         endif;
 
         $defaults = [
             'show_admin_column' => false,
-            'rewrite'           => ['slug' => Sanitize::dash( $this->id )],
+            'rewrite'           => ['slug' => Sanitize::dash( $plural )],
         ];
 
         $this->args = array_merge( $this->args, $defaults, $settings );
 
+        if(class_exists( $model = tr_model($singular, false) ) ) {
+            $this->setModelClass($model);
+        }
+
         return $this;
+    }
+
+    /**
+     * Set Model Class
+     *
+     * @param string $modelClass
+     *
+     * @return $this
+     */
+    public function setModelClass(string $modelClass)
+    {
+        $this->modelClass = $modelClass;
+
+        return $this;
+    }
+
+    /**
+     * Get Model Class
+     *
+     * @return string
+     */
+    public function getModelClass()
+    {
+        return $this->modelClass;
+    }
+
+    /**
+     * Use Custom Capabilities
+     *
+     * @return Taxonomy $this
+     */
+    public function customCapabilities()
+    {
+        $cap = (new Roles)->getTaxonomyCapabilities($this->resource['singular'], $this->resource['plural']);
+        return $this->setArgument('capabilities', $cap);
     }
 
     /**
@@ -95,34 +138,50 @@ class Taxonomy extends Registrable
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
-        $upperSingular = $keep_case ? $singular :  mb_convert_case($singular, MB_CASE_TITLE, "UTF-8");
-        $upperPlural   = $keep_case ? $plural  : mb_convert_case($plural, MB_CASE_TITLE, "UTF-8");
+        $upperPlural   = $keep_case ? $plural : mb_ucwords( $plural );
+        $upperSingular = $keep_case ? $singular : mb_ucwords( $singular );
         $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
 
+        $context = 'taxonomy:' . $this->getId();
+
         $labels = [
-            'add_new_item'               => __( 'Add New ' . $upperSingular, 'typerocket-profile'),
-            'add_or_remove_items'        => __( 'Add or remove ' . $lowerPlural, 'typerocket-profile'),
-            'all_items'                  => __( 'All ' . $upperPlural, 'typerocket-profile' ),
-            'choose_from_most_used'      => __( 'Choose from the most used ' . $lowerPlural, 'typerocket-profile' ),
-            'edit_item'                  => __( 'Edit ' . $upperSingular, 'typerocket-profile' ),
-            'name'                       => __( $upperPlural, 'typerocket-profile' ),
-            'menu_name'                  => __( $upperPlural, 'typerocket-profile' ),
-            'new_item_name'              => __( 'New ' . $upperSingular . ' Name', 'typerocket-profile' ),
-            'not_found'                  => __( 'No ' . $lowerPlural . ' found.', 'typerocket-profile' ),
-            'parent_item'                => __( 'Parent ' . $upperSingular, 'typerocket-profile' ),
-            'parent_item_colon'          => __( 'Parent ' . $upperSingular . ':', 'typerocket-profile' ),
-            'popular_items'              => __( 'Popular ' . $upperPlural, 'typerocket-profile' ),
-            'search_items'               => __( 'Search ' . $upperPlural, 'typerocket-profile' ),
-            'separate_items_with_commas' => __( 'Separate ' . $lowerPlural . ' with commas', 'typerocket-profile' ),
-            'singular_name'              => __( $upperSingular, 'typerocket-profile' ),
-            'update_item'                => __( 'Update ' . $upperSingular, 'typerocket-profile' ),
-            'view_item'                  => __( 'View ' . $upperSingular, 'typerocket-profile' )
+            'add_new_item'               => sprintf( _x( 'Add New %s', $context, 'typerocket-core' ), $upperSingular),
+            'add_or_remove_items'        => sprintf( _x( 'Add or remove %s', $context, 'typerocket-core' ), $lowerPlural),
+            'all_items'                  => sprintf( _x( 'All %s', $context, 'typerocket-core' ), $upperPlural),
+            'back_to_items'              => sprintf( _x( '← Back to %s', $context, 'typerocket-core' ), $lowerPlural),
+            'choose_from_most_used'      => sprintf( _x( 'Choose from the most used %s', $context, 'typerocket-core' ), $lowerPlural),
+            'edit_item'                  => sprintf( _x( 'Edit %s', $context, 'typerocket-core' ), $upperSingular),
+            'name'                       => sprintf( _x( '%s', $context . ':taxonomy general name', 'typerocket-core' ), $upperPlural),
+            'menu_name'                  => sprintf( _x( '%s', $context . ':admin menu', 'typerocket-core' ), $upperPlural),
+            'new_item_name'              => sprintf( _x( 'New %s Name', $context, 'typerocket-core' ), $upperSingular),
+            'no_terms'                   => sprintf( _x( 'No %s', $context, 'typerocket-core' ), $lowerPlural),
+            'not_found'                  => sprintf( _x( 'No %s found.', $context, 'typerocket-core' ), $lowerPlural),
+            'parent_item'                => sprintf( _x( 'Parent %s', $context, 'typerocket-core' ), $upperSingular),
+            'parent_item_colon'          => sprintf( _x( 'Parent %s:', $context, 'typerocket-core' ), $upperSingular),
+            'popular_items'              => sprintf( _x( 'Popular %s', $context, 'typerocket-core' ), $upperPlural),
+            'search_items'               => sprintf( _x( 'Search %s', $context, 'typerocket-core' ), $upperPlural),
+            'separate_items_with_commas' => sprintf( _x( 'Separate %s with commas', $context, 'typerocket-core' ), $lowerPlural),
+            'singular_name'              => sprintf( _x( '%s', $context . ':taxonomy singular name', 'typerocket-core' ), $upperSingular),
+            'update_item'                => sprintf( _x( 'Update %s', $context, 'typerocket-core' ), $upperSingular),
+            'view_item'                  => sprintf( _x( 'View %s', $context, 'typerocket-core' ), $upperSingular),
         ];
 
         $this->args['label'] = $upperPlural;
         $this->args['labels'] = $labels;
 
         return $this;
+    }
+
+    /**
+     * Set Hierarchical
+     *
+     * @param bool $bool
+     *
+     * @return Taxonomy $this
+     */
+    public function setHierarchical($bool = true)
+    {
+        return $this->setArgument('hierarchical', $bool);
     }
 
     /**
@@ -166,18 +225,11 @@ class Taxonomy extends Registrable
     /**
      * Get the form hook value by key
      *
-     * @param string $key
-     *
      * @return mixed
      */
-    public function getForm( $key )
+    public function getMainForm()
     {
-        $form = null;
-        if(array_key_exists($key, $this->form)) {
-            $form = $this->form[$key];
-        }
-
-        return $form;
+        return $this->form['main'] ?? null;
     }
 
     /**
@@ -201,20 +253,6 @@ class Taxonomy extends Registrable
     }
 
     /**
-     * Set Hierarchical
-     *
-     * @param bool $bool
-     *
-     * @return Taxonomy $this
-     */
-    public function setHierarchical( $bool = true )
-    {
-        $this->args['hierarchical'] = (bool) $bool;
-
-        return $this;
-    }
-
-    /**
      * Get the slug
      *
      * @return mixed
@@ -225,14 +263,101 @@ class Taxonomy extends Registrable
     }
 
     /**
+     * Show Quick Edit
+     *
+     * @param bool $bool
+     *
+     * Whether to show the taxonomy in the quick/bulk edit panel.
+     *
+     * @return Taxonomy
+     */
+    public function showQuickEdit($bool = true)
+    {
+        return $this->setArgument('show_in_quick_edit', $bool);
+    }
+
+    /**
+     * Show Post Type Admin Column
+     *
+     * Whether to allow automatic creation of taxonomy columns on associated post-types table.
+     *
+     * @param bool $bool
+     *
+     * @return Taxonomy
+     */
+    public function showPostTypeAdminColumn($bool = true)
+    {
+        return $this->setArgument('show_admin_column', $bool);
+    }
+
+    /**
+     * @param bool|string $rest_base the REST API base path
+     * @param null|string $controller the REST controller default is \WP_REST_Terms_Controller::class
+     *
+     * @return Taxonomy $this
+     */
+    public function setRest( $rest_base = false, $controller = null )
+    {
+        $this->args['rest_base'] = $rest_base ? $rest_base : $this->id;
+        $this->args['show_in_rest'] = true;
+        $controller ? $this->args['rest_controller_class'] = $controller : null;
+
+        return $this;
+    }
+
+    /**
+     * Set the taxonomy to only show in WordPress Admin
+     *
+     * @return Taxonomy $this
+     */
+    public function setAdminOnly() {
+        $this->args['public'] = false;
+        $this->args['show_ui'] = true;
+        $this->args['show_in_nav_menus'] = true;
+
+        return $this;
+    }
+
+    /**
+     * Hide Frontend
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function hideFrontend($bool = true)
+    {
+        $this->args['publicly_queryable'] = !$bool;
+
+        return $this;
+    }
+
+    /**
+     * Hide Admin
+     *
+     * @return Taxonomy $this
+     */
+    public function hideAdmin()
+    {
+        $this->args['show_ui'] = false;
+        $this->args['show_in_menu'] = false;
+        $this->args['show_in_nav_menus'] = false;
+
+        return $this;
+    }
+
+    /**
      * Register the taxonomy with WordPress
      *
      * @return Taxonomy $this
+     * @throws \Exception
      */
     public function register()
     {
         if(!$this->existing) {
-            $this->dieIfReserved();
+            if($this->isReservedId()) {
+                return $this;
+            }
         }
 
         do_action( 'tr_register_taxonomy_' . $this->id, $this );
@@ -246,7 +371,7 @@ class Taxonomy extends Registrable
     /**
      * Apply post types
      *
-     * @param string|PostType $s
+     * @param string|PostType|array $s
      *
      * @return Taxonomy $this
      */
@@ -261,7 +386,7 @@ class Taxonomy extends Registrable
             }
         }
 
-        if ( ! in_array( $s, $this->postTypes )) {
+        if ( is_string($s) && ! in_array( $s, $this->postTypes )) {
             $this->postTypes[] = $s;
         }
 

@@ -1,87 +1,95 @@
+import {links_append, search_append, search_get_map, search_response} from "./fn/search-common";
+
 const { __ } = wp.i18n;
 
+import { tr_esc_html } from './fn/tr-helpers.js';
+
 ;(function( $ ) {
-    $.fn.TypeRocketSearch = function(type, taxonomy, model) {
-    var param, search, that;
+
+    $.fn.TypeRocketSearch = function(type, taxonomy, model, url, map) {
+    var param, search, that, secure;
     if (type == null) { type = 'any'; }
     if (taxonomy == null) { taxonomy = '';}
     if (model == null) { model = ''; }
+    secure = true
+
+    if(this.val() === '') {
+        return;
+    }
 
     that = this;
-    search = encodeURI(this.val().trim());
-    param = 'post_type=' + type + '&s=' + search;
+    let linkList = that.next().next().next();
+    linkList.html('');
+    linkList.append('<li class="tr-search-result-title">'+__('Searching...', 'typerocket-domain')+'</li>');
+    search = this.val().trim();
+    param = 'post_type=' + type + '&s=' +  encodeURI(search);
     if (taxonomy) { param += '&taxonomy=' + taxonomy; }
-    if (model) { param += '&model=' + model; }
 
-    jQuery.getJSON(trHelpers.site_uri+'/wp-json/typerocket/v1/search?' + param, function(data) {
-        var i, id, item, len, post_status, results, title, link;
-        if (data) {
-            var linkList = that.next().next().next();
-            linkList.html('');
-            linkList.append('<div class="tr-link-search-result-title">Results</div>');
-            results = [];
-            for (i = 0, len = data.length; i < len; i++) {
-                item = data[i];
-                if (item.post_title) {
-                    if (item.post_status === 'draft') {
-                        post_status = 'draft ';
-                    } else {
-                        post_status = '';
-                    }
-                    title = item.post_title + ' (' + post_status + item.post_type + ')';
-                    id = item.ID;
-                } else if(item.term_id) {
-                    title = item.name;
-                    id = item.term_id;
-                } else {
-                    title = item.title;
-                    id = item.id;
-                }
+    if(!url) {
+        url = trHelpers.site_uri+'/tr-api/search?' + param;
+    }
 
-                link = jQuery('<a tabindex="0" class="tr-link-search-result" data-id="' + id + '" >' + title + '</a>');
-                link = link.on('click keyup', function(e) {
-                    e.preventDefault();
-                    var keying = false;
-                    var enterKey = false;
-                    if(event.keyCode) {
-                        keying = true;
-                        enterKey = event.keyCode == 13;
-                    }
+    if(!url.startsWith(trHelpers.site_uri)) {
+        secure = false;
+    }
 
-                    if( !keying || enterKey) {
-                        var id, title;
-                        id = $(this).data('id');
-                        title = $(this).text();
-                        $(this).parent().prev().html('Selection: <b>' + title + '</b> <a class="tr-link-search-remove-selection" href="#remove-selection">remove</a>');
-                        that.next().val(id).trigger('change');
-                        that.focus().val('');
-                        return $(this).parent().html('');
-                    }
-                })
-                linkList.append(link);
-                results.push(link);
-            }
-            return results;
-        }
-    });
+    jQuery.post(url, {
+        _method: 'POST',
+        _tr_nonce_form: window.trHelpers.nonce,
+        model: model,
+        post_type: type,
+        taxonomy: taxonomy,
+        s: search
+    }, (data) => {
+        search_response(data, search_append, linkList, that, map, {
+            secure: secure
+        })
+    }, 'json');
     return this;
 };
 
-$('.typerocket-container').on('keyup', '.tr-link-search-input', function() {
-    var taxonomy, that, type, model;
+$(document).on('keydown', '.tr-search-single .tr-search-input', function(e) {
+    if(e.keyCode && e.keyCode === 9) {
+        let res = $(this).siblings('.tr-search-results').find('.tr-search-result').first();
+        if(res.length > 0) {
+            e.preventDefault();
+            res.focus();
+        }
+        return;
+    }
+
+    let taxonomy, that, type, model, url, map;
     that = $(this);
     type = $(this).data('posttype');
     taxonomy = $(this).data('taxonomy');
     model = $(this).data('model');
-    return window.trUtil.delay((function() {
-        that.TypeRocketSearch(type, taxonomy, model);
+    url = $(this).data('endpoint');
+    map = search_get_map( $(this).attr('data-map') );
+
+    if(e.keyCode && e.keyCode === 27) {
+        that.focus().val('');
+        $(this).siblings('.tr-search-results').html('');
+        return;
+    }
+
+    if(e.keyCode && e.keyCode === 13) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    window.trUtil.delay((function() {
+        that.TypeRocketSearch(type, taxonomy, model, url, map);
     }), 250);
 });
 
-$('.typerocket-container').on('click', '.tr-link-search-remove-selection', function(e) {
-    var parent;
+$(document).on('click keyup', '.tr-search-single .tr-search-chosen-item-remove', function(e) {
     e.preventDefault();
-    parent = $(this).parent();
+
+    if(e.keyCode && e.keyCode !== 13) {
+        return;
+    }
+
+    let parent = $(this).parent();
     parent.prev().val('').trigger('change');
     parent.prev().prev().focus();
     parent.text(__('No selection... Search and click on a result', 'typerocket-domain'));

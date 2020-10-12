@@ -18,7 +18,7 @@
 };
 
 jQuery(document).ready(function($) {
-    $('.typerocket-container').on('click', '.field', function() {
+    $(document).on('click', '.tr-dev-field-function', function() {
         $(this).selectText();
     });
 });

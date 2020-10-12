@@ -1,11 +1,10 @@
 <?php
-namespace {{namespace}}\Commands;
+namespace {{namespace}};
 
-use \TypeRocket\Console\Command;
+use TypeRocket\Console\Command;
 
 class {{command}} extends Command
 {
-
     protected $command = [
         '{{name}}',
         'Short description here',

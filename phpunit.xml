@@ -25,5 +25,13 @@
             <directory suffix="Test.php">./tests/Validator</directory>
         </testsuite>
 
+        <testsuite name="Utility">
+            <directory suffix="Test.php">./tests/Utility</directory>
+        </testsuite>
+
+        <testsuite name="Fields">
+            <directory suffix="Test.php">./tests/Fields</directory>
+        </testsuite>
+
     </testsuites>
 </phpunit>

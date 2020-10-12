@@ -1,11 +1,9 @@
 <?php
-
 namespace TypeRocket\Console\Commands;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use TypeRocket\Console\CanQueryDB;
 use TypeRocket\Console\Command;
-use TypeRocket\Core\Config;
-use TypeRocket\Utility\File;
 
 class Migrate extends Command
 {
@@ -19,7 +17,7 @@ class Migrate extends Command
 
     protected function config()
     {
-        $this->addArgument('type', self::REQUIRED, 'The type of migration to run (up|down|reset).');
+        $this->addArgument('type', self::REQUIRED, 'The type of migration to run (up|down|reload|flush).');
         $this->addArgument('steps', self::OPTIONAL, 'The limit of migrations to run as int.');
     }
 
@@ -34,6 +32,12 @@ class Migrate extends Command
     {
         $type = $this->getArgument('type');
         $steps = $this->getArgument('steps');
+        $reload = false;
+
+        if(!in_array($type, ['down','up','flush','reload'])) {
+            $this->error('Migration type invalid. Use: up, down, reload, or flush.');
+            return;
+        }
 
         if(!$steps && $type == 'up') {
             $steps = 99999999999999;
@@ -43,42 +47,37 @@ class Migrate extends Command
             $steps = 1;
         }
 
-        if($type == 'reset') {
+        if($type == 'flush') {
             $type = 'down';
             $steps = 99999999999999;
         }
 
-        $this->sqlMigrationDirectory($type, $steps);
+        if($type == 'reload') {
+            $type = 'down';
+            $reload = true;
+            $steps = 99999999999999;
+        }
+
+        $this->sqlMigrationDirectory($type, $steps, $reload);
     }
 
-    protected function sqlMigrationDirectory($type, $steps = 1) {
+    protected function sqlMigrationDirectory($type, $steps = 1, $reload = false) {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $root = Config::locate('paths.migrate');
-        $migrations_list = is_array($root['migrations']) ? $root['migrations'] : [$root['migrations']];
-        $migrations_run_folder = $root['run'];
-        $migrations = [];
+        $migrations_folder = tr_config('paths.migrations');
 
-        foreach ($migrations_list as $migrations_folder) {
-            if( ! file_exists( $migrations_folder ) ) {
-                $this->error('Migrations folder not found: ' . $migrations_folder);
-                return;
-            }
-            $new_migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
-            $migrations = array_merge($migrations, $new_migrations);
+        if(!file_exists($migrations_folder)) {
+            $this->error('Migration folder does not exist: ' . $migrations_folder);
+            return;
         }
 
-        // Make directories if needed
-        if( ! file_exists( $migrations_run_folder ) ) {
-            $this->warning('TypeRocket trying to locate ' . $root . ' for migrations to run.');
-            mkdir($migrations_run_folder, 0755, true);
-            $this->success('Location created...');
-        }
+        $migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
+        $migrations = array_flip($migrations);
 
-        $migrations_run = array_diff(scandir($migrations_run_folder), ['..', '.'] );
+        $migrations_run = maybe_unserialize(get_option('tr_migrations')) ?: [];
 
         if($type == 'up') {
-            $to_run = array_diff($migrations, $migrations_run);
+            $to_run = array_diff_key($migrations, $migrations_run);
             $match_go = '/--\s+\>\>\>\s+Up\s+\>\>\>/';
             $match_stop = '/--\s+\>\>\>\s+Down\s+\>\>\>/';
         } else {
@@ -90,7 +89,7 @@ class Migrate extends Command
 
         $query_strings = [];
         $count = 0;
-        foreach ($to_run as $file ) {
+        foreach ($to_run as $file => $index ) {
             $file_full = $migrations_folder . '/' . $file;
             if( strpos($file, '.sql', -0) && is_file($file_full) ) {
                 $f = fopen($file_full, 'r');
@@ -136,18 +135,29 @@ class Migrate extends Command
                 $this->error('Migration Failed!');
                 break 1;
             }
-            $time = time();
-            $run_file = $migrations_run_folder . '/' . $file;
+
+            $time = microtime(true);
+            $dtime =  \DateTime::createFromFormat('U.u', $time)->format('Y-m-d\TH:i:s.u');
+            usleep(200);
 
             if( $type == 'up') {
-                $template = __DIR__ . '/../../../templates/MigrationRun.txt';
-                $file_obj = new File( $template );
-                $new = $file_obj->copyTemplateFile($run_file, ['{{time}}'], [$time] );
-            } elseif(file_exists($run_file)) {
-                unlink($run_file);
+                $migrations_run[$file] = $time;
+                $this->success('Migration up finished at ' . $dtime);
+            } else {
+                unset($migrations_run[$file]);
+                $this->warning('Migration down finished at ' . $dtime);
             }
 
-            $this->success('Migration Finished at ' . $time);
+        }
+
+        update_option('tr_migrations', $migrations_run);
+
+        if($reload) {
+            $command = $this->getApplication()->find('migrate');
+            $input = new ArrayInput( [
+                'type' => 'up',
+            ] );
+            $command->run($input, $this->output);
         }
     }
 }

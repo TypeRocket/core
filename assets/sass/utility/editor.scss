@@ -1,0 +1,49 @@
+/* Editor
+----------------------------------------------------------------------- */
+.tr-control-section {
+  .redactor-focus,
+  .redactor-focus:focus {
+    &.redactor-styles-on {
+      border-color: var(--tr-profile-color, #007cba) !important;
+      box-shadow: 0 0 0 1px var(--tr-profile-color, #007cba);
+    }
+  }
+
+  .redactor-over:hover {
+    &.redactor-styles-on {
+      border-color: var(--tr-profile-color, #007cba) !important;
+    }
+  }
+}
+
+.redactor-styles {
+  ul {
+    list-style: disc;
+  }
+
+  .aligncenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .alignleft {
+    float: left;
+    margin: 0.5em 1em 0.5em 0;
+  }
+
+  .alignright {
+    float: right;
+    margin: 0.5em 0 0.5em 1em;
+  }
+
+}
+
+.redactor-toolbar a.re-button-icon .dashicons {
+  font-size: inherit;
+  height: 18px;
+  width: auto;
+  box-sizing: border-box;
+  vertical-align: inherit;
+}

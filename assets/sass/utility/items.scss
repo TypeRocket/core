@@ -3,17 +3,31 @@
 .tr-items-list {
     margin: 10px 0 0 0;
 
-    li {
+    .tr-items-list-item, li {
         display: block;
+        box-sizing: border-box;
         position: relative;
+        min-height: 50px;
         padding: 10px 40px;
-        border: solid 1px #e5e5e5;
+        border: solid 1px $gray_border;
         margin: -1px 0 0 !important;
         background: #fff;
+
+        &:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 2px #0073aa;
+            box-shadow: inset 0 0 0 2px var(--tr-profile-color);
+        }
 
         .remove {
             right: 12px;
             top: 17px;
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+                text-shadow: 0 0 7px $delete;
+            }
         }
 
         .move {
@@ -21,4 +35,12 @@
             top: 17px;
         }
     }
+
+    &:empty + .tr-items-append {
+       display: none;
+    }
+}
+
+.tr-items-append {
+    margin-top: 10px !important;
 }

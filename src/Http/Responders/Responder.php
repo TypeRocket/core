@@ -1,17 +1,35 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
+use TypeRocket\Exceptions\RedirectError;
 use TypeRocket\Http\Handler;
-use \TypeRocket\Http\Request;
-use \TypeRocket\Http\Response;
+use TypeRocket\Http\Request;
+use TypeRocket\Http\Response;
+use TypeRocket\Template\ErrorTemplate;
 
 abstract class Responder
 {
     /** @var \TypeRocket\Http\Kernel */
-    public $kernel;
-    public $hook = false;
-    public $rest = false;
-    public $custom = false;
+    protected $kernel;
+    /** @var Handler */
+    protected $handler;
+
+    /**
+     * Responder constructor.
+     * @param Handler|null $handler
+     */
+    public function __construct(Handler $handler = null)
+    {
+        $this->handler = $handler ?? new Handler;
+    }
+
+    /**
+     * Respond
+     *
+     * @param array $args
+     * @return mixed
+     */
+    abstract function respond( $args );
 
     /**
      * Run the Kernel
@@ -22,8 +40,56 @@ abstract class Responder
      */
     public function runKernel(Request $request, Response $response, Handler $handler )
     {
-        $Kernel = tr_app("Http\\Kernel");
-        $this->kernel = new $Kernel( $request, $response, $handler);
-        $this->kernel->runKernel();
+        try {
+            $Kernel = tr_app_class("Http\\Kernel");
+            $this->kernel = new $Kernel( $request, $response, $handler);
+            $this->kernel->run();
+        } catch (\Throwable $e ) {
+
+            $code = $e->getCode();
+
+            if($e instanceof RedirectError) {
+                $errorRedirect = $e->redirect();
+                $response->setStatus(302);
+                $response->setReturn($errorRedirect)->finish();
+            }
+
+            if(!$e instanceof \Requests_Exception_HTTP) {
+                $code = 500;
+                tr_report($e);
+            }
+
+            $response->setStatus($code);
+
+            if($request->isMarkedAjax() || $request->wants('json')) {
+                $response->exitJson();
+            }
+
+            if(is_admin()) {
+                $response->exitMessage();
+            }
+
+            new ErrorTemplate($code, $handler->getTemplate());
+        }
+    }
+
+    /**
+     * Get Handler
+     *
+     * @return Handler
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    /**
+     * Get Kernel
+     *
+     * @return \TypeRocket\Http\Kernel
+     */
+    public function getKernel()
+    {
+        return $this->kernel;
     }
 }

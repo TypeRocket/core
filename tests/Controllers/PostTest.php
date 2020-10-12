@@ -8,6 +8,7 @@ use TypeRocket\Controllers\WPPostController;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPPost;
+use TypeRocket\Models\WPUser;
 
 class PostTest extends TestCase
 {
@@ -19,10 +20,11 @@ class PostTest extends TestCase
 
         $request = new Request();
         $response = new Response();
-        $controller = new WPPostController( $request, $response );
-        $controller->update( 1 );
+        $controller = new WPPostController();
+        $user = (new WPUser)->find(1);
+        $controller->update(1, $request, $response, $user);
 
-        $model = new WPPost();
+        $model = new WPPost;
         $meta = $model->findById( $response->getData('resourceId') )->getFieldValue('meta_key');
 
         $this->assertTrue( $response->getData('resourceId') == 1 );
@@ -38,8 +40,9 @@ class PostTest extends TestCase
 
         $request = new Request();
         $response = new Response();
-        $controller = new WPPostController( $request, $response );
-        $controller->create();
+        $controller = new WPPostController;
+        $user = (new WPUser)->find(1);
+        $controller->create($request, $response, $user);
         $id = $response->getData('resourceId');
         $model = new WPPost();
         $meta = $model->findById( $id )->getFieldValue('meta_key');

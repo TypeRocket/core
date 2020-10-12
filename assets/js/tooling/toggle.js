@@ -1,7 +1,7 @@
 ;(function( $ ) {
 $(document).on('keyup', '.tr-toggle-box-label', function(e) {
-    e.preventDefault();
-    if( event.keyCode == 13) {
+    // enter when focused
+    if( e.keyCode === 13) {
         $(this).trigger('click');
     }
 })

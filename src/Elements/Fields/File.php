@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Html;
+use TypeRocket\Html\Html;
 
 class File extends Field implements ScriptField
 {
@@ -27,17 +27,19 @@ class File extends Field implements ScriptField
     {
         // $this->attr['class'] = 'file-picker';
         $name = $this->getNameAttributeString();
-        $this->appendStringToAttribute( 'class', ' file-picker' );
-        $value = (int) $this->getValue() !== 0 ? $this->getValue() : null;
+        $this->attrClass('file-picker');
+        $value = $this->setCast('int')->getValue();
+        $value = (int) $value !== 0 ? $value : null;
         $this->removeAttribute( 'name' );
-        $generator = new Html\Generator();
+        $this->setAttribute('data-tr-field', $this->getContextId());
+        $generator = new Html();
 
         if ( ! $this->getSetting( 'button' )) {
-            $this->setSetting( 'button', 'Insert File' );
+            $this->setSetting( 'button', __('Insert File') );
         }
 
         if ( ! $this->getSetting( 'clear' )) {
-            $this->setSetting( 'clear', 'Clear' );
+            $this->setSetting( 'clear', __('Clear') );
         }
 
         if ($value != "") {
@@ -47,25 +49,37 @@ class File extends Field implements ScriptField
             $file = '';
         }
 
-        $html = $generator->newInput( 'hidden', $name, $value, $this->getAttributes() )->getString();
+        $html = $generator->input( 'hidden', $name, $value, $this->getAttributes() )->getString();
         $html .= '<div class="button-group">';
-        $html .= $generator->newElement( 'input', [
+        $html .= $generator->el( 'input', [
             'type'  => 'button',
-            'class' => 'file-picker-button button',
+            'class' => 'tr-file-picker-button button',
             'value' => $this->getSetting( 'button' ),
-            'data-type' => $this->getSetting( 'type' ) ?: '' // https://codex.wordpress.org/Function_Reference/get_allowed_mime_types
-        ])->getString();
-        $html .= $generator->newElement( 'input', [
+            'data-type' => $this->getSetting( 'type', '' ) // https://codex.wordpress.org/Function_Reference/get_allowed_mime_types
+        ]);
+        $html .= $generator->el( 'input', [
             'type'  => 'button',
-            'class' => 'file-picker-clear button',
+            'class' => 'tr-file-picker-clear button',
             'value' => $this->getSetting( 'clear' )
-        ])->getString();
+        ]);
         $html .= '</div>';
-        $html .= $generator->newElement( 'div', [
-            'class' => 'file-picker-placeholder'
-        ], $file )->getString();
+        $html .= $generator->div([
+            'class' => 'tr-file-picker-placeholder'
+        ], $file );
 
         return $html;
+    }
+
+    /**
+     * Set Mime Type
+     *
+     * @param $type
+     *
+     * @return File
+     */
+    public function setMimeType($type)
+    {
+        return $this->setSetting('type', $type);
     }
 
 }

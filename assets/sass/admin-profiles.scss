@@ -1,0 +1,85 @@
+/* Admin Profiles
+----------------------------------------------------------------------- */
+@each $name, $color, $bg in $themes {
+  .admin-color-#{$name} {
+
+    .tr-control-icon-clone {
+      &:hover {
+        color: $color;
+      }
+    }
+
+    .tr-maxlength span {
+      color: $color;
+    }
+
+    .chosen-container .chosen-results {
+      li.highlighted {
+        background-color: $color;
+      }
+    }
+
+    .chosen-container-multi {
+      .chosen-choices li {
+        &.search-choice {
+          border-color: $color;
+          color: $color;
+        }
+      }
+    }
+
+    .chosen-container-active{
+      .chosen-single, .chosen-choices {
+        border-color: $color;
+        box-shadow: 0 0 0 1px $color;
+      }
+    }
+
+    .tr-toggle-box {
+      input:checked + label {
+        background-color: $color;
+      }
+
+      label:focus {
+        box-shadow: 0 0 3px rgba($color, 0.8);
+      }
+    }
+
+    .tr-link-search-result {
+      &:hover, &:focus, &:active {
+        background: $color;
+      }
+    }
+
+    .tr-tabbed-box {
+      .tr-tab-layout-tabs {
+
+        a {
+          color: $color;
+        }
+
+        li:hover, li:active, li:focus,
+        .active {
+          border-left: 3px solid $color;
+
+          .tr-tab-link {
+
+            > .tab-icon {
+              color: $color;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.wp-admin select:focus {
+  border-color: var(--tr-profile-color, #007cba);
+  color: var(--tr-profile-color-dark, #016087);
+  box-shadow: 0 0 0 1px var(--tr-profile-color, #007cba);
+}
+
+.wp-admin select:hover {
+  color: var(--tr-profile-color, #007cba);
+}

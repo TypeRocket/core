@@ -12,6 +12,23 @@ class UserTest extends TestCase
 {
     static public $sharedUserId = 2;
 
+    public function testUserDisabledCache()
+    {
+        $user = WPUser::new()->whereMeta('nickname', '!=', '')->select('user_email')->disableCache()->get()->toArray();
+
+        $this->assertTrue( !!filter_var($user[0]['user_email'], FILTER_VALIDATE_EMAIL) );
+    }
+
+    public function testUserEnabledCache()
+    {
+        // This uses the Obj cache and will break WP as all the fields
+        // are required for the object cache to work properly.
+        // You should always disabled the object cache.
+        $user = WPUser::new()->whereMeta('nickname', '!=', '')->select('user_email', 'ID', 'user_login', 'user_nicename')->get()->toArray();
+
+        $this->assertTrue( !!filter_var($user[0]['user_email'], FILTER_VALIDATE_EMAIL) );
+    }
+
     public function testCreateWithSlashing()
     {
         $user = new WPUser();
@@ -76,6 +93,15 @@ class UserTest extends TestCase
         }
 
         $this->assertTrue( $post instanceof WPPost);
+    }
+
+    public function testUserPrivateProperties()
+    {
+        $user = new WPUser();
+        $result = $user->findById( 1 )->toArray();
+
+        $this->assertTrue( !isset($result['user_pass']));
+        $this->assertTrue( isset($result['user_login']));
     }
 
     public function testUserNotFound()

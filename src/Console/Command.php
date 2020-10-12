@@ -1,8 +1,10 @@
 <?php
 namespace TypeRocket\Console;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Class Command
@@ -29,6 +31,8 @@ class Command extends \Symfony\Component\Console\Command\Command
         'help',
     ];
 
+    protected $printedError = false;
+
     /**
      * Configure
      */
@@ -43,8 +47,8 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * Execute
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param InputInterface $input
+     * @param OutputInterface $output
      *
      * @return void
      */
@@ -76,6 +80,7 @@ class Command extends \Symfony\Component\Console\Command\Command
      */
     protected function error( $content )
     {
+        $this->printedError = true;
         $this->output->writeln('<fg=red>'.$content.'</>');
     }
 
@@ -100,6 +105,16 @@ class Command extends \Symfony\Component\Console\Command\Command
     }
 
     /**
+     * Output info line
+     *
+     * @param string $content
+     */
+    protected function info($content)
+    {
+        $this->output->writeln('<fg=cyan>'.$content.'</>');
+    }
+
+    /**
      * Output line
      *
      * @param string $content
@@ -107,6 +122,23 @@ class Command extends \Symfony\Component\Console\Command\Command
     protected function line($content)
     {
         $this->output->writeln($content);
+    }
+
+    /**
+     * Confirm
+     *
+     * https://symfony.com/doc/3.4/components/console/helpers/questionhelper.html
+     *
+     * @param string|null $question        The question to ask to the user
+     * @param bool   $default         The default answer to return, true or false
+     * @param string $trueAnswerRegex A regex to match the "yes" answer
+     */
+    protected function confirm($question = null, $default = false, $trueAnswerRegex = '/^y/i') {
+        $question = new ConfirmationQuestion(($question ?? 'Continue with this action? (y|n)') . ' ', $default, $trueAnswerRegex);
+
+        if (!$this->getHelper('question')->ask($this->input, $this->output, $question)) {
+            die();
+        }
     }
 
     /**
@@ -121,6 +153,18 @@ class Command extends \Symfony\Component\Console\Command\Command
     }
 
     /**
+     * @param string $name
+     * @param array $args
+     *
+     * @throws \Exception
+     */
+    protected function runCommand($name, array $args = []) {
+        $command = $this->getApplication()->find($name);
+        $input = new ArrayInput( $args );
+        $command->run($input, $this->output);
+    }
+
+    /**
      * Get Option
      *
      * @param string $name
@@ -129,6 +173,21 @@ class Command extends \Symfony\Component\Console\Command\Command
      */
     protected function getOption( $name ) {
         return $this->input->getOption($name);
+    }
+
+    /**
+     * Get Class Arg
+     *
+     * @param $arg
+     *
+     * @return mixed|string|string[]|null
+     */
+    public function getClassArgument($arg) {
+        $arg = $this->getArgument($arg);
+        $arg = str_replace("/",'\\', $arg);
+        $arg = preg_replace('/(\\\\+)/m','\\', $arg);
+
+        return $arg;
     }
 
 }

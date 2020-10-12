@@ -1,45 +1,81 @@
 <?php
-
 namespace TypeRocket\Http;
 
 use TypeRocket\Core\Injector;
 use TypeRocket\Models\Model;
+use TypeRocket\Utility\Str;
 
 class Redirect
 {
     public $url;
 
     /**
+     * Redirect with data
+     *
      * @param array $data
      *
-     * @return Redirect $this
+     * @return Redirect
      */
-    public function with( $data ) {
+    public function withData($data) {
 
-        if( !empty( $data ) ) {
-            $cookie = new Cookie();
-            $cookie->setTransient('tr_redirect_data', $data);
+        if( !empty($data) ) {
+            (new Cookie)->setTransient('tr_redirect_data', $data);
         }
 
         return $this;
     }
 
     /**
+     * With with data
+     *
+     * @param array $errors
+     *
+     * @return Redirect $this
+     */
+    public function withErrors( $errors = null) {
+        if( !empty( $errors ) ) {
+            (new Cookie)->setTransient(ErrorCollection::KEY, $errors);
+        }
+
+        return $this;
+    }
+
+    /**
+     * With Message
+     *
+     * @param string $message
+     * @param string $type options: success, error, warning, and info
+     *
+     * @return $this
+     */
+    public function withMessage($message, $type = 'success')
+    {
+        if(!empty($message) && is_string($message)) {
+            (new Cookie)->setTransient('tr_redirect_message', ['message' => $message, 'type' => $type]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Redirect with old fields
+     *
      * @param array|Fields $fields
      * @param array $notFields
      *
-     * @return \TypeRocket\Http\Redirect $this
+     * @return Redirect
      */
-    public function withFields( $fields, $notFields = [] ) {
+    public function withOldFields($fields = null, $notFields = []) {
 
-        if( $fields instanceof Fields) {
+        $fields = $fields ?? (new Request)->getFields();
+
+        if($fields instanceof Fields) {
             $fields = $fields->getArrayCopy();
         }
 
-        if( !empty( $fields ) ) {
-            $cookie = new Cookie();
+        if( !empty($fields) ) {
             $send = array_diff_key($fields, array_flip($notFields));
-            $cookie->setTransient('tr_old_fields', $send);
+            (new Cookie)->setTransient('tr_old_fields', $send);
         }
 
         return $this;
@@ -51,7 +87,7 @@ class Redirect
      * @param string $path
      *
      * @param null|string $schema
-     * @return Redirect $this
+     * @return Redirect
      */
     public function toHome( $path = '', $schema = null)
     {
@@ -61,22 +97,11 @@ class Redirect
     }
 
     /**
-     * To Home URL
-     *
-     * @param string $path
-     * @return Redirect
-     * @deprecated 4.0.46
-     */
-    public function onHome( $path = '') {
-        return $this->toHome($path);
-    }
-
-    /**
      * To Site URL
      *
      * @param string $path
      * @param null|string $schema
-     * @return $this
+     * @return Redirect
      */
     public function toSite($path = '', $schema = null)
     {
@@ -89,19 +114,22 @@ class Redirect
      * @param string $resource
      * @param string $action
      * @param null $item_id
+     * @param string $root_path
      *
      * @return Redirect $this
      */
-    public function toPage($resource, $action, $item_id = null)
+    public function toPage($resource, $action = null, $item_id = null, $root_path = 'admin.php')
     {
         $query = [];
-        $query['page'] = $resource . '_' . $action;
+        $query['page'] = $resource . ( $action ? '_' . $action : null);
 
-        if($item_id) {
-            $query['route_id'] = (int) $item_id;
+        if(is_array($item_id)) {
+            $query = array_merge($query, $item_id);
+        } elseif($item_id) {
+            $query['route_args'] = [$item_id];
         }
 
-        $this->url = admin_url('/') . 'admin.php?' . http_build_query($query);
+        $this->url = admin_url('/') . $root_path . '?' . http_build_query($query);
 
         return $this;
     }
@@ -129,7 +157,7 @@ class Redirect
      *
      * @param string $url
      *
-     * @return Redirect $this
+     * @return Redirect
      */
     public function toUrl( $url ) {
         $this->url = esc_url_raw($url);
@@ -145,11 +173,11 @@ class Redirect
      * @param bool $site
      * @param null|RouteCollection $routes
      *
-     * @return $this
+     * @return Redirect
      */
-    public function toRoute($name, $values, $site = true, $routes = null)
+    public function toRoute($name, $values = [], $site = true, $routes = null)
     {
-        /** @var ApplicationRoutes $routes */
+        /** @var RouteCollection $routes */
         $routes = $routes ?? Injector::resolve(RouteCollection::class);
         $located = $routes->getNamedRoute($name);
 
@@ -167,18 +195,46 @@ class Redirect
      *
      * Must be the same host
      *
-     * @return Redirect $this
+     * @param bool $self
+     * @param bool $force
+     *
+     * @return Redirect
      */
-    public function back()
+    public function back($self = false, $force = false)
     {
-        $ref = $_SERVER['HTTP_REFERER'];
-        $scheme = is_ssl() ? 'https' : 'http';
-        $same_host = home_url( '/', $scheme );
-        if( substr($ref, 0, strlen($same_host)) === $same_host ) {
+        $ref = (new Request)->getReferer($self);
+
+        if($force) {
             $this->url = $ref;
-        } else {
-            $this->url = home_url('/', $scheme);
         }
+        else {
+            $scheme = is_ssl() ? 'https' : 'http';
+            $same_host = home_url( '/', $scheme );
+            if( Str::starts($same_host, $ref) ) {
+                $this->url = $ref;
+            } else {
+                $this->url = get_site_url(null, '/', $scheme);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Flash message on next request
+     *
+     * When the request is marked as _tr_ajax_request transient is not
+     * set by default.
+     *
+     * @param string $message
+     * @param string $type options: success, error, warning, and info
+     * @param bool $force_transient
+     *
+     * @return $this
+     */
+    public function withFlash($message, $type = 'success', $force_transient = false)
+    {
+        tr_response()->flashNext($message, $type, $force_transient);
 
         return $this;
     }
@@ -189,5 +245,25 @@ class Redirect
     public function now() {
         wp_redirect( $this->url );
         exit();
+    }
+
+    /**
+     *
+     * Get Url
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace TypeRocket\Elements\Traits;
 
 trait MacroTrait
@@ -62,7 +61,7 @@ trait MacroTrait
      * Call Macro
      *
      * @param string $method
-     * @param string $parameters
+     * @param array $parameters
      *
      * @return mixed
      */
@@ -72,6 +71,6 @@ trait MacroTrait
             return call_user_func_array($this->macros[$method]->bindTo($this), $parameters);
         }
 
-        throw new \BadMethodCallException("Method {$method} does not exist.");
+        throw new \BadMethodCallException("Method '{$method}' does not exist.");
     }
 }

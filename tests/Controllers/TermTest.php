@@ -8,6 +8,7 @@ use TypeRocket\Controllers\WPTermController;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPTerm;
+use TypeRocket\Models\WPUser;
 
 class TermTest extends TestCase
 {
@@ -19,10 +20,9 @@ class TermTest extends TestCase
 
         $request = new Request();
         $response = new Response();
-        $controller = new WPTermController( $request, $response );
-        $controller->getModel()->setTaxonomy('category');
-        $controller->update( 1 );
-        $response = $controller->getResponse();
+        $controller = new WPTermController;
+        $user = (new WPUser)->find(1);
+        $controller->update(1, $request, $response, $user);
 
         $model = new WPTerm();
         $meta = $model->findById( $response->getData('resourceId') )->getFieldValue('meta_key');

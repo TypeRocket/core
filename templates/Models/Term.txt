@@ -1,7 +1,7 @@
 <?php
-namespace {{namespace}}\Models;
+namespace {{namespace}};
 
-use \TypeRocket\Models\WPTerm;
+use TypeRocket\Models\WPTerm;
 
 class {{model}} extends WPTerm
 {

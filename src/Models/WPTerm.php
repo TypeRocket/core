@@ -13,6 +13,12 @@ class WPTerm extends Model
     protected $idColumn = 'term_id';
     protected $resource = 'terms';
     protected $taxonomy = null;
+    /** @var \WP_Term */
+    protected $wpTerm = null;
+    protected $fieldOptions = [
+        'key' => 'name',
+        'value' => 'term_id',
+    ];
 
     protected $builtin = [
         'description',
@@ -34,6 +40,60 @@ class WPTerm extends Model
     {
         if($taxonomy) { $this->taxonomy = $taxonomy; }
         parent::__construct();
+    }
+
+    /**
+     * Get Taxonomy
+     *
+     * @return string
+     */
+    public function getTaxonomy()
+    {
+        return $this->taxonomy;
+    }
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->terms;
+    }
+
+    /**
+     * Init Query
+     *
+     * @param Query $query
+     *
+     * @return mixed
+     */
+    protected function initQuery(Query $query)
+    {
+        if($this->taxonomy) {
+            /** @var \wpdb $wpdb */
+            global $wpdb;
+            $tt = $wpdb->term_taxonomy;
+            $query->setSelectTable(null);
+            $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
+            $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
+            $query->where($tt.'.taxonomy', $this->taxonomy);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Get JsonApiResource
+     *
+     * @return string|null
+     */
+    public function getRouteResource()
+    {
+        return $this->getTaxonomy();
     }
 
     /**
@@ -60,6 +120,57 @@ class WPTerm extends Model
     }
 
     /**
+     * Get Term Permalink
+     *
+     * @return string|\WP_Error
+     */
+    public function permalink()
+    {
+        return get_term_link($this->wpTerm, $this->taxonomy);
+    }
+
+    /**
+     * @return string|\WP_Error
+     */
+    public function getSearchUrl()
+    {
+        return $this->permalink();
+    }
+
+    /**
+     * Belongs To Post
+     *
+     * @param string $modelClass
+     * @param null|callable $scope
+     * @param bool $reselect
+     *
+     * @return Model|null
+     */
+    public function belongsToPost($modelClass, $scope = null, $reselect = true)
+    {
+        global $wpdb;
+        return $this->belongsToMany($modelClass, $wpdb->term_relationships, 'term_taxonomy_id', 'object_id', $scope, $reselect);
+    }
+
+    /**
+     * After Properties Are Cast
+     *
+     * Create an Instance of WP_Term
+     *
+     * @return Model
+     */
+    protected function afterCastProperties()
+    {
+        if(!$this->wpTerm && $this->taxonomy && $this->getCache()) {
+            $_term = sanitize_term( (object) $this->properties, $this->taxonomy, 'raw' );
+            wp_cache_add( $_term->term_id, $_term, 'terms' );
+            $this->wpTerm = new \WP_Term($_term);
+        }
+
+        return parent::afterCastProperties();
+    }
+
+    /**
      * Set Taxonomy
      *
      * @param string $taxonomy
@@ -75,28 +186,6 @@ class WPTerm extends Model
     }
 
     /**
-     * Init Query
-     *
-     * @param Query $query
-     *
-     * @return mixed
-     */
-    protected function initQuery(Query $query)
-    {
-        if($this->taxonomy) {
-            /** @var \wpdb $wpdb */
-            global $wpdb;
-            $tt = $wpdb->prefix . 'term_taxonomy';
-            $query->setSelectTable(null);
-            $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
-            $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
-            $query->where($tt.'.taxonomy', $this->taxonomy);
-        }
-
-        return $query;
-    }
-
-    /**
      * Get Term Taxonomy
      *
      * @return null|\TypeRocket\Models\Model
@@ -107,38 +196,36 @@ class WPTerm extends Model
     }
 
     /**
-     * Get Taxonomy
+     * Get WP_Term Instance
      *
-     * @return string
+     * @param \WP_Term|null|int
+     * @param bool $returnModel
+     *
+     * @return \WP_Term|$this|null
      */
-    public function getTaxonomy()
+    public function wpTerm( $term = null, $returnModel = false)
     {
-        return $this->taxonomy;
-    }
+        if( !$term && $this->wpTerm instanceof \WP_Term ) {
+            return $this->wpTerm;
+        }
 
-    /**
-     * Return table name in constructor
-     *
-     * @param \wpdb $wpdb
-     *
-     * @return string
-     */
-    public function initTable( $wpdb )
-    {
-        return $wpdb->prefix . 'terms';
-    }
+        if( !$term && $this->getID() ) {
+            return $this->wpTerm($this->getID());
+        }
 
-    /**
-     * Get comment by ID
-     *
-     * @param string $id
-     *
-     * @return $this
-     */
-    public function getTerm( $id )
-    {
-        $this->fetchResult(  get_term( $id, $this->taxonomy, ARRAY_A ) );
-        return $this;
+        if(!$term) {
+            return $this->wpTerm;
+        }
+
+        $term = get_term( $term );
+
+        if( $term instanceof \WP_Term) {
+            $this->taxonomy = $term->taxonomy;
+            $this->wpTerm = $term;
+            $this->castProperties( $term->to_array() );
+        }
+
+        return $returnModel ? $this : $this->wpTerm;
     }
 
     /**
@@ -152,12 +239,12 @@ class WPTerm extends Model
      *
      * @return WPTerm
      * @throws \TypeRocket\Exceptions\ModelException
-     * @throws \ReflectionException
      */
     public function create( $fields = [] )
     {
         $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields($fields);
+        $term = null;
 
         if ( ! empty( $builtin ) ) {
             $builtin = $this->slashBuiltinFields($builtin);
@@ -218,13 +305,54 @@ class WPTerm extends Model
     }
 
     /**
+     * Update Term Count
+     *
+     * @throws ModelException
+     */
+    public function updateTermCount()
+    {
+        $id = $this->getID();
+
+        if(!$this->taxonomy || !$id) {
+            throw new ModelException('Taxonomy and ID required to use updateTermCount()');
+        }
+
+        wp_update_term_count_now([$id], $this->taxonomy);
+
+        return $this;
+    }
+
+    /**
+     * Delete Term
+     *
+     * @param null|int|\WP_Term $ids
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function delete($ids = null)
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        $delete = wp_delete_term($ids, $this->wpTerm($ids)->taxonomy);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPTerm not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
      * Save term meta fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    private function saveMeta( $fields )
+    public function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields($fields);
         $id = $this->getID();
@@ -275,7 +403,8 @@ class WPTerm extends Model
      * @param array $builtin
      * @return mixed
      */
-    public function slashBuiltinFields( $builtin ) {
+    public function slashBuiltinFields( $builtin )
+    {
 
         $fields = [
             'name',

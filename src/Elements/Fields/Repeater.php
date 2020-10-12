@@ -1,26 +1,19 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use TypeRocket\Core\Config;
+use TypeRocket\Elements\BaseForm;
 use TypeRocket\Elements\Traits\ControlsSetting;
-use \TypeRocket\Html\Generator;
-use TypeRocket\Html\Tag;
+use TypeRocket\Elements\Traits\Fieldable;
+use TypeRocket\Elements\Traits\Limits;
+use TypeRocket\Html\Html;
 
 class Repeater extends Field implements ScriptField
 {
+    use ControlsSetting, Fieldable, Limits;
 
-    use ControlsSetting;
-
-    protected $fields = [];
-    protected $headline = null;
-    protected $limit = 99999;
-    protected $hide = [
-        'move' => false,
-        'remove' => false,
-        'contract' => false,
-        'clear' => false,
-        'flip' => false,
-    ];
+    protected $title = null;
+    protected $confirmRemove = false;
+    protected $bottomButton = true;
 
     /**
      * Run on construction
@@ -35,8 +28,7 @@ class Repeater extends Field implements ScriptField
      */
     public function enqueueScripts()
     {
-        $assetVersion = Config::locate('app.assets');
-        wp_enqueue_script( 'jquery-ui-sortable', ['jquery'], $assetVersion, true );
+        wp_enqueue_script('jquery-ui-sortable', ['jquery'], false, true );
     }
 
     /**
@@ -45,15 +37,15 @@ class Repeater extends Field implements ScriptField
     public function getString()
     {
         $this->setAttribute( 'name', $this->getNameAttributeString() );
-        $form = $this->getForm();
+        $form = $this->getForm()->clone()->setDebugStatus( false );
         $settings = $this->getSettings();
         $name     = $this->getName();
-        $form->setDebugStatus( false );
         $html =  $fields_classes = '';
-        $repeats = $this->getValue();
+        $repeats = $this->setCast('array')->getValue();
         $num_repeaters = count( is_countable($repeats) ? $repeats : []);
+        $fields_num = count($this->fields ?? []);
 
-        $headline = $this->headline ? '<h1>' . $this->headline . '</h1>': '';
+        $headline = $this->title ? '<h2>' . $this->title . '</h2>': '';
 
         // add controls
         if (isset( $settings['help'] )) {
@@ -63,21 +55,17 @@ class Repeater extends Field implements ScriptField
             $help = '';
         }
 
-        // add button settings
-        if (isset( $settings['add_button'] )) {
-            $add_button_value = $settings['add_button'];
-        } else {
-            $add_button_value = "Add New";
-        }
-
         $controls = [
-            'contract' => 'Contract',
-            'expand' => 'Expand',
-            'flip' => 'Flip',
-            'clear' => 'Clear All',
-            'add' => $add_button_value,
-            'limit' => 'Limit Hit',
+            'contract' => __('Contract', 'typerocket-domain'),
+            'expand' => __('Expand', 'typerocket-domain'),
+            'flip' => __('Flip', 'typerocket-domain'),
+            'clone' => __('Clone', 'typerocket-domain'),
+            'clear' => __('Clear All', 'typerocket-domain'),
+            'add' => __('Add New', 'typerocket-domain'),
+            'limit' => __('Limit Hit', 'typerocket-domain'),
         ];
+
+        $limit = __('Limit', 'typerocket-domain');
 
         // controls settings
         if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
@@ -99,143 +87,138 @@ class Repeater extends Field implements ScriptField
         }
 
         // template for repeater groups
-        $control_list = [
-            'contract' => ['class' => 'collapse tr-control-icon tr-control-icon-collapse'],
-            'move' => ['class' => 'move tr-control-icon tr-control-icon-move'],
-            'remove' => ['class' => 'remove tr-control-icon tr-control-icon-remove', 'href' => '#remove', 'title' => __('remove', 'typerocket-domain')],
+        $group_control_list = [
+            'contract' => ['class' => 'tr-repeater-collapse tr-control-icon tr-control-icon-collapse', 'title' => __('Contract', 'typerocket-domain'), 'tabindex' => '0'],
+            'move' => ['div', 'class' => 'move tr-control-icon tr-control-icon-move', 'title' => __('Move')],
+            'clone' => null,
+            'remove' => ['class' => "tr-repeater-remove tr-control-icon tr-control-icon-remove", 'title' => __('Remove', 'typerocket-domain'), 'tabindex' => '0'],
         ];
 
-        foreach ($this->hide as $control_name => $hide) {
-            if($hide) { unset($control_list[$control_name]); }
+        $group_control_list = apply_filters('tr_repeater_item_controls', $group_control_list, $this);
+
+        foreach ($group_control_list as $control_name => $options)
+        {
+            if(!$options || ($this->hide[$control_name] ?? true)) {
+                $fields_classes .= ' tr-repeater-hide-' . $control_name;
+                unset($group_control_list[$control_name]);
+            }
         }
 
-        $controls_html = array_reduce($control_list, function($carry, $item) {
-            return $carry . Tag::make('a', $item);
+        $controls_html = array_reduce($group_control_list, function($carry, $item) {
+            $el = isset($item[0]) ? $item[0] : 'a';
+            unset($item[0]);
+            return $carry . Html::el( $el, $item);
         });
 
-        $openContainer = '<div class="repeater-controls">'.$controls_html.'</div><div class="repeater-inputs">';
+        $openContainer = '<div class="tr-repeater-controls">'.$controls_html.'</div><div class="tr-repeater-inputs">';
         $endContainer  = '</div>';
 
         $html .= '<div class="tr-repeater">'; // start tr-repeater
 
-        // setup repeater
-        $cache_group = $form->getGroup();
-
-        $root_group = $this->getDots();
-        $form->setGroup( $this->getDots() . ".{{ {$name} }}" );
-
         // add controls (add, flip, clear all)
-        $generator    = new Generator();
-        $default_null = $generator->newInput( 'hidden', $this->getAttribute( 'name' ), null, $this->getAttributes() )->getString();
+        $default_null = Html::input( 'hidden', $this->getAttribute( 'name' ), null, $this->getAttributes() )->getString();
 
         // main controls
         $control_list = [
-            'flip' => ['class' => 'flip button', 'value' => $controls['flip'] ],
-            'contract' => ['class' => "tr_action_collapse button {$expanded}", 'value' => $expand_label, 'data-contract' => $controls['contract'], 'data-expand' => $controls['expand']],
-            'clear' => ['class' => 'clear button', 'value' => $controls['clear'] ],
+            'flip' => ['class' => 'tr-repeater-action-flip button', 'value' => $controls['flip'], 'title' => $controls['flip'] ],
+            'contract' => ['class' => "tr-repeater-action-collapse button {$expanded}", 'value' => $expand_label, 'title' => $controls['contract'], 'data-contract' => $controls['contract'], 'data-expand' => $controls['expand']],
+            'clear' => ['class' => 'tr-repeater-action-clear button', 'value' => $controls['clear'], 'title' => $controls['clear'] ],
         ];
+
+        apply_filters('tr_repeater_controls', $control_list, $this);
 
         foreach ($this->hide as $control_name => $hide) {
             if($hide) { unset($control_list[$control_name]); }
         }
 
         $controls_html = array_reduce($control_list, function($carry, $item) {
-            return $carry . Tag::make('input', array_merge(['type' => 'button'], $item));
+            return $carry . Html::el('input', array_merge(['type' => 'button'], $item));
         });
+
         $add_value = $num_repeaters < $this->limit ? $controls['add'] : $controls['limit'];
-        $add_class = $num_repeaters < $this->limit ? 'button add' : 'button disabled add';
-        $add_button = Tag::make('input', ['type' => 'button', 'value' => $add_value, 'class' => $add_class, 'data-add' => $controls['add'], 'data-limit' => $controls['limit']]);
+        $add_class = $num_repeaters < $this->limit ? '' : 'disabled';
+        $add_class = $add_class . ' button tr-repeater-action-add-button';
+        $add_button = Html::el('input', ['type' => 'button', 'value' => $add_value, 'class' => $add_class . ' tr-repeater-action-add', 'data-add' => $controls['add'], 'data-limit' => $controls['limit']]);
+        $html .= $this->limit < 99999 ? "<p class=\"tr-field-help-top\">{$limit} {$this->limit}</p>" : '';
+        $html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\">{$add_button}</div><div class=\"button-group tr-d-inline\">{$controls_html}</div>{$help}<div>{$default_null}</div></div>";
 
-        $html .= "<div class=\"controls\"><div class=\"tr-d-inline tr-mr-10\">{$add_button}</div><div class=\"button-group\">{$controls_html}</div>{$help}<div>{$default_null}</div></div>";
-
-        // replace name attr with data-name so fields are not saved
-        $templateFields = str_replace( ' name="', ' data-name="', $this->getTemplateFields() );
+        // replace name attr with data-tr-name so fields are not saved
+        $templateFields = str_replace( ' name="', ' data-tr-name="', $this->getTemplateFields($form, $name) );
 
         // render js template data
-        $html .= "<div class=\"tr-repeater-group-template\" data-id=\"{$name}\" data-limit=\"{$this->limit}\">";
+        $classes = class_names('tr-repeater-group', [
+            'tr-repeater-clones' => !empty($group_control_list['clone'])
+        ]);
+
+        $html .= '<ul class="tr-repeater-group-template">';
+        $html .= "<li tabindex=\"0\" data-id=\"{$name}\" data-fields='{$fields_num}' data-limit=\"{$this->limit}\" class=\"{$classes}\">";
         $html .= $openContainer . $headline . $templateFields . $endContainer;
-        $html .= '</div>';
+        $html .= '</li>';
+        $html .= '</ul>';
+
+        $remove_class = $this->confirmRemove ? 'tr-repeater-confirm-remove' : '';
+
+        $append = '';
+
+        if(!$this->hide['append']) {
+            $append = Html::button(['class' => $add_class . ' tr-repeater-action-add-append', 'data-add' => $controls['add'], 'data-limit' => $controls['limit']], $add_value);
+        }
 
         // render saved data
-        $html .= '<div class="tr-repeater-fields'.$fields_classes.'">'; // start tr-repeater-fields
-
+        $html .= "<ol class='tr-repeater-fields {$fields_classes} {$remove_class}'>"; // start tr-repeater-fields
         if ( is_array( $repeats ) ) {
             foreach ($repeats as $k => $array) {
-                $html .= '<div class="tr-repeater-group">';
+                $html .= "<li tabindex=\"0\" data-id=\"{$name}\" data-fields=\"{$fields_num}\" data-limit=\"{$this->limit}\" class=\"{$classes}\">";
                 $html .= $openContainer;
-                $form->setGroup( $root_group . ".{$k}" );
                 $html .= $headline;
-                $html .= $form->getFromFieldsString( $this->fields );
+                $html .= $form->super( $k, $this )->setFields($this->fields)->getFieldsString();
                 $html .= $endContainer;
-                $html .= '</div>';
+                $html .= '</li>';
             }
         }
-        $html .= '</div>'; // end tr-repeater-fields
-        $form->setGroup( $cache_group );
+        $html .= '</ol>'; // end tr-repeater-fields
+        $html .= $append;
         $html .= '</div>'; // end tr-repeater
 
         return $html;
     }
 
     /**
+     * Confirm Remove
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function confirmRemove($bool = true)
+    {
+        $this->confirmRemove = $bool;
+
+        return $this;
+    }
+
+    /**
      * Get the repeater template field for JS hook
+     *
+     * @param BaseForm $form
+     * @param $name
      *
      * @return string
      */
-    private function getTemplateFields()
+    protected function getTemplateFields(BaseForm $form, $name)
     {
-        return $this->getForm()->setDebugStatus(false)->getFromFieldsString( $this->fields );
+        return $form->super( "{{ {$name} }}", $this )->setFields($this->fields)->getFieldsString();
     }
 
     /**
-     * Set fields for repeater
+     * Set title for the repeater groups
      *
-     * @param array $fields
+     * @param string $title
      *
      * @return $this
      */
-    public function setFields( $fields )
-    {
-        $this->fields = $fields;
-
-        return $this;
-    }
-
-    /**
-     * Append field
-     *
-     * @param string $field
-     *
-     * @return $this
-     */
-    public function appendField( $field )
-    {
-        if(is_array($field) || $field instanceof Field) {
-            $this->fields[] = $field;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get Fields
-     *
-     * @return array
-     */
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
-    /**
-     * Set headline for the repeater groups
-     *
-     * @param null $headline
-     *
-     * @return $this
-     */
-    public function setHeadline($headline = null) {
-        $this->headline = $headline;
+    public function setTitle($title) {
+        $this->title = esc_html($title);
 
         return $this;
     }
@@ -245,55 +228,9 @@ class Repeater extends Field implements ScriptField
      *
      * @return null
      */
-    public function getHeadline()
+    public function getTitle()
     {
-        return $this->headline;
-    }
-
-    /**
-     * Hide Item Control
-     *
-     * @param string $name
-     * @return $this
-     */
-    public function hideControl($name)
-    {
-        array_key_exists($name, $this->hide) ? $this->hide[$name] = true : null;
-        return $this;
-    }
-
-    /**
-     * Show Item Control
-     *
-     * @param string $name
-     * @return $this
-     */
-    public function showControl($name)
-    {
-        array_key_exists($name, $this->hide) ? $this->hide[$name] = false : null;
-        return $this;
-    }
-
-    /**
-     * Limit Number of Items
-     *
-     * @param int $limit
-     * @return $this
-     */
-    public function setLimit($limit = 99999)
-    {
-        $this->limit = (int) $limit;
-        return $this;
-    }
-
-    /**
-     * Get Item Limit
-     *
-     * @return int
-     */
-    public function getLimit()
-    {
-        return $this->limit;
+        return $this->title;
     }
 
     /**
@@ -305,16 +242,6 @@ class Repeater extends Field implements ScriptField
      */
     public function setControlLimit( $value ) {
         return $this->appendToArraySetting('controls', 'limit', $value);
-    }
-
-    /**
-     * Make repeater contracted by default
-     *
-     * @return $this
-     */
-    public function contracted()
-    {
-        return $this->setSetting('contracted', true);
     }
 
 }

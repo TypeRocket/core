@@ -1,74 +1,130 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Controllers\Traits\LoadsModel;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
-use TypeRocket\Models\Model;
+use TypeRocket\Models\AuthUser;
 use TypeRocket\Models\WPTerm;
 
 class WPTermController extends Controller
 {
+    use LoadsModel;
+
     protected $modelClass = WPTerm::class;
-
-    /** @var \TypeRocket\Models\WPTerm */
-    protected $model = null;
-    protected $type = null;
-
-    public function __construct( Request $request, Response $response, $model = null)
-    {
-        if($model) { $this->modelClass = $model; }
-        parent::__construct($request, $response);
-    }
-
-    /**
-     * Dynamically load proper Model based on post type
-     */
-    protected function init()
-    {
-        $reflect    = new \ReflectionClass( $this );
-        $type       = substr( $reflect->getShortName(), 0, - 10 );
-        $this->type = $type;
-
-        if(!$this->modelClass instanceof Model) {
-            $this->model = new $this->modelClass;
-        }
-    }
 
     /**
      * Update Taxonomy Term by ID
      *
-     * @param null $id
+     * @param null|int $id
+     * @param Request $request
+     * @param Response $response
+     * @param AuthUser $user
      *
-     * @return mixed|void
+     * @return \TypeRocket\Http\Redirect|Response
+     * @throws \Exception
      */
-    public function update( $id = null )
+    public function update($id, Request $request, Response $response, AuthUser $user)
     {
+        /** @var WPTerm $model */
+        $model = new $this->modelClass;
+
         try {
-            $this->model->findById( $id )->update( $this->request->getFields() );
-            $this->response->flashNext($this->type . ' updated', 'success' );
-            $this->response->setData('resourceId', $id );
+            if(!$id) {
+                throw new ModelException('ID not found.');
+            }
+
+            $model->wpTerm($id);
+
+            do_action('tr_controller_update', $this, $model, $user);
+
+            if(!$model->can('update', $user)) {
+                tr_abort(401);
+                throw new ModelException('Policy does not give the current user access to write.');
+            }
+
+            $model->update( $this->getFields() );
+            $response->flashNext($model->getRouteResource() . ' updated', 'success' );
+            $response->setData('resourceId', $id );
         } catch ( ModelException $e ) {
-            $this->response->flashNext($e->getMessage(), 'error' );
-            $this->response->setError( 'model', $e->getMessage() );
+            $response->flashNext($e->getMessage(), 'error' );
+            $response->setError( 'model', $e->getMessage() );
         }
 
+        return $this->returnJsonOrGoBack();
     }
 
     /**
      * Create Taxonomy Term
+     *
+     * This method is not triggered by a WordPress core action.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param AuthUser $user
+     *
+     * @return \TypeRocket\Http\Redirect|Response
+     * @throws \Exception
      */
-    public function create()
+    public function create(Request $request, Response $response, AuthUser $user)
     {
+        /** @var WPTerm $model */
+        $model = (new $this->modelClass);
+
         try {
-            $this->model->create( $this->request->getFields() );
-            $this->response->flashNext($this->type . ' created', 'success' );
-            $this->response->setStatus(201);
-            $this->response->setData('resourceId', $this->model->getID() );
+            if(!$model->can('create', $user)) {
+                throw new ModelException('Policy does not give the current user access to write.');
+            }
+
+            $model->create( $this->getFields() );
+            $response->flashNext($model->getRouteResource() . ' created', 'success' );
+            $response->setStatus(201);
+            $response->setData('resourceId', $model->getID() );
         } catch ( ModelException $e ) {
-            $this->response->flashNext($e->getMessage(), 'error' );
-            $this->response->setError( 'model', $e->getMessage() );
+            $response->flashNext($e->getMessage(), 'error' );
+            $response->setError( 'model', $e->getMessage() );
         }
 
+        return $this->returnJsonOrGoBack();
+    }
+
+    /**
+     * Destroy
+     *
+     * @param null|int $id
+     * @param Request $request
+     * @param Response $response
+     * @param AuthUser $user
+     *
+     * @return \TypeRocket\Http\Redirect|Response
+     * @throws \Exception
+     */
+    public function destroy($id, Request $request, Response $response, AuthUser $user)
+    {
+        /** @var WPTerm $model */
+        $model = new $this->modelClass;
+
+        try {
+            if(!$id) {
+                throw new ModelException('ID not found.');
+            }
+
+            $model->wpTerm( $id );
+
+            if(!$model->can('destroy', $user)) {
+                throw new ModelException('Policy does not give the current user access to write.');
+            }
+
+            $model->delete();
+            $response->flashNext( 'Term deleted', 'success' );
+            $response->setStatus(200);
+            $response->setData('resourceId', $model->getID() );
+        } catch( ModelException $e ) {
+            $response->flashNext( $e->getMessage(), 'error' );
+            $response->setError( 'model', $e->getMessage() );
+        }
+
+        return $this->returnJsonOrGoBack();
     }
 }

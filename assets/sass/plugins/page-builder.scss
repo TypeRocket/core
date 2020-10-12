@@ -2,13 +2,9 @@
 #tr_page_type_toggle {
     text-align: center;
     clear: both;
-    margin: 20px 0;
-    display: table;
+    padding: 15px 12px 10px;
+    box-sizing: border-box;
     width: 100%;
-}
-
-#tr_page_type_toggle > div {
-    display: table-row;
 }
 
 #tr_page_type_toggle:after {
@@ -18,14 +14,9 @@
 }
 
 #tr_page_type_toggle a {
-    font-size: 14px;
-    padding: 8px 15px;
     text-decoration: none;
-    display: table-cell;
     width: 50%;
     vertical-align: middle;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     outline: none;
 }

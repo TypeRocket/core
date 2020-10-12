@@ -1,5 +1,4 @@
 <?php
-
 namespace TypeRocket\Http;
 
 use TypeRocket\Core\Injector;
@@ -25,7 +24,7 @@ class Route
      */
     public function match($regex, $map = [], $clean = true)
     {
-        $this->match = [$clean ? trim($regex, '/') : $regex, $map, $this];
+        $this->match = [ 'regex' => $clean ? trim($regex, '/') : $regex, 'args' => $map, 'route' => $this];
         return $this;
     }
 
@@ -34,7 +33,7 @@ class Route
      *
      * This method does not accept middleware groups.
      *
-     * @param array|string $middleware list of middleware classes to use for the route or string name of group
+     * @param array|string $middleware array of middleware classes to use for the route or string name of group
      * @return $this
      */
     public function middleware($middleware)
@@ -44,18 +43,30 @@ class Route
     }
 
     /**
-     * Handler
+     * Controller
      *
-     * This takes a callable or a quick route decoration.
-     *
-     * @link https://typerocket.com/docs/v4/routes/#section-quick-route-declarations
-     *
-     * @param mixed $handle
+     * @param mixed $controller
      * @return $this
      */
-    public function do($handle)
+    public function do($controller)
     {
-        $this->do = $handle;
+        $this->do = $controller;
+        return $this;
+    }
+
+    /**
+     * Quick Match & Controller
+     *
+     * @param string $match
+     * @param mixed $controller
+     *
+     * @return $this
+     */
+    public function on($match, $controller)
+    {
+        $this->match(str_replace('*', '([^\/]+)',$match));
+        $this->do($controller);
+
         return $this;
     }
 
@@ -185,10 +196,10 @@ class Route
         if(!$pattern) {
             $keys = array_map(function($value) {
                 return strtolower($value[0] == ':' ? $value : ':' . $value);
-            }, $this->match[1]);
+            }, $this->match['args']);
 
             $match = array_map(function($v) { return '/\(.+\)/U'; }, $keys);
-            $pattern = preg_replace($match, $keys, $this->match[0] ?? null, 1);
+            $pattern = preg_replace($match, $keys, $this->match['regex'] ?? null, 1);
         }
 
         $keys = array_keys($values);
@@ -198,8 +209,13 @@ class Route
         }, $keys);
 
         $built = str_replace($keys, $values, $pattern);
+        $url = $site ? site_url( ltrim($built, '/') ) : $built;
 
-        return $site ? site_url( ltrim($built, '/') ) : $built;
+        if($this->addTrailingSlash) {
+            $url = trailingslashit($url);
+        }
+
+        return $url;
     }
 
     /**
@@ -214,6 +230,17 @@ class Route
         $routes->addRoute($this);
 
         return $this;
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        $route = new static(...$args);
+        return $route->register();
     }
 
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace TypeRocket\Models\Meta;
 
 use TypeRocket\Database\ResultsPostMeta;
@@ -29,7 +28,8 @@ class WPPostMeta extends Model
      * @param null $modelClass
      * @return WPPostMeta|null
      */
-    public function post( $modelClass = null ) {
+    public function post( $modelClass = null )
+    {
         return $this->belongsTo( $modelClass ?? WPPost::class, 'post_id' );
     }
 

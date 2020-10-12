@@ -1,0 +1,64 @@
+/* Swatches
+----------------------------------------------------------------------- */
+.tr-swatches
+{
+  display: flex;
+  flex-flow: wrap;
+  margin: 0;
+  padding: 3px 0 0;
+
+  .tr-swatch-box {
+    height: 40px;
+    width: 40px;
+    overflow: hidden;
+    border-radius: 4px;
+    border: solid 1px #191e23;
+
+    &:after {
+      content: '';
+      display: block;
+      height: 0;
+      width: 0;
+      border: solid 20px var(--tr-swatch-a);
+      border-right-color:var(--tr-swatch-b);
+      border-bottom-color:var(--tr-swatch-b);
+    }
+
+  }
+
+  label {
+    padding: 0 8px 0 0;
+    display: inline-block;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  span {
+    @include visually-hidden;
+  }
+
+  [type=radio] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .tr-swatch-box {
+    cursor: pointer;
+    max-width: 100%;
+    height: auto;
+
+    &:hover, &:focus {
+      box-shadow: 0 0 0 3px $gray;
+    }
+  }
+
+  label:focus .tr-swatch-box,
+  [type=radio]:checked ~ .tr-swatch-box {
+    box-shadow: 0 0 0 3px var(--tr-profile-color);
+  }
+}

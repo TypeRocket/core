@@ -1,9 +1,7 @@
 <?php
-
 namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\Command;
-use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Sanitize;
 
@@ -18,7 +16,6 @@ class MakeMigration extends Command
     protected function config()
     {
         $this->addArgument('name', self::REQUIRED, 'The migration name.');
-        $this->addArgument('index', self::OPTIONAL, 'The the array index of the migration folder to use.');
     }
 
     /**
@@ -31,9 +28,7 @@ class MakeMigration extends Command
     protected function exec()
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
-        $index = $this->getArgument('index') ?: 0;
-        $root = Config::locate('paths.migrate.migrations');
-        $root = is_array($root) ? $root[$index] : $root;
+        $root = tr_config('paths.migrations');
 
         // Make directories if needed
         if( ! file_exists($root) ) {
@@ -54,7 +49,7 @@ class MakeMigration extends Command
         if( $new ) {
             $this->success('Migration created: ' . $name );
         } else {
-            $this->error('TypeRocket migration ' . $name . ' exists.');
+            $this->error('TypeRocket migration ' . $name . ' already exists.');
         }
 
     }

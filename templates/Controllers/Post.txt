@@ -1,10 +1,10 @@
 <?php
-namespace {{namespace}}\Controllers;
+namespace {{namespace}};
 
-use \{{namespace}}\Models\{{model}};
-use \TypeRocket\Controllers\WPPostController;
+use {{app}}\Models\{{model}};
+use TypeRocket\Controllers\WPPostController;
 
 class {{controller}} extends WPPostController
 {
-    protected $modelClass = {{model}}::class;
+    protected $modelClass = {{mc}}::class;
 }

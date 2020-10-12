@@ -1,10 +1,9 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Core\Config;
 use TypeRocket\Elements\Traits\DefaultSetting;
-use \TypeRocket\Html\Generator;
-use \TypeRocket\Utility\Sanitize;
+use TypeRocket\Html\Html;
+use TypeRocket\Utility\Sanitize;
 
 class Color extends Field implements ScriptField
 {
@@ -22,7 +21,7 @@ class Color extends Field implements ScriptField
      * Get the scripts
      */
     public function enqueueScripts() {
-        wp_enqueue_script( 'wp-color-picker'  );
+        wp_enqueue_script( 'wp-color-picker' );
     }
 
     /**
@@ -31,25 +30,25 @@ class Color extends Field implements ScriptField
     public function getString()
     {
         $name  = $this->getNameAttributeString();
-        $value = $this->getValue();
+        $value = $this->setCast('string')->getValue();
         $default = $this->getDefault();
         $value = !empty($value) ? $value : $default;
         $value = !empty($value) ? Sanitize::hex( $value ) : null;
 
         $this->removeAttribute( 'name' );
-        $this->appendStringToAttribute( 'class', ' color-picker' );
-        $palette = 'tr_' . uniqid() . '_color_picker';
-        $this->setAttribute('id', $palette);
-        $obj = $this;
+        $this->attrClass('tr-color-picker');
+        $palette = 'tr_color_palette_' . uniqid();
+        $this->setAttribute('data-palette', $palette);
+        $this->setAttribute('data-tr-field', $this->getContextId());
 
-        $callback = \Closure::bind(function() use ($palette, $obj) {
-            wp_localize_script( 'typerocket-scripts', $palette . '_color_palette', $this->getSetting( 'palette' ) );
-        }, $this);
+        $callback = function() use ($palette) {
+            wp_localize_script( 'typerocket-scripts', $palette, $this->getSetting( 'palette' ) );
+        };
 
-        add_action('admin_footer', $callback, 999999999999 );
-
-        if ( tr_is_frontend() && Config::locate('typerocket.frontend.assets') ) {
+        if ( !is_admin() && tr_container(\TypeRocket\Core\System::class)->frontendIsEnabled() ) {
             add_action('wp_footer', $callback, 999999999999 );
+        } else {
+            add_action('admin_footer', $callback, 999999999999 );
         }
 
         if ( $this->getSetting( 'palette' ) ) {
@@ -58,9 +57,8 @@ class Color extends Field implements ScriptField
             $this->setAttribute( 'data-default-color', $default_color );
         }
 
-        $input = new Generator();
 
-        return $input->newInput( 'text', $name, $value, $this->getAttributes() )->getString();
+        return (string) Html::input( 'text', $name, $value, $this->getAttributes() );
     }
 
     /**

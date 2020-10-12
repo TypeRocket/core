@@ -1,8 +1,5 @@
 <?php
-
-
 namespace TypeRocket\Utility;
-
 
 use TypeRocket\Http\Request;
 
@@ -125,11 +122,38 @@ class Url
     }
 
     /**
+     * Get URL with Query Params
+     *
+     * @param string|Request $url
+     * @param array $request_params
+     *
+     * @return string
+     */
+    public static function withQuery($url, $request_params = [])
+    {
+        $parts = parse_url($url);
+        parse_str($parts['query'] ?? '', $query);
+        $query = http_build_query(array_merge($query, $request_params));
+
+        $map = [
+            $parts['scheme'],
+            '://',
+            $parts['host'],
+            !empty($parts['port']) ? ':'.$parts['port'] : null,
+            $parts['path'],
+            $query ? '?' : '',
+            $query,
+        ];
+
+        return implode('', $map);
+    }
+
+    /**
      * Build Instance
      * @return Url
      */
     public static function build()
     {
-        return new static(new Request());
+        return new static(new Request);
     }
 }

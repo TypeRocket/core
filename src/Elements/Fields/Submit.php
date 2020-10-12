@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Html;
+use TypeRocket\Html\Html;
 
 class Submit extends Field
 {
@@ -23,10 +23,9 @@ class Submit extends Field
         $value = esc_attr( $this->getAttribute('value') );
         $this->removeAttribute('value');
         $this->removeAttribute('name');
-        $this->appendStringToAttribute('class', ' button button-primary');
+        $this->attrClass('button button-primary');
 
-        $generator = new Html\Generator();
-        return $generator->newInput( 'submit', $name, $value, $this->getAttributes() )->getString();
+        return (string) Html::input('submit', $name, $value, $this->getAttributes());
     }
 
 }

@@ -28,6 +28,41 @@ class SelectTest extends TestCase
         $this->assertTrue( $compiled == $sql);
     }
 
+    public function testSelectTableOrderBy()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $query->setSelectTable('wp_posts');
+        $query->idColumn = 'ID'; // uppercase
+        $query->orderBy('post_title');
+        $compiled = (string) $query->where('ID', 1);
+        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1 ORDER BY post_title ASC";
+        $this->assertTrue( $compiled == $sql);
+    }
+
+    public function testSelectTableReorder()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $query->setSelectTable('wp_posts');
+        $query->idColumn = 'ID'; // uppercase
+        $query->orderBy('post_title');
+        $query->reorder('post_content');
+        $compiled = (string) $query->where('ID', 1);
+        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1 ORDER BY post_content ASC";
+        $this->assertTrue( $compiled == $sql);
+    }
+
+    public function testSelectTableReorderRemove()
+    {
+        $query = new \TypeRocket\Database\Query('wp_posts');
+        $query->setSelectTable('wp_posts');
+        $query->idColumn = 'ID'; // uppercase
+        $query->orderBy('post_title');
+        $query->reorder();
+        $compiled = (string) $query->where('ID', 1);
+        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1";
+        $this->assertTrue( $compiled == $sql);
+    }
+
     public function testSelectWithTake()
     {
         $query = new \TypeRocket\Database\Query();

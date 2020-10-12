@@ -4,14 +4,16 @@ namespace TypeRocket\Http;
 abstract class Kernel
 {
 
-    public $request;
-    public $response;
+    /** @var Request  */
+    protected $request;
+    /** @var Response  */
+    protected $response;
     /** @var Handler */
-    public $handler;
-
-    /** @var Router */
-    public $router;
-    public $middleware = [];
+    protected $handler;
+    /** @var ControllerContainer */
+    protected $controller;
+    /** @var array  */
+    protected $middleware = [];
 
     /**
      * Handle Middleware
@@ -31,62 +33,71 @@ abstract class Kernel
 
     /**
      * Run Kernel
+     * @throws \Exception
      */
-    public function runKernel()
+    public function run()
     {
-        $groups = $this->handler->getMiddlewareGroups();
-
-        if($this->handler->getRest()) {
-            $groups[] = 'restApiFallback';
-        }
-
-        $resourceMiddleware = [];
-        foreach ($groups as $group) {
-            if($group && !empty($this->middleware[$group])) {
-                $resourceMiddleware = $this->middleware[$group];
-                break;
-            }
-        }
-
-        if(!empty($this->route) && $this->route->middleware) {
-
-            if(is_string($this->route->middleware)) {
-                $this->route->middleware = $this->middleware[$this->route->middleware] ?? [];
-            }
-
-            $resourceMiddleware = array_merge($resourceMiddleware, $this->route->middleware);
-        }
-
-        $client = $this->router = new Router($this->request, $this->response, $this->handler);
-        $middleware = $this->compileMiddleware($resourceMiddleware);
-
-        (new Stack($middleware))->handle($this->request, $this->response, $client, $this->handler);
+        $this->controller = new ControllerContainer($this->request, $this->response, $this->handler);
+        $stack = new Stack( $this, $this->compileMiddleware() );
+        $stack->handle($this->request, $this->response, $this->controller, $this->handler);
     }
 
     /**
      * Compile middleware from controller, router and kernel
-     *
-     * @param array $middleware
-     *
-     * @return mixed|void
      */
-    public function compileMiddleware( $middleware ) {
+    public function compileMiddleware() : array {
+        $stacks = [];
 
-        $routerWare = [];
-        $groups = $this->router->getMiddlewareGroups();
+        // Route middleware
+        $route = $this->handler->getRoute();
+        if(!empty($route) && $route->middleware) {
+
+            if(!is_array($route->middleware)) {
+                $route->middleware = [$route->middleware];
+            }
+
+            $routeMiddleware = [];
+            foreach ($route->middleware as $m) {
+                $routeGroup = null;
+                if(is_string($m)) {
+                    $routeMiddleware = array_merge($routeMiddleware, $this->middleware[$m] ?? []);
+                } else {
+                    $routeMiddleware[] = $m;
+                }
+            }
+
+            $stacks[] = $routeMiddleware;
+        }
+
+        // Handler middleware
+        $groups = array_filter( $this->handler->getMiddlewareGroups() );
+        foreach ($groups as $group) {
+            if($group && !empty($this->middleware[$group])) {
+                $stacks[] = $this->middleware[$group];
+                break; // Take the first group only
+            }
+        }
+
+        // Controller middleware
+        $controllerMiddleware = [];
+        $groups = $this->controller->getMiddlewareGroups();
         foreach( $groups as $group ) {
-            $routerWare[] = $this->middleware[$group];
+            $controllerMiddleware[] = $this->middleware[$group];
         }
 
-        if( !empty($routerWare) ) {
-            $routerWare = call_user_func_array('array_merge', $routerWare);
+        if( !empty($controllerMiddleware) ) {
+            $stacks[] = call_user_func_array('array_merge', $controllerMiddleware);
         }
 
-        $globalMiddleware = $this->handler->getHook() ? 'hookGlobal' : 'resourceGlobal';
+        // Global middleware
+        $globalGroup = $this->handler->getHook() ? 'hooks' : 'http';
+        $stacks[] = $this->middleware[$globalGroup];
 
-        $middleware = array_merge( $middleware, $this->middleware[$globalMiddleware], $routerWare);
-        $middleware = array_reverse($middleware);
-        return apply_filters('tr_kernel_middleware', $middleware, $this->request, $globalMiddleware);
+        // Compile stacks
+        $middleware = call_user_func_array('array_merge', $stacks);
+        $middleware = array_reverse( array_unique($middleware) );
+
+        return apply_filters('tr_middleware', $middleware, $globalGroup);
     }
 
 }

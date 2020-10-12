@@ -1,10 +1,10 @@
 <?php
-namespace {{namespace}}\Controllers;
+namespace {{namespace}};
 
-use \{{namespace}}\Models\{{model}};
-use \TypeRocket\Controllers\WPTermController;
+use {{app}}\Models\{{model}};
+use TypeRocket\Controllers\WPTermController;
 
 class {{controller}} extends WPTermController
 {
-    protected $modelClass = {{model}}::class;
+    protected $modelClass = {{mc}}::class;
 }

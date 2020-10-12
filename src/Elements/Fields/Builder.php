@@ -1,37 +1,20 @@
 <?php
-
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Utility\Buffer;
-use \TypeRocket\Core\Config;
-use \TypeRocket\Html\Generator;
+use TypeRocket\Template\Component;
+use TypeRocket\Html\Html;
 
 class Builder extends Matrix
 {
-
     protected $components = [];
     protected $componentValues = [];
-
-    /**
-     * Get the scripts
-     */
-    public function enqueueScripts() {
-        $this->paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets');
-        $assets = $this->paths['urls']['assets'];
-        wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );
-        wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], $assetVersion, true );
-        wp_enqueue_script( 'wp-color-picker' );
-        wp_enqueue_media();
-        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/lib/redactor.min.js', ['jquery'], $assetVersion, true );
-    }
 
     /**
      * Run on construction
      */
     protected function init()
     {
-        $this->mxid = md5( microtime( true ) );
+        parent::init();
         $this->setType( 'builder' );
     }
 
@@ -43,20 +26,17 @@ class Builder extends Matrix
     public function getString()
     {
         // enqueue tinymce
-        echo '<div style="display: none; visibility: hidden;">';
+        echo '<div class="tr-control-section tr-divide tr-dummy-editor" style="display: none; visibility: hidden;">';
         wp_editor('', 'tr_dummy_editor');
         echo '</div>';
 
         $this->setAttribute('name', $this->getNameAttributeString() );
-        $buffer = new Buffer();
-        $buffer->startBuffer();
+        ob_start();
         $blocks = $this->getBuilderBlocks();
         $settings = $this->getSettings();
-        $count = 0;
-        $generator = new Generator();
-        $component_name = $this->getComponentFolder();
-        $default_null = $generator->newInput('hidden', $this->getAttribute('name'), null)->getString();
-	    // add button settings
+        $generator = new Html();
+        $default_null = $generator->input('hidden', $this->getAttribute('name'), null)->getString();
+
 	    if (isset( $settings['add_button'] )) {
 		    $add_button_value = $settings['add_button'];
 	    } else {
@@ -65,45 +45,32 @@ class Builder extends Matrix
         ?>
 
         <div class="tr-builder">
-            <div><?php echo $default_null; ?></div>
-            <div class="controls">
+            <div class="tr-builder-hidden-field"><?php echo $default_null; ?></div>
+            <div class="tr-builder-controls">
                 <div class="select">
                     <input type="button" value="<?php echo esc_attr($add_button_value); ?>" class="button tr-builder-add-button">
                     <?php echo $this->getSelectHtml(); ?>
                 </div>
-                <ul data-thumbnails="<?php echo $this->paths['urls']['components']; ?>" class="tr-components" data-id="<?php echo $this->mxid; ?>" id="components-<?php echo $this->mxid; ?>">
-                    <?php if(!empty($this->componentValues) && is_array($this->componentValues)) :
-                        $c = count($this->componentValues);
-                        $componentKeys = array_keys($this->componentValues);
-                        for($i = 0; $i < $c; $i++) :
-                            $type = $this->components[$i][0];
-                            $name = $this->components[$i][1];
-                            $componentValue = array_values($this->componentValues[$componentKeys[$i]] ?? [] )[0] ?? [];
-                            $classes = '';
-                            if ($i == 0) { $classes .= ' active'; }
-                            $thumbnail = $this->getComponentThumbnail($component_name, $type, $componentValue);
-                            ?>
-                            <li class="tr-builder-component-control <?php echo $classes; ?>">
-                                <?php if ($thumbnail) : ?>
-                                    <img src="<?php echo $thumbnail; ?>" alt="Thumbnail, <?php echo $name; ?>">
-                                <?php endif; ?>
-                                <span class="tr-builder-component-title"><?php echo $name; ?></span>
-                                <span class="remove tr-remove-builder-component"></span>
-                            </li>
-                        <?php endfor; ?>
+                <ul data-thumbnails="<?php echo $this->urls['components']; ?>" class="tr-components">
+                    <?php if(!empty($this->components) && is_array($this->components)) :
+                        $i = 0;
+                        /** @var Component $component */
+                        foreach ($this->components as $component)  {
+                            static::componentTile($component, $this->getName(), ++$i == 1 ? ' active' : '');
+                        }
+                        ?>
                     <?php endif; ?>
                 </ul>
             </div>
 
-            <div class="tr-frame-fields" data-id="<?php echo $this->mxid; ?>"  id="frame-<?php echo $this->mxid; ?>">
+            <div class="tr-frame-fields">
                 <?php echo $blocks; ?>
             </div>
 
         </div>
 
         <?php
-        $buffer->indexBuffer('main');
-        return $buffer->getBuffer('main');
+        return ob_get_clean();
     }
 
     /**
@@ -111,60 +78,42 @@ class Builder extends Matrix
      *
      * @return string
      */
-    private function getSelectHtml()
+    protected function getSelectHtml()
     {
-
         $name = $this->getName();
-        $folder = $this->getComponentFolder();
-        $options = $this->getOptions();
-        $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
-        $options = array_merge($options, $this->staticOptions);
-        $options = apply_filters('tr_component_select_list', $options, $folder, $name);
+        $options = $this->loadComponentsIntoOptions()->getOptions();
 
         if($this->sort) {
             ksort($options);
         }
 
         if ($options) {
-            $generator = new Generator();
-            $generator->newElement( 'ul', array(
-                'data-mxid' => $this->mxid,
+            $ul = Html::ul( [
                 'class' => "tr-builder-select builder-select-{$name}",
-                'data-group' => $this->getGroup()
-            ) );
+                'data-tr-group' => $this->getGroupWithFrom()]);
 
-            foreach ($options as $name => $value) {
-
-                if($value == null) {
-                    $li = new Generator();
-                    $li->newElement('li', ['class' => 'builder-select-divider'], '<div>' . __($name, 'typerocket-profile') . '</div>');
-
-                    $generator->appendInside( $li );
-                    continue;
-                }
-
-                $attr['data-value'] = $value;
-                $attr['data-thumbnail'] = $this->getComponentThumbnail($folder, $value, null);
-                $attr['class'] = 'builder-select-option';
-                $attr['data-id'] = $this->mxid;
-                $attr['data-folder'] = $folder;
+            /**
+             * @var string $title
+             * @var Component $component
+             */
+            foreach ($options as $title => $component) {
+                $attr['data-value'] = $component->registeredAs();
+                $attr['tabindex'] = '0';
+                $attr['data-thumbnail'] = $component->thumbnail();
+                $attr['class'] = 'tr-builder-select-option';
                 $attr['data-root'] = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
                 $attr['data-group'] = $this->getName();
 
-                $img = new Generator();
-                $img->newImage($attr['data-thumbnail']);
+                $img = Html::img($attr['data-thumbnail']);
+                $li = Html::li($attr, '<span>' . $title . '</span>')->nest( $img );
 
-                $li = new Generator();
-                $li->newElement('li', $attr, '<span>' . __($name, 'typerocket-profile') . '</span>')->appendInside( $img );
-
-                $generator->appendInside( $li );
+                $ul->nest( $li );
             }
 
-            $select = $generator->getString();
+            $select = $ul->getString();
 
         } else {
-            $dir = $this->paths['components'] . '/' . $folder;
-            $select = "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add a component folder at <code>{$dir}</code> and add your component files to it.</div>";
+            $select = "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add a <code>{$folder}</code> component to the components config filet.</div>";
         }
 
         return $select;
@@ -173,16 +122,13 @@ class Builder extends Matrix
     /**
      * Get the component thumbnail
      *
-     * @param string $name
+     * @param Component|null $component
      * @param string $type
-     *
-     * @param string $value
      * @return string
      */
-    private function getComponentThumbnail($name, $type, $value) {
-        $path = '/' .$name . '/' . $type . '.png';
-        $thumbnail = $this->paths['urls']['components'] . $path;
-        return apply_filters('tr_builder_component_thumbnails', $thumbnail, $value, $type, $name, $this);
+    protected function getComponentThumbnail($component, $type)
+    {
+        return $component->thumbnail() ?? $this->urls['components'] . '/' . $type . '.png';
     }
 
     /**
@@ -190,26 +136,21 @@ class Builder extends Matrix
      *
      * @return string
      */
-    private function getBuilderBlocks()
+    protected function getBuilderBlocks()
     {
-
+        $this->setCast('array');
         $val = $this->componentValues = $this->getValue();
-        $utility = new Buffer();
         $blocks = '';
-        $form = $this->getForm();
-        $paths = $this->paths;
-        $folder = $this->getComponentFolder();
+        $form = $this->getForm()->clone();
 
         if (is_array( $val )) {
 
-            $utility->startBuffer();
-            $count = 0;
+            ob_start();
+            $i = 0;
             foreach ($val as $tr_matrix_key => $data) {
                 foreach ($data as $tr_matrix_type => $fields) {
-                    $count++;
                     $tr_matrix_group = $this->getName();
-                    $tr_matrix_type  = $block_name = lcfirst( $tr_matrix_type );
-                    $root_group      = $this->getGroup();
+                    $root_group      = $this->getGroupWithFrom();
                     $form->setDebugStatus(false);
                     $append_group = $root_group;
 
@@ -218,53 +159,63 @@ class Builder extends Matrix
                     }
 
                     $form->setGroup($append_group . "{$tr_matrix_group}.{$tr_matrix_key}.{$tr_matrix_type}");
-                    $file        = $paths['components'] . "/" . $folder . "/{$tr_matrix_type}.php";
-                    $file = apply_filters('tr_component_file', $file, ['folder' => $folder, 'name' => $tr_matrix_type, 'view' => 'component']);
-                    $classes = "builder-field-group builder-type-{$tr_matrix_type} builder-group-{$tr_matrix_group}";
+                    $class = static::getComponentClass($tr_matrix_type)->form($form)->data($form->getModel());
+                    $this->components[] = $class;
 
-                    if(file_exists($file)) {
-                        $line = fgets(fopen( $file, 'r'));
-                        if( preg_match("/<[h|H]\\d>(.*)<\\/[h|H]\\d>/U", $line, $matches) ) {
-                            $block_name = strip_tags($matches[1]);
-                        }
-                    }
-
-                    $this->components[] = [$tr_matrix_type, $block_name];
-
-                    if($count == 1) {
-                        $classes .= ' active';
-                    }
-
-                    ?>
-                    <div class="<?php echo $classes; ?>">
-                        <div class="builder-inputs">
-                            <?php
-                            if (file_exists( $file )) {
-                                /** @noinspection PhpIncludeInspection */
-                                include( $file );
-                            } else {
-                                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> No component file found <code>{$file}</code></div>";
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    <?php
+                    static::componentTemplate($class, $tr_matrix_group, ++$i == 1 ? 'active' : '');
 
                     $form->setGroup($root_group);
-                    $form->setCurrentField($this);
-
                 }
             }
 
-            $utility->indexBuffer('fields');
-
-            $blocks = $utility->getBuffer('fields');
-            $utility->cleanBuffer();
+            $blocks = ob_get_clean();
 
         }
 
         return trim($blocks);
+    }
 
+    /**
+     * @param Component $component
+     * @param string $group
+     * @param string $classes
+     */
+    public static function componentTemplate($component, $group, $classes = '')
+    {
+        $group = $component->form();
+        ?>
+        <div data-tr-component="<?php echo $component->uuid(); ?>" class="builder-field-group builder-type-<?php echo esc_attr($component->registeredAs()); ?> builder-group-<?php echo esc_attr($group); ?> <?php echo $classes; ?>">
+            <div class="tr-component-inputs tr-builder-inputs">
+                <?php
+
+                echo "<h3>{$component->feature('nameable')}</h3>";
+                $component->fields();
+                ?>
+            </div>
+            <?php do_action('tr_component_include', 'builder', $component, $group); ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Get the component thumbnail
+     *
+     * @param Component|null $component
+     * @param string $group
+     * @param string $classes
+     *
+     * @return string
+     */
+    public static function componentTile($component, $group, $classes = '')
+    {
+        ?>
+        <li data-tr-component-tile="<?php echo $component->uuid(); ?>" tabindex="0" class="tr-builder-component-control <?php echo $classes; ?>">
+            <img src="<?php echo $component->thumbnail(); ?>" alt="Thumbnail, <?php echo $component->title(); ?>">
+            <span class="tr-builder-component-title"><?php echo $component->title(); ?></span>
+            <a tabindex="0" class="remove tr-remove-builder-component"></a>
+            <?php echo $component->feature('cloneable') ?>
+        </li>
+        <?php
     }
 
 	/**

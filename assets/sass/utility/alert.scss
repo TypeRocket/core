@@ -1,21 +1,19 @@
 /* AJAX Alerts
 ----------------------------------------------------------------------- */
-.typerocket-ajax-alert {
+.tr-ajax-alert {
     position: fixed;
     top: 42px;
     right: 10px;
     z-index: 100000;
-    padding: 15px 15px;
+    padding: 15px;
     line-height: 1.4em;
-    max-width: 300px;
-    width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
+    max-width: 520px;
+    min-width: 320px;
     box-sizing: border-box;
     text-align: center;
     background: #fff;
     box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
-    border-left: solid 4px;
+    border-left: solid 5px;
     border-color: $success;
 
     &.tr-alert-error {
@@ -27,6 +25,44 @@
     }
 
     &.tr-alert-info {
+        border-color: $info;
+    }
+}
+
+body:not(.wp-admin) .tr-admin-notice {
+    padding: 15px;
+    line-height: 1.4em;
+    box-sizing: border-box;
+    background: #fff;
+    color: #444;
+    margin-bottom: 1em;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    border-left: solid 5px;
+    border-color: $success;
+
+    p:only-child {
+        margin: 0;
+    }
+
+    ul:only-child {
+        margin: 0;
+    }
+
+    p, li {
+        text-transform: none;
+        text-decoration: none;
+        letter-spacing: normal;
+    }
+
+    &.notice-error {
+        border-color: $error;
+    }
+
+    &.notice-warning {
+        border-color: $warn;
+    }
+
+    &.notice-info {
         border-color: $info;
     }
 }

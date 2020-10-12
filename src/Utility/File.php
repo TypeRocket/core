@@ -1,12 +1,8 @@
 <?php
-
 namespace TypeRocket\Utility;
-
-use TypeRocket\Utility\Str;
 
 class File
 {
-
     public $existing = false;
     public $file;
 
@@ -23,6 +19,156 @@ class File
             $this->existing = true;
             $this->file = realpath($file);
         }
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return static
+     */
+    public static function new($file)
+    {
+        return new static(...func_get_args());
+    }
+
+    /**
+     * File Exists
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return $this->existing;
+    }
+
+    /**
+     * Create File
+     *
+     * @param null|string $content
+     *
+     * @return File
+     */
+    public function create($content = null)
+    {
+        if(!$this->existing) {
+            fclose(fopen($this->file, 'w'));
+        }
+
+        if($content) {
+            file_put_contents($this->file, $content);
+        }
+
+        $this->existing = true;
+
+        return $this;
+    }
+
+    /**
+     * Create File
+     *
+     * @param null|string $content
+     *
+     * @return File
+     */
+    public function append($content = null)
+    {
+        if(!$this->existing) {
+            fclose(fopen($this->file, 'w'));
+        }
+
+        if($content) {
+            file_put_contents($this->file, $content, FILE_APPEND);
+        }
+
+        $this->existing = true;
+
+        return $this;
+    }
+
+    /**
+     * Remove File
+     *
+     * @return bool
+     */
+    public function remove()
+    {
+        if($this->existing) {
+            $this->existing = !unlink($this->file);
+            return !$this->existing;
+        }
+
+        return true;
+    }
+
+    /**
+     * Replace File
+     *
+     * @param $content
+     *
+     * @return File|null
+     */
+    public function replace($content)
+    {
+        if(!$this->remove()) {
+            return null;
+        }
+
+        $this->create($content);
+
+        return $this;
+    }
+
+    /**
+     * Read File
+     *
+     * @return false|string|null
+     */
+    public function read()
+    {
+        if(!$this->existing) {
+            return null;
+        }
+
+        return file_get_contents($this->file);
+    }
+
+    /**
+     * Read First Line of File
+     *
+     * @return false|string|null
+     */
+    public function readFirstLine()
+    {
+        if(!$this->existing) {
+            return null;
+        }
+
+        return $line = fgets(fopen($this->file, 'r'));
+    }
+
+    /**
+     * Read First Few Characters
+     *
+     * This is not Unicode safe because PHP does not support Unicode.
+     * This will work only with 256-character set, and will not
+     * work correctly with multi-byte characters.
+     *
+     * @param int $length
+     * @param int|null $offset
+     *
+     * @return false|string|null
+     */
+    public function readFirstCharactersTo($length = null, $offset = 0)
+    {
+        if(!$this->existing) {
+            return null;
+        }
+
+        if(is_null($length)) {
+            return file_get_contents($this->file, false, null, $offset);
+        }
+
+        return file_get_contents($this->file, false, null, $offset, $length);
     }
 
     /**
@@ -94,12 +240,40 @@ class File
      * Download URL
      *
      * @param string $url
+     *
+     * @return bool|int
      */
     public function download( $url )
     {
         if( ! $this->existing ) {
-            file_put_contents( $this->file , fopen( $url , 'r') );
+            return file_put_contents( $this->file , fopen( $url , 'r') );
         }
+
+        return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function mimeType()
+    {
+        return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $this->file);
+    }
+
+    /**
+     * @return false|int
+     */
+    public function size()
+    {
+        return filesize($this->file);
+    }
+
+    /**
+     * @return false|int
+     */
+    public function lastModified()
+    {
+        return filemtime($this->file);
     }
 
     /**
@@ -109,25 +283,40 @@ class File
      *
      * @param null|string $path
      * @param bool $removeSelf
+     * @param bool $root
      *
      * @return bool
+     * @throws \Throwable
      */
-    public function removeRecursiveDirectory($path = null, $removeSelf = true )
+    public function removeRecursiveDirectory($path = null, $removeSelf = true, $root = null )
     {
-        $path = $path ? $path : $this->file;
+        $path = realpath($path ? $path : $this->file);
+        $project_root = tr_wp_root();
 
-        if( Str::starts( TR_PATH, $path) && file_exists( $path ) ) {
-            $path = mb_substr( $path, mb_strlen(TR_PATH) );
+        if(!$root) {
+            if( !Str::starts($project_root, TR_PATH) ) {
+                $project_root = TR_PATH;
+            }
         }
 
-        $dir = rtrim( TR_PATH . '/' . trim($path, '/'), '/' );
+        $root = rtrim($root ?? $project_root, '/');
 
-        if( ! TR_PATH || $dir == TR_PATH || ! $path ) {
-            die('You are about to delete your entire project!');
+        if( !Str::starts($root, $path) ) {
+            throw new \Exception('Nothing deleted. ' . $path . ' file must be within your project scope or ' . $root);
+        }
+
+        if( !file_exists($path) ) {
+            throw new \Exception('Nothing deleted.' . $path . ' does not exist.');
+        }
+
+        $dir = rtrim($path);
+
+        if( ! $root || $dir == $root || ! $path ) {
+            throw new \Error('Nothing deleted. You can not delete your entire WordPress project!');
         }
 
         if( empty($dir) || $dir == '/' || $dir == '\\' ) {
-            die('You are about to delete your server!');
+            throw new \Error('Nothing deleted. You can not delete your entire server!');
         }
 
         if(!is_dir($dir) && is_file($dir)) {
@@ -162,9 +351,15 @@ class File
      * This function replaces all older files. Use with caution.
      *
      * @param string $destination location file/dir will be copied to
-     * @param bool $relative prefix destination location relative to the TypeRocket root.
+     * @param bool $relative prefix destination location relative to the TypeRocket root
+     * @param bool $delete delete old files after being copied to new location
+     * @param null|array $ignore list of files or folders to ignore whose path name start with a value
+     * @param bool|int $verbose output messages
+     * @param bool $replace replace file or folder if already existing
+     *
+     * @throws \Throwable
      */
-    public function copyTo($destination, $relative = false)
+    public function copyTo($destination, $relative = false, $delete = false, $ignore = null, $verbose = false, $replace = true)
     {
         $path = $this->file;
 
@@ -173,11 +368,28 @@ class File
         }
 
         if(!file_exists($destination) && is_dir($path)) {
+            if($verbose && $verbose !== 2) {
+                echo 'Make dir: ' . $destination . PHP_EOL;
+            }
+
             mkdir($destination, 0755);
         }
 
         if(!is_dir($path) && is_file($path)) {
-            copy($path, $destination);
+            $dont_replace_it = file_exists($destination) && !$replace;
+
+            if(!$dont_replace_it) {
+                if($verbose) {
+                    echo 'Copy file: ' . $destination . PHP_EOL;
+                }
+
+                copy($path, $destination);
+            }
+            elseif($verbose) {
+                echo 'Kept existing file: ' . $destination . PHP_EOL;
+                echo 'Wanted to add: ' . $path . PHP_EOL;
+            }
+
             return;
         }
 
@@ -186,11 +398,51 @@ class File
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, $no_dots), $self_first);
 
         foreach ($iterator as $item) {
-            if ($item->isDir()) {
-                mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
-            } else {
-                copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            /** @var \SplFileInfo $item */
+            $name = $iterator->getSubPathName();
+            $file = $destination . DIRECTORY_SEPARATOR . $name;
+            $skip = false;
+
+            if(is_array($ignore)) {
+                foreach ($ignore as $loc) {
+                    if(strpos($name, $loc, 0) !== false) {
+                        if($verbose && $verbose !== 2) {
+                            echo 'Ignoring: ' . $file . PHP_EOL;
+                        }
+
+                        $skip = true;
+                        break;
+                    }
+                }
             }
+
+            if (!$skip && $item->isDir() && !file_exists($file) ) {
+                if($verbose && $verbose !== 2) {
+                    echo 'Make dir: ' . $file . PHP_EOL;
+                }
+                mkdir($file);
+            }
+            elseif(!$skip && !$item->isDir() ) {
+
+
+                $dont_replace_it = file_exists($file) && !$replace;
+
+                if(!$dont_replace_it) {
+                    if($verbose) {
+                        echo 'Copy file: ' . $file . PHP_EOL;
+                    }
+
+                    copy($item, $file);
+                }
+                elseif($verbose) {
+                    echo 'Kept existing file: ' . $destination . PHP_EOL;
+                    echo 'Wanted to add: ' . $item . PHP_EOL;
+                }
+            }
+        }
+
+        if($delete) {
+            $this->removeRecursiveDirectory();
         }
     }
 

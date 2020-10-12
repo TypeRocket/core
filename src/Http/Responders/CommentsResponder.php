@@ -1,8 +1,7 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use TypeRocket\Http\Handler;
-use \TypeRocket\Http\Request;
+use TypeRocket\Http\Request;
 
 class CommentsResponder extends Responder {
 
@@ -12,22 +11,20 @@ class CommentsResponder extends Responder {
      * Create proper request and run through Kernel
      *
      * @param array $args
+     *
+     * @throws \Exception
      */
     public function respond( $args ) {
-        $controller = tr_app("Controllers\\CommentController");
+        $controller = tr_app_class("Controllers\\CommentController");
         $controller  = apply_filters('tr_comments_responder_controller', $controller);
-        $request = new Request('PUT', $this->hook);
         $response = tr_response()->blockFlash();
 
-        $handler = (new Handler())
-            ->setAction('update')
+        $this->handler
             ->setArgs($args)
-            ->setHandler($controller)
-            ->setHook($this->hook)
-            ->setResource('comment')
-            ->setMiddlewareGroups('comment');
+            ->setController([new $controller, 'update'])
+            ->setMiddlewareGroups(['comment']);
 
-        $this->runKernel($request, $response, $handler);
+        $this->runKernel(new Request, $response, $this->handler);
 
     }
 

@@ -1,10 +1,5 @@
 <?php
-
-
 namespace TypeRocket\Database;
-
-
-use TypeRocket\Models\Contract\Formable;
 
 class ResultsMeta extends Results
 {

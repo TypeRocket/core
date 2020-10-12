@@ -1,7 +1,6 @@
 <?php
 namespace TypeRocket\Models;
 
-use TypeRocket\Core\Config;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
@@ -14,9 +13,12 @@ class WPPost extends Model
 
     protected $idColumn = 'ID';
     protected $resource = 'posts';
-    protected $postType = 'post';
-    protected $searchColumn = 'post_title';
-    protected $wp_post = null;
+    protected $postType = null;
+    protected $wpPost = null;
+    protected $fieldOptions = [
+        'key' => 'post_title',
+        'value' => 'ID',
+    ];
 
     protected $builtin = [
         'post_author',
@@ -49,10 +51,99 @@ class WPPost extends Model
         'id'
     ];
 
+    /**
+     * WPPost constructor.
+     *
+     * @param null $postType
+     *
+     * @throws \Exception
+     */
     public function __construct($postType = null)
     {
         if($postType) { $this->postType = $postType; }
         parent::__construct();
+    }
+
+    /**
+     * Get Post Type
+     *
+     * @return string
+     */
+    public function getPostType()
+    {
+        return $this->postType;
+    }
+
+    /**
+     * Return table name in constructor
+     *
+     * @param \wpdb $wpdb
+     *
+     * @return string
+     */
+    public function initTable( $wpdb )
+    {
+        return $wpdb->posts;
+    }
+
+    /**
+     * Init Post Type
+     *
+     * @param Query $query
+     *
+     * @return Query
+     */
+    protected function initQuery( Query $query )
+    {
+        if($this->postType) {
+            $query->where('post_type', $this->getPostType());
+        }
+
+        return $query;
+    }
+
+    /**
+     * Get JsonApiResource
+     *
+     * @return string|null
+     */
+    public function getRouteResource()
+    {
+        return $this->getPostType() ?? 'post';
+    }
+
+    /**
+     * Get WP_Post Instance
+     *
+     * @param WP_Post|null|int|false $post
+     * @param bool $returnModel
+     *
+     * @return WP_Post|$this|null
+     */
+    public function wpPost($post = null, $returnModel = false) {
+
+        if( !$post && $this->wpPost instanceof \WP_Post ) {
+            return $this->wpPost;
+        }
+
+        if( !$post && $this->getID() ) {
+            return $this->wpPost($this->getID());
+        }
+
+        if(!$post) {
+            return $this->wpPost;
+        }
+
+        $post = get_post($post);
+
+        if($post instanceof WP_Post) {
+            $this->postType = $post->post_type;
+            $this->wpPost = $post;
+
+            $this->castProperties( get_object_vars( $post ) );
+        }
+
+        return $returnModel ? $this : $this->wpPost;
     }
 
     /**
@@ -63,6 +154,16 @@ class WPPost extends Model
     protected function getMetaModelClass()
     {
         return WPPostMeta::class;
+    }
+
+    /**
+     * Get User ID
+     *
+     * @return string|int|null
+     */
+    public function getUserID()
+    {
+        return $this->properties['post_author'] ?? null;
     }
 
     /**
@@ -79,6 +180,34 @@ class WPPost extends Model
     }
 
     /**
+     * Get Post Permalink
+     *
+     * @return string|\WP_Error
+     */
+    public function permalink()
+    {
+        return get_permalink($this->wpPost);
+    }
+
+    /**
+     * @return string|\WP_Error
+     */
+    public function getSearchUrl()
+    {
+        return $this->permalink();
+    }
+
+    /**
+     * Limit Field Options
+     *
+     * @return $this
+     */
+    public function limitFieldOptions()
+    {
+        return $this->published();
+    }
+
+    /**
      * After Properties Are Cast
      *
      * Create an Instance of WP_Post
@@ -87,22 +216,13 @@ class WPPost extends Model
      */
     protected function afterCastProperties()
     {
-        if(!$this->wp_post) {
-            $_post = sanitize_post( (object) $this->properties, 'raw' );
-            wp_cache_add( $_post->ID, $_post, 'posts' );
-            $this->wp_post = new WP_Post($_post);
+        if(!$this->wpPost && $this->getCache()) {
+            $_post = sanitize_post((object) $this->properties, 'raw');
+            wp_cache_add($_post->ID, $_post, 'posts');
+            $this->wpPost = new WP_Post($_post);
         }
 
         return parent::afterCastProperties();
-    }
-
-    /**
-     * Get WP_Post Instance
-     *
-     * @return WP_Post
-     */
-    public function WP_Post() {
-        return $this->wp_post;
     }
 
     /**
@@ -114,13 +234,11 @@ class WPPost extends Model
      */
     public function meta( $withoutPrivate = false )
     {
-        $meta = $this->hasMany( WPPostMeta::class, 'post_id', function($rel) use ($withoutPrivate) {
+        return $this->hasMany( WPPostMeta::class, 'post_id', function($rel) use ($withoutPrivate) {
             if( $withoutPrivate ) {
                 $rel->notPrivate();
             }
-        } );
-
-        return $meta;
+        });
     }
 
     /**
@@ -139,19 +257,20 @@ class WPPost extends Model
      * @param string $modelClass
      * @param string $taxonomy_id the registered taxonomy id: category, post_tag, etc.
      * @param null|callable $scope
+     * @param bool $reselect
      *
      * @return Model|null
      */
-    public function belongsToTaxonomy($modelClass, $taxonomy_id, $scope = null)
+    public function belongsToTaxonomy($modelClass, $taxonomy_id, $scope = null, $reselect = false)
     {
         global $wpdb;
 
-        return $this->belongsToMany($modelClass, $wpdb->term_relationships, 'object_id', 'term_taxonomy_id', function($rel) use ($scope, $taxonomy_id) {
+        return $this->belongsToMany($modelClass, $wpdb->term_relationships, 'object_id', 'term_taxonomy_id', function($rel, &$reselect_main = true) use ($scope, $taxonomy_id, $reselect) {
             global $wpdb;
             $rel->where($wpdb->term_taxonomy .'.taxonomy', $taxonomy_id);
-
+            $reselect_main = $reselect;
             if(is_callable($scope)) {
-                $scope($rel);
+                $scope($rel, $reselect_main);
             }
         });
     }
@@ -161,8 +280,9 @@ class WPPost extends Model
      *
      * @return $this|null
      */
-    public function author() {
-        $user = Config::locate('app.class.user', WPUser::class);
+    public function author()
+    {
+        $user = tr_app_class('Models\User');
         return $this->belongsTo( $user, 'post_author' );
     }
 
@@ -189,65 +309,6 @@ class WPPost extends Model
     }
 
     /**
-     * Get Post Type
-     *
-     * @return string
-     */
-    public function getPostType()
-    {
-        return $this->postType;
-    }
-
-    /**
-     * Return table name in constructor
-     *
-     * @param \wpdb $wpdb
-     *
-     * @return string
-     */
-    public function initTable( $wpdb )
-    {
-        return $wpdb->prefix . 'posts';
-    }
-
-    /**
-     * Init Post Type
-     *
-     * @param Query $query
-     *
-     * @return Query
-     */
-    protected function initQuery( Query $query )
-    {
-        return $query->where('post_type', $this->getPostType());
-    }
-
-    /**
-     * Find post by ID
-     *
-     * @param string $id
-     *
-     * @return $this
-     */
-    public function getPost($id) {
-        return $this->fetchResult(get_post( $id, ARRAY_A ));
-    }
-
-    /**
-     * Find by ID with Where
-     *
-     * @param string $id
-     * @return mixed|object|\TypeRocket\Database\Results|Model|null
-     * @throws \Exception
-     */
-    public function findByIdWithWhere($id)
-    {
-        $results = $this->query->findById($id)->get();
-
-        return $this->getQueryResult($results);
-    }
-
-    /**
      * Find by ID and Remove Where
      *
      * @param string $id
@@ -255,7 +316,7 @@ class WPPost extends Model
      */
     public function findById($id)
     {
-        $results = $this->query->removeWhere()->findById($id)->get();
+        $results = $this->query->findById($id)->get();
 
         return $this->getQueryResult($results);
     }
@@ -349,13 +410,59 @@ class WPPost extends Model
     }
 
     /**
+     * Delete Post
+     *
+     * @param null|int|\WP_Post $ids
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function delete($ids = null)
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        $delete = wp_delete_post($ids);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPPost not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete Post Forever
+     *
+     * @param null|int|\WP_Post $ids
+     *
+     * @return $this
+     * @throws ModelException
+     */
+    public function deleteForever($ids = null)
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        $delete = wp_delete_post($ids, true);
+
+        if ( $delete instanceof \WP_Error ) {
+            throw new ModelException('WPPost not deleted: ' . $delete->get_error_message());
+        }
+
+        return $this;
+    }
+
+    /**
      * Save post meta fields from TypeRocket fields
      *
      * @param array|\ArrayObject $fields
      *
      * @return $this
      */
-    private function saveMeta( $fields )
+    public function saveMeta( $fields )
     {
         $fields = $this->getFilteredMetaFields($fields);
         $id = $this->getID();
@@ -419,7 +526,8 @@ class WPPost extends Model
      * @param array $builtin
      * @return mixed
      */
-    public function slashBuiltinFields( $builtin ) {
+    public function slashBuiltinFields( $builtin )
+    {
 
         $fields = [
             'post_content',

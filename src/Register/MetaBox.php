@@ -1,15 +1,14 @@
 <?php
 namespace TypeRocket\Register;
 
-use TypeRocket\Core\Config;
 use TypeRocket\Utility\Sanitize;
 
 class MetaBox extends Registrable
 {
-
     protected $label = null;
     protected $callback = null;
     protected $context = null;
+    protected $capability = null;
     protected $priority = null;
     protected $screens = [];
 
@@ -22,19 +21,18 @@ class MetaBox extends Registrable
      */
     public function __construct( $name, $screen = null, array $settings = [])
     {
-        $this->id    = Sanitize::underscore( $name );
-        $this->label = __($name, 'typerocket-profile');
+        $this->label = $this->id = $name;
+        $this->id    = Sanitize::underscore( $this->id );
 
         if ( ! empty( $screen )) {
-            $screen        = (array) $screen;
-            $this->screens = array_merge( $this->screens, $screen );
+            $this->screens = array_merge( $this->screens, (array) $screen );
         }
 
         if ( ! empty( $settings['callback'] )) {
             $this->callback = $settings['callback'];
         }
         if ( ! empty( $settings['label'] )) {
-            $this->label = __($settings['label'], 'typerocket-profile');
+            $this->label = $settings['label'];
         }
 
         unset( $settings['label'] );
@@ -55,8 +53,8 @@ class MetaBox extends Registrable
     /**
      * Set Gutenberg Compatibility
      *
-     * @param bool $editor
-     * @param bool $compat
+     * @param bool $editor Setting to true signifies that the you’ve confirmed that the meta box works in block editor
+     * @param bool $compat Setting to true signifies that this meta box should only be loaded in the classic editor
      * @return $this
      */
     public function gutenbergCompatibility($editor = true, $compat = true)
@@ -76,7 +74,7 @@ class MetaBox extends Registrable
      */
     public function gutenbergOff()
     {
-        return $this->gutenbergCompatibility(false, false);
+        return $this->gutenbergCompatibility(false, true);
     }
 
     /**
@@ -88,8 +86,7 @@ class MetaBox extends Registrable
      */
     public function setLabel( $label )
     {
-
-        $this->label = __((string) $label, 'typerocket-profile');
+        $this->label = (string) $label;
 
         return $this;
     }
@@ -116,6 +113,30 @@ class MetaBox extends Registrable
         $this->screens = array_merge( $this->screens, (array) $screen );
 
         return $this;
+    }
+
+    /**
+     * Set Capability
+     *
+     * @param string|null $capability
+     *
+     * @return $this
+     */
+    public function setCapability($capability)
+    {
+        $this->capability = $capability;
+
+        return $this;
+    }
+
+    /**
+     * Get Capability
+     *
+     * @return string|null
+     */
+    public function getCapability()
+    {
+        return $this->capability;
     }
 
     /**
@@ -154,6 +175,12 @@ class MetaBox extends Registrable
 
         $postType = null;
 
+        if($capability = $this->getCapability()) {
+            if(!current_user_can($capability)) {
+                return $this;
+            }
+        }
+
         if(!empty($post)) {
             $postType = get_post_type( $post->ID );
             $pageTemplate = get_post_meta( $post->ID, '_wp_page_template', true );
@@ -187,22 +214,26 @@ class MetaBox extends Registrable
                     $callback = $obj->getCallback();
 
                     echo '<div class="typerocket-container">';
+                    echo tr_field_nonce('hook');
                     if (is_callable( $callback )) :
                         call_user_func_array( $callback, [$obj]);
                     elseif (function_exists( $func )) :
                         $func( $obj );
-                    elseif ( Config::locate('app.debug') == true) :
-                        echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
+                    elseif ( tr_debug() ) :
+                        echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                     endif;
                     echo '</div>';
                 };
+
+                $used_screen = $isPageTemplate || $isFrontPage || $isPostsPage ? $postType : $screen;
+                $used_context = $used_screen == 'dashboard' || $used_screen == 'comment' ? 'normal' : $this->context;
 
                 add_meta_box(
                     $this->id,
                     $this->label,
                     $callback,
-                    $isPageTemplate || $isFrontPage || $isPostsPage ? $postType : $screen,
-                    $this->context,
+                    $used_screen,
+                    $used_context,
                     $this->priority,
                     $this->args
                 );
@@ -225,13 +256,13 @@ class MetaBox extends Registrable
     /**
      * Set Priority
      *
-     * @param null $priority 'high', 'core', 'default' or 'low'
+     * @param null|string $priority 'high', 'core', 'default' or 'low'
      *
      * @return MetaBox $this
      */
     public function setPriority( $priority )
     {
-        $this->priority = $priority;
+        $this->priority = $priority ?? $this->priority;
 
         return $this;
     }
@@ -239,13 +270,13 @@ class MetaBox extends Registrable
     /**
      * Set Context
      *
-     * @param null $context 'normal', 'advanced', or 'side'
+     * @param null|string $context 'normal', 'advanced', or 'side'
      *
      * @return MetaBox $this
      */
     public function setContext( $context )
     {
-        $this->context = $context;
+        $this->context = $context ?? $this->context;
 
         return $this;
     }
@@ -263,7 +294,7 @@ class MetaBox extends Registrable
     /**
      * Set Callback
      *
-     * @param string $callback
+     * @param callable|null $callback
      * @return MetaBox $this
      */
     public function setCallback( $callback )
@@ -286,6 +317,16 @@ class MetaBox extends Registrable
     public function getCallback()
     {
         return $this->callback;
+    }
+
+    /**
+     * @param callable|null $callback
+     *
+     * @return MetaBox
+     */
+    public function setMainForm($callback)
+    {
+        return $this->setCallback($callback);
     }
 
 

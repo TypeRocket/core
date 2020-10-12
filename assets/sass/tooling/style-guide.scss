@@ -1,129 +1,106 @@
 /* WordPress Style Guide
 ----------------------------------------------------------------------- */
-.typerocket-container.typerocket-wp-style-guide {
-    display: table;
-    border-collapse: collapse;
+.typerocket-wp-style-table {
     margin: .5em auto;
     width: 100%;
     clear: both;
 
-    > .typerocket-elements-fields-text input,
-    > .typerocket-elements-fields-textarea textarea,
-    > .typerocket-elements-fields-select select {
-        max-width: 95%;
+    > {
+        .tr-divide + .tr-divide {
+            box-shadow: none;
+        }
+
+        @media screen and (max-width: 782px) {
+            .tr-control-section, .tr-control-row {
+                padding: 8px 0;
+
+                > .tr-control-label {
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+            }
+        }
     }
 
-    .dev .nav {
-        max-width: 120px;
-    }
+    @media screen and (min-width: 783px) {
+        display: table;
+        border-collapse: collapse;
 
-    > .control-section {
-        display: table-row;
-    }
+        .tr-dev-field-helper .nav {
+            max-width: 120px;
+        }
 
-    > .control-section > .control-label {
-        color: #333;
-        display: table-cell;
-        font-family: sans-serif;
-        font-size: 14px;
-        height: auto;
-        vertical-align: top;
-        text-align: left;
-        padding: 20px 10px 20px 0;
-        width: 200px;
-        line-height: 1.3;
-        font-weight: 600;
-    }
+        > {
+            .tr-control-section {
+                display: table-row;
 
-    > .control-section > .control,
-    > .control-section > .controls {
-        margin-bottom: 9px;
-        padding: 15px 10px;
-        line-height: 1.3;
-        font-size: 14px;
-        vertical-align: middle;
-        display: table-cell;
-    }
+                > .tr-control-label {
+                    color: #333;
+                    display: table-cell;
+                    font-size: 14px;
+                    height: auto;
+                    vertical-align: top;
+                    text-align: left;
+                    padding: 20px 10px 20px 0;
+                    width: 200px;
+                    line-height: 1.3;
+                    font-weight: 600;
+                }
 
-    > .control-section > .controls {
-        vertical-align: top;
-    }
+                > .control,
+                > .controls {
+                    margin-bottom: 9px;
+                    padding: 15px 10px;
+                    line-height: 1.3;
+                    font-size: 14px;
+                    vertical-align: middle;
+                    display: table-cell;
+                }
 
-    > .control-section.tr-repeater > .dev {
-        display: none;
-    }
+                > .controls {
+                    vertical-align: top;
+                }
 
+                &.tr-repeater > .tr-dev-field-helper {
+                    display: none;
+                }
+            }
+        }
+    }
 }
 
-/* WordPress Taxonomy
+/* WordPress Style Guide - Widgets
 ----------------------------------------------------------------------- */
-#edittag .typerocket-taxonomy-style {
-    display: table;
-    border-collapse: collapse;
-    margin: .5em auto;
-    width: 100%;
-    clear: both;
+.typerocket-wp-style-subtle {
 
-    > .typerocket-elements-fields-text input,
-    > .typerocket-elements-fields-textarea textarea,
-    > .typerocket-elements-fields-select select {
-        max-width: 95%;
+    div.tr-control-label {
+        font-weight: normal;
+        font-size: 13px;
+        line-height: 1.5;
     }
 
-    > .control-section {
-        display: table-row;
-    }
+    > {
+        .tr-control-section, .tr-control-row {
+            padding: 8px 0;
+        }
 
-    > .control-section > .control-label {
-        color: #333;
-        display: table-cell;
-        font-family: sans-serif;
-        font-size: 14px;
-        height: auto;
-        vertical-align: top;
-        text-align: left;
-        padding: 20px 10px 20px 0;
-        width: 200px;
-        line-height: 1.3;
-        font-weight: 600;
-    }
-
-    .dev .nav {
-        max-width: 100px;
-    }
-
-    > .control-section > .control,
-    > .control-section > .controls {
-        margin-bottom: 9px;
-        padding: 15px 10px;
-        line-height: 1.3;
-        font-size: 14px;
-        vertical-align: middle;
-        display: table-cell;
-    }
-
-    > .control-section > .controls {
-        vertical-align: top;
-    }
-
-    > .control-section.tr-repeater > .dev {
-        display: none;
+        .tr-divide + .tr-divide {
+            box-shadow: none;
+        }
     }
 }
 
-#addtag .typerocket-taxonomy-style {
-    > .control-section > .control-label {
-        color: #23282d;
-        font-weight: 400;
-        font-size: 13px;
-        line-height: 1.4em;
-        text-shadow: none;
-        vertical-align: baseline;
-    }
+.tr-menu-container {
+    padding-right: 10px;
+    clear: both;
 
-    > .typerocket-elements-fields-text input,
-    > .typerocket-elements-fields-textarea textarea,
-    > .typerocket-elements-fields-select select {
-        max-width: 95%;
+    div.tr-control-label {
+        font-style: italic;
+        color: #666;
+        padding-bottom: 0;
     }
+}
+
+.tr-taxonomy-add-container {
+    padding-right: 5%;
 }

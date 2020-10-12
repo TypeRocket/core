@@ -27,4 +27,19 @@ class SanitizeTest extends TestCase
         $sanitized = \TypeRocket\Utility\Sanitize::underscore($string, true);
         $this->assertTrue( $sanitized == '_.2_._ex_ample_1_' );
     }
+
+    public function testSanitizeEditor()
+    {
+        $content = '<p>Hi there <a target="_blank" href="#">link</a></p>';
+
+        $sanitized = \TypeRocket\Utility\Sanitize::editor($content, true, false, [
+            'p' => [],
+            'a' => [
+                'href' => true,
+                'target' => true,
+            ],
+        ]);
+
+        $this->assertTrue( $content === $sanitized );
+    }
 }

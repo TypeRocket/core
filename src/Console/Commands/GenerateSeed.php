@@ -1,7 +1,6 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
-
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 
@@ -10,7 +9,7 @@ class GenerateSeed extends Command
 
     protected $command = [
         'config:seed',
-        'Generate seed for config.php',
+        'Generate seed for app.php',
         'This command generates a seed for config.php by replacing PUT_TYPEROCKET_SEED_HERE with a seed.',
     ];
 
@@ -24,7 +23,7 @@ class GenerateSeed extends Command
     protected function exec()
     {
         try {
-            $file = new File(TR_PATH . '/config/app.php');
+            $file = new File(TR_CORE_CONFIG_PATH . '/app.php');
             $seed = 'seed_' . escapeshellcmd( uniqid() );
             $found = $file->replaceOnLine('PUT_TYPEROCKET_SEED_HERE', $seed );
 

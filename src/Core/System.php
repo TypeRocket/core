@@ -1,0 +1,418 @@
+<?php
+namespace TypeRocket\Core;
+
+use TypeRocket\Controllers\FieldsController;
+use TypeRocket\Controllers\RestController;
+use TypeRocket\Http\Cookie;
+use TypeRocket\Http\ErrorCollection;
+use TypeRocket\Http\Request;
+use TypeRocket\Elements\Notice;
+use TypeRocket\Http\RouteCollection;
+use TypeRocket\Http\Router;
+use TypeRocket\Http\SSL;
+use TypeRocket\Register\Registry;
+use TypeRocket\Utility\RuntimeCache;
+use TypeRocket\Utility\Str;
+
+class System
+{
+    public const ALIAS = 'system';
+    public const ADVANCED = 'TypeRocketPro\Core\AdvancedSystem';
+
+    protected $stash = [];
+    protected $frontend_mode = false;
+
+    /**
+     * Boot Core
+     */
+    public function boot()
+    {
+        $self = $this;
+
+        /**
+         * Maybe Load TypeRocket Pro
+         */
+        if(class_exists(static::ADVANCED)) {
+            (new Resolver())->resolve(static::ADVANCED);
+        }
+
+        $this->loadRuntimeCache();
+        $this->loadExtensions();
+        $this->initHooks();
+        $this->loadResponders();
+        $this->maybeFrontend();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Register System
+        |--------------------------------------------------------------------------
+        |
+        | Register system into the DI container.
+        |
+        */
+        Injector::singleton(self::class, function() use ($self) {
+            return $self;
+        }, static::ALIAS);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Run Registry
+        |--------------------------------------------------------------------------
+        |
+        | Runs after hooks muplugins_loaded, plugins_loaded and setup_theme
+        | This allows the registry to work outside of the themes folder. Use
+        | the typerocket_loaded hook to access TypeRocket from your WP plugins.
+        |
+        */
+        add_action('after_setup_theme', function () {
+            do_action('typerocket_loaded');
+            Registry::initHooks();
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Router
+        |--------------------------------------------------------------------------
+        |
+        | Load TypeRocket Router
+        |
+        */
+        add_action('typerocket_loaded', [$this, 'loadRoutes']);
+
+        return $this;
+    }
+
+    protected function loadRuntimeCache()
+    {
+        $assets = tr_config('paths.assets');
+        $manifest = json_decode(file_get_contents($assets . '/typerocket/mix-manifest.json'), true);
+
+        $cache = RuntimeCache::getFromContainer();
+        $cache->update('manifest', $manifest);
+
+        if( !empty($_COOKIE[ErrorCollection::KEY]) ) {
+            $cache->update(ErrorCollection::KEY, ErrorCollection::new() );
+        }
+
+        $url = SSL::fixSSLUrl(tr_config('urls.typerocket'));
+
+        $this->stash['url.typerocket'] = $url;
+        $this->stash['manifest.typerocket'] = $manifest;
+    }
+
+    /**
+     * Load Routes
+     */
+    public function loadRoutes()
+    {
+        if(!immutable('TR_ROUTES', true)) {
+            return;
+        }
+
+        do_action( 'tr_routes' );
+        $this->addRewrites();
+        $routes = tr_config('paths.routes') . '/public.php';
+        if( file_exists($routes) ) {
+            /** @noinspection PhpIncludeInspection */
+            require( $routes );
+        }
+        /** @var RouteCollection $routes */
+        $routes = Injector::resolve(RouteCollection::class);
+        $request = new Request;
+        $config = ['match' => 'site_url'];
+
+        (new Router($request, $config, $routes))->detectRoute()->initHooks();
+    }
+
+    /**
+     * Admin Init
+     */
+    public function initAdminHooks()
+    {
+        $this->addCss();
+        $this->addJs();
+
+        add_action( 'edit_user_profile', [$this, 'userProfiles'] );
+        add_action( 'show_user_profile', [$this, 'userProfiles'] );
+        add_action( 'wp_nav_menu_item_custom_fields', [$this, 'menuFields'], 10, 5 );
+        add_action( 'admin_footer', [$this, 'addBottomJs']);
+        add_action( 'admin_head', [$this, 'addTopJs']);
+        add_action( 'admin_notices', [$this, 'setFlash']);
+        add_filter( 'wp_handle_upload_prefilter', [$this, 'restrictUploadMimeTypes'] );
+    }
+
+    /**
+     * Admin Init
+     */
+    protected function initHooks()
+    {
+        add_action( 'wp_loaded', [$this, 'checkSiteStateChanged']);
+        add_action( 'admin_init', [$this, 'initAdminHooks'] );
+        add_filter( 'wp_handle_upload_prefilter', [$this, 'restrictUploadMimeTypes'] );
+    }
+
+    /**
+     * User Profile Hook
+     *
+     * @param $user
+     */
+    public function userProfiles($user) {
+        echo tr_field_nonce('hook');
+        echo '<div class="typerocket-wp-style-table">';
+
+        /**
+         * @depreciated action tr_user_profile
+         */
+        if( has_action('tr_user_profile') ) {
+            do_action( 'tr_user_profile', $user );
+        }
+
+        if( has_action('tr_user_fields') ) {
+            $form = tr_form();
+            do_action( 'tr_user_fields', $form, $user );
+        }
+        echo '</div>';
+    }
+
+    /**
+     * Menu Fields
+     *
+     * @param $item_id
+     * @param $item
+     * @param $depth
+     * @param $args
+     * @param $id
+     */
+    function menuFields($item_id, $item, $depth, $args, $id) {
+        if(has_action('tr_menu_fields')) {
+            echo tr_field_nonce('hook');
+            $id = 'tr-fields-' . wp_generate_uuid4();
+            echo '<div class="tr-menu-container typerocket-wp-style-subtle" id="'.$id.'">';
+            $form = tr_form($item)->useMenu($item_id);
+            do_action( 'tr_menu_fields', $form, $item_id, $item, $depth, $args, $id);
+            echo '<script>if(window.tr_apply_repeater_callbacks !== undefined) { window.tr_apply_repeater_callbacks(jQuery("#'.$id.'")) }</script>';
+            echo '</div>';
+        }
+    }
+
+    /**
+     * Is Front-end enabled
+     *
+     * @return bool
+     */
+    public function frontendIsEnabled()
+    {
+        return $this->frontend_mode;
+    }
+
+    /**
+     * Enable Front-end
+     */
+    public function frontendEnable()
+    {
+        $this->frontend_mode = true;
+
+        add_action( 'wp_enqueue_scripts', function() {wp_enqueue_style( 'dashicons' );} );
+        add_action( 'wp_enqueue_scripts', [ $this, 'addCss' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
+        add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
+        add_action( 'wp_head', [ $this, 'addTopJs' ] );
+    }
+
+    /**
+     * Maybe Init Front-end
+     *
+     * @param bool $force for typerocket on the front-end
+     *
+     * @return bool
+     */
+    public function maybeFrontend($force = false)
+    {
+        $this->frontend_mode = $force || tr_config('app.frontend');
+
+        if ( is_admin() || !$this->frontend_mode ) {
+            $this->frontend_mode = false;
+            return $this->frontend_mode;
+        }
+
+        $this->frontendEnable();
+
+        return $this->frontend_mode;
+    }
+
+    /**
+     * Load plugins
+     */
+    public function loadExtensions()
+    {
+        $conf = tr_config('app');
+        $ext = apply_filters('tr_extensions', $conf['extensions'] );
+
+        foreach ($ext as $extClass) {
+            if(class_exists($extClass)) {
+                (new Resolver())->resolve($extClass);
+            }
+        }
+    }
+
+    /**
+     * Load Responders
+     */
+    protected function loadResponders() {
+        if( defined('WP_INSTALLING') && WP_INSTALLING) {
+            return;
+        }
+
+        add_action( 'save_post', 'TypeRocket\Http\Responders\Hook::posts' );
+        add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
+        add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
+        add_action( 'edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies', 10, 4 );
+        add_action( 'create_term', 'TypeRocket\Http\Responders\Hook::taxonomies', 10, 4 );
+        add_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
+        add_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
+    }
+
+    /**
+     *  Set flashing for admin notices
+     */
+    public function setFlash() {
+        if( !empty($_COOKIE['tr_admin_flash']) ) {
+            $data = (new Cookie)->getTransient('tr_admin_flash');
+            Notice::dismissible($data);
+        }
+    }
+
+    /**
+     * Add CSS
+     */
+    public function addCss()
+    {
+        $url = $this->stash['url.typerocket'];
+        $manifest = $this->stash['manifest.typerocket'];
+
+        wp_enqueue_style( 'typerocket-styles', $url . $manifest['/css/core.css']);
+
+        if (is_admin()) {
+            wp_enqueue_style( 'wp-color-picker' );
+        }
+    }
+
+    /**
+     * Add JavaScript
+     */
+    public function addJs()
+    {
+        $url = $this->stash['url.typerocket'];
+        $manifest = $this->stash['manifest.typerocket'];
+
+        wp_enqueue_script( 'typerocket-scripts-global', $url . $manifest['/js/global.js'] );
+    }
+
+    /**
+     * Restrict Upload Mime Types
+     *
+     * https://wordpress.stackexchange.com/a/97025
+     * https://wordpress.stackexchange.com/a/174805
+     *
+     * @param $file
+     * @return mixed
+     */
+    public function restrictUploadMimeTypes($file) {
+        if ( empty( $_POST['allowed_mime_types'] ) || empty( $file['type'] ) ) {
+            return $file;
+        }
+        $allowed_mime_types = explode( ',', $_POST['allowed_mime_types'] );
+        if ( in_array( $file['type'], $allowed_mime_types ) ) {
+            return $file;
+        }
+        // Cater for "group" allowed mime types eg "image", "audio" etc. to match
+        // files of type "image/png", "audio/mp3" etc.
+        if ( ( $slash_pos = strpos( $file['type'], '/' ) ) > 0 ) {
+            if ( in_array( substr( $file['type'], 0, $slash_pos ), $allowed_mime_types ) ) {
+                return $file;
+            }
+        }
+        $file['error'] = __('Sorry, you cannot upload this file type for this field.', 'typerocket-domain');
+        return $file;
+    }
+
+    /**
+     * Add JavaScript to very bottom
+     *
+     * This is in place so that all other scripts from fields come
+     * before the main typerocket script.
+     */
+    public function addBottomJs()
+    {
+        $url = $this->stash['url.typerocket'];
+        $manifest = $this->stash['manifest.typerocket'];
+
+        wp_enqueue_script( 'typerocket-scripts', $url . $manifest['/js/core.js'], [ 'jquery', 'wp-i18n' ], false, true );
+        wp_set_script_translations( 'typerocket-scripts', 'typerocket-domain' );
+        do_action('tr_bottom_assets', $url, $manifest);
+    }
+
+    /**
+     * Top JavaScript
+     */
+    public function addTopJs()
+    {
+        $url = $this->stash['url.typerocket'];
+        $manifest = $this->stash['manifest.typerocket'];
+        $scheme = '';
+        if ( is_ssl() || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
+            $scheme =  'https';
+        }
+        ?><script>window.trHelpers = {site_uri: "<?php echo rtrim(esc_url(get_site_url( null, '', $scheme )), '/');?>", nonce: "<?php echo tr_nonce(); ?>"}</script><?php
+        do_action('tr_top_assets', $url, $manifest);
+    }
+
+    /**
+     * Add Rewrite rules
+     */
+    public function addRewrites()
+    {
+        $path = tr_request()->getPath();
+
+        if(Str::contains('tr-api', $path) || tr_debug() ) {
+            tr_route()->any()
+                ->match('tr-api/rest/([^/]+)/?([^/]+)?', ['resource', 'id'])
+                ->do([RestController::class, 'rest']);
+
+            tr_route()->post()
+                ->match('tr-api/(builder|matrix)/([^/]+)/([^/]+)', ['caller', 'group', 'type'])
+                ->do([FieldsController::class, 'component']);
+
+            tr_route()->get()->post()
+                ->match('tr-api/search')->middleware('search')
+                ->do([FieldsController::class, 'search']);
+        }
+    }
+
+    /**
+     * Check site state
+     */
+    public function checkSiteStateChanged() {
+        if ( $site_state = get_option( '_tr_site_state_changed' ) ) {
+
+            if( is_array( $site_state ) ) {
+                $site_state = array_unique( $site_state );
+                foreach ( $site_state as $site_state_func ) {
+                    if( function_exists( $site_state_func ) ) {
+                        call_user_func( $site_state_func );
+                    }
+                }
+            }
+
+            update_option( '_tr_site_state_changed', '0', 'yes');
+        }
+    }
+
+    /**
+     * @return static
+     */
+    public static function getFromContainer()
+    {
+        return tr_container(static::ALIAS);
+    }
+}

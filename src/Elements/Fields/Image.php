@@ -1,10 +1,13 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Html\Generator;
+use TypeRocket\Elements\Traits\ImageFeaturesTrait;
+use TypeRocket\Html\Html;
 
 class Image extends Field implements ScriptField
 {
+    use ImageFeaturesTrait;
+
     /**
      * Run on construction
      */
@@ -36,22 +39,28 @@ class Image extends Field implements ScriptField
     public function getString()
     {
         $name = $this->getNameAttributeString();
-        $this->appendStringToAttribute( 'class', 'image-picker' );
-        $value = esc_attr( $this->getValue() );
+        $this->attrClass( 'image-picker' );
+        $value = $this->getValue();
+        $this->setAttribute('data-tr-field', $this->getContextId());
+
+        if(is_array($value) && is_numeric($value['id'] ?? null)) {
+            $value = $value['id'];
+        }
+
+        $value = tr_cast($value, 'int');
 
         $this->removeAttribute( 'name' );
-        $generator = new Generator();
 
         if ( ! $this->getSetting( 'button' )) {
-            $this->setSetting( 'button', 'Insert Image' );
+            $this->setSetting( 'button', __('Insert Image', 'typerocket-domain') );
         }
 
         if ( ! $this->getSetting( 'clear' )) {
-            $this->setSetting( 'clear', 'Clear' );
+            $this->setSetting( 'clear', __('Clear', 'typerocket-domain') );
         }
 
         if ($value != "") {
-            $image = wp_get_attachment_image( (int) $value, 'thumbnail' );
+            $image = wp_get_attachment_image( (int) $value, $this->getSetting('size', 'thumbnail') );
         } else {
             $image = '';
         }
@@ -60,22 +69,27 @@ class Image extends Field implements ScriptField
             $value = '';
         }
 
-        $html = $generator->newInput( 'hidden', $name, $value, $this->getAttributes() )->getString();
+        $classes = class_names('tr-image-picker-placeholder', [
+            'tr-dark-image-background' => $this->getSetting('background', 'light') == 'dark'
+        ]);
+
+        $html = (string) Html::input( 'hidden', $name, $value, $this->getAttributes() );
         $html .= '<div class="button-group">';
-        $html .= $generator->newElement( 'input', [
+        $html .= Html::el( 'input', [
             'type'  => 'button',
-            'class' => 'image-picker-button button',
+            'class' => 'tr-image-picker-button button',
+            'data-size' => $this->getSetting('size', 'thumbnail'),
             'value' => $this->getSetting( 'button' )
-        ])->getString();
-        $html .= $generator->newElement( 'input', [
+        ]);
+        $html .= Html::el( 'input', [
             'type'  => 'button',
-            'class' => 'image-picker-clear button',
+            'class' => 'tr-image-picker-clear button',
             'value' => $this->getSetting( 'clear' )
-        ])->getString();
+        ]);
         $html .= '</div>';
-        $html .= $generator->newElement( 'div', [
-            'class' => 'image-picker-placeholder'
-        ], $image )->getString();
+        $html .= Html::div([
+            'class' => $classes
+        ], $image );
 
         return $html;
     }

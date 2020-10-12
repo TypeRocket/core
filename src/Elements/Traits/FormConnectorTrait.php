@@ -1,43 +1,127 @@
 <?php
-
 namespace TypeRocket\Elements\Traits;
 
+use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Interfaces\Formable;
+use TypeRocket\Models\Model;
+use TypeRocket\Utility\DataCollection;
 use TypeRocket\Utility\Sanitize;
 
 trait FormConnectorTrait
 {
-
-    protected $resource = null;
-    protected $action = null;
-    protected $itemId = null;
-
-    /** @var \TypeRocket\Models\Model $model */
+    /** @var mixed|Formable|Model $model */
     protected $model = null;
-
+    protected $itemId = null;
     protected $populate = true;
     protected $group = null;
     protected $sub = null;
-    protected $settings = [];
+    protected $translateLabelDomain = null;
+    protected $debugStatus = null;
     protected $prefix = 'tr';
 
     /**
-     * Get controller
+     * Get Translate Label Domain
      *
      * @return null|string
      */
-    public function getResource()
+    public function getLabelTranslationDomain()
     {
-        return $this->resource;
+        return $this->translateLabelDomain;
     }
 
     /**
-     * Set Action
+     * Set Translate Label Domain
      *
-     * @return null|string
+     * @param string $domain
+     * @return $this
      */
-    public function getAction()
+    public function setLabelTranslationDomain($domain)
     {
-        return $this->action;
+        $this->translateLabelDomain = $domain;
+
+        return $this;
+    }
+
+    /**
+     * Set Translate Label Domain Shorthand
+     *
+     * @param null|string $domain
+     *
+     * @return $this|string|null
+     */
+    public function domain($domain = null)
+    {
+        if(func_num_args() === 0) {
+             return $this->getLabelTranslationDomain();
+        }
+
+        return $this->setLabelTranslationDomain($domain);
+    }
+
+    /**
+     * Set the form debug status
+     *
+     * @param bool $status
+     *
+     * @return $this
+     */
+    public function setDebugStatus( $status )
+    {
+        $this->debugStatus = (bool) $status;
+
+        return $this;
+    }
+
+    /**
+     * Get the From debug status
+     *
+     * @return bool|null
+     */
+    public function getDebugStatus()
+    {
+        return $this->debugStatus === false ? $this->debugStatus : tr_debug();
+    }
+
+    /**
+     * Set Model
+     *
+     * @param array|Formable|Model $model
+     *
+     * @return $this
+     * @throws \ReflectionException
+     */
+    public function setModel($model)
+    {
+        if(is_array($model)) {
+            $model = new DataCollection($model);
+        }
+        elseif( is_string($model) && class_exists($model) ) {
+            $model = new $model;
+        }
+
+        if( $this->itemId && $model instanceof Model && !$model->hasProperties() ) {
+            $model = $model->findById($this->itemId);
+        }
+
+        if( method_exists($model, 'getRouteResource') && method_exists($this, 'setResource') ) {
+            $this->setResource($model->getRouteResource());
+        }
+
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /**
+     * Set Item ID
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setItemId($id)
+    {
+        $this->itemId = $id;
+        return $this;
     }
 
     /**
@@ -53,11 +137,29 @@ trait FormConnectorTrait
     /**
      * Get Model
      *
-     * @return \TypeRocket\Models\Model
+     * @return mixed|Formable|Model
      */
     public function getModel()
     {
         return $this->model;
+    }
+
+    /**
+     * Get or Set Group
+     *
+     * @param null $group
+     *
+     * @return $this|null|string
+     */
+    public function group($group = null)
+    {
+        if(func_num_args() === 0) {
+            return $this->getGroup();
+        }
+
+        $this->setGroup($group);
+
+        return $this;
     }
 
     /**
@@ -88,12 +190,14 @@ trait FormConnectorTrait
      * Append To Group
      *
      * @param string $append dot notation
+     * @param bool $escape
+     *
      * @return $this
      */
-    public function appendToGroup($append)
+    public function appendToGroup($append, $escape = true)
     {
-        $append = Sanitize::underscore($append, true);
-        $this->group = $this->group ? $this->group . '.' . $append : $append;
+        $append = $escape ? Sanitize::underscore($append, true) : $append;
+        $this->group = $this->group ? $this->group . ($append ? '.' . $append : '') : $append;
 
         return $this;
     }
@@ -102,13 +206,59 @@ trait FormConnectorTrait
      * Prepend To Group
      *
      * @param string $prepend dot notation
+     * @param bool $escape
+     *
      * @return $this
      */
-    public function prependToGroup($prepend)
+    public function prependToGroup($prepend, $escape = true)
     {
-        $this->group = $prepend . '.' . $this->group;
+        $prepend = $escape ? Sanitize::underscore($prepend, true) : $prepend;
+        $this->group = $this->group ? ($prepend  ? $prepend . '.' : '') . $this->group : $prepend;
 
         return $this;
+    }
+
+    /**
+     * Clone
+     *
+     * @return $this
+     */
+    public function clone()
+    {
+        return clone $this;
+    }
+
+    /**
+     * Extend Form
+     *
+     * Only extends by group.
+     *
+     * @param $group
+     *
+     * @param bool $escape
+     *
+     * @return $this
+     */
+    public function extend($group, $escape = true)
+    {
+        return $this->clone()->appendToGroup($group, $escape);
+    }
+
+    /**
+     * Super Extend Form
+     *
+     * Extends by fields name, group, and subgroup
+     *
+     * @param string $group
+     * @param Field|string $set
+     *
+     * @return $this
+     */
+    public function super($group, $set = null)
+    {
+        $set = $set ?? $this;
+        $dots = method_exists($set, 'getDots') ? $set->getDots() : $set;
+        return $this->clone()->setGroup($dots . '.' . $group);
     }
 
     /**
@@ -134,127 +284,6 @@ trait FormConnectorTrait
     public function getPopulate()
     {
         return $this->populate;
-    }
-
-    /**
-     * Set From settings
-     *
-     * @param array $settings
-     *
-     * @return $this
-     */
-    public function setSettings( $settings )
-    {
-        $this->settings = $settings;
-
-        return $this;
-    }
-
-    /**
-     * Get Form settings
-     *
-     * @return array
-     */
-    public function getSettings()
-    {
-        return $this->settings;
-    }
-
-    /**
-     * Set Form setting by key
-     *
-     * @param string $key
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function setSetting( $key, $value )
-    {
-        $this->settings[$key] = $value;
-
-        return $this;
-    }
-
-	/**
-	 * Append to Array Setting
-	 *
-	 * Append to an array setting
-	 *
-	 * @param string $setting
-	 * @param string $key
-	 * @param string $value
-	 *
-	 * @return $this
-	 */
-	public function appendToArraySetting( $setting, $key, $value )
-	{
-		$this->settings[$setting][$key] = $value;
-
-		return $this;
-	}
-
-    /**
-     * Get From setting by key
-     *
-     * @param string $key
-     * @param null $default default value to return if none
-     *
-     * @return null
-     */
-    public function getSetting( $key, $default = null )
-    {
-        if ( ! array_key_exists( $key, $this->settings )) {
-            return $default;
-        }
-
-        return $this->settings[$key];
-    }
-
-    /**
-     * Remove setting bby key
-     *
-     * @param string $key
-     *
-     * @return $this
-     */
-    public function removeSetting( $key )
-    {
-        if (array_key_exists( $key, $this->settings )) {
-            unset( $this->settings[$key] );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Render Setting
-     *
-     * By setting render to 'raw' the form will not add any special html wrappers.
-     * You have more control of the design when render is set to raw.
-     *
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function setRenderSetting( $value )
-    {
-        $this->settings['render'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get render mode
-     *
-     * @return null
-     */
-    public function getRenderSetting()
-    {
-        if ( ! array_key_exists( 'render', $this->settings )) {
-            return null;
-        }
-
-        return $this->settings['render'];
     }
 
     /**
@@ -285,6 +314,18 @@ trait FormConnectorTrait
     }
 
     /**
+     * Set Menu Prefix
+     *
+     * @param $menu_id
+     *
+     * @return $this
+     */
+    public function setMenuPrefix($menu_id)
+    {
+        return $this->setPrefix('tr-menu-'.$menu_id);
+    }
+
+    /**
      * Set Widget Name Attribute Prefix
      *
      * @param \WP_Widget $widget
@@ -293,7 +334,6 @@ trait FormConnectorTrait
      */
     public function setWidgetPrefix(\WP_Widget $widget)
     {
-        $this->setPrefix('widget-' . $widget->id_base . '[' . $widget->number . ']');
-        return $this;
+        return $this->setPrefix('widget-' . $widget->id_base . '[' . $widget->number . ']');
     }
 }

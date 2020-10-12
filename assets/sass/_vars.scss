@@ -1,3 +1,11 @@
+/*
+
+
+Sync To TypeRocket Pro Core
+
+
+*/
+
 // Branding
 $blue: #3182bd;
 $dark: #085286;
@@ -5,10 +13,11 @@ $light: #5199CC;
 $alt: #FFCB36;
 
 //  WordPress Colors
+$wp_button: #007cba; // new color WP 5.3
+$wp_button_hover: #0071a1; // new color WP 5.3
+
 $wp_link: #0073aa;
-$wp_button: #0085ba;
 $wp_link_hover: #00a0d2;
-$wp_button_hover: #008ec2;
 
 // Alerts
 $success: #46b450;
@@ -20,6 +29,61 @@ $info: #00a0d2;
 $delete: #A00;
 $delete_hover: #F00;
 
-// Gays
+// Grays
 $gray: #666;
 $gray_dark: #191e23;
+$gray_border: #ccd0d4;
+$gray_icon: #9B9B9B;
+$gray_border_input: #7e8993;
+// @link https://make.wordpress.org/core/2019/10/18/noteworthy-admin-css-changes-in-wordpress-5-3/
+
+$gray_bg_disabled: #f7f7f7;
+$gray_color_disabled: #a0a5aa;
+$gray_border_disabled: #ddd;
+
+// SVG
+// 16px by 16px
+$icon_select_chevron_url: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%206l5%205%205-5%202%201-7%207-7-7%202-1z%22%20fill%3D%22%23555%22%2F%3E%3C%2Fsvg%3E');
+$icon_select_chevron_url_disabled: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%206l5%205%205-5%202%201-7%207-7-7%202-1z%22%20fill%3D%22%23a0a5aa%22%2F%3E%3C%2Fsvg%3E');
+
+@keyframes tr-shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+.tr-shake {
+  animation: tr-shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@mixin visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+$themes:
+        "default" #0073aa #333,
+        "light" #04a4cc #999,
+        "ectoplasm" #a3b745 #523f6d,
+        "coffee" #c7a589 #59524c,
+        "midnight" #e14d43 #363b3f,
+        "ocean" #9ebaa0 #738e96,
+        "sunrise" #dd823b #cf4944,
+        "blue" #096484 #4796b3;

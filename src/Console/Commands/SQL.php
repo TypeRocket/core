@@ -1,5 +1,4 @@
 <?php
-
 namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\CanQueryDB;

@@ -5,3 +5,23 @@
     padding: 9px 15px 4px 0;
     line-height: 29px;
 }
+
+.tr-headline {
+    margin-top: 0;
+    display: flex;
+    line-height: 1.05em;
+    margin-bottom: 15px;
+    font-size: 23px;
+    font-weight: 400;
+
+    > .text {
+        flex: 1;
+    }
+
+    > .icon {
+        width: 30px;
+        display: flex;
+        justify-items: center;
+        align-items: center;
+    }
+}

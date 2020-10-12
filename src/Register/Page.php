@@ -1,12 +1,10 @@
 <?php
-
 namespace TypeRocket\Register;
 
 use Closure;
 use TypeRocket\Controllers\Controller;
-use TypeRocket\Core\Config;
 use TypeRocket\Http\Request;
-use TypeRocket\Http\Responders\ResourceResponder;
+use TypeRocket\Http\Responders\HttpResponder;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Template\View;
 use TypeRocket\Utility\Str;
@@ -14,23 +12,26 @@ use WP_Admin_Bar;
 
 class Page extends Registrable
 {
-
-    public $title = 'Admin Page Title';
-    public $resource = 'admin';
+    protected $title = 'Admin Page Title';
+    protected $menuTitle = null;
+    protected $subMenuTitle = null;
+    protected $subMenu = null;
+    protected $resource = 'admin';
     /** @var string|Controller|null  */
-    public $handler = null;
-    public $middlewareGroups = null;
-    public $action = 'index';
-    public $actionMap = [];
-    public $icon = null;
-    public $pages = [];
+    protected $handler = null;
+    protected $middlewareGroups = [];
+    protected $action = 'index';
+    protected $actionMap = [];
+    protected $routeArgs = [];
+    protected $routeArgsNamed = [];
+    protected $icon = null;
+    protected $pages = [];
     /** @var null|Page parent page */
-    public $parent = null;
-    public $showTitle = true;
-    public $showMenu = true;
-    public $showAddNewButton = false;
-    public $useController = false;
-    public $builtin = [
+    protected $parent = null;
+    protected $showTitle = true;
+    protected $showMenu = true;
+    protected $showAddNewButton = false;
+    protected $builtin = [
         'tools' => 'tools.php',
         'dashboard' => 'index.php',
         'media' => 'upload.php',
@@ -47,70 +48,121 @@ class Page extends Registrable
      * @param string $action set the action the page is responsible for
      * @param string $title set the title of the page and menu
      * @param array $settings menu, capability, position, view, slug
+     * @param null|array|string|callable $handler
      */
-    public function __construct($resource, $action, $title, array $settings = [])
+    public function __construct(string $resource, string $action, string $title, array $settings = [], $handler = null)
     {
-        $this->title    = __($title, 'typerocket-profile');
+        list($resource, $handle) = array_pad(explode('@', $resource), 2, null);
+        $handler = $handler ?? $handle;
+
+        $settings['capability'] = $settings['capability'] ?? $settings['cap'] ?? null;
+
+        $this->setTitle($title);
         $this->resource = Sanitize::underscore( $resource );
         $this->id       = Sanitize::underscore( $this->title );
         $this->action   = Sanitize::underscore( $action );
         $this->args     = array_merge( [
             'menu' => $this->title,
-            'capability' => false,
+            'sub_menu' => $this->subMenuTitle,
             'inherit_capability' => true,
-            'position' => 99,
-            'view_file' => null,
+            'position' => 25,
+            'view' => null,
             'slug' => $this->resource . '_' . $this->action,
         ], $settings );
 
+        if($handler) {
+            $this->setHandler($handler);
+        }
     }
 
     /**
-     * Set the post type menu icon
+     * Set View
      *
-     * Add the CSS needed to create the icon for the menu
+     * @param View|string|callable $view string value can be a file path or text block
      *
-     * @param string $name
+     * @return Page
+     */
+    public function setView($view)
+    {
+        return $this->setArgument('view', $view);
+    }
+
+    /**
+     * Set the page menu icon
+     *
+     * @link https://developer.wordpress.org/resource/dashicons/
+     *
+     * @param string $name icon name does not require prefix.
      *
      * @return Page $this
      */
-    public function setIcon( $name )
+    public function setIcon($name)
     {
-        $name       = strtolower( $name );
-        $icons      = Config::locate('app.class.icons');
-        $icons      = new $icons;
-
-        $this->icon = !empty($icons[$name]) ? $icons[$name] : null;
-        if( ! $this->icon ) {
-            return $this;
-        }
-
-        add_action( 'admin_head', Closure::bind( function() use ($icons) {
-            $slug = $this->args['slug'];
-            $icon = $this->getIcon();
-            echo "
-            <style type=\"text/css\">
-                #adminmenu #toplevel_page_{$slug} .wp-menu-image:before {
-                    font: {$icons->fontWeight} {$icons->fontSize} {$icons->fontFamily} !important;
-                    content: '{$icon}';
-                    speak: none;
-                    top: 2px;
-                    position: relative;
-                    -webkit-font-smoothing: antialiased;
-                }
-            </style>";
-        }, $this ) );
+        $this->icon = 'dashicons-' . Str::trimStart($name, 'dashicons-');
 
         return $this;
     }
 
     /**
-     * Get the post type icon
+     * Get the page icon
      *
      * @return null
      */
     public function getIcon() {
         return $this->icon;
+    }
+
+    /**
+     * Set Position
+     *
+     * @param int $number
+     *
+     * @return Page
+     */
+    public function setPosition($number)
+    {
+        return $this->setArgument('position', $number);
+    }
+
+    /**
+     * Get Handler
+     *
+     * @return string|Controller|null
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    /**
+     * Get Pages
+     *
+     * @return array
+     */
+    public function getPages()
+    {
+        return $this->pages;
+    }
+
+    /**
+     * Is Action
+     *
+     * @param $action
+     * @return bool
+     */
+    public function isAction(string $action)
+    {
+        return $this->action == $action;
+    }
+
+    /**
+     * Get Action
+     *
+     * @return mixed|string
+     */
+    public function getAction()
+    {
+        return $this->action;
     }
 
     /**
@@ -142,7 +194,7 @@ class Page extends Registrable
      *
      * @return Page $this
      */
-    public function setParent( Page $parent ) {
+    public function setParentPage( Page $parent ) {
         $this->parent = $parent;
 
         return $this;
@@ -170,16 +222,71 @@ class Page extends Registrable
     /**
      * Set Title
      *
+     * The Page title.
+     *
      * @param string $title
      *
      * @return Page $this
      */
     public function setTitle( $title )
     {
-        $this->title = __($title, 'typerocket-profile');
+        $this->title = $title;
 
         return $this;
     }
+
+    /**
+     * Set Menu Title
+     *
+     * The main menu title if used.
+     *
+     * @param $title
+     *
+     * @return Page
+     */
+    public function setMenuTitle($title)
+    {
+        $this->menuTitle = $title;
+
+        return $this;
+    }
+
+    /**
+     * Set Sub Menu Title
+     *
+     * The sub menu title if used.
+     *
+     * @param $title
+     *
+     * @return Page
+     */
+    public function setSubMenuTitle($title)
+    {
+        $this->subMenuTitle = $title;
+
+        return $this;
+    }
+
+    /**
+     * Set Sub Menu
+     *
+     * Make page a submenu of another page.
+     *
+     * @param string|Page $page
+     *
+     * @return $this
+     */
+    public function setParent($page)
+    {
+        if($page instanceof Page) {
+            return $this->setParentPage($page);
+        }
+
+        $this->subMenu = $page;
+
+        return $this;
+    }
+
 
     /**
      * Remove title from page
@@ -214,13 +321,15 @@ class Page extends Registrable
      * @return string
      */
     public function getUrl( $params = [] ) {
+
         $query = http_build_query( array_merge(
             [ 'page' => $this->getSlug() ],
+            $this->routeArgsNamed,
+            ['route_args' => $this->routeArgs],
             $params
         ) );
-        $url = admin_url() . $this->getAdminPage() . '?' . $query;
 
-        return $url;
+        return admin_url() . $this->getAdminPage() . '?' . $query;
     }
 
     /**
@@ -233,14 +342,32 @@ class Page extends Registrable
     public function getUrlWithParams( $params = [] ) {
         parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $request_params);
 
-        $query = http_build_query( array_merge(
+        $query = http_build_query( array_filter( array_merge(
             [ 'page' => $this->getSlug() ],
+            $this->routeArgsNamed,
+            ['route_args' => $this->routeArgs],
             $request_params,
             $params
-        ) );
-        $url = admin_url() . $this->getAdminPage() . '?' . $query;
+        ) ) );
 
-        return $url;
+        return admin_url() . $this->getAdminPage() . '?' . $query;
+    }
+
+    /**
+     * @param string $key
+     * @param string|int $value
+     *
+     * @return Page
+     */
+    public function setRouteArg($key, $value = null)
+    {
+        if(func_num_args() == 1) {
+            $this->routeArgs[] = $key;
+        } else {
+            $this->routeArgsNamed['route_' . $key] = $value;
+        }
+
+        return $this;
     }
 
     /**
@@ -269,35 +396,6 @@ class Page extends Registrable
     }
 
     /**
-     * Make the page use a TypeRocket controller and routing
-     *
-     * @param null|string $handler the class name of the controller for the page to use.
-     * @return Page $this
-     */
-    public function useController($handler = null)
-    {
-        $this->useController = true;
-
-        if($handler) {
-            $this->setHandler($handler);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Disable Controller
-     *
-     * @return Page $this
-     */
-    public function disableController()
-    {
-        $this->useController = false;
-
-        return $this;
-    }
-
-    /**
      * Set Handler
      *
      * The class name of the controller for the page to use.
@@ -312,7 +410,13 @@ class Page extends Registrable
         return $this;
     }
 
-    public function setMiddlewareGroups($middlewareGroups)
+    /**
+     * Set Middleware Groups
+     *
+     * @param array $middlewareGroups
+     * @return $this
+     */
+    public function setMiddlewareGroups(array $middlewareGroups)
     {
         $this->middlewareGroups = $middlewareGroups;
 
@@ -320,17 +424,29 @@ class Page extends Registrable
     }
 
     /**
+     * Set Capability
+     *
+     * @param string $capability
+     *
+     * @return Page
+     */
+    public function setCapability($capability)
+    {
+        return $this->setArgument('capability', $capability);
+    }
+
+    /**
      * Get Capability
      *
      * @return string
      */
-    protected function getCapability() {
+    public function getCapability() {
         $default_capability = 'administrator';
-        $capability = $this->args['capability'] ? $this->args['capability'] : $default_capability;
+        $capability = $this->args['capability'] ?? $default_capability;
 
         if( $this->getParent() && $this->args['inherit_capability'] && ! $this->args['capability'] ) {
             $parent_capability = $this->getParent()->getArgument('capability');
-            $capability = $parent_capability ? $parent_capability : $default_capability;
+            $capability = $parent_capability ?? $default_capability;
         }
 
         return $capability;
@@ -345,7 +461,7 @@ class Page extends Registrable
      */
     public function register()
     {
-        $menu_title = $this->args['menu'];
+        $menu_title = $this->menuTitle ?? $this->args['menu'];
         $capability = $this->getCapability();
         $slug = $this->getSlug();
         $position = $this->args['position'];
@@ -355,7 +471,7 @@ class Page extends Registrable
             $url = $action = '';
 
             if( $this->parent ) {
-                $all_pages = $this->parent->pages;
+                $all_pages = $this->parent->getPages();
             } else {
                 $all_pages = $this->pages;
             }
@@ -375,35 +491,45 @@ class Page extends Registrable
                 if( is_string($this->showAddNewButton) ) {
                     $url = $this->showAddNewButton;
                 }
-                $add_text = __('Add New');
+                $add_text = __('Add New', 'typerocket-domain');
                 $action = ' <a href="'.$url.'" class="page-title-action">'.$add_text.'</a>';
             }
+
+            $action = apply_filters('tr_page_title_actions', $action, $this);
 
             if( $this->showTitle ) {
                 echo '<h1 class="tr-admin-page-title">'. $this->title . $action . '</h1>';
             }
 
-            echo '<div>';
+            echo '<div class="tr-admin-view">';
 
-            if( file_exists($this->args['view_file']) ) {
+            $response = $this->args['view'];
+
+            if( is_callable($response) ) {
+                call_user_func($response, $this);
+            }
+            elseif ( $response instanceof View) {
+                $response->render();
+            }
+            elseif( file_exists($response) ) {
                 /** @noinspection PhpIncludeInspection */
-                include( $this->args['view_file'] );
-            } elseif ( View::isReady('admin') ) {
-                $this->loadView();
-            } elseif( Config::locate('app.debug') == true ) {
-                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by creating or setting a view.</div>";
+                include( $response );
+            }
+            elseif ( is_string($response)) {
+                echo $response;
+            }
+            elseif( tr_debug() ) {
+                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by creating or setting a view.</div>";
             }
             echo '</div></div>';
-            do_action('tr_page_end_view_' . $this->id, $this);
-
         };
 
-        if( array_key_exists( $this->resource, $this->builtin ) ) {
-            add_submenu_page( $this->builtin[$this->resource] , $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ) );
+        if( $this->subMenu || array_key_exists( $this->resource, $this->builtin ) ) {
+            add_submenu_page( $this->builtin[$this->subMenu ?? $this->resource] ?? $this->subMenu, $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ) );
         } elseif( ! $this->parent ) {
-            add_menu_page( $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ), '', $position);
+            add_menu_page( $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ), $this->icon, $position);
             if( $this->hasShownSubPages() ) {
-                add_submenu_page( $slug , $this->title, $menu_title, $capability, $slug );
+                add_submenu_page( $slug, $this->title, $this->subMenuTitle ?? $menu_title, $capability, $slug );
             }
         } else {
             $parent_slug = $this->parent->getSlug();
@@ -475,7 +601,7 @@ class Page extends Registrable
      * page=? to act as a single route that can respond
      * to any number of HTTP request methods.
      *
-     * @param string $map ['POST' => 'create', 'GET' => 'add', 'DELETE' => 'destroy']
+     * @param array $map ['POST' => 'create', 'GET' => 'add', 'DELETE' => 'destroy']
      * @return Page $this
      */
     public function mapActions($map)
@@ -486,7 +612,8 @@ class Page extends Registrable
     }
 
     /**
-     * Invoked if $useController is true
+     * Invoked if $handler is set
+     * @throws \Exception
      */
     public function respond()
     {
@@ -497,22 +624,54 @@ class Page extends Registrable
             $args = [];
 
             if(isset($_GET)) {
-                foreach ($_GET as $name => $value) {
-                    if( Str::starts('route_', $name) ) {
-                        $args[mb_substr($name, 6)] = $value;
+
+                $get = $_GET;
+
+                if(isset($get['route_args']) && is_array($get['route_args'])) {
+                    $args = $get['route_args'];
+                    unset($get['route_args']);
+                }
+
+                foreach ($get as $name => $value) {
+                    if( $name != 'route_args' && Str::starts('route_', $name) ) {
+                        if($route_arg = mb_substr($name, 6)) {
+                            $args[$route_arg] = $value;
+                        } else {
+                            $args[] = $value;
+                        }
                     }
                 }
             }
 
-            $method = (new Request())->getFormMethod();
+            $this->loadGlobalVars();
+            $method = (new Request)->getFormMethod();
+            $action = $this->actionMap[$method] ?? $this->action;
+            $handler = [$this->handler, $action];
 
-            (new ResourceResponder())
-                ->setResource( $this->resource )
-                ->setHandler( $this->handler )
-                ->setCustom(true)
-                ->setMiddlewareGroups($this->middlewareGroups)
-                ->setAction( $this->actionMap[$method] ?? $this->action )
-                ->respond( $args );
+            if(is_array($this->handler) || is_callable($this->handler)) {
+                $handler = $this->handler;
+            }
+
+            $responder = new HttpResponder;
+            $responder->getHandler()
+                ->setController( $handler )
+                ->setMiddlewareGroups( $this->middlewareGroups );
+
+            $responder->respond( $args );
+
+            $response = tr_response();
+            $returned = $response->getReturn();
+            $rest = tr_request()->isMarkedAjax();
+
+            if( !$rest && $returned instanceof View) {
+                status_header( $response->getStatus() );
+                $this->setArgument('view', $returned);
+            } elseif( !$rest && is_string($returned) ) {
+                status_header( $response->getStatus() );
+                $this->setArgument('view', $returned);
+            } else {
+                $response->finish($rest);
+            }
         }
     }
 
@@ -545,7 +704,7 @@ class Page extends Registrable
     {
         if ( $s instanceof Page && ! in_array( $s, $this->pages )) {
             $this->pages[] = $s;
-            $s->setParent( $this );
+            $s->setParentPage( $this );
         } elseif( is_array($s) ) {
             foreach($s as $n) {
                 $this->addPage($n);
@@ -556,15 +715,33 @@ class Page extends Registrable
     }
 
     /**
-     * Load Views
+     * Apply post types
+     *
+     * @param array|PostType $post_type
+     *
+     * @return Page $this
      */
-    protected function loadView() {
+    public function addPostType( $post_type )
+    {
+        if ($post_type instanceof PostType) {
+            $post_type->setArgument( 'show_in_menu', $this->getSlug() );
+        } elseif (is_array( $post_type )) {
+            foreach ($post_type as $n) {
+                $this->addPostType( $n );
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Global Vars
+     */
+    protected function loadGlobalVars() {
         $GLOBALS['_tr_page'] = $this;
-        $class = tr_app('Models\\' . Str::camelize($this->resource));
+        $class = tr_app_class('Models\\' . Str::camelize($this->resource));
         if( class_exists( $class ) ) {
             $GLOBALS['_tr_resource'] = new $class;
         }
-
-        View::loadPage();
     }
 }

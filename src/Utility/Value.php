@@ -12,11 +12,11 @@ class Value
      * @param null|array $args
      *
      * @return mixed
-     * @throws \Exception
+     * @throws \ReflectionException
      */
     public static function get($value, $args = null)
     {
-        return $value instanceof \Closure ? $value($value, $args) : $value;
+        return $value instanceof \Closure ? (new Resolver)->resolveCallable($value, $args) : $value;
     }
 
     /**

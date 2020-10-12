@@ -1,8 +1,5 @@
 <?php
-
-
 namespace TypeRocket\Core;
-
 
 class Injector
 {
@@ -31,7 +28,9 @@ class Injector
             }
 
             return $instance;
-        } elseif(!empty(self::$alias[$class_name])) {
+        }
+
+        if(!empty(self::$alias[$class_name])) {
             return self::resolve(self::$alias[$class_name]);
         }
 
@@ -44,8 +43,7 @@ class Injector
      * @param string $class_name
      * @param callable $callback
      * @param bool $singleton
-     *
-     * @param null $alias
+     * @param null|string $alias
      * @return bool
      */
     public static function register($class_name, $callback, $singleton = false, $alias = null)
@@ -68,6 +66,19 @@ class Injector
     }
 
     /**
+     * Register Singleton
+     *
+     * @param string $class_name
+     * @param callable $callback
+     * @param null|string  $alias
+     * @return bool
+     */
+    public static function singleton($class_name, $callback, $alias = null)
+    {
+        return self::register($class_name, $callback, true, $alias);
+    }
+
+    /**
      * Get Aliases
      *
      * @return array
@@ -81,35 +92,17 @@ class Injector
      * Resolve Singleton
      *
      * @param string $class_name
+     * @param null|string $alias
      *
      * @return mixed|null
      */
-    public static function findOrNewSingleton($class_name)
+    public static function findOrNewSingleton($class_name, $alias = null)
     {
         self::register($class_name, function() use ($class_name) {
             return new $class_name;
-        }, true);
+        }, true, $alias);
 
         return self::resolve($class_name);
-    }
-
-    /**
-     * Destroy By Key
-     *
-     * @param string $class_name
-     *
-     * @return bool
-     */
-    public static function destroy($class_name)
-    {
-        if(array_key_exists($class_name, self::$list)) {
-            unset(self::$list[$class_name]['singleton_instance']);
-            unset(self::$list[$class_name]);
-
-            return true;
-        }
-
-        return false;
     }
 
 }

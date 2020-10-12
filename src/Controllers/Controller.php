@@ -1,9 +1,9 @@
 <?php
 namespace TypeRocket\Controllers;
 
-use \TypeRocket\Models\Model;
-use \TypeRocket\Http\Request;
-use \TypeRocket\Http\Response;
+use TypeRocket\Http\Redirect;
+use TypeRocket\Http\Request;
+use TypeRocket\Http\Response;
 
 /**
  * Class Controller
@@ -16,102 +16,53 @@ use \TypeRocket\Http\Response;
  */
 class Controller
 {
-
-    /** @var Response */
-    protected $response = null;
-    /** @var Request */
-    protected $request = null;
-
-    protected $fields = [];
+    /** @var array  */
     protected $middleware = [];
-    protected $model = null;
-    protected $modelClass = Model::class;
-    protected $validation = [];
 
     /**
-     * Construct Controller
+     * Maybe return response
      *
-     * @param Request $request
-     * @param Response $response
+     * @param mixed $return
+     *
+     * @return Response|mixed
      */
-    public function __construct( Request $request, Response $response )
+    public function onAjaxReturnResponseOr($return)
     {
-        $this->response = $response;
-        $this->request  = $request;
-        $this->fields = $this->request->getFields();
-        $this->model = is_object($this->modelClass) ? $this->modelClass : new $this->modelClass;
-        $this->init();
-        $this->routing();
+        if((new Request)->isAjax()) {
+            return tr_response();
+        }
+
+        return $return;
     }
 
     /**
-     * Run when object is created
+     * Return Response json or go back with redirect data
      *
-     * @return $this
-     */
-    protected function init()
-    {
-        return $this;
-    }
-
-    /**
-     * Set Model
+     * @param bool $withFields
      *
-     * @param Model $model
-     * @return $this
+     * @return Redirect|Response
      */
-    public function setModel(Model $model)
+    public function returnJsonOrGoBack($withFields = true)
     {
-        $this->model = $model;
+        $response = tr_response();
+        $request = new Request;
 
-        return $this;
-    }
+        if($request->isAjax() || $request->isGet()) {
+            return $response;
+        }
 
-    /**
-     * Get Model
-     *
-     * @return mixed
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
+        $redirect = tr_redirect()->back();
+        $request = new Request;
 
-    public function setRequest($request)
-    {
-        $this->request = $request;
+        $response->withRedirectData();
+        $response->withRedirectMessage();
+        $response->withRedirectErrors();
 
-        return $this;
-    }
+        if($response->hasErrors() && $withFields) {
+            $redirect->withOldFields($request->getFields());
+        }
 
-    /**
-     * Get Response
-     *
-     * @return Response
-     */
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    /**
-     * Get Request
-     *
-     * @return $this
-     */
-    public function getRequest()
-    {
-        return $this;
-    }
-
-    /**
-     * Run just before middleware is run
-     *
-     * @return $this
-     */
-    protected function routing()
-    {
-        return $this;
+        return $redirect;
     }
 
     /**
@@ -122,21 +73,20 @@ class Controller
     }
 
     /**
-     * @param string $group
-     *
-     * @param array $settings
+     * @param string $group Kernel named group
+     * @param array $actions ['show', 'index']
      *
      * @return $this
      */
-    public function setMiddleware( $group, $settings = []) {
+    public function addMiddleware( $group, $actions = []) {
         $middleware['group'] = $group;
 
-        if(array_key_exists('except', $settings)) {
-            $middleware['except'] = $settings['except'];
+        if(array_key_exists('except', $actions)) {
+            $middleware['except'] = $actions['except'];
         }
 
-        if(array_key_exists('only', $settings)) {
-            $middleware['only'] = $settings['only'];
+        if(array_key_exists('only', $actions)) {
+            $middleware['only'] = $actions['only'];
         }
 
         $this->middleware[] = $middleware;
@@ -145,18 +95,15 @@ class Controller
     }
 
     /**
-     * invalid
-     * if($this->invalid()) return tr_redirect()
-     * @return bool whether validation is passed
+     * Get Fields
+     *
+     * @param null $field
+     *
+     * @return array|null
      */
-    protected function invalid()
+    public function getFields($field = null)
     {
-        $validator = tr_validator($this->validation, $this->fields);
-        if($validator->getErrors()) {
-            $validator->flashErrors($this->response);
-            return true;
-        }
-        return false;
+        return apply_filters('tr_controller_fields', tr_request()->getFields($field), $this);
     }
 
 }

@@ -1,6 +1,6 @@
 /* Sort Helper
 ----------------------------------------------------------------------- */
-.typerocket-container .ui-sortable-helper {
+.tr-ui-sortable-helper {
     opacity: 0.8;
     cursor: move;
     overflow: hidden;
@@ -14,4 +14,5 @@
     z-index: 1;
     box-shadow: none;
     max-height: 300px !important;
+    box-sizing: border-box;
 }

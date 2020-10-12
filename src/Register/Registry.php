@@ -2,8 +2,6 @@
 namespace TypeRocket\Register;
 
 use Closure;
-use TypeRocket\Core\Config;
-use TypeRocket\Models\Model;
 use TypeRocket\Models\WPPost;
 use WP_Post;
 use WP_Query;
@@ -11,18 +9,17 @@ use WP_Term;
 
 class Registry
 {
-
     public static $collection = [];
     public static $aggregateCollection = [];
 
     public static $postTypes = [
-        'post' => ['post', 'posts', null, null],
-        'page' => ['page', 'pages', null, null]
+        'post' => ['singular' => 'post', 'plural' => 'posts', 'controller' => null],
+        'page' => ['singular' => 'page', 'plural' => 'pages', 'controller' => null],
     ];
 
     public static $taxonomies = [
-        'category' => ['category', 'categories', null, null],
-        'post_tag' => ['tag', 'tags', null, null]
+        'category' => ['singular' => 'category', 'plural' => 'categories', 'controller' => null],
+        'post_tag' => ['singular' => 'tag', 'plural' => 'tags', 'controller' => null]
     ];
 
     public static $customs = [];
@@ -34,7 +31,7 @@ class Registry
      * @param array $resource resource name ex. posts, pages, books
      */
     public static function addPostTypeResource($id, $resource = []) {
-        self::$postTypes[$id] = array_pad($resource, 4, null);
+        self::$postTypes[$id] = array_pad($resource, 3, null);
     }
 
     /**
@@ -66,7 +63,7 @@ class Registry
      * @param array $resource resource name ex. posts, pages, books
      */
     public static function addTaxonomyResource($id, $resource = []) {
-        self::$taxonomies[$id] = array_pad($resource, 4, null);
+        self::$taxonomies[$id] = array_pad($resource, 3, null);
     }
 
     /**
@@ -76,7 +73,7 @@ class Registry
      * @param array $resource resource name ex. posts, pages, books
      */
     public static function addCustomResource($id, $resource = []) {
-        self::$customs[$id] = array_pad($resource, 4, null);
+        self::$customs[$id] = array_pad($resource, 3, null);
     }
 
     /**
@@ -126,7 +123,7 @@ class Registry
                     }
                 }
 
-                if ($obj instanceof Page && ! empty( $obj->parent ) ) {
+                if ($obj instanceof Page && ! empty( $obj->getParent() ) ) {
                     $later[] = $obj;
                     array_pop($collection);
                 }
@@ -144,8 +141,8 @@ class Registry
                 add_action( 'admin_init', [$obj, 'register']);
                 add_action( 'add_meta_boxes', [$obj, 'register']);
             } elseif ($obj instanceof Page) {
-                if($obj->useController) {
-                    add_action( 'admin_init', [$obj, 'respond'] );
+                if($obj->getHandler()) {
+                    add_action( 'admin_init', [$obj, 'respond']);
                 }
 
                 add_action( 'admin_menu', [$obj, 'register']);
@@ -154,7 +151,7 @@ class Registry
 
         add_action( 'init', function() {
             self::setAggregatePostTypeHooks();
-        });
+        }, 12);
     }
 
     /**
@@ -206,7 +203,35 @@ class Registry
 
         if( !empty($obj->getArchiveQuery()) ) {
             add_action('pre_get_posts', Closure::bind(function( WP_Query $main_query ) {
-                if($main_query->is_main_query() && $main_query->is_post_type_archive($this->getId())) {
+                /**
+                 * @var PostType $this
+                 */
+                if(!$main_query->is_main_query() || $main_query->is_admin) {
+                    return;
+                }
+
+                $isTax = false;
+                $id = $this->getId();
+
+                if($this->getArchiveQueryWithTaxonomies() && !empty($main_query->tax_query->queries)) {
+                    $taxonomyList = get_object_taxonomies($id);
+                    foreach($taxonomyList as $taxonomy){
+                        if($taxonomy == 'category' && $main_query->is_category()) {
+                            $isTax = true;
+                            break;
+                        }
+                        elseif($taxonomy == 'post_tag' && $main_query->is_tag()) {
+                            $isTax = true;
+                            break;
+                        }
+                        elseif($main_query->is_tax($taxonomy)){
+                            $isTax = true;
+                            break;
+                        }
+                    }
+                }
+
+                if($main_query->is_post_type_archive($id) || $isTax) {
                     $query = $this->getArchiveQuery();
                     foreach ($query as $key => $value) {
                         $main_query->set($key, $value);
@@ -232,11 +257,45 @@ class Registry
             }
         }
 
+        if(!empty($obj->getSaves())) {
+            add_action('save_post', function ($id, $post) use ($obj) {
+                if(
+                    $post->post_type != $obj->getId() ||
+                    wp_is_post_revision($id) ||
+                    $post->post_status == 'auto-draft'
+                ) { return; }
+
+                global $wpdb;
+                $saves = $obj->getSaves();
+                $class = $obj->getModelClass();
+                $model = (new $class)->wpPost($post, true)->load('meta');
+                $fields = [];
+
+                foreach ($saves as $field => $fn) {
+                    $value = $fn($model);
+                    $value = sanitize_post_field($field, $value, $id, 'db' );
+                    $fields[$field] = $value;
+                }
+
+                $wpdb->update( $wpdb->posts, $fields, ['ID' => $id]);
+            }, 11, 2);
+        }
+
+        if(!is_null($obj->getRevisions())) {
+            add_filter( 'wp_revisions_to_keep', function($num, $post) use ($obj) {
+                if ( $post->post_type == $obj->getId() ) {
+                    return $obj->getRevisions();
+                }
+
+                return $num;
+            }, 10, 2 );
+        }
+
         if($obj->getRootSlug()) {
             self::$aggregateCollection['post_type']['root_slug'][] = $obj->getId();
         }
 
-        if($obj->getForgeDisableGutenberg()) {
+        if($obj->getForceDisableGutenberg()) {
             self::$aggregateCollection['post_type']['use_gutenberg'][] = $obj->getId();
         }
 
@@ -251,33 +310,36 @@ class Registry
      */
     public static function taxonomyFormContent( Taxonomy $obj ) {
 
-        $callback = function( $term, $type, $obj )
+        $callback = function( $term, $obj )
         {
             /** @var Taxonomy $obj */
             if ( $term == $obj->getId() || $term->taxonomy == $obj->getId() ) {
-                $func = 'add_form_content_' . $obj->getId() . '_' . $type;
-                echo '<div class="typerocket-container typerocket-taxonomy-style">';
-                $form = $obj->getForm( $type );
+                $func = 'add_form_content_' . $obj->getId() . '_taxonomy';
+
+                $form = $obj->getMainForm();
                 if (is_callable( $form )) {
                     call_user_func( $form, $term );
                 } elseif (function_exists( $func )) {
                     call_user_func( $func, $term );
-                } elseif ( Config::locate('app.debug') == true) {
-                    echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
+                } elseif ( tr_debug() ) {
+                    echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                 }
-                echo '</div>';
             }
         };
 
-        if ($obj->getForm( 'main' )) {
+        if ($obj->getMainForm()) {
             add_action( $obj->getId() . '_edit_form', function($term) use ($obj, $callback) {
-                $type = 'main';
-                call_user_func_array($callback, [$term, $type, $obj]);
+                echo tr_field_nonce('hook');
+                echo '<div class="tr-taxonomy-edit-container typerocket-wp-style-table">';
+                call_user_func_array($callback, [$term, $obj]);
+                echo '</div>';
             }, 10, 2 );
 
             add_action( $obj->getId() . '_add_form_fields', function($term) use ($obj, $callback) {
-                $type = 'main';
-                call_user_func_array($callback, [$term, $type, $obj]);
+                echo tr_field_nonce('hook');
+                echo '<div class="tr-taxonomy-add-container typerocket-wp-style-subtle">';
+                call_user_func_array($callback, [$term, $obj]);
+                echo '</div>';
             }, 10, 2 );
         }
     }
@@ -299,14 +361,15 @@ class Registry
             if ($post->post_type == $obj->getId()) {
                 $func = 'add_form_content_' . $obj->getId() . '_' . $type;
                 echo '<div class="typerocket-container">';
+                echo tr_field_nonce('hook');
 
                 $form = $obj->getForm( $type );
                 if (is_callable( $form )) {
                     call_user_func( $form );
                 } elseif (function_exists( $func )) {
                     call_user_func( $func, $post );
-                } elseif (Config::locate('app.debug') == true) {
-                    echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
+                } elseif (tr_debug()) {
+                    echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                 }
                 echo '</div>';
             }
@@ -356,18 +419,7 @@ class Registry
         $pt = $post_type->getId();
         $new_columns = $post_type->getColumns();
 	    $primary_column = $post_type->getPrimaryColumn();
-
-        $model = WPPost::class;
-
-        add_action('wp_loaded', function() use (&$model, $pt) {
-            $resource = Registry::getPostTypeResource($pt);
-            if($resource) {
-                if (class_exists($resource[2])) {
-                    /** @var \TypeRocket\Models\Model|string $model */
-                    $model = $resource[2];
-                }
-            }
-        }, 9);
+        $model = $post_type->getModelClass();
 
         add_filter( "manage_edit-{$pt}_columns" , function($columns) use ($new_columns) {
             foreach ($new_columns as $key => $new_column) {
@@ -381,24 +433,30 @@ class Registry
             return $columns;
         });
 
-        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($new_columns, &$model) {
-            global $post;
+        add_action( "manage_{$pt}_posts_custom_column" , function($column, $post_id) use ($new_columns, $model) {
+            $post = get_post($post_id);
+
+            /** @var WPPost $post_temp */
+            $post_temp = (new $model)->wpPost($post, true)->load('meta');
 
             foreach ($new_columns as $new_column) {
                 if(!empty($new_column['field']) && $column == $new_column['field']) {
+
                     $data = [
                         'column' => $column,
                         'field' => $new_column['field'],
                         'post' => $post,
-                        'post_id' => $post_id
+                        'post_id' => $post_id,
+                        'model' => $post_temp
                     ];
-                    /** @var Model $post_temp */
-                    $post_temp = (new $model);
+
                     $value = $post_temp
                         ->setProperty($post_temp->getIdColumn(), $post_id)
                         ->getBaseFieldValue($new_column['field']);
 
-                    call_user_func_array($new_column['callback'], [$value, $data]);
+                    if($result = call_user_func_array($new_column['callback'], [$value, $data])) {
+                        echo $result;
+                    }
                 }
             }
         }, 10, 2);
@@ -427,8 +485,7 @@ class Registry
                             if ( isset( $vars['orderby'] ) && $new_column['field'] == $vars['orderby'] ) {
 
                                 if( ! in_array($new_column['field'], (new WPPost())->getBuiltinFields())) {
-                                    if(!empty($new_column['order_by'])) {
-
+                                    if( is_string($new_column['order_by']) ) {
                                         switch($new_column['order_by']) {
                                             case 'number':
                                             case 'num':
@@ -473,7 +530,7 @@ class Registry
     }
 
     /**
-     * Run agrogate
+     * Run aggregate
      */
     public static function setAggregatePostTypeHooks()
     {

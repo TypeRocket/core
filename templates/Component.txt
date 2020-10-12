@@ -1,0 +1,30 @@
+<?php
+namespace {{namespace}};
+
+use TypeRocket\Template\Component;
+
+class {{component}} extends Component
+{
+    protected $title = '{{title}}';
+
+    /**
+     * Admin Fields
+     */
+    public function fields()
+    {
+        $form = $this->form();
+    }
+
+    /**
+     * Render
+     *
+     * @var array $data component fields
+     * @var array $info name, item_id, model, first_item, last_item, component_id, hash
+     */
+    public function render(array $data, array $info)
+    {
+        ?>
+
+        <?php
+    }
+}

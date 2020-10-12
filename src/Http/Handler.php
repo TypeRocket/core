@@ -1,64 +1,18 @@
 <?php
-
-
 namespace TypeRocket\Http;
 
-
-use TypeRocket\Controllers\Controller;
+use TypeRocket\Core\Resolver;
 use TypeRocket\Utility\Str;
 
 class Handler
 {
-    protected $handler;
-    protected $action;
+    protected $controller;
+    protected $constructController;
     protected $args;
     protected $hook;
-    protected $rest;
-    protected $custom;
-    protected $middlewareGroups;
-    protected $resource;
+    protected $template;
+    protected $middlewareGroups = [];
     protected $route;
-
-    /**
-     * @return mixed
-     */
-    public function getHandler()
-    {
-        return $this->handler;
-    }
-
-    /**
-     * @param string|Controller $handler
-     * @return Handler
-     */
-    public function setHandler($handler)
-    {
-        $this->handler = $handler;
-
-        return $this;
-    }
-
-    /**
-     * Get Action
-     *
-     * @return string
-     */
-    public function getAction()
-    {
-
-        return $this->action;
-    }
-
-    /**
-     * @param string $action
-     * @return Handler
-     */
-    public function setAction($action)
-    {
-        $this->action = $action;
-
-        return $this;
-    }
 
     /**
      * @return mixed
@@ -89,9 +43,28 @@ class Handler
      * @param array $args
      * @return Handler
      */
-    public function setArgs($args)
+    public function setArgs($args) : Handler
     {
         $this->args = $args;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param bool $bool
+     * @return Handler
+     */
+    public function setTemplate($bool = true) : Handler
+    {
+        $this->template = $bool;
 
         return $this;
     }
@@ -105,12 +78,12 @@ class Handler
     }
 
     /**
-     * @param bool $hook
+     * @param bool $bool
      * @return Handler
      */
-    public function setHook($hook)
+    public function setHook($bool = true) : Handler
     {
-        $this->hook = $hook;
+        $this->hook = $bool;
 
         return $this;
     }
@@ -120,46 +93,16 @@ class Handler
      */
     public function getMiddlewareGroups()
     {
-        return explode('|', $this->middlewareGroups);
+        return $this->middlewareGroups;
     }
 
     /**
-     * @param string|array $groups
+     * @param array $groups
      * @return Handler
      */
-    public function setMiddlewareGroups($groups)
+    public function setMiddlewareGroups(array $groups) : Handler
     {
-        $groups = (string) is_array($groups) ? implode('|', array_filter($groups)) : $groups;
-        $this->middlewareGroups = strtolower($groups);
-
-        return $this;
-    }
-
-    /**
-     * @param null $type
-     * @return string
-     */
-    public function getResource($type = null)
-    {
-        switch($type) {
-            case 'camel' :
-            case 'camelize' :
-                return Str::camelize( $this->resource );
-            case 'lower' :
-            case 'lowercase' :
-                return strtolower( $this->resource );
-        }
-
-        return $this->resource;
-    }
-
-    /**
-     * @param mixed $resource
-     * @return Handler
-     */
-    public function setResource($resource)
-    {
-        $this->resource = $resource;
+        $this->middlewareGroups = $groups;
 
         return $this;
     }
@@ -176,7 +119,7 @@ class Handler
      * @param mixed $route
      * @return $this
      */
-    public function setRoute($route)
+    public function setRoute($route) : Handler
     {
         $this->route = $route;
 
@@ -184,39 +127,71 @@ class Handler
     }
 
     /**
-     * @param mixed $rest
+     * Set Controller
+     *
+     * @param array|callable|string $controller
+     * @param array $with associative array of constructor values
+     *
      * @return Handler
      */
-    public function setRest($rest)
+    public function setController($controller, array $with = []) : Handler
     {
-        $this->rest = $rest;
+        $provided = $controller;
+
+        if ( !is_callable($controller) && is_string($controller) ) {
+            list($action, $controller) = array_pad(explode('@', $controller), 2, null);
+            $maybeController = tr_controller($controller);
+
+            if( strpos($controller, "\\") === false && class_exists($maybeController) ) {
+                $controller = $maybeController;
+            }
+
+            if(!class_exists($controller)) {
+                wp_die('Invalid controller provided: ' . $provided);
+            }
+
+            $controller = [$controller, $action];
+        }
+
+        $this->controller = $controller;
+        $this->constructController = $with;
+
         return $this;
     }
 
     /**
-     * @return mixed
+     * Get Controller
+     *
+     * @return array|callable
+     * @throws \Exception
      */
-    public function getRest()
+    public function getController()
     {
-        return $this->rest;
-    }
+        if(is_array($this->controller) && is_string($this->controller[0])) {
 
-    /**
-     * @param bool $custom
-     * @return Handler
-     */
-    public function setCustom($custom)
-    {
-        $this->custom = $custom;
-        return $this;
-    }
+            /**
+             * Is Resource
+             *
+             * A definition can start with an @. When it does load the
+             * controller it belongs to from the app folder.
+             */
+            if($this->controller[0][0] === '@') {
+                $resource = Str::camelize( substr($this->controller[0], 1) );
+                $this->controller[0] = tr_controller($resource);
+            }
 
-    /**
-     * @return bool
-     */
-    public function getCustom()
-    {
-        return $this->custom;
+            $this->controller[0] = (new Resolver)->resolve($this->controller[0], $this->constructController);
+        }
+
+        if(is_array($this->controller) && method_exists($this->controller[0], 'onHandlerAcquire')) {
+            (new Resolver)->resolveCallable([$this->controller[0], 'onHandlerAcquire'], $this);
+        }
+
+        if(is_callable($this->controller, true)) {
+            return $this->controller;
+        }
+
+        return null;
     }
 
 }

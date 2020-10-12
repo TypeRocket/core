@@ -1,14 +1,12 @@
 <?php
-
-use TypeRocket\Core\Injector;
-use TypeRocket\Http\ApplicationRoutes;
-use TypeRocket\Http\RouteCollection;
-
 require __DIR__.'/../vendor/autoload.php';
 date_default_timezone_set('UTC');
 
 $_SERVER['SERVER_PROTOCOL'] = $_SERVER['SERVER_PROTOCOL'] ?? null;
 $_SERVER['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+$_SERVER['REQUEST_URI'] = '/php-unit-tests?phpunit=yes';
+$_SERVER['HTTP_HOST'] = 'example.com';
+$_SERVER['SERVER_NAME'] = 'trtestsys';
 
 function getWordpressPath()
 {
@@ -33,8 +31,7 @@ if( ! file_exists($wp_load) ) {
     echo 'PHP Unit: WordPress Not Connected at ' . $wp_load . PHP_EOL;
 } else {
     define('BASE_WP', $wp_load);
-    define('WP_USE_THEMES', false);
-    new \TypeRocket\Core\Config( __DIR__ . '/config');
+    define('WP_USE_THEMES', true);
 
     // Disable email
     function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) { return true; }
@@ -42,8 +39,6 @@ if( ! file_exists($wp_load) ) {
     require BASE_WP . '/wp-load.php';
     require BASE_WP . '/wp-admin/includes/user.php';
     require BASE_WP . '/wp-admin/includes/upgrade.php';
-
-    \TypeRocket\Core\Launcher::bootContainer();
 
     // Create Mock Tables
     dbDelta('CREATE TABLE `posts_terms` (

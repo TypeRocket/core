@@ -3,7 +3,6 @@ namespace TypeRocket\Utility;
 
 class Sanitize
 {
-
     /**
      * Sanitize a textarea input field. Removes bad html like <script> and <html>.
      *
@@ -105,6 +104,17 @@ class Sanitize
     }
 
     /**
+     * Sanitizes content for allowed HTML tags for post content.
+     *
+     * @param string $input Post content to filter.
+     * @return string Filtered post content with allowed HTML tags and attributes intact.
+     */
+    public static function post($input)
+    {
+        return wp_kses_post($input);
+    }
+
+    /**
      *
      *
      * @param string $input HTML input
@@ -116,14 +126,67 @@ class Sanitize
      */
     public static function html($input, $allowed_tags = null, $namespace = null, $auto_p = false) {
         $tags = apply_filters('tr_sanitize_html_tags_' . ($namespace ?? 'default'), $allowed_tags ?? [
-                'em' => [],
-                'strong' => [],
-                'ul' => [],
-                'ol' => [],
-                'li' => [],
-                'p' => [],
-                'br' => [],
-            ]);
+            'em' => [],
+            'strong' => [],
+            'small' => [],
+            'sub' => [],
+            'sup' => [],
+            'b' => [],
+            'i' => [],
+            'ul' => [],
+            'ol' => [],
+            'hgroup' => [],
+            'h1' => [],
+            'h2' => [],
+            'h3' => [],
+            'h4' => [],
+            'h5' => [],
+            'h6' => [],
+            'table' => [],
+            'tbody' => [],
+            'tfoot' => [],
+            'thead' => [],
+            'dd' => [],
+            'dt' => [],
+            'dl' => [],
+            'tr' => [],
+            'th' => [],
+            'td' => [],
+            'figure' => [],
+            'figcaption' => [],
+            'caption' => [],
+            'img' => [
+                'src' => true,
+                'alt' => true,
+            ],
+            'video'      => array(
+                'autoplay'    => true,
+                'controls'    => true,
+                'height'      => true,
+                'loop'        => true,
+                'muted'       => true,
+                'playsinline' => true,
+                'poster'      => true,
+                'preload'     => true,
+                'src'         => true,
+                'width'       => true,
+            ),
+            'a' => [
+                'href' => true,
+                'title' => true,
+                'rev'      => true,
+                'rel' => true,
+                'target' => true,
+                'download' => ['valueless' => 'y'],
+            ],
+            'li' => [],
+            'blockquote' => [],
+            'cite' => [],
+            'code' => [],
+            'hr' => [],
+            'p' => [],
+            'br' => [],
+        ]);
         $output =  trim(wp_kses(trim($input), $tags));
 
         if($auto_p) {

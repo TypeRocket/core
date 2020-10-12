@@ -6,13 +6,13 @@ namespace Http;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Core\Injector;
-use TypeRocket\Elements\Form;
+use TypeRocket\Elements\BaseForm;
 use TypeRocket\Http\ApplicationRoutes;
 use TypeRocket\Http\CustomRequest;
 use TypeRocket\Http\Redirect;
 use TypeRocket\Http\Route;
 use TypeRocket\Http\RouteCollection;
-use TypeRocket\Http\Routes;
+use TypeRocket\Http\Router;
 use TypeRocket\Models\WPPost;
 
 class RouteTest extends TestCase
@@ -21,6 +21,15 @@ class RouteTest extends TestCase
     public function testMakeGetRoute()
     {
         $route = tr_route()->get()->match('/app-test')->do(function() {
+            return 'Hi';
+        });
+
+        $this->assertTrue($route instanceof Route);
+    }
+
+    public function testMakeNewStaticGetRoute()
+    {
+        $route = Route::new()->get()->match('/app-test')->do(function() {
             return 'Hi';
         });
 
@@ -55,14 +64,28 @@ class RouteTest extends TestCase
             'method' => 'GET'
         ]);
 
-        $route = (new Routes($request, [
+        // basic
+        $route = (new Router($request, [
             'root' => 'https://example.com/wordpress/'
         ], Injector::resolve(RouteCollection::class) ))->detectRoute();
 
-        $map = resolve_method_args($route->match[1]->do,  $route->match[2]);
-        $response = resolve_method_map($map);
 
-        $this->assertTrue($response[0] == '1' && $response[1] >= 2);
+        $this->assertTrue($route->args['id'] === '1');
+
+        // no slash
+        $route = (new Router($request, [
+            'root' => 'https://example.com/wordpress'
+        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
+
+        $this->assertTrue($route->args['id'] === '1');
+
+        // http
+        $route = (new Router($request, [
+            'root' => 'http://example.com/wordpress'
+        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
+
+
+        $this->assertTrue($route->args['id'] === '1');
     }
 
     public function testRoutesCount()
@@ -78,13 +101,13 @@ class RouteTest extends TestCase
             'method' => 'GET'
         ]);
 
-        $route = (new Routes($request, [
+        $route = (new Router($request, [
             'root' => 'https://example.com/wordpress/'
         ], Injector::resolve(RouteCollection::class)))->detectRoute();
 
-        $matched_route = $route->match[0];
+        $matched_route = $route->path;
 
-        $this->assertTrue($matched_route == 'wordpress/app-test');
+        $this->assertTrue($matched_route == 'app-test');
     }
 
     public function testRoutesMatchRoot()
@@ -94,11 +117,11 @@ class RouteTest extends TestCase
             'method' => 'GET'
         ]);
 
-        $route = (new Routes($request, [
+        $route = (new Router($request, [
             'root' => 'https://example.com/wordpress/'
         ], Injector::resolve(RouteCollection::class) ))->detectRoute();
 
-        $matched_route = $route->match[0];
+        $matched_route = $route->path;
 
         $this->assertTrue($matched_route == 'app-test/');
     }
@@ -111,30 +134,30 @@ class RouteTest extends TestCase
             ->match('/about/me/(.+)', ['id'])
             ->name('about.me', '/about/me/:id/:given-name');
 
-        $located = tr_route_lookup('about.me');
+        $located = tr_route_find('about.me');
 
         $built = $located->buildUrlFromPattern([
             ':id' => 123,
             'given-name' => 'kevin'
         ], false);
 
-        $built_helper = tr_route_url_lookup('about.me', [
+        $built_helper = tr_route_url('about.me', [
             ':id' => 987,
             'given-name' => 'ben'
         ], false);
 
-        $this->assertTrue($built == '/about/me/123/kevin');
-        $this->assertTrue($built_helper == '/about/me/987/ben');
+        $this->assertTrue($built == '/about/me/123/kevin/');
+        $this->assertTrue($built_helper == '/about/me/987/ben/');
 
-        $form = new Form('post', 'update', 1, WPPost::class);
+        $form = new BaseForm('post', 'update', 1, WPPost::class);
 
-        $formUrl = $form->useRoute('about.me')->getFormUrl();
+        $formUrl = $form->toRoute('about.me')->getFormUrl();
         $this->assertContains('/about/me/1/:given-name', $formUrl);
     }
 
     public function testRouteNamedNoPatternAutoDetect()
     {
-        $routes = new ApplicationRoutes();
+        $routes = new RouteCollection();
         $route = new Route();
 
         $route

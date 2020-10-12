@@ -1,21 +1,25 @@
 <?php
-
 namespace TypeRocket\Http;
 
 use TypeRocket\Http\Middleware\Middleware;
 
 class Stack
 {
-    protected $middleware;
+    /** @var array  */
+    protected $middleware = [];
+    /** @var Kernel  */
+    protected $kernel;
 
     /**
      * Stack Constructor
      *
+     * @param Kernel $kernel
      * @param array $middleware
      */
-    public function __construct($middleware)
+    public function __construct(Kernel $kernel, array $middleware = null)
     {
-        $this->middleware = $middleware;
+        $this->kernel = $kernel;
+        $this->setMiddleware($middleware);
     }
 
     /**
@@ -23,22 +27,48 @@ class Stack
      *
      * @param Request $request
      * @param Response $response
-     * @param Router $client
+     * @param ControllerContainer $client
      * @param mixed $handler
      *
-     * @return $this
      * @throws \Exception
      */
     public function handle($request, $response, $client, $handler)
     {
         foreach($this->middleware as $class) {
-            /** @var Middleware $client
-             */
+            /** @var Middleware $client */
             $client = new $class($request, $response, $client, $handler);
         }
 
         $client->handle();
+    }
 
-        return $this;
+    /**
+     * Set Middleware
+     *
+     * @param array $middleware
+     */
+    public function setMiddleware(array $middleware)
+    {
+        $this->middleware = $middleware;
+    }
+
+    /**
+     * Get Middleware
+     *
+     * @return array
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
+    }
+
+    /**
+     * Get Kernel
+     *
+     * @return Kernel
+     */
+    public function getKernel()
+    {
+        return $this->kernel;
     }
 }

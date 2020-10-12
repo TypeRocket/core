@@ -1,25 +1,18 @@
 <?php
-
-
 namespace TypeRocket\Http;
-
 
 class CustomRequest extends Request
 {
-
     /**
      * CustomRequest constructor.
-     * @param null|array|string $method
-     * @param bool $hook
-     * @param bool $rest
-     * @param bool $custom
+     * @param array $options
      */
-    public function __construct($method = null, $hook = false, $rest = false, $custom = false )
+    public function __construct($options = null)
     {
-        parent::__construct($method, $hook, $rest, $custom);
+        parent::__construct();
 
-        if( is_array($method) ) {
-            foreach ($method as $key => $value) {
+        if( is_array($options) ) {
+            foreach ($options as $key => $value) {
                 $this->{$key} = $value;
             }
         }

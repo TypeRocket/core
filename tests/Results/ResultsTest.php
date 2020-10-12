@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace Results;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\ResultsPaged;
 use TypeRocket\Database\ResultsPostMeta;
+use TypeRocket\Models\Model;
+use TypeRocket\Models\WPOption;
 use TypeRocket\Models\WPPost;
 
 class ResultsTest extends TestCase
@@ -16,6 +19,17 @@ class ResultsTest extends TestCase
         $results->prepend(true);
 
         $this->assertTrue( $results[0] );
+    }
+
+    public function testArrayResults()
+    {
+        $results = new \TypeRocket\Database\Results([
+            'tr' => ['ID' => 0]
+        ]);
+
+        $results->castResults(WPPost::class);
+
+        $this->assertTrue( $results['tr'] instanceof WPPost);
     }
 
     public function testCastToResultsToModel()
@@ -93,15 +107,62 @@ class ResultsTest extends TestCase
 
     public function testResultsPostMeta()
     {
-        update_post_meta(1, 'k1', 1);
-        $posts = (new WPPost('post'))->where('id', 1)->with('meta')->get();
+        add_post_meta(1, 'tr_test_meta', true, true);
+
+        $posts = (new WPPost('post'))->with('meta')->findAll([1])->get();
+
+        delete_post_meta(1, 'tr_test_meta');
 
         foreach ($posts as $post) {
             $post->meta->initKeyStore();
             $this->assertTrue( $post->meta instanceof ResultsPostMeta );
         }
+    }
 
-        delete_post_meta(1, 'k1');
+    public function testResultsPages()
+    {
+        /** @var ResultsPaged $options */
+        $options = (new WPOption)->findAll()->paginate();
+
+        $array = $options->toArray();
+
+        $this->assertTrue($options instanceof ResultsPaged);
+        $this->assertTrue(is_array($array));
+        $this->assertTrue($array['links']['next'] === 'http://example.com/php-unit-tests?phpunit=yes&paged=2');
+        $this->assertTrue($array['links']['previous'] === null);
+        $this->assertContains('http://example.com/php-unit-tests?phpunit=yes&paged=', $array['links']['last']);
+        $this->assertTrue($array['links']['first'] === 'http://example.com/php-unit-tests?phpunit=yes&paged=1');
+    }
+
+    public function testResultsPagesNull()
+    {
+        /** @var ResultsPaged $posts */
+        $posts = (new WPPost)->with('meta')->findAll([1,2])->paginate();
+
+        $array = $posts->toArray();
+
+        $this->assertTrue($posts instanceof ResultsPaged);
+        $this->assertTrue(is_array($array));
+        $this->assertTrue($array['links']['next'] === null);
+        $this->assertTrue($array['links']['previous'] === null);
+        $this->assertTrue($array['links']['last'] === null);
+        $this->assertTrue($array['links']['first'] === null);
+    }
+
+    public function testResultsEagerLoading()
+    {
+        add_post_meta(1, 'tr_test_meta', true, true);
+
+        $posts = (new WPPost('post'))->findAll([1])->get()->load('meta');
+
+        delete_post_meta(1, 'tr_test_meta');
+
+        /** @var Model $post */
+        foreach ($posts as $post) {
+            $meta = $post->getRelationship('meta');
+            $meta->initKeyStore();
+            $this->assertTrue( $post->meta instanceof ResultsPostMeta );
+        }
     }
 
 }

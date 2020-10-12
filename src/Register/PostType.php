@@ -1,10 +1,11 @@
 <?php
 namespace TypeRocket\Register;
 
-use TypeRocket\Core\Config;
-use TypeRocket\Elements\Icons;
+use TypeRocket\Auth\Roles;
+use TypeRocket\Models\WPPost;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Sanitize;
+use TypeRocket\Utility\Str;
 
 class PostType extends Registrable
 {
@@ -12,16 +13,22 @@ class PostType extends Registrable
 
     protected $title = null;
     protected $form = [];
+    /** @var callable[]  */
+    protected $saves = [];
+    protected $modelClass = WPPost::class;
     protected $taxonomies = [];
+    protected $revisions = null;
     protected $columns = [];
     protected $primaryColumn = null;
     protected $metaBoxes = [];
     protected $archiveQuery = [];
+    protected $archiveQueryTaxonomies = false;
     protected $icon = null;
     protected $resource = null;
     protected $existing = null;
     protected $hooksAttached = false;
     protected $rootSlug = false;
+    protected $featureless = false;
     protected $forceDisableGutenberg = false;
 
     /**
@@ -30,58 +37,78 @@ class PostType extends Registrable
      * Do not use before init hook.
      *
      * @param string $singular singular name is required
-     * @param string $plural plural name
-     * @param array $settings args override and extend
+     * @param string|array|null $plural plural name or settings array override
+     * @param array|null $settings args override and extend
      */
-    public function __construct( $singular, $plural = null, $settings = [] )
+    public function __construct( $singular, $plural = null, $settings = null )
     {
-        // make lowercase
         $singularLower = strtolower( trim($singular) );
+
+        if(is_array($plural) && is_null($settings)) {
+            $settings = $plural;
+            $plural = null;
+        } elseif(is_null($settings)) {
+            $settings = [];
+        }
 
         if(is_null($plural)) {
             $plural = strtolower(Inflect::pluralize($singular));
-            $this->existing = get_post_type_object($singularLower);
-
-            if($this->existing) {
-                $this->id = $this->existing->name;
-                $this->args = (array) $this->existing;
-
-                $singular = Sanitize::underscore( $singular );
-                $plural  = Sanitize::underscore( $plural );
-
-                $this->resource = Registry::getPostTypeResource($this->id) ?? [$singular, $plural, null, null];
-                $this->args['supports'] = array_keys(get_all_post_type_supports($this->id));
-                $this->args = array_merge($this->args, $settings);
-
-                return $this;
-            }
         }
 
-        $this->applyQuickLabels($singular, $plural);
+        $this->existing = get_post_type_object($singularLower);
+
+        if($this->existing) {
+            $this->id = $this->existing->name;
+            $this->args = (array) $this->existing;
+
+            $singular = Sanitize::underscore( $singular );
+            $plural  = Sanitize::underscore( $plural );
+
+            $this->resource = Registry::getPostTypeResource($this->id) ?? [
+                    'singular' => $singular,
+                    'plural' => $plural,
+                    'model' => null,
+                    'controller' => null
+                ];
+            $this->args['supports'] = array_keys(get_all_post_type_supports($this->id));
+            $this->args = array_merge($this->args, $settings);
+
+            return $this;
+        }
+
+        $labelSingular = $singular;
+        $labelPlural = $plural;
+        $keep_case = false;
+
+        if(!empty($settings['labeled'])) {
+            $labelSingular = $settings['labeled'][0] ?? $labelSingular;
+            $labelPlural = $settings['labeled'][1] ?? $labelPlural;
+            $keep_case = $settings['labeled'][2] ?? $keep_case;
+            unset($settings['labeled']);
+        }
+
+        if(empty($settings['labeled'])) {
+            $this->applyQuickLabels($labelSingular, $labelPlural, $keep_case);
+        }
 
         // setup object for later use
         $plural   = Sanitize::underscore( $plural );
         $singular = Sanitize::underscore( $singular );
-        $this->resource = [$singular, $plural, $this->modelClass, $this->controllerClass];
+        $this->resource = [
+            'singular' => $singular,
+            'plural' => $plural,
+            'model' => null,
+            'controller' => null
+        ];
         $this->id       = ! $this->id ? $singular : $this->id;
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
-            $settings['capabilities'] = [
-                'publish_posts'       => 'publish_' . $plural,
-                'edit_post'           => 'edit_' . $singular,
-                'edit_posts'          => 'edit_' . $plural,
-                'edit_others_posts'   => 'edit_others_' . $plural,
-                'delete_post'         => 'delete_' . $singular,
-                'delete_posts'        => 'delete_' . $plural,
-                'delete_others_posts' => 'delete_others_' . $plural,
-                'read_post'           => 'read_' . $singular,
-                'read_private_posts'  => 'read_private_' . $plural,
-            ];
+            $settings['capabilities'] = (new Roles)->getCustomPostTypeCapabilities($singular, $plural);
         endif;
 
         $defaults = [
             'description' => $plural,
-            'rewrite'     => [ 'slug' => Sanitize::dash( $this->id ) ],
+            'rewrite'     => [ 'slug' => Sanitize::dash( $plural ) ],
             'public'      => true,
             'supports'    => [ 'title', 'editor' ],
             'has_archive' => true,
@@ -96,7 +123,46 @@ class PostType extends Registrable
 
         $this->args = array_merge( $this->args, $defaults, $settings );
 
+        if(class_exists( $model = tr_model($singular, false) ) ) {
+            $this->setModelClass($model);
+        }
+
         return $this;
+    }
+
+    /**
+     * Set Model Class
+     *
+     * @param string $modelClass
+     *
+     * @return $this
+     */
+    public function setModelClass(string $modelClass)
+    {
+        $this->modelClass = $modelClass;
+
+        return $this;
+    }
+
+    /**
+     * Get Model Class
+     *
+     * @return string
+     */
+    public function getModelClass()
+    {
+        return $this->modelClass;
+    }
+
+    /**
+     * Use Custom Capabilities
+     *
+     * @return PostType $this
+     */
+    public function customCapabilities()
+    {
+        $cap = (new Roles)->getCustomPostTypeCapabilities($this->resource['singular'], $this->resource['plural']);
+        return $this->setArgument('capabilities', $cap);
     }
 
     /**
@@ -105,7 +171,7 @@ class PostType extends Registrable
      * @link https://developer.wordpress.org/reference/functions/get_post_type_labels/
      *
      * @param string $singular
-     * @param string $plural
+     * @param string|null $plural
      * @param bool $keep_case
      * @return PostType $this
      */
@@ -113,33 +179,59 @@ class PostType extends Registrable
     {
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
-        // make lowercase
-        $upperSingular = $keep_case ? $singular :  mb_convert_case($singular, MB_CASE_TITLE, "UTF-8");
-        $upperPlural   = $keep_case ? $plural  : mb_convert_case($plural, MB_CASE_TITLE, "UTF-8");
-        $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
+        $upperSingular = $keep_case ? $singular : mb_ucwords( $singular );
+        $lowerSingular = $keep_case ? $singular : mb_strtolower( $singular );
+        $upperPlural   = $keep_case ? $plural : mb_ucwords( $plural );
+        $pluralLower   = $keep_case ? $plural : mb_strtolower( $plural );
+
+        $context = 'post_type:' . $this->getId();
 
         $labels = [
-            'add_new'            => __('Add New', 'typerocket-profile'),
-            'all_items'          => __('All ' . $upperPlural, 'typerocket-profile'),
-            'add_new_item'       => __('Add New ' . $upperSingular, 'typerocket-profile'),
-            'edit_item'          => __('Edit ' . $upperSingular, 'typerocket-profile'),
-            'item_published'     => __($upperSingular . ' published.', 'typerocket-profile'),
-            'item_updated'       => __($upperSingular . ' updated.', 'typerocket-profile'),
-            'item_reverted_to_draft' => __($upperSingular . ' reverted to draft.', 'typerocket-profile'),
-            'item_scheduled'     => __($upperSingular . ' scheduled.', 'typerocket-profile'),
-            'menu_name'          => __($upperPlural, 'typerocket-profile'),
-            'name'               => __($upperPlural, 'typerocket-profile'),
-            'new_item'           => __('New ' . $upperSingular, 'typerocket-profile'),
-            'not_found'          => __('No ' . $lowerPlural . ' found', 'typerocket-profile'),
-            'not_found_in_trash' => __('No ' . $lowerPlural . ' found in Trash', 'typerocket-profile'),
-            'parent_item_colon'  => __('Parent ' . $upperSingular . ':', 'typerocket-profile'),
-            'search_items'       => __('Search ' . $upperPlural, 'typerocket-profile'),
-            'singular_name'      => __($upperSingular, 'typerocket-profile'),
-            'view_item'          => __('View ' . $upperSingular, 'typerocket-profile'),
+            'add_new'               => _x('Add New', $context, 'typerocket-core'),
+            'all_items'             => sprintf( _x('All %s', $context, 'typerocket-core'), $upperPlural),
+            'archives'              => sprintf( _x('%s Archives', $context, 'typerocket-core'), $upperSingular),
+            'add_new_item'          => sprintf( _x('Add New %s', $context, 'typerocket-core'), $upperSingular),
+            'attributes'            => sprintf( _x('%s Attributes', $context, 'typerocket-core'), $upperSingular),
+            'edit_item'             => sprintf( _x('Edit %s', $context, 'typerocket-core'), $upperSingular),
+            'filter_items_list'     => sprintf( _x('Filter %s list %s', $context, 'typerocket-core'), $pluralLower, $upperSingular),
+            'insert_into_item'      => sprintf( _x('Insert into %s', $context, 'typerocket-core'), $lowerSingular),
+            'item_published'        => sprintf( _x('%s published.', $context, 'typerocket-core'), $upperSingular),
+            'item_published_privately' => sprintf( _x('%s published privately.', 'typerocket-core'), $upperSingular),
+            'item_updated'          => sprintf( _x('%s updated.', $context, 'typerocket-core'), $upperSingular),
+            'item_reverted_to_draft'=> sprintf( _x('%s reverted to draft.', $context, 'typerocket-core'), $upperSingular),
+            'item_scheduled'        => sprintf( _x('%s scheduled.', $context, 'typerocket-core'), $upperSingular),
+            'items_list'            => sprintf( _x('%s list', $context, 'typerocket-core'), $upperPlural),
+            'menu_name'             => sprintf( _x('%s',  $context . ':admin menu', 'typerocket-core'), $upperPlural),
+            'name'                  => sprintf( _x('%s', $context . ':post type general name', 'typerocket-core'), $upperPlural),
+            'name_admin_bar'        => sprintf( _x('%s', $context . ':add new from admin bar', 'typerocket-core'), $upperSingular),
+            'items_list_navigation' => sprintf( _x('%s list navigation', $context, 'typerocket-core'), $upperPlural),
+            'new_item'              => sprintf( _x('New %s', $context, 'typerocket-core'), $upperSingular),
+            'not_found'             => sprintf( _x('No %s found', $context, 'typerocket-core'), $pluralLower),
+            'not_found_in_trash'    => sprintf( _x('No %s found in Trash', $context, 'typerocket-core'), $pluralLower),
+            'parent_item_colon'     => sprintf( _x("Parent %s:", $context, 'typerocket-core'), $upperPlural),
+            'search_items'          => sprintf( _x('Search %s', $context, 'typerocket-core'), $upperPlural),
+            'singular_name'         => sprintf( _x('%s',  $context . ':post type singular name', 'typerocket-core'), $upperSingular),
+            'uploaded_to_this_item' => sprintf( _x('Uploaded to this %s', $context, 'typerocket-core'), $lowerSingular),
+            'view_item'             => sprintf( _x('View %s', $context, 'typerocket-core'), $upperSingular),
+            'view_items'            => sprintf( _x('View %s', $context, 'typerocket-core'), $upperPlural),
         ];
 
-        $this->args['label'] = $upperPlural;
-        $this->args['labels'] = $labels;
+        return $this->setLabels($labels, $upperPlural, false);
+    }
+
+    /**
+     * Set Labels
+     *
+     * @param array $labels
+     * @param string $plural
+     * @param bool $merge
+     *
+     * @return PostType $this
+     */
+    public function setLabels(array $labels, $plural = null, $merge = true)
+    {
+        $this->args['labels'] = $merge ? array_merge($this->args['labels'] ?? [], $labels) : $labels;
+        $this->args['label'] = $plural ?? $this->args['label'];
 
         return $this;
     }
@@ -157,41 +249,77 @@ class PostType extends Registrable
     /**
      * Set the post type menu icon
      *
-     * Add the CSS needed to create the icon for the menu
+     * @link https://developer.wordpress.org/resource/dashicons/
      *
-     * @param string $name
+     * @param string $name icon name does not require prefix.
      *
      * @return PostType $this
      */
     public function setIcon( $name )
     {
-        $name       = strtolower( $name );
-        $icons      = Config::locate('app.class.icons');
-        $icons      = new $icons;
-
-        $this->icon = !empty($icons[$name]) ? $icons[$name] : null;
-        if( ! $this->icon ) {
-            return $this;
-        }
-
-        add_action( 'admin_head', \Closure::bind( function() use ($icons) {
-            $postType = $this->getId();
-            $icon = $this->getIcon();
-            $id = in_array($postType, ['post', 'page']) ? "#menu-{$postType}s" : "#menu-posts-{$postType}";
-            echo "
-            <style type=\"text/css\">
-                #adminmenu {$id} .wp-menu-image:before {
-                    font: {$icons->fontWeight} {$icons->fontSize} {$icons->fontFamily} !important;
-                    content: '{$icon}';
-                    speak: none;
-                    top: 2px;
-                    position: relative;
-                    -webkit-font-smoothing: antialiased;
-                }
-            </style>";
-        }, $this) );
+        $this->setArgument('menu_icon', 'dashicons-' . Str::trimStart($name, 'dashicons-'));
 
         return $this;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function saveTitleAs(callable $callback)
+    {
+        $this->saves['post_title'] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function saveContentAs(callable $callback)
+    {
+        $this->saves['post_content'] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function saveMenuOrderAs(callable $callback)
+    {
+        $this->saves['menu_order'] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function saveExcerptAs(callable $callback)
+    {
+        $this->saves['post_excerpt'] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Get Saver
+     *
+     * @param string|null $key
+     *
+     * @return callable|null|array
+     */
+    public function getSaves($key = null)
+    {
+        return is_null($key) ? $this->saves : ($this->saves[$key] ?? null);
     }
 
     /**
@@ -201,6 +329,58 @@ class PostType extends Registrable
      */
     public function getIcon() {
         return $this->icon;
+    }
+
+    /**
+     * Set Hierarchical
+     *
+     * @param bool $bool
+     *
+     * @return PostType $this
+     */
+    public function setHierarchical($bool = true)
+    {
+        return $this->setArgument('hierarchical', $bool);
+    }
+
+    /**
+     * Exclude from search
+     *
+     * @param bool $bool
+     *
+     * @return PostType
+     */
+    public function excludeFromSearch($bool = true)
+    {
+        return $this->setArgument('exclude_from_search', $bool);
+    }
+
+    /**
+     * Delete with user
+     *
+     * Whether to delete posts of this type when deleting a user. If true, posts of this type
+     * belonging to the user will be moved to trash when then user is deleted. If false,
+     * posts of this type belonging to the user will not be trashed or deleted.
+     *
+     * @param bool $bool
+     *
+     * @return PostType
+     */
+    public function deleteWithUser($bool = true)
+    {
+        return $this->setArgument('delete_with_user', $bool);
+    }
+
+    /**
+     * Set Position
+     *
+     * @param int $number range 5 - 100 and default is 25
+     *
+     * @return PostType
+     */
+    public function setPosition($number = 25)
+    {
+        return $this->setArgument('menu_position', $number);
     }
 
     /**
@@ -314,6 +494,20 @@ class PostType extends Registrable
      *
      * @return PostType $this
      */
+    public function setMainForm($value = true)
+    {
+        return $this->setEditorForm($value);
+    }
+
+    /**
+     * Set the form editor hook
+     *
+     * From hook to be added below the editor
+     *
+     * @param bool|true|callable $value
+     *
+     * @return PostType $this
+     */
     public function setEditorForm( $value = true )
     {
         if (is_callable( $value )) {
@@ -367,6 +561,45 @@ class PostType extends Registrable
     public function getSupports()
     {
         return $this->args['supports'];
+    }
+
+    /**
+     * Make Featureless
+     *
+     * Removes all base features from post type excluding custom meta boxes
+     *
+     * @return $this
+     */
+    public function featureless()
+    {
+        $this->featureless = true;
+        $this->setSupports([]);
+
+        return $this;
+    }
+
+    /**
+     * Keep Number of Revisions
+     *
+     * @param int $number
+     *
+     * @return $this
+     */
+    public function setRevisions($number)
+    {
+        $this->revisions = (int) $number;
+
+        return $this;
+    }
+
+    /**
+     * Get Revisions
+     *
+     * @return int|null
+     */
+    public function getRevisions()
+    {
+        return $this->revisions;
     }
 
     /**
@@ -457,9 +690,33 @@ class PostType extends Registrable
      *
      * @return bool
      */
-    public function getForgeDisableGutenberg()
+    public function getForceDisableGutenberg()
     {
         return $this->forceDisableGutenberg;
+    }
+
+    /**
+     * Apply Archive Query to All Taxonomy Archives
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function setArchiveQueryWithTaxonomies($bool = true)
+    {
+        $this->archiveQueryTaxonomies = (bool) $bool;
+
+        return $this;
+    }
+
+    /**
+     * Get Archive Query Taxonomies
+     *
+     * @return bool
+     */
+    public function getArchiveQueryWithTaxonomies()
+    {
+        return $this->archiveQueryTaxonomies;
     }
 
     /**
@@ -480,7 +737,7 @@ class PostType extends Registrable
      * Set Archive Query Key
      *
      * @param string $key
-     * @param string $value
+     * @param mixed $value
      *
      * @return PostType $this
      */
@@ -524,9 +781,9 @@ class PostType extends Registrable
      *
      * @return PostType $this
      */
-    public function setArchivePostsPerPage( $number = -1)
+    public function setArchivePostsPerPage($number = -1)
     {
-        $this->archiveQuery['posts_per_page'] = $number;
+        $this->archiveQuery['posts_per_page'] = (int) $number;
 
         return $this;
     }
@@ -535,28 +792,32 @@ class PostType extends Registrable
      * Add Column To Admin Table
      *
      * @param string|null $field the name of the field
-     * @param bool $sort make column sortable
+     * @param bool|string|callable $sort_by_c make column sortable (doubles as order_by when string) | callable override
      * @param string|null $label the label for the table header
      * @param callable|null $callback the function used to display the field data
-     * @param string $order_by is the column a string or number
      *
      * @return PostType $this
      */
-    public function addColumn($field, $sort = false, $label = null, $callback = null, $order_by = '') {
-        if( ! $label ) { $label = $field; }
+    public function addColumn($field, $sort_by_c = false, $label = null, $callback = null) {
+        if( ! $label ) { $label = ucwords($field); }
         $field = Sanitize::underscore( $field );
         if( ! $callback ) {
             $callback = function($value) {
-                echo $value;
+                return $value;
             };
+        }
+
+        if(is_callable($sort_by_c)) {
+            $callback = $sort_by_c;
+            $sort_by_c = false;
         }
 
         $this->columns[$field] = [
             'field' => $field,
-            'sort' => $sort,
+            'sort' => $sort_by_c ? true : false,
             'label' => $label,
             'callback' => $callback,
-            'order_by' => $order_by
+            'order_by' => $sort_by_c
         ];
 
         return $this;
@@ -616,6 +877,35 @@ class PostType extends Registrable
         $this->args['public'] = false;
         $this->args['has_archive'] = false;
         $this->args['show_ui'] = true;
+        $this->args['show_in_nav_menus'] = true;
+
+        return $this;
+    }
+
+    /**
+     * Hide Admin
+     *
+     * @return $this
+     */
+    public function hideAdmin()
+    {
+        $this->args['show_ui'] = false;
+        $this->args['show_in_nav_menus'] = false;
+        $this->args['show_in_admin_bar'] = false;
+        $this->args['show_in_menu'] = false;
+
+        return $this;
+    }
+
+    /**
+     * Hide Frontend
+     *
+     * @return $this
+     */
+    public function hideFrontend()
+    {
+        $this->args['publicly_queryable'] = false;
+        $this->args['exclude_from_search'] = false;
 
         return $this;
     }
@@ -646,15 +936,18 @@ class PostType extends Registrable
      * the post type.
      *
      * @return PostType $this
+     * @throws \Exception
      */
     public function register()
     {
         if(!$this->existing) {
-            $this->dieIfReserved();
+            if($this->isReservedId()) {
+                return $this;
+            }
         }
 
-        $supports = array_unique(array_merge($this->args['supports'], $this->metaBoxes));
-        $this->args['supports'] = $supports;
+        $supports = array_filter(array_unique(array_merge($this->args['supports'] ?: [], $this->metaBoxes)));
+        $this->args['supports'] = $this->featureless && empty($supports) ? false : $supports;
         do_action('tr_post_type_register_' . $this->id, $this);
         register_post_type( $this->id, $this->args );
         Registry::addPostTypeResource($this->id, $this->resource);
@@ -666,7 +959,7 @@ class PostType extends Registrable
     /**
      * Add meta box to post type
      *
-     * @param string|MetaBox $s
+     * @param string|array|MetaBox $s
      *
      * @return PostType $this
      */
@@ -674,13 +967,17 @@ class PostType extends Registrable
     {
         if ( $s instanceof MetaBox ) {
             $s = (string) $s->getId();
-        }elseif( is_array($s) ) {
+        } elseif( is_array($s) ) {
             foreach($s as $n) {
                 $this->addMetaBox($n);
             }
+
+            return $this;
         }
 
-        $this->metaBoxes[] = $s;
+        if(is_string($s)) {
+            $this->metaBoxes[] = $s;
+        }
 
         return $this;
     }
@@ -688,7 +985,7 @@ class PostType extends Registrable
     /**
      * Add taxonomy to post type
      *
-     * @param string|Taxonomy $s
+     * @param string|Taxonomy|array $s
      *
      * @return PostType $this
      */
@@ -703,13 +1000,12 @@ class PostType extends Registrable
             }
         }
 
-        if ( ! in_array( $s, $this->taxonomies )) {
+        if ( is_string($s) && ! in_array( $s, $this->taxonomies )) {
             $this->taxonomies[]       = $s;
             $this->args['taxonomies'] = $this->taxonomies;
         }
 
         return $this;
-
     }
 
     /**

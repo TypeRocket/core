@@ -30,7 +30,7 @@ class ValidatorTest extends TestCase
         $errors = $validator->getErrors();
 
         $this->assertEquals($errors['person'], 'Custom Message');
-        $this->assertEquals($errors['email'], '"<strong>Email</strong>" is required. Callable');
+        $this->assertEquals($errors['email'], '<strong>"Email"</strong> is required. Callable');
     }
 
     public function testDeepMultipleSetMessageRegex()
@@ -62,7 +62,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'email' => 'email'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( $validator->passed() );
     }
@@ -73,7 +73,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person.email' => 'email'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( $validator->passed() );
     }
@@ -86,7 +86,7 @@ class ValidatorTest extends TestCase
         $validator = new Validator([
             'person.*.email' => 'email',
             'person.*.name' => 'required',
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(2, count($validator->getPasses()) );
         $this->assertEquals(2, count($validator->getErrors()) );
@@ -100,7 +100,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person.*.email' => 'email'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(3, count($validator->getErrors()) );
     }
@@ -122,7 +122,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person.*.email' => 'callback:\Validator\checkValidatorCallback:option'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(3, count($validator->getPasses()) );
     }
@@ -144,7 +144,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person.*.email' => 'callback:\Validator\checkValidatorCallbackError:option'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(3, count($validator->getErrors()) );
         $this->assertNotTrue( $validator->passed() );
@@ -157,7 +157,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person' => 'min:6'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(1, count($validator->getErrors()) );
     }
@@ -168,31 +168,9 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person' => 'max:4'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(1, count($validator->getErrors()) );
-    }
-
-    public function testRequiredMissing()
-    {
-        $validator = new Validator([
-            'email' => 'required'
-        ], ['email' => null]);
-
-        $errors = $validator->getErrors();
-
-        $this->assertEquals(1, count($errors) );
-    }
-
-    public function testRequiredNoFields()
-    {
-        $validator = tr_validator([
-            'email' => 'required'
-        ], []);
-
-        $errors = $validator->getErrors();
-
-        $this->assertEquals(1, count($errors) );
     }
 
     public function testMinPassing()
@@ -201,7 +179,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person' => 'min:5'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(1, count($validator->getPasses()) );
     }
@@ -212,7 +190,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'person' => 'max:5'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(1, count($validator->getPasses()) );
     }
@@ -223,7 +201,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'number' => 'size:2'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(1, count($validator->getPasses()) );
     }
@@ -234,7 +212,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'number' => 'size:2'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertEquals(1, count($validator->getErrors()) );
     }
@@ -247,7 +225,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options@option_id:' . $result['option_id']
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( $validator->passed() );
     }
@@ -258,7 +236,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( ! $validator->passed() );
     }
@@ -269,7 +247,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options@option_name'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( ! $validator->passed() );
     }
@@ -280,7 +258,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( $validator->passed() );
     }
@@ -291,7 +269,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'option_name' => 'unique:option_name:wp_options@option_id:0'
-        ], $fields);
+        ], $fields, null, true);
 
         $this->assertTrue( ! $validator->passed() );
     }
@@ -302,7 +280,7 @@ class ValidatorTest extends TestCase
 
         $validator = new Validator([
             'title' => 'unique:post_title'
-        ], $fields, WPPost::class);
+        ], $fields, WPPost::class, true);
 
         $this->assertTrue( $validator->passed() );
     }

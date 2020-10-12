@@ -1,8 +1,5 @@
 <?php
-
-
 namespace TypeRocket\Models;
-
 
 class WPTermTaxonomy extends Model
 {
@@ -32,10 +29,14 @@ class WPTermTaxonomy extends Model
      */
     public function initTable( $wpdb )
     {
-        return $wpdb->prefix . 'term_taxonomy';
+        return $wpdb->term_taxonomy;
     }
 
-    public function term() {
+    /**
+     * @return WPTermTaxonomy|null
+     */
+    public function term()
+    {
         return $this->belongsTo( WPTerm::class, 'term_id' );
     }
 

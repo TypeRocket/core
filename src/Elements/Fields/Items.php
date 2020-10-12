@@ -1,12 +1,22 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Html\Generator;
+use TypeRocket\Elements\Traits\Limits;
+use TypeRocket\Html\Html;
 
-class Items extends Field
+class Items extends Field implements ScriptField
 {
-    public $limit = 99999;
+    use Limits;
+
     public $inputType = 'text';
+
+    /**
+     * Get the scripts
+     */
+    public function enqueueScripts()
+    {
+        wp_enqueue_script('jquery-ui-sortable', ['jquery'], false, true );
+    }
 
     /**
      * Run on construction
@@ -22,10 +32,9 @@ class Items extends Field
     public function getString()
     {
         $name = $this->getNameAttributeString();
-        $this->appendStringToAttribute( 'class', 'items-list' );
-        $items = $this->getValue();
+        $this->attrClass( 'items-list' );
+        $items = $this->setCast('array')->getValue();
         $this->removeAttribute('name');
-        $generator = Generator::make();
         $settings = $this->getSettings();
         $num_items = count( is_countable($items) ? $items : []);
 
@@ -42,53 +51,66 @@ class Items extends Field
             'limit' => 'Limit Hit',
         ];
 
+        $limit = __('Limit', 'typerocket-domain');
+
         // controls settings
         if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
             $controls = array_merge($controls, $settings['controls']);
         }
 
-        $list = '';
+        $list = [];
 
         if (is_array( $items )) {
             foreach ($items as $value) {
-
-                $value = esc_attr( $this->sanitize($value, 'raw') );
-                $input = $generator->newInput( $this->inputType, $name . '[]', $value )->getString();
                 $remove = '#remove';
                 $remove_title = __('Remove Item', 'typerocket-domain');
-                $list .= $generator->newElement( 'li', ['class' => 'item'],
-                    '<a class="move tr-control-icon tr-control-icon-move"></a><a href="'.$remove.'" class="remove tr-control-icon tr-control-icon-remove" title="'.$remove_title.'"></a>' . $input )->getString();
-
+                $list[] = Html::li(['class' => 'tr-items-list-item', 'tabindex' => '0'], [
+                    '<a class="move tr-control-icon tr-control-icon-move"></a>',
+                    Html::input( $this->inputType, $name.'[]', $this->sanitize($value, 'raw') ),
+                    Html::el('a', ['href' => $remove, 'class' => 'remove tr-control-icon tr-items-list-item-remove tr-control-icon-remove', 'title' => $remove_title]),
+                ]);
             }
         }
 
         $this->removeAttribute('id');
-        $html = $generator->newInput( 'hidden', $name, '0', $this->getAttributes() )->getString();
-        $html .= '<div class="button-group">';
-        $html .= $generator->newElement( 'input', [
-            'type'  => 'button',
-            'class' => $num_items < $this->limit ? 'items-list-button button' : 'items-list-button disabled button',
+        $html = $this->limit < 99999 ? "<p class=\"tr-field-help-top\">{$limit} {$this->limit}</p>" : '';
+        $html .= (string) Html::input( 'hidden', $name, '0', $this->getAttributes() );
+
+        $add_buttom = $num_items < $this->limit ? $controls['add'] : $controls['limit'];
+
+        $prepend = Html::input('button', null, $add_buttom, [
+            'class' => ($num_items < $this->limit ? '' : 'disabled') . 'tr-items-list-button tr-items-prepend button',
             'data-add' => $controls['add'],
             'data-limit' => $controls['limit'],
-            'value' => $num_items < $this->limit ? $controls['add'] : $controls['limit']
-        ])->getString();
-        $html .= $generator->newElement( 'input', [
-            'type'  => 'button',
-            'class' => 'items-list-clear button',
-            'value' => $controls['clear']
-        ])->getString();
-        $html .= '</div>';
+        ]);
 
-        if (is_null( $name ) && is_string( $this->getAttribute('data-name') )) {
-            $name = $this->getAttribute('data-name');
+        $append = Html::input('button', null, $add_buttom, [
+            'class' => ($num_items < $this->limit ? '' : 'disabled') . 'tr-items-list-button tr-items-append button',
+            'data-add' => $controls['add'],
+            'data-limit' => $controls['limit'],
+        ]);
+
+        $clear = Html::input('button', null, $controls['clear'], [
+            'class' => 'tr-items-list-clear button',
+        ]);
+
+        $html .= Html::div(['class' => 'button-group'], [
+            $prepend,
+            $clear
+        ]);
+
+        if (is_null( $name ) && is_string( $this->getAttribute('data-tr-name') )) {
+            $name = $this->getAttribute('data-tr-name');
         }
 
-        $html .= $generator->newElement( 'ul', [
-            'data-name' => $name,
+        $html .= Html::ul([
+            'data-tr-name' => $name,
             'data-type' => $this->inputType,
             'data-limit' => $this->limit,
             'class'     => 'tr-items-list cf'
-        ], $list )->getString();
+        ], $list );
+
+        $html .= $append;
 
         return $html;
     }
@@ -114,28 +136,6 @@ class Items extends Field
     public function getInputType()
     {
         return $this->inputType;
-    }
-
-    /**
-     * Limit Number of Items
-     *
-     * @param int $limit
-     * @return $this
-     */
-    public function setLimit($limit = 99999)
-    {
-        $this->limit = (int) $limit;
-        return $this;
-    }
-
-    /**
-     * Get Item Limit
-     *
-     * @return int
-     */
-    public function getLimit()
-    {
-        return $this->limit;
     }
 
     /**

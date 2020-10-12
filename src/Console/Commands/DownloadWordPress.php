@@ -1,9 +1,7 @@
 <?php
-
-
 namespace TypeRocket\Console\Commands;
 
-
+use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Str;
@@ -12,7 +10,7 @@ class DownloadWordPress extends Command
 {
     protected $archiveWP;
     protected $path;
-    protected $clean = 'all';
+    protected $type = 'ignore';
 
     protected $command = [
         'wp:download',
@@ -23,22 +21,42 @@ class DownloadWordPress extends Command
     protected function config()
     {
         $this->archiveWP = TR_PATH . '/wp.zip';
-        $this->addArgument('clean', self::OPTIONAL, 'Remove all WordPress themes and plugins');
+        $this->addArgument('type', self::OPTIONAL, 'Process WordPress themes and plugins: all, core, or cleanup');
         $this->addArgument('path', self::OPTIONAL, 'The absolute path where WP will download');
+        $this->addOption('build', 'b', InputOption::VALUE_REQUIRED, 'Download nightly build or specific version of WordPress' );
     }
 
     /**
      * Execute Command
      *
-     * Example command: php galaxy use:templates {wp-content}
+     * Example command: php galaxy wp:download
      *
      * @return void
      */
     protected function exec()
     {
         $path = $this->getArgument('path');
-        $this->clean = $this->getArgument('clean') ?? 'all';
-        $this->path = $path ? rtrim( $path, '/') : TR_PATH;
+        $type = $this->getArgument('type');
+        $this->type = $type ?: 'core';
+        $this->path = rtrim( $path ?  $path : tr_wp_root(), '/');
+
+        switch($this->type) {
+            case 'all' :
+                $this->info('Downloading WordPress core with theme and plugin files.');
+                break;
+            case 'core' :
+                $this->info('Downloading WordPress core without theme and plugin files.');
+                break;
+            case 'cleanup' :
+                $this->warning('Default WordPress themes and plugins will be removed.');
+                $this->warning('If you have a theme name starting with twenty* if may have been removed.');
+                $this->confirm('Continue with download and cleanup? (y|n) ');
+                break;
+            default :
+                $this->error('Invalid command options include: all, core, or cleanup');
+                die();
+                break;
+        }
 
         $this->downloadWordPress();
         $this->unArchiveWordPress();
@@ -50,12 +68,31 @@ class DownloadWordPress extends Command
      */
     protected function downloadWordPress()
     {
-        // Message
-        $this->success('Downloading WordPress');
+        // Remove old ZIP
+        if(file_exists($this->archiveWP)) {
+            unlink($this->archiveWP);
+        }
 
         // Download
         $file = new File( $this->archiveWP );
-        $file->download('https://wordpress.org/latest.zip');
+        $url = 'https://wordpress.org/latest.zip';
+        $build = $this->getOption('build');
+        if(!empty($build) && in_array($build, [ 'd', 'n', 'dev', 'develop',  'development', 'night', 'nightly'])) {
+            $url = 'https://wordpress.org/nightly-builds/wordpress-latest.zip';
+        } elseif(!empty($build) && strpos($build, '.') !== false) {
+            $url = 'https://wordpress.org/wordpress-'.$build.'.zip';
+        }
+
+        $status = get_headers($url, 1);
+        $code = $status[0] ?? null;
+        if(strpos($code ?? '', '200') !== FALSE) {
+            $this->success('Downloading WordPress from ' . $url);
+            $file->download($url);
+        } else {
+            $this->error($status[0]);
+            $this->error('Downloading WordPress failed ' . $url);
+            die();
+        }
     }
 
     /**
@@ -65,13 +102,26 @@ class DownloadWordPress extends Command
         $zip = new \ZipArchive;
 
         if ( $zip->open( $this->archiveWP ) ) {
-            // Message
             $this->success('Extracting WordPress');
 
-            $zip->extractTo( $this->path );
+            $location = $this->path . '/wp-unzip';
+
+            if( ! file_exists( $location ) ) {
+                mkdir($location, 0755, true);
+            }
+
+            $zip->extractTo( $location );
             $zip->close();
+
+            $this->success('Moving files to ' . $this->path);
+            $download = new File($location . '/wordpress');
+            $download->copyTo($this->path, false, true, $this->ignoreInDownload(), $this->getOption('verbose'));
+
+            if(is_dir($location)) {
+                rmdir($location);
+            }
+
         } else {
-            // Error
             $this->error('Error opening archive file');
             die();
         }
@@ -79,33 +129,35 @@ class DownloadWordPress extends Command
         // Cleanup zip file
         if( file_exists( $this->archiveWP ) ) {
             unlink( $this->archiveWP );
-            $this->success('Archive file deleted');
+            $this->success('Downloaded archive deleted at ' . $this->archiveWP);
         }
+    }
+
+    /**
+     * @return array|null
+     */
+    protected function ignoreInDownload() {
+        if($this->type !== 'core') {
+            return null;
+        }
+
+        return [
+            'wp-content/themes/twenty',
+            'wp-content/plugins/akismet',
+            'wp-content/plugins/hello.php',
+        ];
     }
 
     /**
      * Clean WordPress Themes
      */
     protected function cleanWordPress() {
-
-        $remove_themes = false;
-        $remove_plugins = false;
-
-        if($this->clean == 'themes') { $remove_themes = true; }
-        if($this->clean == 'plugins') { $remove_plugins = true; }
-        if($this->clean == 'all') { $remove_themes = $remove_plugins = true; }
-
-        if($remove_themes) {
+        if($this->type == 'cleanup') {
             $this->cleanWordPressThemes();
-        }
-
-        if($remove_plugins) {
             $this->cleanWordPressPlugins();
+            $this->info('Cleanup completed. Default WordPress themes and plugins removed.');
         }
 
-        if($remove_plugins || $remove_themes) { return true; }
-
-        $this->success('Cleanup skipped. Themes and plugins retained.');
         return false;
     }
 
@@ -113,8 +165,7 @@ class DownloadWordPress extends Command
      * Clean WordPress Themes
      */
     protected function cleanWordPressThemes() {
-
-        $twentyThemes = glob( $this->path . "/wordpress/wp-content/themes/twenty*/");
+        $twentyThemes = glob( $this->path . "/wp-content/themes/twenty*/");
 
         foreach ($twentyThemes as $value) {
 
@@ -135,16 +186,16 @@ class DownloadWordPress extends Command
     protected function cleanWordPressPlugins() {
 
         $plugins = [
-            $this->path . '/wordpress/wp-content/plugins/akismet',
-            $this->path . '/wordpress/wp-content/plugins/hello.php',
+            $this->path . '/wp-content/plugins/akismet',
+            $this->path . '/wp-content/plugins/hello.php',
         ];
 
         foreach ($plugins as $value) {
 
             // Message
             $this->success('Deleting ' . $value);
-            if( Str::starts( TR_PATH, $value) && file_exists( $value ) ) {
-                // Delete plugins
+
+            if( Str::starts( $this->path, $value) && file_exists( $value ) ) {
                 ( new File($value) )->removeRecursiveDirectory();
             } else {
                 $this->error('Error deleting none project file ' . $value);

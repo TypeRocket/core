@@ -3,29 +3,22 @@ namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\ControlsSetting;
 use TypeRocket\Elements\Traits\DefaultSetting;
-use \TypeRocket\Elements\Traits\OptionsTrait;
-use \TypeRocket\Html\Generator;
-use \TypeRocket\Core\Config;
+use TypeRocket\Elements\Traits\OptionsTrait;
+use TypeRocket\Html\Html;
 use TypeRocket\Models\WPPost;
-use \TypeRocket\Utility\Sanitize;
-use TypeRocket\Utility\Buffer;
+use TypeRocket\Template\Component;
+use TypeRocket\Template\ErrorComponent;
 
-class Matrix extends Field implements ScriptField {
-
+class Matrix extends Field implements ScriptField
+{
     use OptionsTrait, DefaultSetting, ControlsSetting;
 
-    protected $mxid = null;
     protected $staticOptions = [];
     protected $componentFolder = null;
+    protected $confirmRemove = false;
     protected $paths;
+    protected $urls;
     protected $sort = true;
-    protected $hide = [
-        'move' => false,
-        'remove' => false,
-        'contract' => false,
-        'clear' => false,
-        'flip' => false,
-    ];
 
     /**
      * Define debug function
@@ -38,7 +31,7 @@ class Matrix extends Field implements ScriptField {
             return "tr_components_field('{$this->getDots()}');";
         }
         $class = get_class($this->getModel());
-        return "tr_components_field('{$this->getDots()}', '{$this->getItemId()}', \\{$class}::class);";
+        return "tr_components_field('{$this->getDots()}', '{$this->getForm()->getItemId()}', \\{$class}::class);";
     }
 
     /**
@@ -46,8 +39,9 @@ class Matrix extends Field implements ScriptField {
      */
     protected function init()
     {
-        $this->mxid = md5( microtime( true ) ); // set id for matrix random
         $this->setType( 'matrix' );
+        $this->urls = tr_config('urls');
+        $this->paths = tr_config('paths');
     }
 
     /**
@@ -92,15 +86,15 @@ class Matrix extends Field implements ScriptField {
     /**
      * Get the scripts
      */
-    public function enqueueScripts() {
-        $this->paths = Config::locate('paths');
-        $assetVersion = Config::locate('app.assets');
-        $assets = $this->paths['urls']['assets'];
-        wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], $assetVersion, true );
-        wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], $assetVersion, true );
+    public function enqueueScripts()
+    {
+        wp_enqueue_script( 'jquery-ui-sortable', [ 'jquery' ], false, true );
+        wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], false, true );
         wp_enqueue_script( 'wp-color-picker' );
-        wp_enqueue_media();
-        wp_enqueue_script( 'typerocket-editor', $assets . '/typerocket/js/lib/redactor.min.js', ['jquery'], $assetVersion, true );
+
+        if(class_exists('TypeRocketPro\Features\EditorScripts')) {
+            call_user_func('TypeRocketPro\Features\EditorScripts::enqueueEditorScripts');
+        }
     }
 
     /**
@@ -109,15 +103,26 @@ class Matrix extends Field implements ScriptField {
     public function getString()
     {
         // enqueue tinymce
-        echo '<div style="display: none; visibility: hidden;">';
+        echo '<div class="tr-control-section tr-divide tr-dummy-editor" style="display: none; visibility: hidden;">';
         wp_editor('', 'tr_dummy_editor');
         echo '</div>';
 
         $this->setAttribute('name', $this->getNameAttributeString());
+        $fields_classes = '';
+
+        // add button settings
+        $controls = [
+            'contract' => __('Contract', 'typerocket-domain'),
+            'expand' => __('Expand', 'typerocket-domain'),
+            'clone' => __('Duplicate', 'typerocket-domain'),
+            'move' => __('Move', 'typerocket-domain'),
+            'flip' => __('Flip', 'typerocket-domain'),
+            'clear' => __('Clear All', 'typerocket-domain'),
+            'add' => __('Add New', 'typerocket-domain'),
+        ];
 
         // setup select list of files
         $select = $this->getSelectHtml();
-        $folder = $this->getComponentFolder();
         $group = $this->getName();
         $settings = $this->getSettings();
         $blocks = $this->getMatrixBlocks();
@@ -130,23 +135,9 @@ class Matrix extends Field implements ScriptField {
             $help = '';
         }
 
-        $generator = new Generator();
-        $default_null = $generator->newInput('hidden', $this->getAttribute('name'), null)->getString();
+        $generator = new Html();
+        $default_null = $generator->input('hidden', $this->getAttribute('name'), null)->getString();
 
-	    // add button settings
-	    if (isset( $settings['add_button'] )) {
-		    $add_button_value = $settings['add_button'];
-	    } else {
-		    $add_button_value = "Add New";
-	    }
-
-	    $controls = [
-		    'contract' => 'Contract',
-		    'expand' => 'Expand',
-		    'flip' => 'Flip',
-		    'clear' => 'Clear All',
-		    'add' => $add_button_value,
-	    ];
 
 	    // controls settings
 	    if (isset( $settings['controls'] ) && is_array($settings['controls']) ) {
@@ -168,13 +159,20 @@ class Matrix extends Field implements ScriptField {
         }
 
         $controls_buttons = [
-            'flip' => "<input type=\"button\" value=\"{$controls['flip']}\" class=\"flip button\">",
-            'contract' => "<input type=\"button\" value=\"{$expand_label}\" data-contract=\"{$controls['contract']}\" data-expand=\"{$controls['expand']}\" class=\"tr_action_collapse button {$expanded}\">",
-            'clear' => "<input type=\"button\" value=\"{$controls['clear']}\" class=\"clear button\">"
+            'flip' => "<input type=\"button\" value=\"{$controls['flip']}\" class=\"tr-repeater-action-flip button\">",
+            'contract' => "<input type=\"button\" value=\"{$expand_label}\" data-contract=\"{$controls['contract']}\" data-expand=\"{$controls['expand']}\" class=\"tr-repeater-action-collapse button {$expanded}\">",
+            'clear' => "<input type=\"button\" value=\"{$controls['clear']}\" class=\"tr-repeater-action-clear button\">",
         ];
 
+        $remove_class = $this->confirmRemove ? 'tr-repeater-confirm-remove' : '';
+
         foreach ($this->hide as $control_name => $hide) {
-            if($hide) { unset($controls_buttons[$control_name]); }
+            if($hide) {
+                $fields_classes .= ' tr-repeater-hide-' . $control_name;
+                if($controls_buttons[$control_name] ?? null) {
+                    unset($controls_buttons[$control_name]);
+                }
+            }
         }
 
         $controls_html = array_reduce($controls_buttons, function($carry, $item) {
@@ -183,12 +181,12 @@ class Matrix extends Field implements ScriptField {
 
         // add it all
         $home_url = esc_url( home_url('/', is_ssl() ? 'https' : 'http') );
-        $html = "
+        return "
 <div class='tr-matrix tr-repeater'>
-<div class='matrix-controls controls'>
+<div class='tr-matrix-controls controls'>
 {$select}
 <div class=\"tr-mr-10 tr-d-inline\">
-<input type=\"button\" value=\"{$controls['add']}\" data-root=\"{$home_url}\" data-id=\"{$this->mxid}\" data-group=\"{$group}\" data-folder=\"{$folder}\" class=\"button matrix-button\">
+<input type=\"button\" value=\"{$controls['add']}\" data-root=\"{$home_url}\" data-tr-group=\"{$group}\" class=\"button tr-matrix-add-button\">
 </div>
 <div class=\"button-group\">
 {$controls_html}
@@ -196,24 +194,7 @@ class Matrix extends Field implements ScriptField {
 {$help}
 </div>
 <div>{$default_null}</div>
-<div id=\"{$this->mxid}\" class='matrix-fields tr-repeater-fields ui-sortable'>{$blocks}</div></div>";
-
-        return $html;
-    }
-
-    /**
-     * Sanitize the file name for component
-     *
-     * @param string $name
-     *
-     * @return string
-     */
-    private function cleanFileName( $name )
-    {
-
-        $name = Sanitize::underscore($name);
-
-        return ucwords( $name );
+<ul class='tr-matrix-fields tr-repeater-fields ui-sortable {$fields_classes} {$remove_class}'>{$blocks}</ul></div>";
     }
 
     /**
@@ -221,33 +202,28 @@ class Matrix extends Field implements ScriptField {
      *
      * @return string
      */
-    private function getSelectHtml()
+    protected function getSelectHtml()
     {
-
         $name = $this->getName();
-        $folder = $this->getComponentFolder();
-        $options = $this->getOptions();
-        $options = $options ? $options : $this->setOptionsFromFolder()->getOptions();
-        $options = array_merge($options, $this->staticOptions);
-        $options = apply_filters('tr_component_select_list', $options, $folder, $name);
+        $options = $this->loadComponentsIntoOptions()->getOptions();
 
         if($this->sort) {
             ksort($options);
         }
 
-
         if ($options) {
-            $generator = new Generator();
-            $formGroup = $this->getGroup();
-            $generator->newElement( 'select', [
-                'data-mxid' => $this->mxid,
-                'class' => "tr-mr-10 tr-d-inline matrix-select-{$name}",
-                'data-group' => $formGroup
+            $generator = new Html();
+            $generator->el( 'select', [
+                'class' => "tr-mr-10 tr-d-inline matrix-select matrix-select-{$name}",
+                'data-group' => $this->getGroupWithFrom(),
             ]);
             $default = $this->getSetting('default');
 
-            foreach ($options as $name => $value) {
-
+            /**
+             * @var string $title
+             * @var Component $component */
+            foreach ($options as $title => $component) {
+                $value = $component->registeredAs();
                 $attr['value'] = $value;
                 if ( $default == $value && isset($default) ) {
                     $attr['selected'] = 'selected';
@@ -255,18 +231,16 @@ class Matrix extends Field implements ScriptField {
                     unset( $attr['selected'] );
                 }
 
-                $generator->appendInside( 'option', $attr, $name );
+                $generator->nest( Html::option($attr, $title) );
             }
 
             $select = $generator->getString();
 
         } else {
-            $dir = $this->paths['components'] . '/' . $folder;
-            $select = "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> Add a component folder at <code>{$dir}</code> and add your component files to it.</div>";
+            $select = "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> You need to register a components group for {$name}.</div>";
         }
 
         return $select;
-
     }
 
     /**
@@ -274,36 +248,16 @@ class Matrix extends Field implements ScriptField {
      *
      * @return $this
      */
-    public function setOptionsFromFolder() {
-        $paths = Config::locate('paths');
-        $folder = $this->getComponentFolder();
-        $dir = $paths['components'] . '/' . $folder;
+    public function loadComponentsIntoOptions()
+    {
+        $name = $this->getName();
+        $options = $this->popAllOptions();
+        $options = $options ?: tr_config("components.{$name}");
+        $list = array_merge($options, $this->staticOptions);
 
-        if (file_exists( $dir )) {
-
-            $files = preg_grep( '/^([^.])/', scandir( $dir ) );
-
-            foreach ($files as $file) {
-
-                $is_php_file = function($haystack) {
-                    // search forward starting from end minus needle length characters
-                    $needle = '.php';
-                    return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
-                };
-
-                if (file_exists( $dir . '/' . $file ) && $is_php_file($file) ) {
-
-                    $the_file = $file;
-                    $path = pathinfo( $file );
-                    $key = $this->cleanFileName( $path['filename'] );
-                    $line = fgets(fopen( $dir . '/' . $the_file, 'r'));
-                    if( preg_match("/<[h|H]\\d>(.*)<\\/[h|H]\\d>/U", $line, $matches) ) {
-                        $key = strip_tags($matches[1]);
-                    }
-                    $this->options[$key] = $path['filename'];
-                }
-            }
-
+        foreach ($list as $name) {
+            $c = static::getComponentClass($name);
+            $this->options[$c->title()] = $c;
         }
 
         return $this;
@@ -314,26 +268,23 @@ class Matrix extends Field implements ScriptField {
      *
      * @return string
      */
-    private function getMatrixBlocks()
+    protected function getMatrixBlocks()
     {
-
-        $val = $this->getValue();
-        $utility = new Buffer();
+        // add button settings
+        $val = $this->setCast('array')->getValue();
         $blocks = '';
-        $form = $this->getForm();
-        $paths = Config::locate('paths');
-        $folder = $this->getComponentFolder();
+        $form = $this->getForm()->clone();
 
         if (is_array( $val )) {
 
-            $utility->startBuffer();
+            ob_start();
 
             foreach ($val as $tr_matrix_key => $data) {
                 foreach ($data as $tr_matrix_type => $fields) {
 
                     $tr_matrix_group = $this->getName();
                     $tr_matrix_type  = lcfirst( $tr_matrix_type );
-                    $root_group        = $this->getGroup();
+                    $root_group        = $this->getGroupWithFrom();
                     $form->setDebugStatus(false);
                     $append_group = $root_group;
 
@@ -342,46 +293,12 @@ class Matrix extends Field implements ScriptField {
                     }
 
                     $form->setGroup($append_group . "{$tr_matrix_group}.{$tr_matrix_key}.{$tr_matrix_type}");
-                    $file        = $paths['components'] . "/" . $folder . "/{$tr_matrix_type}.php";
-                    $file = apply_filters('tr_component_file', $file, ['folder' => $folder, 'name' => $tr_matrix_type, 'view' => 'component']);
-                    $classes = "matrix-field-group tr-repeater-group matrix-type-{$tr_matrix_type} matrix-group-{$tr_matrix_group}";
-                    $remove = '#remove';
-                    ?>
-                    <div class="<?php echo $classes; ?>">
-                        <div class="repeater-controls">
-                            <?php if(!$this->hide['contract']) : ?>
-                            <div class="collapse tr-control-icon tr-control-icon-collapse"></div>
-                            <?php endif; ?>
-                            <?php if(!$this->hide['move']) : ?>
-                            <div class="move tr-control-icon tr-control-icon-move"></div>
-                            <?php endif; ?>
-                            <?php if(!$this->hide['remove']) : ?>
-                            <a href="<?php echo $remove; ?>" class="remove tr-control-icon tr-control-icon-remove" title="remove"></a>
-                            <?php endif; ?>
-                        </div>
-                        <div class="repeater-inputs">
-                            <?php
-                            if (file_exists( $file )) {
-                                /** @noinspection PhpIncludeInspection */
-                                include( $file );
-                            } else {
-                                echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon tr-icon-bug\"></i> No component file found <code>{$file}</code></div>";
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    <?php
-
-                    $form->setGroup($root_group);
-                    $form->setCurrentField($this);
-
+                    $class = static::getComponentClass($tr_matrix_type)->form($form)->data($form->getModel());
+                    static::componentTemplate($class, $tr_matrix_group);
                 }
             }
 
-            $utility->indexBuffer('fields');
-
-            $blocks = $utility->getBuffer('fields');
-            $utility->cleanBuffer();
+            $blocks = ob_get_clean();;
 
         }
 
@@ -390,12 +307,90 @@ class Matrix extends Field implements ScriptField {
     }
 
     /**
+     * @param $type
+     *
+     * @return Component
+     */
+    public static function getComponentClass($type)
+    {
+        $component_class = tr_config("components.registry.{$type}");
+
+        if(!$component_class) {
+            return (new ErrorComponent)->title($type)->registeredAs($type);
+        }
+
+        return (new $component_class)->registeredAs($type);
+    }
+
+    /**
+     * @param Component $component
+     * @param string $group
+     * @param string $classes
+     */
+    public static function componentTemplate($component, $group, $classes = '')
+    {
+        $group_control_list = [
+            'contract' => ['class' => 'tr-repeater-collapse tr-control-icon tr-control-icon-collapse', 'title' => __('Contract', 'typerocket-domain'), 'tabindex' => '0'],
+            'move' => ['div', 'class' => 'move tr-control-icon tr-control-icon-move', 'title' => __('Move')],
+            'clone' => null,
+            'remove' => ['class' => "tr-repeater-remove tr-control-icon tr-control-icon-remove", 'title' => __('Remove', 'typerocket-domain'), 'tabindex' => '0'],
+        ];
+
+        $group_control_list = apply_filters('tr_component_item_controls', $group_control_list);
+
+        if(!$component->feature('cloneable')) {
+            $group_control_list['clone'] = null;
+        }
+
+        foreach ($group_control_list as $control_name => $options)
+        {
+            if(!$options) {
+                unset($group_control_list[$control_name]);
+            }
+        }
+
+        $controls_html = array_reduce($group_control_list, function($carry, $item) {
+            $el = isset($item[0]) ? $item[0] : 'a';
+            unset($item[0]);
+            return $carry . Html::el( $el, $item);
+        });
+        ?>
+        <li data-tr-component="<?php echo $component->uuid(); ?>" tabindex="0" class="matrix-field-group tr-repeater-clones tr-repeater-group matrix-type-<?php echo esc_attr($component->registeredAs()); ?> matrix-group-<?php echo esc_attr($group); ?> <?php echo $classes; ?>">
+            <div class="tr-repeater-controls">
+                <?php echo $controls_html; ?>
+            </div>
+            <div class="tr-component-inputs tr-repeater-inputs">
+                <?php
+                echo "<h3>{$component->feature('nameable')}</h3>";
+                $component->fields();
+                ?>
+            </div>
+            <?php do_action('tr_component_include', 'matrix', $component, $group); ?>
+        </li>
+        <?php
+    }
+
+    /**
+     * Confirm Remove
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function confirmRemove($bool = true)
+    {
+        $this->confirmRemove = $bool;
+
+        return $this;
+    }
+
+    /**
      * Get component folder
      *
      * @return null|string
      */
-    public function getComponentFolder() {
-
+    public function getComponentFolder()
+    {
         if( ! $this->componentFolder ) {
             $this->componentFolder = $this->getName();
         }
@@ -410,39 +405,14 @@ class Matrix extends Field implements ScriptField {
      *
      * @return $this
      */
-    public function setComponentFolder($folder_name = '') {
-
-        $paths = Config::locate('paths');
-        $dir = $paths['components'] . '/' . $folder_name;
+    public function setComponentFolder($folder_name = '')
+    {
+        $dir = tr_config('paths.components') . '/' . $folder_name;
 
         if(file_exists($dir)) {
             $this->componentFolder = $folder_name;
         }
 
-        return $this;
-    }
-
-    /**
-     * Hide Item Control
-     *
-     * @param string $name
-     * @return $this
-     */
-    public function hideControl($name)
-    {
-        array_key_exists($name, $this->hide) ? $this->hide[$name] = true : null;
-        return $this;
-    }
-
-    /**
-     * Show Item Control
-     *
-     * @param string $name
-     * @return $this
-     */
-    public function showControl($name)
-    {
-        array_key_exists($name, $this->hide) ? $this->hide[$name] = false : null;
         return $this;
     }
 

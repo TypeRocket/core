@@ -2,12 +2,13 @@
 namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\DefaultSetting;
-use \TypeRocket\Html\Generator;
-use \TypeRocket\Elements\Traits\MaxlengthTrait;
+use TypeRocket\Elements\Traits\RequiredTrait;
+use TypeRocket\Html\Html;
+use TypeRocket\Elements\Traits\MaxlengthTrait;
 
 class Textarea extends Field
 {
-    use MaxlengthTrait, DefaultSetting;
+    use MaxlengthTrait, DefaultSetting, RequiredTrait;
 
     protected $labelTag = 'label';
 
@@ -16,7 +17,7 @@ class Textarea extends Field
      */
     protected function init()
     {
-        $this->setType( 'textarea' );
+        $this->setType('textarea');
     }
 
     /**
@@ -24,16 +25,21 @@ class Textarea extends Field
      */
     public function getString()
     {
-        $generator = new Generator();
-        $this->setAttribute('name', $this->getNameAttributeString());
-        $value = $this->getValue();
-        $default = $this->getDefault();
         $this->setupInputId();
+        $this->setAttribute('data-tr-field', $this->getContextId());
+        $this->setAttribute('name', $this->getNameAttributeString());
+        $value = $this->setCast('string')->getValue();
+        $default = $this->getDefault();
+
         $value = !empty($value) ? $value : $default;
         $value = $this->sanitize($value, 'textarea');
-        $max = $this->getMaxlength( $value,  $this->getAttribute('maxlength'));
+        $max = $this->getMaxlength($value, $this->getAttribute('maxlength'));
 
-        return $generator->newElement( 'textarea', $this->getAttributes(), $value )->getString() . $max;
+        if($max) {
+            $this->attrClass('tr-input-maxlength');
+        }
+
+        return (string) Html::textarea($this->getAttributes(), $value) . $max;
     }
 
 }

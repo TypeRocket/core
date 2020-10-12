@@ -1,11 +1,11 @@
 <?php
 namespace TypeRocket\Register;
 
+use TypeRocket\Elements\Notice;
 use TypeRocket\Utility\Sanitize;
 
 abstract class Registrable
 {
-
     protected $use = [];
     protected $id = null;
     protected $args = [];
@@ -101,7 +101,7 @@ abstract class Registrable
     public function setId($id)
     {
         $this->id = Sanitize::underscore($id);
-        $this->dieIfReserved();
+        $this->isReservedId();
 
         return $this;
     }
@@ -145,7 +145,7 @@ abstract class Registrable
      *
      * @param string $key
      *
-     * @return string
+     * @return string|array
      */
     public function getArgument($key)
     {
@@ -160,7 +160,7 @@ abstract class Registrable
      * Set Argument by key
      *
      * @param string $key
-     * @param string $value
+     * @param string|array $value
      *
      * @return $this
      */
@@ -188,19 +188,28 @@ abstract class Registrable
         return $this;
     }
 
-    protected function dieIfReserved()
+    /**
+     * Check If Reserved
+     */
+    protected function isReservedId()
     {
         if (in_array($this->id, $this->reservedNames)) {
-            die('TypeRocket: Error, you are using the reserved wp name "' . $this->id . '".');
+            $exception = sprintf(__('You can not register a post type or taxonomy using the WordPress reserved name "%s".', 'typerocket-domain'),  $this->id);
+            Notice::admin(['type' => 'error', 'message' => $exception]);
+
+            return true;
         }
+
+        return false;
     }
 
     /**
      * Use other Registrable objects or string IDs
      *
-     * @param string|MetaBox|PostType|Taxonomy $args variadic
+     * @param array|MetaBox|PostType|Taxonomy|Page $args variadic
      *
      * @return $this
+     * @throws \Exception
      */
     public function apply($args)
     {
@@ -241,20 +250,20 @@ abstract class Registrable
 
     /**
      * Used with the apply method to connect Registrable objects together.
+     * @throws \Exception
      */
     protected function uses()
     {
-
         foreach ($this->use as $obj) {
             if ($obj instanceof Registrable) {
                 $class  = get_class($obj);
-                $class  = substr($class, 11 + 9 );
+                $class = substr(strrchr($class, "\\"), 1);
                 $method = 'add' . $class;
                 if (method_exists($this, $method)) {
                     $this->$method($obj);
                 } else {
                     $current_class = get_class($this);
-                    die('TypeRocket: You are passing the unsupported object ' . $class . ' into ' . $current_class . '.');
+                    throw new \Exception('TypeRocket: You are passing the unsupported object ' . $class . ' into ' . $current_class . '.');
                 }
             }
         }
@@ -268,5 +277,15 @@ abstract class Registrable
     public function getApplied()
     {
         return $this->use;
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 }

@@ -1,0 +1,24 @@
+<?php
+namespace {{namespace}};
+
+use TypeRocket\Http\Fields;
+
+class {{fields}} extends Fields
+{
+    /** @var bool Validate & redirect on errors immediately */
+    protected $run = false;
+
+    /**
+     * @return array
+     */
+    protected function fillable() {
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    protected function rules() {
+        return [];
+    }
+}

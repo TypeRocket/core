@@ -1,14 +1,11 @@
 <?php
-namespace {{namespace}}\Controllers;
+namespace {{namespace}};
 
-use {{namespace}}\Models\{{model}};
-use \TypeRocket\Controllers\Controller;
+use {{app}}\Models\{{model}};
+use TypeRocket\Controllers\Controller;
 
 class {{controller}} extends Controller
 {
-
-    protected $modelClass = {{model}}::class;
-
     /**
      * The index page for admin
      *
@@ -44,11 +41,11 @@ class {{controller}} extends Controller
     /**
      * The edit page for admin
      *
-     * @param string $id
+     * @param string|{{mc}} ${{var}}
      *
      * @return mixed
      */
-    public function edit($id)
+    public function edit({{mc}} ${{var}})
     {
         // TODO: Implement edit() method.
     }
@@ -58,11 +55,11 @@ class {{controller}} extends Controller
      *
      * AJAX requests and normal requests can be made to this action
      *
-     * @param string $id
+     * @param string|{{mc}} ${{var}}
      *
      * @return mixed
      */
-    public function update($id)
+    public function update({{mc}} ${{var}})
     {
         // TODO: Implement update() method.
     }
@@ -70,11 +67,11 @@ class {{controller}} extends Controller
     /**
      * The show page for admin
      *
-     * @param string $id
+     * @param string|{{mc}} ${{var}}
      *
      * @return mixed
      */
-    public function show($id)
+    public function show({{mc}} ${{var}})
     {
         // TODO: Implement show() method.
     }
@@ -82,11 +79,11 @@ class {{controller}} extends Controller
     /**
      * The delete page for admin
      *
-     * @param string $id
+     * @param string|{{mc}} ${{var}}
      *
      * @return mixed
      */
-    public function delete($id)
+    public function delete({{mc}} ${{var}})
     {
         // TODO: Implement delete() method.
     }
@@ -96,11 +93,11 @@ class {{controller}} extends Controller
      *
      * AJAX requests and normal requests can be made to this action
      *
-     * @param string $id
+     * @param string|{{mc}} ${{var}}
      *
      * @return mixed
      */
-    public function destroy($id)
+    public function destroy({{mc}} ${{var}})
     {
         // TODO: Implement destroy() method.
     }

@@ -1,0 +1,45 @@
+<?php
+namespace TypeRocket\Http;
+
+use TypeRocket\Utility\RuntimeCache;
+
+class ErrorCollection
+{
+    public const KEY = 'tr_redirect_errors';
+
+    /**
+     * @var array|null
+     */
+    protected $errors = null;
+
+    /**
+     * @var RuntimeCache
+     */
+    protected $cache;
+
+    public function __construct()
+    {
+        $errors = Cookie::new()->getTransient(static::KEY, false);
+        $this->errors = $errors;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function errors()
+    {
+        Cookie::new()->deleteTransient(static::KEY);
+
+        return $this->errors;
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
+    }
+}

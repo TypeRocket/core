@@ -1,160 +1,234 @@
 <?php
 namespace TypeRocket\Http;
 
-use ReflectionMethod;
-use TypeRocket\Controllers\Controller;
-use TypeRocket\Core\Config;
-use TypeRocket\Core\Resolver;
-use TypeRocket\Models\Model;
+use TypeRocket\Http\Responders\HttpResponder;
+use TypeRocket\Utility\Str;
+use WP_Query;
 
 /**
- * Class Router
+ * Class Routes
  *
- * Run proper controller based on request.
+ * Store all the routes for TypeRocket Resources if there are any.
  *
- * @package TypeRocket\Http\Middleware
+ * @package TypeRocket\Http
  */
 class Router
 {
+    /** @var array $args */
+    public $args = [];
+
+    /** @var Route|null  */
+    public $route = null;
+    public $path = null;
+    public $config = [];
     /** @var Request  */
-    protected $request;
-    /** @var Response  */
-    protected $response;
-    /** @var Handler  */
-    protected $handler;
-
-    /** @var Controller  */
-    protected $controller;
-    /** @var string  */
-    protected $action;
-    /** @var string  */
-    protected $resource;
-    /** @var array */
-    public $middleware = [];
-
-    /** @var mixed */
-    public $returned = [];
+    public $request;
+    public $routes;
+    public $match = [];
 
     /**
-     * Router constructor.
-     *
+     * Routes constructor.
      * @param Request $request
-     * @param Response $response
-     * @param Handler $handler
+     * @param null|array $config
+     * @param RouteCollection $routes
      */
-    public function __construct( Request $request, Response $response, Handler $handler )
+    public function __construct($request, $config, RouteCollection $routes)
     {
         $this->request = $request;
-        $this->response = $response;
-        $this->handler = $handler;
-
-        $this->action = $this->handler->getAction();
-        $this->resource = $this->handler->getResource('camel');
-
-        $caller = $this->handler->getHandler() ?? tr_app("Controllers\\{$this->resource}Controller");
-
-        if (!is_object($caller) && class_exists($caller)) {
-            $caller = new $caller($this->request, $this->response);
-        }
-
-        if ( !$this->validController($caller) ) {
-            $class = is_string($caller) ? $caller : '\\' . get_class($caller);
-            $this->response->exitServerError("Invalid Controller Action: {$this->action}@{$this->resource}:{$class}");
-        }
-
-        $this->controller = $caller;
-        $this->middleware = $this->controller->getMiddleware();
+        $this->config = $config;
+        $this->routes = $routes;
     }
 
     /**
-     * Handle routing to controller
-     * @throws \Exception
+     * Init Hooks
+     *
+     * @return $this
      */
-    public function handle() {
-        $action = $this->action;
-        $controller = $this->controller;
-        $params = (new ReflectionMethod($controller, $action))->getParameters();
-
-        if( $params ) {
-
-            $args = [];
-            $vars = $this->handler->getArgs();
-
-            foreach ($params as $index => $param ) {
-                $varName = $param->getName();
-                $class = $param->getClass();
-                if ( $class ) {
-
-                    $instance = (new Resolver)->resolve( $param->getClass()->name );
-
-                    if( $instance instanceof Model ) {
-                        $injectionColumn = $instance->getRouterInjectionColumn();
-                        if( isset($vars[ $injectionColumn ]) ) {
-                            $instance = $instance->findFirstWhereOrDie($injectionColumn, $vars[ $injectionColumn ] );
-                        }
-                    }
-
-                    $args[$index] = $instance;
-                } elseif( isset($vars[$varName]) ) {
-                    $args[$index] = $vars[$varName];
-                } else {
-                    $args[$index] = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
+    public function initHooks()
+    {
+        if( ! is_admin() ) {
+            // template_include is needed to keep admin bar
+            add_filter('template_include', function( $template ) {
+                if( $this->route ) {
+                    $this->runRoute();
                 }
-            }
+                return $template;
+            });
 
-            $this->returned = call_user_func_array( [$controller, $action], $args );
-        } else {
-            $this->returned = call_user_func( [$controller, $action] );
+            add_filter( 'query_vars', function($vars) {
+                $vars[] = 'tr_route_var';
+                return $vars;
+            } );
+
+            add_filter( 'posts_request', function($sql, $q) {
+                /** @var WP_Query $q */
+                if ( $q->is_main_query() && !empty($q->query['tr_route_var']) ) {
+                    // disable row count
+                    $q->query_vars['no_found_rows'] = true;
+
+                    // disable cache
+                    $q->query_vars['cache_results'] = false;
+                    $q->query_vars['update_post_meta_cache'] = false;
+                    $q->query_vars['update_post_term_cache'] = false;
+
+                    add_filter('body_class', function($classes) { array_push($classes, 'custom-route'); return $classes; });
+                    return false;
+                }
+                return $sql;
+            }, 10, 3 );
+
+            add_action('option_rewrite_rules', function($value) {
+                return $this->spoofRewrite($value);
+            });
         }
+
+        return $this;
     }
 
     /**
-     * Get the middleware group
+     * Spoof Rewrite Rules
+     *
+     * @param string|array $value
      *
      * @return array
      */
-    public function getMiddlewareGroups() {
-        $groups = [];
-        $action = $this->action;
+    public function spoofRewrite( $value )
+    {
+        $add = [];
+        if( $this->route ) {
+            $key = '^' . rtrim($this->route->match['regex'], '/') . '/?$';
+            if( !empty($value[$key]) ) {
+                unset($value[$key]);
+            }
+            $add[$key] = 'index.php?tr_route_var=1';
 
-        foreach ($this->middleware as $group ) {
-            if (array_key_exists('group', $group)) {
-                $use = null;
+            if(is_array($value)) {
+                $value = array_merge($add, $value);
+            } else {
+                $value = $add;
+            }
+        }
+        return $value;
+    }
 
-                if( ! array_key_exists('except', $group) && ! array_key_exists('only', $group) ) {
-                    $use = $group['group'];
+    /**
+     * Run route if there is a callback
+     *
+     * If the callback is not a controller pass in the Response
+     * object as the argument $response
+     */
+    private function runRoute()
+    {
+        $requested_path = $this->request->getPath();
+        $uri = $this->request->getUri();
+
+        $addSlash = $this->route->addTrailingSlash ?? true;
+        $endsInSlash = Str::ends('/', $requested_path );
+        $isGet = $this->request->isGet();
+
+        if( ! $endsInSlash && $addSlash && $isGet ) {
+            $new = $requested_path . '/';
+            $redirect = Str::replaceFirst($requested_path, $new, $uri);
+            wp_redirect($redirect);
+            die();
+        } elseif( ! $addSlash && $endsInSlash && $isGet ) {
+            $new = rtrim($requested_path, '/');
+            $redirect = Str::replaceFirst($requested_path, $new, $uri);
+            wp_redirect($redirect);
+            die();
+        }
+
+        $responder = new HttpResponder;
+
+        $responder
+            ->getHandler()
+            ->setRoute( $this->route )
+            ->setController( $this->route->do );
+
+        $responder->respond( $this->args );
+        tr_response()->finish();
+    }
+
+    /**
+     * Route request through registered routes if these is a match
+     * @return Router
+     */
+    public function detectRoute()
+    {
+        $root = $this->config['root'] ?? get_site_url();
+
+        $routesRegistered = $this->routes->getRegisteredRoutes($this->request->getFormMethod());
+        $this->path = $this->request->getPathWithoutRoot($root);
+
+        if( $this->matchRoute($this->path, $routesRegistered) ) {
+            add_filter( 'redirect_canonical', [$this, 'redirectCanonical'] , 10, 2);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Custom Routes Will Add Trailing Slash
+     *
+     * Custom routes always add a trailing slash unless otherwise
+     * defined in route declaration. We do not need WP to handle
+     * this functionality for us.
+     *
+     * @param $redirect_url
+     * @param $requested_url
+     *
+     * @return $this
+     */
+    public function redirectCanonical($redirect_url, $requested_url)
+    {
+        remove_filter('redirect_canonical', [$this, 'redirectCanonical']);
+        return $requested_url;
+    }
+
+    /**
+     * @param string $uri path to match
+     * @param array $routes list of routes
+     *
+     * @return bool
+     */
+    public function matchRoute($uri, $routes) {
+
+        if(empty($routes)) { return false; }
+
+        $regex = ['#^(?'];
+        foreach ($routes as $i => $route) {
+            $slash = $route['route']->addTrailingSlash ? '\/?$' : '';
+            $regex[] = rtrim($route['regex'], '/') . $slash . '(*MARK:'.$i.')';
+        }
+        $regex = implode('|', $regex) . ')$#x';
+        preg_match($regex, $uri, $m);
+
+        if(empty($m)) { return false; }
+
+        $r = $routes[$m['MARK']];
+        $args = [];
+
+        if(empty($r)) { return false; }
+
+        if(!empty($r['args'])) {
+            foreach ($r['args'] as $i => $arg) {
+                if($v = $m[$i + 1] ?? null) {
+                    $args[$arg] = $v;
                 }
-
-                if (array_key_exists('except', $group) && ! in_array($action, $group['except'])) {
-                    $use = $group['group'];
-                }
-
-                if (array_key_exists('only', $group) && in_array($action, $group['only'])) {
-                    $use = $group['group'];
-                }
-
-                if($use) {
-                    $groups[] = $use;
+            }
+        } else {
+            foreach ($m as $i => $arg) {
+                if($i > 0 && $i !== 'MARK') {
+                    $args[] = $arg;
                 }
             }
         }
 
-        return $groups;
-    }
 
-    /**
-     * Validate Controller
-     *
-     * @param string $caller
-     * @return bool
-     */
-    public function validController($caller)
-    {
-        if ($caller instanceof Controller && method_exists($caller, $this->action)) {
-            return true;
-        }
+        $this->route = $r['route'];
+        $this->args = $args;
 
-        return false;
+        return true;
     }
 
 }

@@ -1,0 +1,13 @@
+:root {
+  @each $name, $color, $bg in $themes {
+    --tr-#{$name}-color: #{$color};
+  }
+  --tr-profile-color: #{$wp_button};
+}
+@each $name, $color, $bg in $themes {
+  .admin-color-#{$name} {
+      --tr-profile-color: #{$color};
+      --tr-profile-color-bg: #{$bg};
+      --tr-profile-color-dark: #{darken($color, 25%)};
+  }
+}

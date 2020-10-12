@@ -2,8 +2,8 @@
 namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\DefaultSetting;
-use \TypeRocket\Elements\Traits\OptionsTrait;
-use \TypeRocket\Html\Generator;
+use TypeRocket\Elements\Traits\OptionsTrait;
+use TypeRocket\Html\Html;
 
 class Radio extends Field
 {
@@ -15,7 +15,7 @@ class Radio extends Field
      */
     protected function init()
     {
-        $this->setType( 'radio' );
+        $this->setType('radio');
     }
 
     /**
@@ -32,23 +32,32 @@ class Radio extends Field
         $this->removeAttribute('name');
         $id = $this->getAttribute('id', '');
         $this->removeAttribute('id');
-        $generator = new Generator();
+        $generator = new Html();
+        $this->setAttribute('data-tr-field', $this->getContextId());
+        $label_attr = '';
+        $with = null;
 
         if($id) { $id = "id=\"{$id}\""; }
 
-        $classes = $mode == 'image' ? 'radio-images' : 'data-full';
+        if($mode == 'image') {
+            $with = ['tabindex' => '-1'];
+            $label_attr = "class='tr-radio-options-label' tabindex='0'";
+        }
+
+        $classes = $mode == 'image' ? 'tr-radio-images tr-radio-options' : 'tr-data-full';
         $classes = $ul_classes ? $ul_classes . ' ' . $classes : $classes;
 
         $field = "<ul class=\"{$classes}\" {$id}>";
 
         foreach ($this->options as $key => $value) {
             $content = $key;
+            $key = esc_attr($key);
 
             if($mode == 'image') {
                 $src = $value['src'];
                 $value = $value['value']; // keep as last setter
 
-                $content =  "<img src='{$src}' class='radio-images-image' alt='{$key}' />";
+                $content =  "<img src='{$src}' class='tr-radio-images-image' alt='{$key}' />";
             }
 
             if ( $option == $value && isset($option) ) {
@@ -57,8 +66,8 @@ class Radio extends Field
                 $this->removeAttribute('checked');
             }
 
-            $field .= "<li><label>";
-            $field .= $generator->newInput( 'radio', $name, $value, $this->getAttributes() )->getString();
+            $field .= "<li><label $label_attr>";
+            $field .= $generator->input( 'radio', $name, $value, $this->getAttributes($with ?? null) );
             $field .= "<span>{$content}</span></label></li>";
         }
 
@@ -70,11 +79,14 @@ class Radio extends Field
     /**
      * Use images instead of text
      *
-     * @param string $ul_classes 'default'
+     * @param string $style options include `square` or `normal`
+     * @param string $ul_classes css classes for ul html element
+     *
      * @return $this
      */
-    public function useImages($ul_classes = 'tr-flex-tight tr-round-image-corners')
+    public function useImages($style = 'normal', $ul_classes = 'tr-round-image-corners')
     {
+        $ul_classes .= $style == 'square' ? ' tr-radio-images-square' : 'tr-radio-images-normal';
         $this->settings['mode'] = 'image';
         $this->settings['ul_classes'] = $ul_classes;
 

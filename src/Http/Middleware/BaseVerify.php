@@ -1,8 +1,6 @@
 <?php
 namespace TypeRocket\Http\Middleware;
 
-use \TypeRocket\Core\Config;
-
 /**
  * Class BaseVerifyNonce
  *
@@ -10,29 +8,30 @@ use \TypeRocket\Core\Config;
  *
  * @package TypeRocket\Http\Middleware
  */
-class BaseVerify extends Middleware  {
-
+class BaseVerify extends Middleware
+{
     public $except = [];
 
     /**
      * Handle CSRF
+     *
+     * Checks wp_verify_nonce()
      */
     public function handle() {
 
-        $path = $this->request->getPath();
+        $path = $this->request->getPathWithoutRoot();
 
         if( ! $this->excludePath($path) ) {
             if( ! $this->request->isGet() ) {
-                $token = check_ajax_referer( 'form_' . Config::locate('app.seed'), '_tr_nonce_form', false );
+                $action = sanitize_key($_REQUEST['_tr_nonce_form_action'] ?? '');
+                $token = tr_field_nonce_check( $action );
                 if ( ! $token ) {
-                    $this->response->setError( 'csrf', true );
-                    $this->response->flashNow( 'Invalid CSRF Token', 'error' );
+                    $this->response->setError('csrf', true);
+                    $this->response->flashNow('Request Failed. Invalid CSRF Token. Try reloading the page or reauthenticate.', 'error');
                     $this->response->exitAny( 403 );
                 }
             }
         }
-
-
 
         $this->next->handle();
     }
@@ -47,7 +46,8 @@ class BaseVerify extends Middleware  {
     public function excludePath($path)
     {
         $path = trim($path, '/');
-        foreach ($this->except as $exclude ) {
+        $except = apply_filters('tr_verify_nonce_except', $this->except);
+        foreach ($except as $exclude ) {
             $exclude = explode( '/', trim($exclude, '/') );
             $explodedPath = explode('/', $path);
             $excluding = true;
@@ -65,7 +65,7 @@ class BaseVerify extends Middleware  {
                 return true;
             }
 
-        };
+        }
 
         return false;
     }

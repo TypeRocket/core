@@ -1,15 +1,15 @@
 <?php
-
 namespace TypeRocket\Models\Meta;
 
-use TypeRocket\Database\ResultsMeta;
+use TypeRocket\Database\ResultsUserMeta;
 use TypeRocket\Models\Model;
+use TypeRocket\Models\WPUser;
 
 class WPUserMeta extends Model
 {
     protected $idColumn = 'meta_id';
     protected $resource = 'usermeta';
-    protected $resultsClass = ResultsMeta::class;
+    protected $resultsClass = ResultsUserMeta::class;
 
     protected $builtin = [
         'meta_id',
@@ -28,8 +28,9 @@ class WPUserMeta extends Model
      * @param $modelClass
      * @return WPUserMeta|null
      */
-    public function user( $modelClass ) {
-        return $this->belongsTo( $modelClass, 'user_id' );
+    public function user( $modelClass = null )
+    {
+        return $this->belongsTo( $modelClass ?? WPUser::class, 'user_id' );
     }
 
     /**

@@ -1,21 +1,23 @@
 <?php
-
 namespace TypeRocket\Elements;
 
 use TypeRocket\Elements\Fields\Field;
-use TypeRocket\Elements\Traits\AttributesTrait;
-use TypeRocket\Html\Generator;
-use TypeRocket\Html\Tag;
+use TypeRocket\Elements\Traits\Attributes;
+use TypeRocket\Elements\Traits\CloneFields;
+use TypeRocket\Elements\Traits\Conditional;
+use TypeRocket\Elements\Traits\Fieldable;
+use TypeRocket\Html\Html;
 
 class FieldRow
 {
-    use AttributesTrait;
+    use Attributes, CloneFields, Fieldable, Conditional;
 
-    public $fields = [];
-    public $size = [];
-    public $hasColumns = false;
-    public $hasColumnsWithTitle = false;
-    public $title = '';
+    protected $fields = [];
+    protected $form;
+    protected $dots;
+    protected $contextRoot;
+    protected $hasColumns = false;
+    protected $title = '';
 
     /**
      * Get fields as row
@@ -24,15 +26,27 @@ class FieldRow
      *
      * @param array|Field $fields
      */
-    public function __construct( $fields )
+    public function __construct( ...$fields )
     {
-        if( ! is_array( $fields) ) {
-            $fields = func_get_args();
-        }
+        $this->setFields(...$fields);
+    }
 
-        $this->setAttribute('class', '');
-        $this->fields = $fields;
-        $this->size = count($fields);
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * Get Context ID
+     *
+     * @return string
+     */
+    public function getContextId()
+    {
+        return trim($this->contextRoot . '.' . $this->dots, '.') . '.-row';
     }
 
     /**
@@ -42,45 +56,54 @@ class FieldRow
      */
     public function __toString()
     {
-        $fieldsHtml = '';
-        $class = "control-row";
+        $html = '';
 
         if($this->title) {
-            $fieldsHtml .= (string) Tag::make('h4', ['class' => 'form-control-title'], $this->title);
+            $html .= (string) Html::h4(['class' => 'tr-field-control-title'], $this->title);
         }
 
         foreach( $this->fields as $field) {
-        	if( $field instanceof Generator ) {
-        		$fieldsHtml .= $field;
-	        } elseif( $field instanceof Field ) {
-                $fieldsHtml .= (string) $field;
-            } elseif( $field instanceof FieldColumn ) {
+        	if( $field instanceof FieldColumn ) {
                 $this->hasColumns = true;
-
-                if($field->title) {
-                    $this->hasColumnsWithTitle = true;
-                }
-
-                $fieldsHtml .= (string) $field;
+                $html .= $field;
+            } else {
+                $html .= $field;
             }
         }
 
-        if($this->hasColumns) {
-            $class .= " control-row-has-columns";
-        }
+        $this->attrClass('tr-control-row tr-divide');
+        $with = $this->getContextId() ? ['data-tr-context' => $this->getContextId()] : [];
 
-        if($this->hasColumnsWithTitle) {
-            $class .= " control-row-has-columns-with-titles";
-        }
+        return Html::div($this->getAttributes($with + $this->getConditionalAttribute(true)), $html)->getString();
+    }
 
-        if($this->title) {
-            $class .= ' control-row-has-title';
-        }
+    /**
+     * Make Column
+     *
+     * @param mixed ...$fields
+     *
+     * @return FieldColumn
+     */
+    public function column(...$fields)
+    {
+        $column = (new FieldColumn(...$fields))->configureToForm($this->form);
+        $this->fields[] = $column;
 
-        $this->appendStringToAttribute('class', $class);
-        $html = ( new Generator() )->newElement('div', $this->getAttributes(), $fieldsHtml)->getString();
+        return $column;
+    }
 
-        return $html;
+    /**
+     * Add Column & Return Row
+     *
+     * @param mixed ...$fields
+     *
+     * @return FieldRow
+     */
+    public function withColumn(...$fields)
+    {
+        $this->column(...$fields);
+
+        return $this;
     }
 
     /**

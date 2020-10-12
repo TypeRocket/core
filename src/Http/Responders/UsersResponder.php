@@ -1,9 +1,7 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
-use TypeRocket\Http\Handler;
-use \TypeRocket\Http\Request;
-use \TypeRocket\Http\Response;
+use TypeRocket\Http\Request;
 
 class UsersResponder extends Responder {
 
@@ -15,20 +13,16 @@ class UsersResponder extends Responder {
      * @param array $args
      */
     public function respond( $args ) {
-        $controller = tr_app("Controllers\\UserController");
+        $controller = tr_app_class("Controllers\\UserController");
         $controller  = apply_filters('tr_users_responder_controller', $controller);
-        $request = new Request('PUT', $this->hook);
         $response = tr_response()->blockFlash();
 
-        $handler = (new Handler())
-            ->setAction('update')
+        $this->handler
             ->setArgs($args)
-            ->setHandler($controller)
-            ->setHook($this->hook)
-            ->setResource('user')
-            ->setMiddlewareGroups('user');
+            ->setController([new $controller, 'update'])
+            ->setMiddlewareGroups(['user']);
 
-        $this->runKernel($request, $response, $handler);
+        $this->runKernel(new Request, $response, $this->handler);
     }
 
 }

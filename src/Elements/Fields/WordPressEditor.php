@@ -1,13 +1,10 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use \TypeRocket\Utility\Sanitize;
+use TypeRocket\Utility\Sanitize;
 
 class WordPressEditor extends Field implements ScriptField
 {
-
-    public $incremental = false;
-    public static $count = 0;
 
     /**
      * Run on construction
@@ -26,23 +23,12 @@ class WordPressEditor extends Field implements ScriptField
     }
 
     /**
-     * Increment field ID on echo
-     *
-     * @return $this
-     */
-    public function increment()
-    {
-        $this->incremental = true;
-        return $this;
-    }
-
-    /**
      * Covert WordPress Editor to HTML string
      */
     public function getString()
     {
         $this->setAttribute('name', $this->getNameAttributeString());
-        $value    = Sanitize::editor( $this->getValue() );
+        $value    = Sanitize::editor( $this->setCast('string')->getValue() );
         $settings = $this->getSetting('options', []);
 
         $override = [
@@ -56,17 +42,10 @@ class WordPressEditor extends Field implements ScriptField
         ];
 
         $settings = array_merge( $defaults, $settings, $override );
-        $increment = '';
-
-        if($this->incremental) {
-            $increment = uniqid() . '_';
-        }
 
         ob_start();
         wp_editor( $value, 'wp_editor_' . wp_generate_uuid4() . '_' . $this->getName(), $settings );
-        $html = ob_get_clean();
-
-        return $html;
+        return ob_get_clean();
     }
 
 }

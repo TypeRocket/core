@@ -1,23 +1,41 @@
 <?php
 namespace TypeRocket\Elements;
 
-use TypeRocket\Utility\Sanitize;
+use TypeRocket\Elements\Components\Tab;
+use TypeRocket\Html\Element;
+use TypeRocket\Utility\Str;
 
 class Tabs
 {
-
-    private $activeTabIndex = 0;
-    private $tabs = [];
-    private $sidebar = null;
-    public $iconAppend = '<i class="tr-icon-';
-    public $iconPrepend = '"></i> ';
-    public $bind = false;
-
-    /** @var \TypeRocket\Elements\Form $form */
-    public $form;
+    protected $tabs = [];
+    protected $sidebar = null;
+    protected $onlyIcons = null;
+    protected $layout = null;
+    protected $footer = null;
+    protected $title = null;
 
     /**
-     * Gets the help tabs registered for the screen.
+     * @param $tab
+     * @param null $icon
+     * @param null|callable|array $arg
+     *
+     * @return Tab
+     */
+    public function tab($tab, $icon = null, ...$arg)
+    {
+        $tab = $tab instanceof Tab ? $tab : new Tab($tab);
+        $tab->setIcon($icon);
+        $this->tabs[$tab->getAccessor()] = $tab;
+
+        if($arg) {
+            $tab->configure($arg);
+        }
+
+        return $tab;
+    }
+
+    /**
+     * Gets the registered tabs.
      *
      * @since 3.4.0
      *
@@ -26,6 +44,18 @@ class Tabs
     public function getTabs()
     {
         return $this->tabs;
+    }
+
+    /**
+     * Only Icons
+     *
+     * @return $this
+     */
+    public function onlyIcons()
+    {
+        $this->onlyIcons = true;
+
+        return $this;
     }
 
     /**
@@ -38,81 +68,6 @@ class Tabs
     public function setTabs( $tabs )
     {
         $this->tabs = $tabs;
-        return $this;
-    }
-
-    /**
-     * Set initially active Tab
-     *
-     * @param integer $index 
-     *
-     * @return $this
-     */
-    public function setActiveTab( $index )
-    {
-        $this->activeTabIndex = $index;
-        return $this;
-    }
-
-    /**
-     * Set Form
-     *
-     * @param \TypeRocket\Elements\Form $form
-     *
-     * @return $this
-     */
-    public function setForm( Form $form )
-    {
-        $this->form = $form;
-        return $this;
-    }
-
-    /**
-     * Bind Callbacks to Tabs Instance
-     *
-     * @param bool $bind
-     *
-     * @return $this
-     */
-    public function bindCallbacks($bind = true)
-    {
-        $this->bind = $bind;
-        return $this;
-    }
-
-    /**
-     * Set Tab Fields
-     *
-     * Use this option to add custom fields to a tab. This is
-     * the only way to add tabs into repeaters with fields.
-     *
-     * @param string $id must be the same as the tab ID
-     * @param array $fields list of fields to be used
-     *
-     * @return $this
-     */
-    public function setTabFields( $id, array $fields )
-    {
-        $this->tabs[Sanitize::underscore($id)]['fields'] = $fields;
-        return $this;
-    }
-
-    /**
-     * Update Tabs IDs
-     *
-     * If you need some tabs to share the same ID you can use
-     * this function to do so.
-     *
-     * @return $this
-     */
-    public function uidTabs()
-    {
-        foreach ($this->tabs as &$tab) {
-            $uid = uniqid();
-            $tab['id'] .= '-tab-uid-' . $uid;
-            $tab['uid'] = $uid;
-        }
-
         return $this;
     }
 
@@ -135,82 +90,6 @@ class Tabs
     }
 
     /**
-     * Add a help tab to the contextual help for the screen.
-     * Call this on the load-$pagenow hook for the relevant screen.
-     *
-     * @since 3.3.0
-     *
-     * @param array|string $settings
-     * - string   - title    - Title for the tab.
-     * - string   - id       - Tab ID. Must be HTML-safe.
-     * - string   - content  - Help tab content in plain text or HTML. Optional.
-     * - callback - callback - A callback to generate the tab content. Optional.
-     *
-     * @param null|string|callable $content
-     * @param bool $icon
-     *
-     * @return $this
-     */
-    public function addTab( $settings, $content = null, $icon = false )
-    {
-
-        if( ! is_array($settings)) {
-            $args = func_get_args();
-            $settings = [];
-            $settings['id'] = Sanitize::underscore($args[0]);
-            $settings['title'] = $args[0];
-
-            if(!empty($args[1]) &&  !is_callable($args[1]) ) {
-                $settings['content'] = $args[1];
-            } elseif(!empty($args[1]) && is_callable($args[1])) {
-                $settings['callback'] = $args[1];
-            }
-
-            $settings['icon'] = !empty($args[2]) ? $args[2] : false;
-        }
-
-        $this->addTabFromArray($settings);
-        return $this;
-    }
-
-    /**
-     * Add tabs using array format
-     *
-     * @param string $settings
-     *
-     * @return $this
-     */
-    private function addTabFromArray($settings) {
-        $defaults = [
-            'title'    => false,
-            'id'       => false,
-            'icon'       => false,
-            'content'  => '',
-            'callback' => false,
-            'url'      => false
-        ];
-        $settings     = wp_parse_args( $settings, $defaults );
-
-        $settings['id'] = sanitize_html_class( $settings['id'] );
-
-        // Bind callback to tab
-        if($settings['callback'] && $this->bind) {
-            $settings['callback'] = \Closure::bind($settings['callback'], $this);
-        }
-
-        // Ensure we have an ID and title.
-        if ( ! $settings['id'] || ! $settings['title']) {
-            echo "TypeRocket: Tab needs ID and Title";
-            die();
-        }
-
-        // Allows for overriding an existing tab with that ID.
-        $this->tabs[$settings['id']] = $settings;
-
-        return $this;
-    }
-
-    /**
      * Removes a help tab from the contextual help for the screen.
      *
      * @since 3.3.0
@@ -226,29 +105,6 @@ class Tabs
         return $this;
     }
 
-    /**
-     * Removes all help tabs from the contextual help for the screen.
-     *
-     * @since 3.3.0
-     */
-    public function removeTabs()
-    {
-        $this->tabs = [];
-
-        return $this;
-    }
-
-    /**
-     * Gets the content from a contextual help sidebar.
-     *
-     * @since 3.4.0
-     *
-     * @return string Contents of the help sidebar.
-     */
-    public function getSidebar()
-    {
-        return $this->sidebar;
-    }
 
     /**
      * Add a sidebar to the contextual help for the screen.
@@ -257,33 +113,116 @@ class Tabs
      *
      * @since 3.3.0
      *
-     * @param string $content Sidebar content in plain text or HTML.
+     * @param string $sidebar Sidebar content in plain text or HTML.
      *
      * @return $this
      */
-    public function setSidebar( $content )
+    public function setSidebar( $sidebar )
     {
-        $this->sidebar = $content;
+        $this->sidebar = $sidebar;
 
         return $this;
     }
 
     /**
-     * Render the screen's help section.
-     *
-     * This will trigger the deprecated filters for backwards compatibility.
-     *
-     * @since 3.3.0
-     *
-     * @param string $style meta|default
+     * @param $footer
      *
      * @return $this
      */
-    public function render( $style = null )
+    public function setFooter($footer)
     {
-        switch ($style) {
-            case 'box' :
+        $this->footer = $footer;
+
+        return $this;
+    }
+
+    /**
+     * @param $title
+     *
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Tabs at Top
+     *
+     * @return $this
+     */
+    public function layoutTop()
+    {
+        $this->layout = 'top';
+
+        return $this;
+    }
+
+    /**
+     * Tabs to left
+     *
+     * @return $this
+     */
+    public function layoutLeft()
+    {
+        $this->layout = 'left';
+
+        return $this;
+    }
+
+    /**
+     * Left Enclosed
+     *
+     * @return $this
+     */
+    public function layoutLeftEnclosed()
+    {
+        $this->layout = 'left-enclosed';
+
+        return $this;
+    }
+
+    /**
+     * Top Big
+     *
+     * @return $this
+     */
+    public function layoutTopEnclosed()
+    {
+        $this->layout = 'top-enclosed';
+
+        return $this;
+    }
+
+    /**
+     * Get Layout
+     *
+     * @return null|string
+     */
+    public function getLayout()
+    {
+        return $this->layout;
+    }
+
+    /**
+     * Render
+     *
+     * @param string $layout|default
+     * @return $this
+     */
+    public function render($layout = null)
+    {
+        switch ($layout ?? $this->layout) {
+            case 'left' :
                 $this->leftBoxedStyleTabs();
+                break;
+            case 'left-enclosed':
+                $this->leftBoxedStyleTabs('tr-tabs-layout-left-enclosed');
+                break;
+            case 'top-enclosed':
+                $this->topStyleTabs('tr-tabs-layout-top-enclosed');
                 break;
             default :
                 $this->topStyleTabs();
@@ -291,205 +230,344 @@ class Tabs
         }
 
         return $this;
+    }
 
+    /**
+     * To String
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        ob_start();
+        $this->render();
+        return ob_get_clean();
     }
 
     /**
      * Get Icon HTML
      *
-     * @param string $tab
+     * @param Tab $tab
      *
      * @return string
      */
-    private function getIconHtml($tab) {
-        $iconHtml = '';
+    protected function getIcon(Tab $tab) {
+        if($icon = $tab->getIcon()) {
 
-        if(! empty($tab['icon'])) {
-            $iconInstance = new Icons();
-            if(array_key_exists($tab['icon'], $iconInstance->icons)) {
-                $iconHtml = $this->iconAppend . $tab['icon'] . $this->iconPrepend ;
+            if(Str::starts('dashicons-', $icon)) {
+                return "<span class='tab-icon'><i class=\"dashicons {$icon}\"></i></span>";
+            }
+
+            return "<span class='tab-icon'><i class=\"dashicons dashicons-{$icon}\"></i></span>";
+        }
+
+        return null;
+    }
+
+    /**
+     * Get Active Tab Index
+     *
+     * @return string
+     */
+    protected function getActiveTabIndex() {
+        /**
+         * @var int $i
+         * @var Tab $tab
+         */
+        foreach ($this->tabs as $i => $tab) {
+            $first = $first ?? $i;
+            if($tab->getActive()) {
+                return $i;
             }
         }
 
-        return $iconHtml;
+        return $first ?? '';
     }
 
     /**
      * Tabs at the top
+     *
+     * @param null $classes
      */
-    private function topStyleTabs()
+    protected function topStyleTabs($classes = null)
     {
-        // Default help only if there is no old-style block of text and no new-style help tabs.
-        $help_sidebar = $this->getSidebar();
-
-        // Time to render!
         ?>
-
-        <div class="tr-tabbed-top cf">
-            <div class="tabbed-sections">
-                <ul class="tr-tabs alignleft">
+        <div class="tr-tabbed-top tr-divide cf <?php echo $classes; ?>">
+            <div class="tr-tabbed-sections">
+                <ul class="tr-tabs">
                     <?php
-                    $i = 0;
+                    $class = '';
+                    $active = $this->getActiveTabIndex();
                     $tabs  = $this->getTabs();
-                    foreach ($tabs as $tab) :
-                        $class   = ($i == $this->activeTabIndex)? ' class="active"' : '';
-
-                        $icon = $this->getIconHtml($tab);
-                        $link_id = "tab-link-{$tab['id']}";
-                        $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
-                        $data_uid = ( ! empty( $tab['uid'] ) ) ? " data-uid=\"{$tab['uid']}\"" : '';
+                    /** @var Tab $tab */
+                    foreach ($tabs as $i => $tab) :
+                        $icon = $this->getIcon($tab);
+                        $link_id = "tab-link-{$tab->getId()}";
+                        $panel_id = $tab->getUrl() ?? "#tab-panel-{$tab->getId()}";
+                        $data_uid = " data-uid=\"{$tab->getId()}\"";
+                        $desc = $tab->getDescription();
+                        $class .= $desc ? ' has-description': '';
+                        if($active === $i) { $class .= ' active';}
                         ?>
-                        <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class . $data_uid; ?>>
-                            <a href="<?php echo esc_url( "$panel_id" ); ?>">
-                                <?php echo $icon . esc_html( $tab['title'] ); ?>
+                        <li class="<?php echo $class; ?>" id="<?php echo esc_attr( $link_id ); ?>"<?php echo $data_uid; ?>>
+                            <a class="tr-tab-link" href="<?php echo esc_url( "$panel_id" ); ?>">
+                                <?php echo $icon; ?>
+                                <?php if(!$this->onlyIcons) : ?>
+                                <span>
+                                    <?php echo $tab->getTitle(); ?>
+                                    <?php if($desc) : ?>
+                                        <em><?php echo $desc; ?></em>
+                                    <?php endif; ?>
+                                </span>
+                                <?php endif; ?>
                             </a>
                         </li>
                         <?php
-                        $i++;
+                        $class   = '';
                     endforeach;
                     ?>
                 </ul>
             </div>
 
-            <?php if ($help_sidebar) : ?>
-                <div class="tabbed-sidebar">
-                    <?php
-                    if (is_callable($help_sidebar)) {
-                        call_user_func($help_sidebar);
-                    } else {
-                        echo $help_sidebar;
-                    }
-                    ?>
-                </div>
-            <?php endif; ?>
-
             <div class="tr-sections">
                 <?php
-                $i = 0;
-                foreach ($tabs as $tab):
-                    $classes = ($i == $this->activeTabIndex)? 'tab-section active' : 'tab-section';
-                    $panel_id = "tab-panel-{$tab['id']}";
+                $classes = '';
+                foreach ($tabs as $i => $tab):
+                    if($active === $i) { $classes .= ' active';}
+                    $panel_id = "tab-panel-{$tab->getId()}";
                     ?>
 
-                    <div id="<?php echo esc_attr( $panel_id ); ?>" class="<?php echo $classes; ?>">
+                    <div id="<?php echo esc_attr( $panel_id ); ?>" class="tr-tab-section <?php echo $classes; ?>">
                         <?php
-                        // Print tab content.
-                        echo (string) $tab['content'];
 
                         // If it exists, fire tab callback.
-                        if ( ! empty( $tab['callback'] )) {
-                            call_user_func_array( $tab['callback'], [$this, $tab]);
+                        if ( $call = $tab->getCallback() ) {
+                            call_user_func_array( $call, [$this, $tab]);
                         }
 
                         // Tab fields
-                        if ( ! empty( $tab['fields'] )) {
-                            foreach ($tab['fields'] as $option) {
+                        if ( $fields = $tab->getFields() ) {
+                            foreach ($fields as $option) {
+                                echo $option;
+                            }
+                        }
+
+                        // Tab groups
+                        if ( $groups = $tab->getFieldset() ) {
+                            foreach ($groups as $option) {
                                 echo $option;
                             }
                         }
                         ?>
                     </div>
                     <?php
-                    $i++;
-                endforeach;
-                ?>
+                    $classes  = '';
+                endforeach; ?>
+                <?php if ($this->footer) : ?>
+                <div class="tr-tabbed-footer">
+                    <?php
+                    if (is_callable($this->footer)) {
+                        call_user_func($this->footer);
+                    } else {
+                        echo $this->footer;
+                    }
+                    ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
-        <?php
+
+        <?php if ($this->sidebar) : ?>
+        <div class="tr-tabbed-sidebar">
+            <?php
+            if (is_callable($this->sidebar)) {
+                call_user_func($this->sidebar);
+            } else {
+                echo $this->sidebar;
+            }
+            ?>
+        </div>
+        <?php endif;
     }
 
     /**
      * Tabs boxes in like with help tabs
+     *
+     * @param null $classes
      */
-    private function leftBoxedStyleTabs()
+    protected function leftBoxedStyleTabs($classes = null)
     {
         // Default help only if there is no old-style block of text and no new-style help tabs.
-        $help_sidebar = $this->getSidebar();
+        $sidebar = $this->sidebar;
+        $active = $this->getActiveTabIndex();
 
         $help_class = '';
-        if ( ! $help_sidebar) :
+        if (!$sidebar) :
             $help_class .= ' no-sidebar';
+        endif;
+
+        if ($this->title) :
+            $classes .= ' has-header';
         endif;
 
         // Time to render!
         ?>
-        <div class="tr-tabbed-box metabox-prefs">
+        <div class="tr-tabbed-box metabox-prefs <?php echo $classes; ?>">
 
-            <div class="tr-contextual-help-wrap <?php echo esc_attr( $help_class ); ?> cf">
-                <div class="tr-contextual-help-back"></div>
-                <div class="tr-contextual-help-columns">
-                    <div class="contextual-help-tabs">
-                        <ul>
+            <div class="tr-tab-layout-wrap <?php echo esc_attr( $help_class ); ?> cf">
+                <div class="tr-tab-layout-columns">
+                    <div class="tr-tab-layout-tabs">
+                        <ul class="tr-tabs">
                             <?php
-                            $i = 0;
+                            $class = '';
                             $tabs  = $this->getTabs();
-                            foreach ($tabs as $tab) :
-                                $class   = ($i == $this->activeTabIndex)? ' class="active"' : '';
-
-                                $icon = $this->getIconHtml($tab);
-                                $link_id = "tab-link-{$tab['id']}";
-                                $panel_id = ( ! empty( $tab['url'] ) ) ? $tab['url'] : "#tab-panel-{$tab['id']}";
-                                $data_uid = ( ! empty( $tab['uid'] ) ) ? " data-uid=\"{$tab['uid']}\"" : '';
+                            /** @var Tab $tab */
+                            foreach ($tabs as $i => $tab) :
+                                $icon = $this->getIcon($tab);
+                                $link_id = "tab-link-{$tab->getId()}";
+                                $url = $tab->getUrl();
+                                $panel_id = $url ? $url : "#tab-panel-{$tab->getId()}";
+                                $data_uid = " data-uid=\"{$tab->getId()}\"";
+                                $desc = $tab->getDescription();
+                                $class .= $desc ? ' has-description': '';
+                                if($active === $i) { $class .= ' active';}
                                 ?>
-                                <li id="<?php echo esc_attr( $link_id ); ?>"<?php echo $class . $data_uid; ?>>
-                                    <a href="<?php echo esc_url( "$panel_id" ); ?>">
-                                        <?php echo $icon . esc_html( $tab['title'] ); ?>
+                                <li class="<?php echo $class; ?>" id="<?php echo esc_attr( $link_id ); ?>"<?php echo $data_uid; ?>>
+                                    <a class="tr-tab-link" href="<?php echo esc_url( "$panel_id" ); ?>">
+                                        <?php if(!$this->onlyIcons) : ?>
+                                        <span class="tab-text">
+                                            <?php echo $tab->getTitle(); ?>
+                                            <?php if($desc = $tab->getDescription()) : ?>
+                                                <em><?php echo $desc; ?></em>
+                                            <?php endif; ?>
+                                        </span>
+                                        <?php endif; ?>
+                                        <?php echo $icon; ?>
                                     </a>
                                 </li>
                                 <?php
-
-                                $i++;
+                                $class   = '';
                             endforeach;
                             ?>
                         </ul>
                     </div>
 
-                    <?php if ($help_sidebar) : ?>
-                        <div class="contextual-help-sidebar">
-                            <?php
-                            if (is_callable($help_sidebar)) {
-                                call_user_func($help_sidebar);
-                            } else {
-                                echo $help_sidebar;
-                            }
-                            ?>
-                        </div>
-                    <?php endif; ?>
+                    <div class="tr-tab-layout-tabs-wrap">
 
-                    <div class="contextual-help-tabs-wrap">
-                        <?php
-                        $i = 0;
-                        foreach ($tabs as $tab):
-                            $classes = ($i == $this->activeTabIndex)? 'help-tab-content active' : 'help-tab-content';
-                            $panel_id = "tab-panel-{$tab['id']}";
-                            ?>
-
-                            <div id="<?php echo esc_attr( $panel_id ); ?>" class="inside <?php echo $classes; ?>">
+                        <?php if ($this->title) : ?>
+                            <div class="tr-tabbed-header">
                                 <?php
-                                // Print tab content.
-                                echo (string) $tab['content'];
+                                if (is_callable($this->title)) {
+                                    call_user_func($this->title);
+                                } else {
+                                    echo Element::title($this->title);
+                                }
+                                ?>
+                            </div>
+                        <?php endif; ?>
 
+                        <?php
+                        $classes = '';
+                        foreach ($tabs as $i => $tab):
+                            if($active === $i) { $classes .= ' active';}
+                            $panel_id = "tab-panel-{$tab->getId()}";
+                            ?>
+
+                            <div id="<?php echo esc_attr( $panel_id ); ?>" class="tr-tab-layout-content tr-tab-section inside <?php echo $classes; ?>">
+                                <?php
                                 // If it exists, fire tab callback.
-                                if ( ! empty( $tab['callback'] )) {
-                                    call_user_func_array( $tab['callback'], [$this, $tab]);
+                                if ( $call = $tab->getCallback()) {
+                                    call_user_func_array( $call, [$this, $tab]);
                                 }
 
                                 // Tab fields
-                                if ( ! empty( $tab['fields'] )) {
-                                    foreach ($tab['fields'] as $option) {
+                                if ( $fields = $tab->getFields() ) {
+                                    foreach ($fields as $option) {
+                                        echo $option;
+                                    }
+                                }
+
+                                // Tab groups
+                                if ( $sets = $tab->getFieldset() ) {
+                                    foreach ($sets as $option) {
                                         echo $option;
                                     }
                                 }
                                 ?>
                             </div>
                             <?php
-                            $i++;
+                            $classes  = '';
                         endforeach;
                         ?>
+
+                        <?php if ($this->footer) : ?>
+                            <div class="tr-tabbed-footer">
+                                <?php
+                                if (is_callable($this->footer)) {
+                                    call_user_func($this->footer);
+                                } else {
+                                    echo $this->footer;
+                                }
+                                ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
+
+                    <?php if ($sidebar) : ?>
+                        <div class="tr-tab-layout-sidebar">
+                            <?php
+                            if (is_callable($sidebar)) {
+                                call_user_func($sidebar);
+                            } else {
+                                echo $sidebar;
+                            }
+                            ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
         <?php
+    }
+
+    /**
+     * @param null|BaseForm $form
+     *
+     * @return Tabs
+     */
+    public function cloneToForm($form = null)
+    {
+        $clone = clone $this;
+        if($clone->tabs) {
+            /**
+             * @var string $i
+             * @var Tab $tab */
+            foreach ($clone->tabs as $i => $tab) {
+                $clone->tabs[$i] = $tab->cloneToForm($form);
+            }
+        }
+
+        return $clone;
+    }
+
+    /**
+     * Clone Tabs
+     */
+    public function __clone() {
+        if($this->tabs) {
+            foreach ($this->tabs as $i => $tab) {
+                $this->tabs[$i] = clone $tab;
+            }
+        }
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 }

@@ -1,21 +1,22 @@
 {
-    "name": "typerocket/core",
-    "description": "The TypeRocket WordPress Framework.",
+    "name": "typerocket/pro-core",
+    "description": "The TypeRocket Pro Core.",
     "keywords": ["framework", "typerocket", "wordpress"],
     "license": "GPL-3.0-or-later",
     "homepage": "https://typerocket.com",
     "authors": [
         {
-            "name": "Kevin Dees",
-            "homepage": "https://kevdees.com",
+            "name": "Robojuice",
+            "homepage": "https://robojuice.com",
             "role": "Creator"
         }
     ],
     "support": {
-        "docs": "https://typerocket.com/docs/v4/"
+        "docs": "https://typerocket.com/docs/v5/"
     },
     "require" : {
-        "php": ">=7",
+        "php": ">=7.2.5",
+        "ext-json": "*",
         "symfony/console": "3.4.*"
     },
     "require-dev": {
@@ -23,7 +24,6 @@
     },
     "autoload": {
         "files": [
-            "functions/functions.php",
             "functions/helpers.php"
         ],
         "psr-4": {

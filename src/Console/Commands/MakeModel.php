@@ -4,9 +4,9 @@ namespace TypeRocket\Console\Commands;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
-use TypeRocket\Core\Config;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Inflect;
+use TypeRocket\Utility\Str;
 
 class MakeModel extends Command
 {
@@ -30,11 +30,13 @@ class MakeModel extends Command
      * Example command: php galaxy make:model base member
      *
      * @return int|null|void
+     * @throws \Exception
      */
     protected function exec()
     {
         $directive = $this->getArgument('directive');
-        $name = $this->getArgument('name');
+        $name = $this->getClassArgument('name');
+
         $id = $this->getArgument('id');
 
         switch ( strtolower($directive) ) {
@@ -51,14 +53,13 @@ class MakeModel extends Command
 
         if( ! $id ) {
             if( $directive == 'Base') {
-                $id = strtolower(Inflect::pluralize($name));
+                $id = Str::splitAt('\\', strtolower(Inflect::pluralize($name)), true)[1];
             } else {
                 $id = strtolower($name);
             }
         }
 
-        $model = ucfirst($name);
-        $this->makeFile($model, $directive, $id);
+        $this->makeFile($name, $directive, $id);
     }
 
     /**
@@ -67,29 +68,40 @@ class MakeModel extends Command
      * @param string $model
      * @param string $directive
      * @param string $id
+     *
+     * @throws \Exception
      */
     private function makeFile( $model, $directive, $id ) {
 
-        $tags = ['{{namespace}}', '{{model}}', '{{id}}'];
-        $replacements = [ TR_APP_NAMESPACE, $model, $id ];
+        list($namespace, $class) = Str::splitAt('\\', $model, true);
+
+        $tags = ['{{namespace}}', '{{model}}', '{{id}}', '{{app}}'];
+        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Models', $namespace]));
+        $replacements = [ $namespace, $class, str_replace('\\', '_', $id), TR_APP_NAMESPACE ];
         $template =  __DIR__ . '/../../../templates/Models/' . $directive . '.txt';
-        $app_path = Config::locate('paths.app');
-        $new = $app_path . '/Models/' . $model . ".php";
+
+        $app_path = tr_config('paths.app');
+        $model_file = $app_path . '/Models/' . str_replace("\\",'/', $model) . ".php";
+        $model_path = substr($model_file, 0, -1 + -strlen(basename($model_file)) ) ;
+
+        if( ! file_exists( $model_path ) ) {
+            mkdir($model_path, 0755, true);
+        }
 
         $file = new File( $template );
-        $new = $file->copyTemplateFile( $new, $tags, $replacements );
+        $model_file = $file->copyTemplateFile( $model_file, $tags, $replacements );
 
-        if( $new ) {
+        if( $model_file ) {
             $this->success('Model created: ' . $model . ' as ' . $directive . '</>');
         } else {
-            $this->error('TypeRocket ' . $model . ' exists.');
+            $this->error('TypeRocket ' . $model . ' already exists.');
         }
 
         if ( $this->getOption('controller') ) {
             $command = $this->getApplication()->find('make:controller');
             $input = new ArrayInput( [
                 'directive' => $this->getArgument('directive'),
-                'name' => $this->getArgument('name')
+                'name' => $model . 'Controller'
             ] );
             $command->run($input, $this->output);
         }
