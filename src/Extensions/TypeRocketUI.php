@@ -453,6 +453,6 @@ class TypeRocketUI
             $supports[ esc_attr__($key, 'typerocket-ui') ] = $v;
         }
 
-        return tr_view( __DIR__ .'/views/post-types.php', compact('form', 'icons', 'supports', 'values'));
+        return tr_view( __DIR__ .'/views/typerocket-ui.php', compact('form', 'icons', 'supports', 'values'));
     }
 }
