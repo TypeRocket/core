@@ -362,48 +362,63 @@ class Validator
      * @throws \Exception
      */
     protected function validateField($handle, $value, $fullName) {
-        $handle = $handle instanceof  ValidatorRule ? $handle : explode('|', (string) $handle);
         $field_name = '<strong>"' . mb_ucwords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
 
-        if(is_object($handle)) {
-            $handle->setArgs([
-                'validator' => $this,
-                'value' => $value,
-                'full_name' => $fullName,
-                'field_name' => $field_name,
-            ]);
+        $args = [
+            'validator' => $this,
+            'value' => $value,
+            'full_name' => $fullName,
+            'field_name' => $field_name,
+        ];
+
+        if($handle instanceof  ValidatorRule) {
+            $handle->setArgs($args);
             $this->runValidatorRule($handle, $fullName, $field_name, $value);
             return;
         }
 
-        foreach( $handle as $validation) {
-            [ $type, $option, $option2, $option3 ] = array_pad(explode(':', $validation, 4), 4, null);
+        $list = [];
 
-            if(array_key_exists($type, $this->validatorMap)) {
-                $class = $this->validatorMap[$type];
-            } else {
-                $class = $type;
-            }
+        if(is_string($handle)) {
+            $handle = explode('|', (string) $handle);
+        }
 
-            if(class_exists($class)) {
-                $class = (new $class)->setArgs([
-                    'validator' => $this,
-                    'option' => $option,
-                    'value' => $value,
-                    'full_name' => $fullName,
-                    'field_name' => $field_name,
-                    'option2' => $option2,
-                    'option3' => $option3,
-                ]);
+        if(is_array($handle)) {
+            $list = $handle;
+        }
 
-                if($class instanceof ValidatorRule) {
-                    $this->runValidatorRule($class, $fullName, $field_name, $value);
+        foreach( $list as $validation) {
+
+            if(is_string($validation)) {
+                [ $type, $option, $option2, $option3 ] = array_pad(explode(':', $validation, 4), 4, null);
+
+                if(array_key_exists($type, $this->validatorMap)) {
+                    $class = $this->validatorMap[$type];
+                } else {
+                    $class = $type;
                 }
 
+                if(class_exists($class)) {
+                    $args = array_merge($args, [
+                        'option' => $option,
+                        'option2' => $option2,
+                        'option3' => $option3,
+                    ]);
+
+                    $class = new $class;
+                }
+            }
+            elseif ($validation instanceof ValidatorRule) {
+                $class = $validation;
+            }
+
+            if($class instanceof ValidatorRule) {
+                $class->setArgs($args);
+                $this->runValidatorRule($class, $fullName, $field_name, $value);
                 continue;
             }
 
-            throw new \Exception('Unknown validation option: ' . $option);
+            throw new \Exception('Unknown validation option: ' . $type);
         }
     }
 
@@ -419,7 +434,7 @@ class Validator
         if( !$pass ) {
             $this->setErrorMessage($fullName, $field_name, $class);
         } else {
-            $this->passes[$fullName] = $value;
+            $this->passes[$fullName . ':' . $class::KEY] = $value;
         }
     }
 

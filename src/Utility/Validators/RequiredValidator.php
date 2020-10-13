@@ -21,6 +21,7 @@ class RequiredValidator extends ValidatorRule
          * @var Validator $validator
          */
         extract($this->args);
+        $option = $option ?? null;
 
         $weak = $option === 'weak' && is_null($value);
 

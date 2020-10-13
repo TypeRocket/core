@@ -15,13 +15,15 @@ class ValidatorTest extends TestCase
 
     public function testValidatorRule()
     {
-        $fields['person'] = 'example@typerocket.com';
+        $fields['email'] = 'example@typerocket.com';
 
         $validator = new Validator([
-            'person' => EmailValidator::new()
+            'email' => [ EmailValidator::new(), 'required' ]
         ], $fields, null, true);
 
-        $this->assertEquals(1, count($validator->getPasses()) );
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(2, $passes);
     }
 
     public function testKeyRule()
