@@ -6,7 +6,7 @@ namespace Validator;
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Database\Query;
 use TypeRocket\Models\WPPost;
-use TypeRocket\Utility\ValidatorRule;
+use TypeRocket\Utility\Validators\ValidatorRule;
 use TypeRocket\Utility\Validator;
 use TypeRocket\Utility\Validators\EmailValidator;
 

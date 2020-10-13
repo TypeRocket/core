@@ -12,9 +12,9 @@ class UniqueModelValidator extends ValidatorRule
     {
         $result = null;
         /**
-         * @var $option3
          * @var $option
          * @var $option2
+         * @var $option3
          * @var $full_name
          * @var $field_name
          * @var $value

@@ -10,9 +10,9 @@ class UrlValidator extends ValidatorRule
     public function validate(): bool
     {
         /**
-         * @var $option3
          * @var $option
          * @var $option2
+         * @var $option3
          * @var $full_name
          * @var $field_name
          * @var $value

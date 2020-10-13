@@ -25,11 +25,11 @@ abstract class ValidatorRule
     /**
      * Validate
      *
-     * Args from $this->args
+     * Args typically available from $this->args
      *
-     * @var $option3
      * @var $option
      * @var $option2
+     * @var $option3
      * @var $full_name
      * @var $field_name
      * @var $value
