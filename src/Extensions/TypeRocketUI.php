@@ -396,13 +396,23 @@ class TypeRocketUI
         }
 
         $validator = Validator::new([
-            'tr_registered.post_types.*.singular' => 'required:weak',
-            'tr_registered.taxonomies.*.singular' => 'required:weak',
-            'tr_registered.meta_boxes.*.meta_box_title' => 'required:weak',
+            'tr_registered.post_types.?.singular' => 'required',
+            'tr_registered.post_types.?.post_type_id' => 'max:20|required|key',
+            'tr_registered.taxonomies.?.singular' => 'required',
+            'tr_registered.taxonomies.?.taxonomy_id' => 'max:32|required|key',
+            'tr_registered.meta_boxes.?.meta_box_title' => 'required',
+            'tr_registered.meta_boxes.?.meta_box_id' => 'required',
         ], $fields)->setErrorMessages([
-            'tr_registered.post_types.\d+.singular:required' => 'Post type singular name is required.',
-            'tr_registered.taxonomies.\d+.singular:required' => 'Taxonomy singular name is required.',
-            'tr_registered.meta_boxes.\d+.meta_box_title:required' => 'Meta box title is required.',
+            'tr_registered.post_types.\d+.singular:required' => _x('Post type singular name {error}', 'required'),
+            'tr_registered.post_types.\d+.post_type_id:max' => _x('Post type ID {error}', 'max'),
+            'tr_registered.post_types.\d+.post_type_id:required' => _x('Post type ID {error}', 'required'),
+            'tr_registered.post_types.\d+.post_type_id:key' => _x('Post type ID {error}', 'key'),
+            'tr_registered.taxonomies.\d+.singular:required' => __('Taxonomy singular name {error}'),
+            'tr_registered.taxonomies.\d+.taxonomy_id:max' => _x('Taxonomy ID {error}', 'max'),
+            'tr_registered.taxonomies.\d+.taxonomy_id:required' => _x('Taxonomy ID {error}', 'required'),
+            'tr_registered.taxonomies.\d+.taxonomy_id:key' => _x('Taxonomy ID {error}', 'key'),
+            'tr_registered.meta_boxes.\d+.meta_box_title:required' => _x('Meta box title {error}', 'required'),
+            'tr_registered.meta_boxes.\d+.meta_box_id:required' => _x('Meta box ID {error}', 'required'),
         ], true)->validate(true);
 
         if($validator->failed()) {

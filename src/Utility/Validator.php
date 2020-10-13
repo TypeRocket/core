@@ -6,18 +6,41 @@ use TypeRocket\Exceptions\RedirectError;
 use TypeRocket\Http\Fields;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
+use TypeRocket\Utility\Validators\ValidatorRule;
+use TypeRocket\Utility\Validators\CallbackValidator;
+use TypeRocket\Utility\Validators\EmailValidator;
+use TypeRocket\Utility\Validators\KeyValidator;
+use TypeRocket\Utility\Validators\MaxLengthValidator;
+use TypeRocket\Utility\Validators\MinLengthValidator;
+use TypeRocket\Utility\Validators\NumericValidator;
+use TypeRocket\Utility\Validators\RequiredValidator;
+use TypeRocket\Utility\Validators\SizeValidator;
+use TypeRocket\Utility\Validators\UniqueModelValidator;
+use TypeRocket\Utility\Validators\UrlValidator;
 
 class Validator
 {
     protected $rules = [];
     protected $fields = [];
-    protected $modelClass = [];
     protected $passes = [];
     protected $errors = [];
+    protected $errorFields = [];
+    protected $modelClass;
     protected $respondWithErrors;
     protected $errorMessages = ['messages' => [], 'regex' => false];
-    protected $errorFields = [];
     protected $ran = false;
+    protected $validatorMap = [
+        CallbackValidator::KEY => CallbackValidator::class,
+        EmailValidator::KEY => EmailValidator::class,
+        KeyValidator::KEY => KeyValidator::class,
+        MaxLengthValidator::KEY => MaxLengthValidator::class,
+        MinLengthValidator::KEY => MinLengthValidator::class,
+        NumericValidator::KEY => NumericValidator::class,
+        RequiredValidator::KEY => RequiredValidator::class,
+        SizeValidator::KEY => SizeValidator::class,
+        UniqueModelValidator::KEY => UniqueModelValidator::class,
+        UrlValidator::KEY => UrlValidator::class,
+    ];
 
     /**
      * Validator
@@ -34,6 +57,7 @@ class Validator
         $this->modelClass = $modelClass;
         $this->fields = $fields ?? (new Request)->getFields();
         $this->rules = $rules;
+        $this->validatorMap = apply_filters('tr_validator_map', $this->validatorMap);
 
         if($run) {
             $this->mapFieldsToValidation();
@@ -202,6 +226,14 @@ class Validator
     }
 
     /**
+     * @return array|null
+     */
+    public function getModelClass()
+    {
+        return $this->modelClass;
+    }
+
+    /**
      * Used to format fields
      *
      * @param array $arr
@@ -212,22 +244,25 @@ class Validator
      * @return array|null
      * @throws \Exception
      */
-    private function walk(array &$arr, $path, $handle, $fullPath) {
+    protected function walk(array &$arr, $path, $handle, $fullPath) {
         $loc = &$arr;
         $dots = explode('.', $path);
         foreach($dots as $step)
         {
             array_shift($dots);
-            if($step === '*' && is_array($loc)) {
+            if(in_array($step, ['*', '?']) && is_array($loc)) {
                 $new_loc = &$loc;
                 $indies = array_keys($new_loc);
                 foreach($indies as $index) {
                     if(isset($new_loc[$index])) {
-                        $newFullPath = preg_replace('(\*)', "{$index}", $fullPath, 1);
+                        $newFullPath = preg_replace('(\*|\?)', "{$index}", $fullPath, 1);
                         $this->walk($new_loc[$index], implode('.', $dots), $handle, $newFullPath);
                     }
                 }
-            } elseif( isset($loc[$step] ) ) {
+            } elseif( $step === '?' && empty($loc) ) {
+                $this->passes[substr($fullPath, 0, strpos($fullPath, '.?'))] = $loc;
+                return null;
+            } elseif( isset($loc[$step]) ) {
                 $loc = &$loc[$step];
             } else {
                 if( !empty($handle) && !isset($indies) ) {
@@ -276,14 +311,14 @@ class Validator
      * Pulls message override from $errorMessages
      *
      * @param string $name
-     * @param string $type
      * @param string $field_name
-     * @param string $message
+     * @param ValidatorRule $class
      */
-    protected function setErrorMessage($name, $type, $field_name, $message) {
-        $message = __($message, 'typerocket-domain');
+    protected function setErrorMessage($name, $field_name, $class) {
+        $message = __($class->getError(), 'typerocket-domain');
         $this->errors[$name] = $field_name . ' ' .  $message;
         $this->errorFields[$name] = trim($message);
+        $type = $class::KEY;
         $index = $name.':'.$type;
         $validate = $value = $match = $matches = false;
 
@@ -295,7 +330,8 @@ class Validator
                     break;
                 }
             }
-        } else {
+        }
+        else {
             $validate = !empty($this->errorMessages['messages'][$index]);
 
             if($validate) {
@@ -308,8 +344,10 @@ class Validator
                 $this->errors[$name] = call_user_func($value, $name, $type, $this->errors[$name], $matches);
                 $this->errorFields[$name] = $this->errors[$name];
             } else {
-                $this->errors[$name] = $value;
-                $this->errorFields[$name] = $value;
+                $error_message = $class->getError();
+                $error_message = isset($value) ? str_replace('{error}', $error_message, $value) : $error_message;
+                $this->errors[$name] = $error_message;
+                $this->errorFields[$name] = $error_message;
             }
         }
     }
@@ -317,111 +355,71 @@ class Validator
     /**
      * Validate the Field
      *
-     * @param string $handle
+     * @param string|ValidatorRule $handle
      * @param string $value
-     * @param string $name
+     * @param string $fullName
+     *
      * @throws \Exception
      */
-    protected function validateField( $handle, $value, $name ) {
-        $list = explode('|', $handle);
-        foreach( $list as $validation) {
+    protected function validateField($handle, $value, $fullName) {
+        $handle = $handle instanceof  ValidatorRule ? $handle : explode('|', (string) $handle);
+        $field_name = '<strong>"' . mb_ucwords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
+
+        if(is_object($handle)) {
+            $handle->setArgs([
+                'validator' => $this,
+                'value' => $value,
+                'full_name' => $fullName,
+                'field_name' => $field_name,
+            ]);
+            $this->runValidatorRule($handle, $fullName, $field_name, $value);
+            return;
+        }
+
+        foreach( $handle as $validation) {
             [ $type, $option, $option2, $option3 ] = array_pad(explode(':', $validation, 4), 4, null);
-            $field_name = '<strong>"' . mb_ucwords(preg_replace('/\_|\./', ' ', $name)) . '"</strong>';
-            switch($type) {
-                case 'required' :
-                    if( $option === 'weak' && is_null($value) ) {
-                        $this->passes[$name] = $value;
-                    } elseif( empty( $value ) ) {
-                        $this->setErrorMessage($name, $type, $field_name, 'is required.');
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'callback' :
-                    $callback_value = call_user_func_array($option, [ $this, $value, $field_name, $option2 ]);
-                    if( isset($callback_value['error']) ) {
-                        $this->setErrorMessage($name, $type, $field_name, $callback_value['error']);
-                    } else {
-                        $this->passes[$name] = $callback_value['success'];
-                    }
-                    break;
-                case 'min' :
-                    $option = (int) $option;
-                    if( mb_strlen($value) < $option ) {
-                        $this->setErrorMessage($name, $type, $field_name, "must be at least $option characters.");
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'max' :
-                    $option = (int) $option;
-                    if( mb_strlen($value) > $option ) {
-                        $this->setErrorMessage($name, $type, $field_name, "must be less than $option characters.");
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'size' :
-                    $option = (int) $option;
-                    if( mb_strlen($value) !== (int) $option ) {
-                        $this->setErrorMessage($name, $type, $field_name, "must be $option characters.");
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'email' :
-                    if( ! filter_var($value, FILTER_VALIDATE_EMAIL) ) {
-                        $this->setErrorMessage($name, $type, $field_name, "must be an email address.");
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'numeric' :
-                    if( ! is_numeric($value) ) {
-                        $this->setErrorMessage($name, $type, $field_name, "must be a numeric value.");
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'url' :
-                    if( ! filter_var($value, FILTER_VALIDATE_URL) ) {
-                        $this->setErrorMessage($name, $type, $field_name, "must be at a URL.");
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-                    break;
-                case 'unique' :
-                    $result = null;
 
-                    if( $this->modelClass && ! $option3) {
-                        /** @var \TypeRocket\Models\Model $model */
-                        $model = new $this->modelClass;
-                        $model->where($option, $value);
-
-                        if($option2) {
-                            $model->where($model->getIdColumn(), '!=', $option2);
-                        }
-
-                        $result = $model->first();
-                    } elseif( $option3 || ( ! $this->modelClass && $option2 ) ) {
-                        [$table, $idColumn] = array_pad(explode('@', $option2, 2), 2, null);
-                        $query = (new Query)->table($table)->where($option, $value);
-
-                        if($idColumn && $option3) {
-                            $query->where($idColumn, '!=', $option3);
-                        }
-
-                        $result = $query->first();
-                    }
-
-                    if($result) {
-                        $this->setErrorMessage($name, $type, $field_name, 'is taken.');
-                    } else {
-                        $this->passes[$name] = $value;
-                    }
-
-                    break;
+            if(array_key_exists($type, $this->validatorMap)) {
+                $class = $this->validatorMap[$type];
+            } else {
+                $class = $type;
             }
+
+            if(class_exists($class)) {
+                $class = (new $class)->setArgs([
+                    'validator' => $this,
+                    'option' => $option,
+                    'value' => $value,
+                    'full_name' => $fullName,
+                    'field_name' => $field_name,
+                    'option2' => $option2,
+                    'option3' => $option3,
+                ]);
+
+                if($class instanceof ValidatorRule) {
+                    $this->runValidatorRule($class, $fullName, $field_name, $value);
+                }
+
+                continue;
+            }
+
+            throw new \Exception('Unknown validation option: ' . $option);
+        }
+    }
+
+    /**
+     * @param ValidatorRule $class
+     * @param $fullName
+     * @param $field_name
+     * @param $value
+     */
+    protected function runValidatorRule(ValidatorRule $class, $fullName, $field_name, $value) {
+        $pass = $class->validate();
+
+        if( !$pass ) {
+            $this->setErrorMessage($fullName, $field_name, $class);
+        } else {
+            $this->passes[$fullName] = $value;
         }
     }
 

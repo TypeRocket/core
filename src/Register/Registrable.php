@@ -8,6 +8,7 @@ abstract class Registrable
 {
     protected $use = [];
     protected $id = null;
+    protected $maxIdLength = 10000;
     protected $args = [];
     protected $reservedNames = [
         'attachment',
@@ -104,6 +105,14 @@ abstract class Registrable
         $this->isReservedId();
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxIdLength()
+    {
+        return $this->maxIdLength;
     }
 
     /**

@@ -12,6 +12,7 @@ trait Resourceful
      *
      * @param string $id set the ID
      * @param boolean $resource update the resource binding
+     * @param int $max
      *
      * @return $this
      */
@@ -32,7 +33,10 @@ trait Resourceful
      */
     public function setRawId($id, $resource = false)
     {
-        $this->id = $id;
+        $length = $this->getMaxIdLength();
+        $sub = substr($id, 0, $length);
+
+        $this->id = $sub ?: $id;
 
         if($resource) {
             $this->resource['singular'] = $this->id;

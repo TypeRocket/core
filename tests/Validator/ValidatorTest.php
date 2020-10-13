@@ -6,10 +6,75 @@ namespace Validator;
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Database\Query;
 use TypeRocket\Models\WPPost;
+use TypeRocket\Utility\ValidatorRule;
 use TypeRocket\Utility\Validator;
+use TypeRocket\Utility\Validators\EmailValidator;
 
 class ValidatorTest extends TestCase
 {
+
+    public function testValidatorRule()
+    {
+        $fields['person'] = 'example@typerocket.com';
+
+        $validator = new Validator([
+            'person' => EmailValidator::new()
+        ], $fields, null, true);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
+    public function testKeyRule()
+    {
+        $fields['id'] = 'id Here';
+
+        $validator = new Validator([
+            'id' => 'key'
+        ], $fields, null, true);
+
+        $this->assertEquals(1, count($validator->getErrors()) );
+
+        $fields['id'] = 'id_here';
+
+        $validator = new Validator([
+            'id' => 'key'
+        ], $fields, null, true);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+
+        $fields['id'] = 'id_Here';
+
+        $validator = new Validator([
+            'id' => 'key'
+        ], $fields, null, true);
+
+        $this->assertEquals(1, count($validator->getErrors()) );
+    }
+
+    public function testDeepMultipleMaybe()
+    {
+        $fields['person'] = '';
+
+        $validator = new Validator([
+            'person.?.email' => 'email'
+        ], $fields, null, true);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+        $this->assertEquals(0, count($validator->getErrors()) );
+    }
+
+    public function testDeepMultipleMaybeFails()
+    {
+        $fields['person'][1]['email'] = 'example@typerocket.com';
+        $fields['person'][2]['email'] = 'example2';
+
+        $validator = new Validator([
+            'person.?.email' => 'email'
+        ], $fields, null, true);
+
+        $this->assertEquals(1, count($validator->getPasses()) );
+        $this->assertEquals(1, count($validator->getErrors()) );
+    }
 
     public function testSetMessage()
     {
@@ -111,13 +176,27 @@ class ValidatorTest extends TestCase
         $fields['person'][2]['email'] = 'e@example2.1@typerocket.com';
         $fields['person'][3]['email'] = 'example2.1typerocket.com';
 
-        function checkValidatorCallback($validator, $value, $field, $option2)
+        function checkValidatorCallback($args)
         {
+            /**
+             * @var $option3
+             * @var $option
+             * @var $option2
+             * @var $name
+             * @var $field_name
+             * @var $value
+             * @var $type
+             * @var Validator $validator
+             */
+            extract($args);
+
+            $error = null;
+
             if( empty($value) ) {
-               return  ['error' => $field . ' is bad'];
+                return $field_name . ' is bad';
             }
 
-            return ['success' => $field . ' is good'];
+            return true;
         }
 
         $validator = new Validator([
@@ -133,13 +212,27 @@ class ValidatorTest extends TestCase
         $fields['person'][2]['email'] = '';
         $fields['person'][3]['email'] = '';
 
-        function checkValidatorCallbackError($validator,  $value, $field, $option2)
+        function checkValidatorCallbackError($args)
         {
+            /**
+             * @var $option3
+             * @var $option
+             * @var $option2
+             * @var $name
+             * @var $field_name
+             * @var $value
+             * @var $type
+             * @var Validator $validator
+             */
+            extract($args);
+
+            $error = null;
+
             if( empty($value) ) {
-                return  ['error' => $field . ' is bad'];
+                return $field_name . ' is bad';
             }
 
-            return ['success' => $field . ' is good'];
+            return true;
         }
 
         $validator = new Validator([

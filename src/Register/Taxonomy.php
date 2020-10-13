@@ -21,6 +21,7 @@ class Taxonomy extends Registrable
     protected $resource = null;
     protected $existing = null;
     protected $hooksAttached = false;
+    protected $maxIdLength = 32;
 
     /**
      * Make Taxonomy. Do not use before init.
@@ -70,7 +71,7 @@ class Taxonomy extends Registrable
             'controller' => null
         ];
 
-        $this->id     = ! $this->id ? $singular : $this->id;
+        $this->setId(! $this->id ? $singular : $this->id);
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
             $settings['capabilities'] = (new Roles)->getTaxonomyCapabilities($singular, $plural);
