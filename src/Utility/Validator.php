@@ -329,7 +329,9 @@ class Validator
             $field_name = '<strong>"' . mb_ucwords(preg_replace('/\_|\./', ' ', $name)) . '"</strong>';
             switch($type) {
                 case 'required' :
-                    if( empty( $value ) ) {
+                    if( $option === 'weak' && is_null($value) ) {
+                        $this->passes[$name] = $value;
+                    } elseif( empty( $value ) ) {
                         $this->setErrorMessage($name, $type, $field_name, 'is required.');
                     } else {
                         $this->passes[$name] = $value;

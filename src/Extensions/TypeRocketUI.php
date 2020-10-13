@@ -396,9 +396,9 @@ class TypeRocketUI
         }
 
         $validator = Validator::new([
-            'tr_registered.post_types.*.singular' => 'required',
-            'tr_registered.taxonomies.*.singular' => 'required',
-            'tr_registered.meta_boxes.*.meta_box_title' => 'required',
+            'tr_registered.post_types.*.singular' => 'required:weak',
+            'tr_registered.taxonomies.*.singular' => 'required:weak',
+            'tr_registered.meta_boxes.*.meta_box_title' => 'required:weak',
         ], $fields)->setErrorMessages([
             'tr_registered.post_types.\d+.singular:required' => 'Post type singular name is required.',
             'tr_registered.taxonomies.\d+.singular:required' => 'Taxonomy singular name is required.',
