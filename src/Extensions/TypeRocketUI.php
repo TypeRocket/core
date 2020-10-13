@@ -401,7 +401,7 @@ class TypeRocketUI
             'tr_registered.taxonomies.?.singular' => 'required',
             'tr_registered.taxonomies.?.taxonomy_id' => 'max:32|required|key',
             'tr_registered.meta_boxes.?.meta_box_title' => 'required',
-            'tr_registered.meta_boxes.?.meta_box_id' => 'required',
+            'tr_registered.meta_boxes.?.meta_box_id' => 'required|key',
         ], $fields)->setErrorMessages([
             'tr_registered.post_types.\d+.singular:required' => _x('Post type singular name {error}', 'required'),
             'tr_registered.post_types.\d+.post_type_id:max' => _x('Post type ID {error}', 'max'),
@@ -413,6 +413,7 @@ class TypeRocketUI
             'tr_registered.taxonomies.\d+.taxonomy_id:key' => _x('Taxonomy ID {error}', 'key'),
             'tr_registered.meta_boxes.\d+.meta_box_title:required' => _x('Meta box title {error}', 'required'),
             'tr_registered.meta_boxes.\d+.meta_box_id:required' => _x('Meta box ID {error}', 'required'),
+            'tr_registered.meta_boxes.\d+.meta_box_id:key' => _x('Meta box ID {error}', 'key'),
         ], true)->validate(true);
 
         if($validator->failed()) {
