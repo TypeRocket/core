@@ -181,9 +181,9 @@ class PostType extends Registrable
     {
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
-        $upperSingular = $keep_case ? $singular : mb_ucwords( $singular );
+        $upperSingular = $keep_case ? $singular : tr_mb_ucwords( $singular );
         $lowerSingular = $keep_case ? $singular : mb_strtolower( $singular );
-        $upperPlural   = $keep_case ? $plural : mb_ucwords( $plural );
+        $upperPlural   = $keep_case ? $plural : tr_mb_ucwords( $plural );
         $pluralLower   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $context = 'post_type:' . $this->getId();

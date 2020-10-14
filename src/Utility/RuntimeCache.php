@@ -47,7 +47,7 @@ class RuntimeCache
      */
     public function get($key, $namespace = 'typerocket')
     {
-        return dots_walk($key, $this->cache[$namespace]);
+        return tr_dots_walk($key, $this->cache[$namespace]);
     }
 
     /**

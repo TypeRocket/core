@@ -362,7 +362,7 @@ class Validator
      * @throws \Exception
      */
     protected function validateField($handle, $value, $fullName) {
-        $field_name = '<strong>"' . mb_ucwords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
+        $field_name = '<strong>"' . tr_mb_ucwords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
 
         $args = [
             'validator' => $this,

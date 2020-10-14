@@ -139,8 +139,8 @@ class Taxonomy extends Registrable
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
-        $upperPlural   = $keep_case ? $plural : mb_ucwords( $plural );
-        $upperSingular = $keep_case ? $singular : mb_ucwords( $singular );
+        $upperPlural   = $keep_case ? $plural : tr_mb_ucwords( $plural );
+        $upperSingular = $keep_case ? $singular : tr_mb_ucwords( $singular );
         $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $context = 'taxonomy:' . $this->getId();

@@ -146,7 +146,7 @@ class Repeater extends Field implements ScriptField
         $templateFields = str_replace( ' name="', ' data-tr-name="', $this->getTemplateFields($form, $name) );
 
         // render js template data
-        $classes = class_names('tr-repeater-group', [
+        $classes = tr_class_names('tr-repeater-group', [
             'tr-repeater-clones' => !empty($group_control_list['clone'])
         ]);
 

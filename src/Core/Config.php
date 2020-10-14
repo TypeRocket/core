@@ -40,7 +40,7 @@ class Config
      */
     private function jitLocate($dots, $default = null)
     {
-        list($root, $rest) = array_pad(explode('.', $dots, 2), 2, null);
+        [$root, $rest] = array_pad(explode('.', $dots, 2), 2, null);
         if(!isset($this->config[$root]) && is_file($this->root . '/' . $root . '.php')) {
             /** @noinspection PhpIncludeInspection */
             $this->config[$root] = require( $this->root . '/' . $root . '.php' );
@@ -49,7 +49,7 @@ class Config
                 return $this->config[$root];
             }
 
-            return dots_walk($rest, $this->config[$root], $default);
+            return tr_dots_walk($rest, $this->config[$root], $default);
         }
 
         return $default;
@@ -67,7 +67,7 @@ class Config
      */
     public function locate($dots, $default = null)
     {
-        $value = dots_walk($dots, $this->config);
+        $value = tr_dots_walk($dots, $this->config);
         if( isset($dots) && is_null($value) ) {
             return self::jitLocate($dots, $default);
         }

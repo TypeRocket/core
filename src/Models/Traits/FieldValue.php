@@ -18,11 +18,11 @@ trait FieldValue
         $data = $this->getFormFields();
 
         if( $this->old ) {
-            $data = dots_walk($field, $this->old);
+            $data = tr_dots_walk($field, $this->old);
             $data = wp_unslash($data);
         }
         elseif( ! $this->onlyOld ) {
-            $data = dots_walk($field, $data);
+            $data = tr_dots_walk($field, $data);
         }
         else {
             return null;

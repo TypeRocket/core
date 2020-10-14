@@ -328,14 +328,14 @@ class BaseForm
     public function useErrors($key = 'fields', $override = null)
     {
         if($override) {
-            $this->errors = dots_walk($key ?? 'fields', $override);
+            $this->errors = tr_dots_walk($key ?? 'fields', $override);
         }
         elseif ($errors = RuntimeCache::getFromContainer()->get(ErrorCollection::KEY))    {
             /** @var null|ErrorCollection $errors */
             $fields = $errors->errors();
             if(is_array($fields)) {
                 $errors = $override ?? $fields;
-                $this->errors = dots_walk($key ?? 'fields', $errors);
+                $this->errors = tr_dots_walk($key ?? 'fields', $errors);
             }
         }
 

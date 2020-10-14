@@ -69,7 +69,7 @@ class Image extends Field implements ScriptField
             $value = '';
         }
 
-        $classes = class_names('tr-image-picker-placeholder', [
+        $classes = tr_class_names('tr-image-picker-placeholder', [
             'tr-dark-image-background' => $this->getSetting('background', 'light') == 'dark'
         ]);
 

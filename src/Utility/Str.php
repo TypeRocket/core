@@ -188,7 +188,7 @@ class Str
     public static function makeWords($subject, $uppercase, $separator = '_')
     {
         $words = str_replace($separator, ' ', $subject);
-        return $uppercase ? mb_ucwords($words) : $words;
+        return $uppercase ? tr_mb_ucwords($words) : $words;
     }
 
 }
