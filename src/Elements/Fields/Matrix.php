@@ -14,11 +14,12 @@ class Matrix extends Field implements ScriptField
     use OptionsTrait, DefaultSetting, ControlsSetting;
 
     protected $staticOptions = [];
-    protected $componentFolder = null;
+    protected $componentGroup = null;
     protected $confirmRemove = false;
     protected $paths;
     protected $urls;
     protected $sort = true;
+    protected static $editorAdded = false;
 
     /**
      * Define debug function
@@ -103,9 +104,7 @@ class Matrix extends Field implements ScriptField
     public function getString()
     {
         // enqueue tinymce
-        echo '<div class="tr-control-section tr-divide tr-dummy-editor" style="display: none; visibility: hidden;">';
-        wp_editor('', 'tr_dummy_editor');
-        echo '</div>';
+        static::dummyEditor();
 
         $this->setAttribute('name', $this->getNameAttributeString());
         $fields_classes = '';
@@ -250,13 +249,13 @@ class Matrix extends Field implements ScriptField
      */
     public function loadComponentsIntoOptions()
     {
-        $name = $this->getName();
+        $name = $this->getComponentGroup();
         $options = $this->popAllOptions();
         $options = $options ?: tr_config("components.{$name}");
         $list = array_merge($options, $this->staticOptions);
 
         foreach ($list as $name) {
-            $c = static::getComponentClass($name);
+            $c = static::getComponentClass($name, $name);
             $this->options[$c->title()] = $c;
         }
 
@@ -293,7 +292,7 @@ class Matrix extends Field implements ScriptField
                     }
 
                     $form->setGroup($append_group . "{$tr_matrix_group}.{$tr_matrix_key}.{$tr_matrix_type}");
-                    $class = static::getComponentClass($tr_matrix_type)->form($form)->data($form->getModel());
+                    $class = static::getComponentClass($tr_matrix_type, $tr_matrix_group)->form($form)->data($form->getModel());
                     static::componentTemplate($class, $tr_matrix_group);
                 }
             }
@@ -308,12 +307,15 @@ class Matrix extends Field implements ScriptField
 
     /**
      * @param $type
+     * @param null|string $group
      *
      * @return Component
      */
-    public static function getComponentClass($type)
+    public static function getComponentClass($type, $group = null)
     {
-        $component_class = tr_config("components.registry.{$type}");
+        // This is to help with migration from v4/v1 to v5
+        $reg = tr_config("components.registry");
+        $component_class = $reg["{$group}:{$type}"] ?? $reg[$type] ?? null;
 
         if(!$component_class) {
             return (new ErrorComponent)->title($type)->registeredAs($type);
@@ -385,17 +387,17 @@ class Matrix extends Field implements ScriptField
     }
 
     /**
-     * Get component folder
+     * Get component group
      *
      * @return null|string
      */
-    public function getComponentFolder()
+    public function getComponentGroup()
     {
-        if( ! $this->componentFolder ) {
-            $this->componentFolder = $this->getName();
+        if( ! $this->componentGroup ) {
+            $this->componentGroup = $this->getName();
         }
 
-        return $this->componentFolder;
+        return $this->componentGroup;
     }
 
     /**
@@ -405,15 +407,21 @@ class Matrix extends Field implements ScriptField
      *
      * @return $this
      */
-    public function setComponentFolder($folder_name = '')
+    public function setComponentGroup($folder_name = '')
     {
-        $dir = tr_config('paths.components') . '/' . $folder_name;
-
-        if(file_exists($dir)) {
-            $this->componentFolder = $folder_name;
-        }
+        $this->componentGroup = $folder_name;
 
         return $this;
+    }
+
+    public static function dummyEditor()
+    {
+        if(!static::$editorAdded) {
+            static::$editorAdded = true;
+            echo '<div class="tr-control-section tr-divide tr-dummy-editor" style="display: none; visibility: hidden;">';
+            wp_editor('', 'tr_dummy_editor');
+            echo '</div>';
+        }
     }
 
 }

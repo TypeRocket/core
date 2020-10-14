@@ -17,8 +17,8 @@ class MakeComponent extends Command
     protected function config()
     {
         $this->addArgument('key', self::REQUIRED, 'The registered component config key.');
-        $this->addArgument('class', self::REQUIRED, 'The component class name.');
-        $this->addArgument('title', self::REQUIRED, 'The component title.');
+        $this->addArgument('class', self::OPTIONAL, 'The component class name.');
+        $this->addArgument('title', self::OPTIONAL, 'The component title.');
     }
 
     /**
@@ -34,8 +34,18 @@ class MakeComponent extends Command
         $title = $this->getArgument('title');
         $key = $this->getArgument('key');
 
+        if(!$title) {
+            $title = ucwords($key);
+        }
+
+        $key = Sanitize::underscore($key);
+
+        if(!$command) {
+            $command = Str::camelize($key);
+        }
+
         list($namespace, $class) = Str::splitAt('\\', $command, true);
-        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Commands', $namespace]));
+        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Components', $namespace]));
 
         $tags = ['{{namespace}}', '{{component}}', '{{title}}'];
         $replacements = [ $namespace, $class, $title ];
