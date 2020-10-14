@@ -746,7 +746,7 @@ if ( ! function_exists('tr_components_field')) {
 
         $builder_data = $model->getFieldValue($name);
         if(is_array($builder_data)) {
-            tr_components_loop($builder_data, compact('name', 'item_id', 'model'));
+            tr_components_loop($builder_data, compact('item_id', 'model'), $name);
         }
 
         return $builder_data;
@@ -759,8 +759,9 @@ if( ! function_exists('tr_components_loop')) {
      *
      * @param array $builder_data
      * @param array $other be sure to pass $name, $item_id, $model
+     * @param string $group
      */
-    function tr_components_loop($builder_data, $other = []) {
+    function tr_components_loop($builder_data, $other = [], $group = 'builder') {
         /**
          * @var $name
          * @var $item_id
@@ -772,8 +773,9 @@ if( ! function_exists('tr_components_loop')) {
         $item_id = $item_id ?? null;
         $nested = $nested ?? false;
         $i = $nested ? 1 : 0;
+        $group = $name ?? $group; // This is to help with migration from v4/v1 to v5
         $len = count($builder_data);
-        $components_list = tr_config('components.registry');
+
         do_action('tr_components_loop', $builder_data, $other, $len);
         foreach ($builder_data as $hash => $data) {
             $first_item = $last_item = false;
@@ -787,15 +789,7 @@ if( ! function_exists('tr_components_loop')) {
             $component_id = key($data);
             $component = strtolower(key($data));
             $info = compact('name', 'item_id', 'model', 'first_item', 'last_item', 'component_id', 'hash');
-            $component_class = $components_list[$component];
-
-            if(!$component_class) {
-                $class = (new \TypeRocket\Template\ErrorComponent)->title($component);
-            } else {
-                /** @var $class \TypeRocket\Template\Component */
-                $class = new $component_class;
-            }
-
+            $class = \TypeRocket\Elements\Fields\Matrix::getComponentClass($component, $group);
             $class->render($data[$component_id], $info);
             $i++;
         }

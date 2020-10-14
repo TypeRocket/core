@@ -25,13 +25,13 @@ class Builder extends Matrix
      */
     public function getString()
     {
+
         // enqueue tinymce
-        echo '<div class="tr-control-section tr-divide tr-dummy-editor" style="display: none; visibility: hidden;">';
-        wp_editor('', 'tr_dummy_editor');
-        echo '</div>';
+        static::dummyEditor();
+
 
         $this->setAttribute('name', $this->getNameAttributeString() );
-        ob_start();
+
         $blocks = $this->getBuilderBlocks();
         $settings = $this->getSettings();
         $generator = new Html();
@@ -42,8 +42,8 @@ class Builder extends Matrix
 	    } else {
 		    $add_button_value = "Add New";
 	    }
+        ob_start();
         ?>
-
         <div class="tr-builder">
             <div class="tr-builder-hidden-field"><?php echo $default_null; ?></div>
             <div class="tr-builder-controls">
@@ -159,7 +159,7 @@ class Builder extends Matrix
                     }
 
                     $form->setGroup($append_group . "{$tr_matrix_group}.{$tr_matrix_key}.{$tr_matrix_type}");
-                    $class = static::getComponentClass($tr_matrix_type)->form($form)->data($form->getModel());
+                    $class = static::getComponentClass($tr_matrix_type, $tr_matrix_group)->form($form)->data($form->getModel());
                     $this->components[] = $class;
 
                     static::componentTemplate($class, $tr_matrix_group, ++$i == 1 ? 'active' : '');
