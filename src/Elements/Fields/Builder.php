@@ -113,7 +113,7 @@ class Builder extends Matrix
             $select = $ul->getString();
 
         } else {
-            $select = "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add a <code>{$folder}</code> component to the components config filet.</div>";
+            $select = "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add a <code>{$name}</code> component to the components config filet.</div>";
         }
 
         return $select;
