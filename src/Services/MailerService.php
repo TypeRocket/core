@@ -20,7 +20,7 @@ namespace TypeRocket\Services
                 throw new \Exception('mail.php config is missing.');
             }
 
-            $driver = Config::get("mail.mailers.{$default}.driver");
+            $driver = Config::get("mail.drivers.{$default}.driver");
 
             $this->driver = new $driver;
 

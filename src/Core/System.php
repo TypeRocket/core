@@ -110,7 +110,7 @@ class System
      */
     public function loadRoutes()
     {
-        if(!Config::env('TR_ROUTES', true)) {
+        if(!Config::env('TYPEROCKET_ROUTES', true)) {
             return;
         }
 

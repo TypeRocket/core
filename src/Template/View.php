@@ -131,7 +131,7 @@ class View
      */
     public function setSeoMeta(array $meta, $url = null)
     {
-        if(!defined('TR_SEO_EXTENSION')) {
+        if(!defined('TYPEROCKET_SEO_EXTENSION')) {
             throw new \Exception('TypeRocket SEO Extension required for the `setMeta()` view method.');
         }
 

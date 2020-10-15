@@ -20,11 +20,11 @@ class TypeRocketUI
 
     public function __construct()
     {
-        if(!Config::env('TR_POST_TYPES', true)) {
+        if(!Config::env('TYPEROCKET_POST_TYPES', true)) {
             return;
         }
 
-        $this->menu = Config::env('TR_POST_TYPES_MENU', false);
+        $this->menu = Config::env('TYPEROCKET_POST_TYPES_MENU', false);
         add_action( 'typerocket_loaded', [$this, 'setup']);
     }
 

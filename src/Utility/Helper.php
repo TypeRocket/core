@@ -16,8 +16,8 @@ class Helper
      */
     public static function wordPressRootPath() {
 
-        if( defined('TR_ROOT_WP') ) {
-            return TR_ROOT_WP;
+        if( defined('TYPEROCKET_ROOT_WP') ) {
+            return TYPEROCKET_ROOT_WP;
         }
 
         if( defined('TYPEROCKET_ROOT_INSTALL') ) {
@@ -59,11 +59,11 @@ class Helper
             $plugins_loaded = true;
         }
 
-        if((defined('TR_THEME_INSTALL') || $plugins_loaded) && function_exists('get_theme_file_uri')) {
+        if((defined('TYPEROCKET_THEME_INSTALL') || $plugins_loaded) && function_exists('get_theme_file_uri')) {
             $url = get_theme_file_uri( '/typerocket/wordpress/' . $path );
         }
 
-        if(defined('TR_PLUGIN_INSTALL') && function_exists('plugins_url')) {
+        if(defined('TYPEROCKET_PLUGIN_INSTALL') && function_exists('plugins_url')) {
             $url = plugins_url( '/typerocket/wordpress/' . $path, TYPEROCKET_PATH );
         }
 
@@ -71,8 +71,8 @@ class Helper
             $url = home_url($path);
         }
 
-        if(!$url || defined('TR_MU_INSTALL')) {
-            $mu = typerocket_env('TR_MU_INSTALL', '/typerocket-pro-plugin/typerocket/wordpress/');
+        if(!$url || defined('TYPEROCKET_MU_INSTALL')) {
+            $mu = typerocket_env('TYPEROCKET_MU_INSTALL', '/typerocket-plugin/typerocket/wordpress/');
             $url = WPMU_PLUGIN_URL . $mu . $path;
         }
 

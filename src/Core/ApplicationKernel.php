@@ -19,7 +19,7 @@ namespace TypeRocket\Core
                 return new Config(TYPEROCKET_CORE_CONFIG_PATH);
             }, Config::ALIAS);
 
-            if(Config::env('TR_ROUTES', true) ) {
+            if(Config::env('TYPEROCKET_ROUTES', true) ) {
                 Container::singleton(RouteCollection::class, function() {
                     return new RouteCollection();
                 }, RouteCollection::ALIAS);

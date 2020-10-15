@@ -19,7 +19,7 @@ class PageBuilder
 
     public function __construct($post_types = ['page'], $field_name = 'builder')
     {
-        if(!Config::env('TR_PAGE_BUILDER', true)) {
+        if(!Config::env('TYPEROCKET_PAGE_BUILDER', true)) {
             return;
         }
 
