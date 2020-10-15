@@ -233,12 +233,13 @@ class View
     /**
      * @param string $key
      * @param int $time cache forever by default
+     * @param string $folder
      *
      * @return string|null
      */
-    public function cache($key, $time = 9999999999)
+    public function cache($key, $time = 9999999999, $folder = 'app')
     {
-        return PersistentCache::new()->getOtherwisePut($key, function() {
+        return PersistentCache::new($folder)->getOtherwisePut($key, function() {
             return $this->toString();
         }, $time);
     }
