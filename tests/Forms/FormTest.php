@@ -304,7 +304,7 @@ class FormTest extends TestCase
 
     public function testHelperForm()
     {
-        $form = tr_form();
+        $form = \TypeRocket\Utility\Helper::form();
         $this->assertTrue($form instanceof BaseForm);
     }
 }

@@ -101,7 +101,7 @@ class FieldsController extends Controller
             ];
         }
 
-        tr_response()->setData('results', $results);
+        \TypeRocket\Http\Response::getFromContainer()->setData('results', $results);
 
         return $results;
     }

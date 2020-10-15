@@ -2,6 +2,8 @@
 namespace TypeRocket\Register;
 
 use Closure;
+use TypeRocket\Core\Config;
+use TypeRocket\Elements\BaseForm;
 use TypeRocket\Models\WPPost;
 use WP_Post;
 use WP_Query;
@@ -321,7 +323,7 @@ class Registry
                     call_user_func( $form, $term );
                 } elseif (function_exists( $func )) {
                     call_user_func( $func, $term );
-                } elseif ( tr_debug() ) {
+                } elseif ( Config::get('app.debug') ) {
                     echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                 }
             }
@@ -329,14 +331,14 @@ class Registry
 
         if ($obj->getMainForm()) {
             add_action( $obj->getId() . '_edit_form', function($term) use ($obj, $callback) {
-                echo tr_field_nonce('hook');
+                echo BaseForm::nonceInput('hook');
                 echo '<div class="tr-taxonomy-edit-container typerocket-wp-style-table">';
                 call_user_func_array($callback, [$term, $obj]);
                 echo '</div>';
             }, 10, 2 );
 
             add_action( $obj->getId() . '_add_form_fields', function($term) use ($obj, $callback) {
-                echo tr_field_nonce('hook');
+                echo BaseForm::nonceInput('hook');
                 echo '<div class="tr-taxonomy-add-container typerocket-wp-style-subtle">';
                 call_user_func_array($callback, [$term, $obj]);
                 echo '</div>';
@@ -361,14 +363,14 @@ class Registry
             if ($post->post_type == $obj->getId()) {
                 $func = 'add_form_content_' . $obj->getId() . '_' . $type;
                 echo '<div class="typerocket-container">';
-                echo tr_field_nonce('hook');
+                echo BaseForm::nonceInput('hook');
 
                 $form = $obj->getForm( $type );
                 if (is_callable( $form )) {
                     call_user_func( $form );
                 } elseif (function_exists( $func )) {
                     call_user_func( $func, $post );
-                } elseif (tr_debug()) {
+                } elseif (Config::get('app.debug')) {
                     echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                 }
                 echo '</div>';

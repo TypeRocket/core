@@ -1,62 +1,120 @@
 <?php
 namespace TypeRocket\Core;
 
-use TypeRocket\Http\RouteCollection;
-use TypeRocket\Models\AuthUser;
-use TypeRocket\Models\WPUser;
-use TypeRocket\Services\Service;
-use TypeRocket\Utility\RuntimeCache;
-
 class Container
 {
+    protected static $list = [];
+    protected static $alias = [];
+
     /**
-     * Boot Container
+     * Resolve Class
+     *
+     * @param string $class_name class name or alias
+     * @param bool $forceAliasLookup only check for instance by alias
+     *
+     * @return mixed|null
      */
-    public function boot()
-    {
-        // Initial singletons
-        Injector::singleton(Config::class, function() {
-            return new Config(TR_CORE_CONFIG_PATH);
-        }, Config::ALIAS);
+    public static function resolve($class_name, $forceAliasLookup = false) {
+        if(!$forceAliasLookup && array_key_exists($class_name, self::$list)) {
+            $single = self::$list[$class_name]['singleton_instance'];
 
-        if(immutable('TR_ROUTES', true) ) {
-            Injector::singleton(RouteCollection::class, function() {
-                return new RouteCollection();
-            }, RouteCollection::ALIAS);
+            if($single) {
+                return $single;
+            }
+
+            $instance = call_user_func(self::$list[$class_name]['callback']);
+
+            if(!empty(self::$list[$class_name]['make_singleton'])) {
+                self::$list[$class_name]['singleton_instance'] = $instance;
+            }
+
+            return $instance;
         }
 
-        Injector::singleton(RuntimeCache::class, function() {
-            return new RuntimeCache();
-        }, RuntimeCache::ALIAS);
-
-        Injector::singleton(AuthUser::class, function() {
-            $user_class = tr_app_class('Models\User');
-            /** @var WPUser $user */
-            $user = (new $user_class);
-
-            try {
-                $wp_user = wp_get_current_user();
-            } catch (\Throwable $e) {
-                throw new \Exception('AuthUser class is not accessible until `plugins_loaded` action has fired');
-            }
-            $user->wpUser($wp_user);
-
-            return $user;
-        }, 'user');
-
-        // Application Services
-        $services = tr_config('app.services');
-
-        /**
-         * @var string[] $services
-         */
-        foreach ($services as $service) {
-            $instance = (new Resolver)->resolve($service);
-            if($instance instanceof Service) {
-                Injector::register($service, [$instance, 'register'], $instance->isSingleton(), $instance->alias());
-            }
-        }
-
-        return $this;
+        return self::resolveAlias($class_name);
     }
+
+    /**
+     * Resolve by Alias Only
+     *
+     * @param string $alias alias
+     *
+     * @return mixed|null
+     */
+    public static function resolveAlias($alias) {
+        if(!empty(self::$alias[$alias])) {
+            return self::resolve(self::$alias[$alias]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Register Class
+     *
+     * @param string $class_name
+     * @param callable $callback
+     * @param bool $singleton
+     * @param null|string $alias
+     * @return bool
+     */
+    public static function register($class_name, $callback, $singleton = false, $alias = null)
+    {
+        if(!empty(self::$list[$class_name])) {
+            return false;
+        }
+
+        self::$list[$class_name] = [
+            'callback' => $callback,
+            'make_singleton' => $singleton,
+            'singleton_instance' => null
+        ];
+
+        if($alias && empty(self::$alias[$alias])) {
+            self::$alias[$alias] = $class_name;
+        }
+
+        return true;
+    }
+
+    /**
+     * Register Singleton
+     *
+     * @param string $class_name
+     * @param callable $callback
+     * @param null|string  $alias
+     * @return bool
+     */
+    public static function singleton($class_name, $callback, $alias = null)
+    {
+        return self::register($class_name, $callback, true, $alias);
+    }
+
+    /**
+     * Get Aliases
+     *
+     * @return array
+     */
+    public function aliases()
+    {
+        return self::$alias;
+    }
+
+    /**
+     * Resolve Singleton
+     *
+     * @param string $class_name
+     * @param null|string $alias
+     *
+     * @return mixed|null
+     */
+    public static function findOrNewSingleton($class_name, $alias = null)
+    {
+        self::register($class_name, function() use ($class_name) {
+            return new $class_name;
+        }, true, $alias);
+
+        return self::resolve($class_name);
+    }
+
 }

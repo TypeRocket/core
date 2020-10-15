@@ -18,7 +18,7 @@ class Launcher
         $application = new Application();
         $commands = new CommandCollection();
         $commands->enableCustom();
-        $wp_root = tr_config('galaxy.wordpress');
+        $wp_root = \TypeRocket\Core\Config::get('galaxy.wordpress');
 
         // Set common headers, to prevent warnings from plugins.
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';

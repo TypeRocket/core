@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Utility;
 
+use TypeRocket\Core\Container;
+
 class RuntimeCache
 {
     public const ALIAS = 'cache';
@@ -47,7 +49,7 @@ class RuntimeCache
      */
     public function get($key, $namespace = 'typerocket')
     {
-        return tr_dots_walk($key, $this->cache[$namespace]);
+        return Data::walk($key, $this->cache[$namespace]);
     }
 
     /**
@@ -85,7 +87,7 @@ class RuntimeCache
      */
     public static function getFromContainer()
     {
-        return tr_container(static::ALIAS);
+        return Container::resolve(static::ALIAS);
     }
 
     /**

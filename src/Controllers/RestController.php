@@ -55,7 +55,7 @@ class RestController extends Controller
         $responder->respond(['@first' => (int) $id]);
         $rest = $request->isMarkedAjax();
 
-        tr_response()->finish($rest);
+        \TypeRocket\Http\Response::getFromContainer()->finish($rest);
     }
 
 }

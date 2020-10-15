@@ -11,7 +11,7 @@ class ViewsTest extends TestCase
     public function testViewToString()
     {
         $title = 'Test Title Here';
-        $str = tr_view('master', compact('title'))->setContext('views')->toString();
+        $str = \TypeRocket\Template\View::new('master', compact('title'))->setContext('views')->toString();
 
         $this->assertTrue(Str::contains($title, $str));
     }
@@ -20,7 +20,7 @@ class ViewsTest extends TestCase
     {
 
         $title = 'Test Title Here';
-        $str = tr_view('master', compact('title'))->cache('test.views', 20);
+        $str = \TypeRocket\Template\View::new('master', compact('title'))->cache('test.views', 20);
 
         $this->assertTrue(Str::contains($title, $str));
     }

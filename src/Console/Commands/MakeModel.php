@@ -80,7 +80,7 @@ class MakeModel extends Command
         $replacements = [ $namespace, $class, str_replace('\\', '_', $id), TR_APP_NAMESPACE ];
         $template =  __DIR__ . '/../../../templates/Models/' . $directive . '.txt';
 
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
         $model_file = $app_path . '/Models/' . str_replace("\\",'/', $model) . ".php";
         $model_path = substr($model_file, 0, -1 + -strlen(basename($model_file)) ) ;
 

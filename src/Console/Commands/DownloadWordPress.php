@@ -4,6 +4,7 @@ namespace TypeRocket\Console\Commands;
 use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Str;
 
 class DownloadWordPress extends Command
@@ -38,7 +39,7 @@ class DownloadWordPress extends Command
         $path = $this->getArgument('path');
         $type = $this->getArgument('type');
         $this->type = $type ?: 'all';
-        $this->path = rtrim( $path ?  $path : tr_wp_root(), '/');
+        $this->path = rtrim( $path ?  $path : Helper::wordPressRootPath(), '/');
 
         switch($this->type) {
             case 'all' :

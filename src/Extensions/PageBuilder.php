@@ -2,7 +2,12 @@
 namespace TypeRocket\Extensions;
 
 use App\Elements\Form;
+use TypeRocket\Core\Config;
 use TypeRocket\Elements\Traits\OptionsTrait;
+use TypeRocket\Http\Request;
+use TypeRocket\Register\MetaBox;
+use TypeRocket\Utility\ModelField;
+use TypeRocket\Utility\RuntimeCache;
 
 class PageBuilder
 {
@@ -14,7 +19,7 @@ class PageBuilder
 
     public function __construct($post_types = ['page'], $field_name = 'builder')
     {
-        if(!immutable('TR_PAGE_BUILDER', true)) {
+        if(!Config::env('TR_PAGE_BUILDER', true)) {
             return;
         }
 
@@ -35,8 +40,8 @@ class PageBuilder
                 return;
             }
 
-            $url = tr_config('urls.typerocket');
-            $manifest = tr_container('cache')->get('manifest');
+            $url = Config::get('urls.typerocket');
+            $manifest = RuntimeCache::getFromContainer()->get('manifest');
 
             $url = $url . $manifest['/js/builder.ext.js'];
 
@@ -88,10 +93,10 @@ class PageBuilder
 
         if(in_array($post->post_type, $this->postTypes)) {
 
-            tr_meta_box('Editor')->setPriority('high')->setContext('side')->addScreen($post->post_type)->setCallback(function () use ($post, $use_builder, $value) {
+            MetaBox::add('Editor')->setPriority('high')->setContext('side')->addScreen($post->post_type)->setCallback(function () use ($post, $use_builder, $value) {
                 $builder_active = $editor_active = '';
 
-                $page_boxes = tr_post_field($this->fieldName, $post->ID);
+                $page_boxes = ModelField::post($this->fieldName, $post->ID);
                 $is_not_set = (!isset($use_builder) || $use_builder === "");
                 $has_boxes = is_array($page_boxes);
 
@@ -101,11 +106,11 @@ class PageBuilder
                     $editor_active = 'builder-active button-primary ';
                 }
 
-                $gutenberg_url = tr_request()->getModifiedUri(['tr_builder_gutenberg' => '1', 'tr_builder' => null]);
+                $gutenberg_url = Request::new()->getModifiedUri(['tr_builder_gutenberg' => '1', 'tr_builder' => null]);
 
                 echo '<div id="tr_page_type_toggle"><div><a id="tr_page_builder_control" href="#tr_page_builder" class="button ' . $builder_active . '">' . __('Builder', 'typerocket-ext-pb') . '</a><a href="#builderStandardEditor" class="button ' . $editor_active . '">' . __('Standard Editor', 'typerocket-ext-pb') . '</a></div></div>';
                 echo '<div id="builderSelectRadio">';
-                echo tr_form()->checkbox('use_builder')->setLabel(__('Use Builder', 'typerocket-ext-pb'));
+                echo \TypeRocket\Utility\Helper::form()->checkbox('use_builder')->setLabel(__('Use Builder', 'typerocket-ext-pb'));
                 echo '</div>';
 
                 if ($value) {
@@ -132,9 +137,9 @@ class PageBuilder
         if (is_array($this->postTypes) && in_array($post->post_type, $this->postTypes)) :
 
             /** @var Form $form */
-            $form = tr_form();
+            $form = \TypeRocket\Utility\Helper::form();
 
-            $page_boxes = tr_post_field($this->fieldName);
+            $page_boxes = ModelField::post($this->fieldName);
             $use_builder = get_post_meta($post->ID, "use_builder", true);
             $is_not_set = (!isset($use_builder) || $use_builder === "");
             $has_boxes = is_array($page_boxes);
@@ -152,7 +157,7 @@ class PageBuilder
 
             $field = $form->builder($this->fieldName)
                 ->setOptions($this->options)
-                ->setLabelOption(tr_debug())
+                ->setLabelOption(Config::get('app.debug'))
                 ->setLabel(__("Builder", 'typerocket-ext-pb'));
 
             echo '<div id="tr_page_builder" ' . $hide_builder . ' class="typerocket-container typerocket-dev">';

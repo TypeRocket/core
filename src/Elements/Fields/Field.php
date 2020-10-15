@@ -15,6 +15,7 @@ use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\WPUser;
 use TypeRocket\Elements\Traits\Settings;
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
 
@@ -322,7 +323,7 @@ abstract class Field
         }
 
         if( !empty($this->cast) ) {
-            $value = tr_cast($value, $this->cast);
+            $value = Data::cast($value, $this->cast);
         }
 
         return $value;

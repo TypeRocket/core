@@ -24,7 +24,7 @@ class BaseVerify extends Middleware
         if( ! $this->excludePath($path) ) {
             if( ! $this->request->isGet() ) {
                 $action = sanitize_key($_REQUEST['_tr_nonce_form_action'] ?? '');
-                $token = tr_field_nonce_check( $action );
+                $token = $this->request->checkNonce( $action );
                 if ( ! $token ) {
                     $this->response->setError('csrf', true);
                     $this->response->flashNow('Request Failed. Invalid CSRF Token. Try reloading the page or reauthenticate.', 'error');

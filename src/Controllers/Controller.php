@@ -29,7 +29,7 @@ class Controller
     public function onAjaxReturnResponseOr($return)
     {
         if((new Request)->isAjax()) {
-            return tr_response();
+            return \TypeRocket\Http\Response::getFromContainer();
         }
 
         return $return;
@@ -44,14 +44,14 @@ class Controller
      */
     public function returnJsonOrGoBack($withFields = true)
     {
-        $response = tr_response();
+        $response = \TypeRocket\Http\Response::getFromContainer();
         $request = new Request;
 
         if($request->isAjax() || $request->isGet()) {
             return $response;
         }
 
-        $redirect = tr_redirect()->back();
+        $redirect = \TypeRocket\Http\Redirect::new()->back();
         $request = new Request;
 
         $response->withRedirectData();
@@ -103,7 +103,7 @@ class Controller
      */
     public function getFields($field = null)
     {
-        return apply_filters('tr_controller_fields', tr_request()->getFields($field), $this);
+        return apply_filters('tr_controller_fields', Request::new()->getFields($field), $this);
     }
 
 }

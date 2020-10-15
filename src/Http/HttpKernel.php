@@ -1,9 +1,8 @@
 <?php
 namespace TypeRocket\Http;
 
-abstract class Kernel
+abstract class HttpKernel
 {
-
     /** @var Request  */
     protected $request;
     /** @var Response  */

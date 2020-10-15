@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Http;
 
-use TypeRocket\Core\Injector;
+use TypeRocket\Core\Container;
 
 class Route
 {
@@ -13,6 +13,17 @@ class Route
     public $middleware;
     public $methods;
     public $addTrailingSlash = true;
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        $route = new static(...$args);
+        return $route->register();
+    }
 
     /**
      * Match URL Path
@@ -175,7 +186,7 @@ class Route
             $this->pattern = $pattern;
 
             /** @var RouteCollection $routes */
-            $routes = $routes instanceof RouteCollection ? $routes : Injector::resolve(RouteCollection::class);
+            $routes = $routes instanceof RouteCollection ? $routes : Container::resolve(RouteCollection::class);
             $routes->registerNamedRoute($this);
         }
 
@@ -225,22 +236,26 @@ class Route
      * @return $this
      */
     public function register($routes = null) {
-        /** @var RouteCollection $routes */
-        $routes = $routes instanceof RouteCollection ? $routes : Injector::resolve(RouteCollection::class);
+        $routes = $routes instanceof RouteCollection ? $routes : RouteCollection::getFromContainer();
         $routes->addRoute($this);
 
         return $this;
     }
 
     /**
-     * @param mixed ...$args
+     * Get Routes Repo
      *
-     * @return static
+     * @param string $name
+     * @param array $values
+     * @param bool $site
+     * @param null|RouteCollection $routes
+     *
+     * @return null|string
      */
-    public static function new(...$args)
+    public static function buildUrl($name, $values = [], $site = true, $routes = null)
     {
-        $route = new static(...$args);
-        return $route->register();
+        $routes = $routes instanceof RouteCollection ? $routes : \TypeRocket\Http\RouteCollection::getFromContainer();
+        return $routes->getNamedRoute($name)->buildUrlFromPattern($values, $site);
     }
 
 }

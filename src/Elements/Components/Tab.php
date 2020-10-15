@@ -5,6 +5,7 @@ use TypeRocket\Elements\BaseForm;
 use TypeRocket\Elements\Tabs;
 use TypeRocket\Elements\Traits\CloneFields;
 use TypeRocket\Elements\Traits\Fieldable;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Sanitize;
 
 class Tab
@@ -26,7 +27,7 @@ class Tab
 
     public function __construct($title, $icon = null, ...$arg)
     {
-        $this->id = tr_hash();
+        $this->id = Helper::hash();
         $this->accessor = Sanitize::underscore($title);
 
         $this->setTitle($title);
@@ -234,7 +235,7 @@ class Tab
      * Clone Tabs
      */
     public function __clone() {
-        $this->id = tr_hash();
+        $this->id = Helper::hash();
 
         if($this->fieldset) {
             foreach ($this->fieldset as $i => $set) {

@@ -10,9 +10,9 @@ class HttpError extends \Requests_Exception_HTTP
      * @param null $message
      * @return mixed
      */
-    public function getRealError($code = 404, $message = null)
+    public static function abort($code = 404, $message = null)
     {
         $class = static::get_class($code);
-        return new $class($message);
+        throw new $class($message);
     }
 }

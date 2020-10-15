@@ -34,7 +34,7 @@ class MakeService extends Command
         $replacements = [ $namespace, $class];
         $tags = ['{{namespace}}', '{{service}}'];
 
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
         $service_file = $app_path . '/Services/' . str_replace("\\",'/', $name) . ".php";
         $service_path = substr($service_file, 0, -1 + -strlen(basename($service_file)) ) ;
 

@@ -21,13 +21,13 @@ class Rooter
     {
         do_action('tr_rooter');
 
-        if(!tr_config('app.root.themes.override', true)) {
+        if(!\TypeRocket\Core\Config::get('app.root.themes.override', true)) {
             return;
         }
 
-        $paths = tr_config('paths');
-        $urls = tr_config('urls');
-        $root = tr_config('app.root.themes');
+        $paths = \TypeRocket\Core\Config::get('paths');
+        $urls = \TypeRocket\Core\Config::get('urls');
+        $root = \TypeRocket\Core\Config::get('app.root.themes');
         $themes = [
             $paths['themes'],
             WP_CONTENT_DIR . '/themes',

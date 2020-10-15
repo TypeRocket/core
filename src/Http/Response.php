@@ -2,10 +2,12 @@
 namespace TypeRocket\Http;
 
 use JsonSerializable;
+use TypeRocket\Core\Config;
 use TypeRocket\Database\Results;
 use TypeRocket\Elements\Notice;
 use TypeRocket\Models\Model;
 use TypeRocket\Template\View;
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Str;
 
@@ -37,6 +39,16 @@ class Response implements JsonSerializable
     protected $data = [];
     protected $cancel = false;
     protected $return;
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
+    }
 
     /**
      * Get Return
@@ -804,7 +816,7 @@ class Response implements JsonSerializable
      */
     public function abort($code = null)
     {
-        tr_abort($code ?? $this->getStatus());
+        \TypeRocket\Exceptions\HttpError::abort($code ?? $this->getStatus());
     }
 
     /**
@@ -883,7 +895,7 @@ class Response implements JsonSerializable
      */
     public function finish($forceResponseArray = false)
     {
-        $response = tr_response();
+        $response = static::getFromContainer();
         do_action('tr_response_finish', $response, $forceResponseArray);
 
         $statusCode = $response->getStatus();
@@ -958,7 +970,7 @@ class Response implements JsonSerializable
 
         if( is_string($returned) || empty($returned) ) {
 
-            if( tr_is_json($returned) ) {
+            if( Data::isJson($returned) ) {
                 $response->send('json');
             }
 
@@ -967,6 +979,18 @@ class Response implements JsonSerializable
         }
 
         return true;
+    }
+
+    /**
+     * Create Nonce
+     *
+     * @param string|null $action
+     *
+     * @return false|string
+     */
+    public function createNonce($action = null)
+    {
+        return wp_create_nonce( 'form_' . $action . Config::get('app.seed' ) );
     }
 
     /**
@@ -1000,6 +1024,6 @@ class Response implements JsonSerializable
      */
     public static function getFromContainer()
     {
-        return \TypeRocket\Core\Injector::findOrNewSingleton(static::class, static::ALIAS);
+        return \TypeRocket\Core\Container::findOrNewSingleton(static::class, static::ALIAS);
     }
 }

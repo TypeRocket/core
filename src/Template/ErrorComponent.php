@@ -6,7 +6,7 @@ class ErrorComponent extends Component
     public function __construct()
     {
         parent::__construct();
-        $this->thumbnail = tr_config('urls.components') . '/tr-error-component.png';
+        $this->thumbnail = \TypeRocket\Core\Config::get('urls.components') . '/tr-error-component.png';
     }
 
     /**

@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Http\Middleware;
 
+use TypeRocket\Exceptions\HttpError;
+
 /**
  * Class IsUserOrCanEditUsers
  *
@@ -14,7 +16,7 @@ class CanEditUsers extends Middleware
     public function handle() {
 
         if( ! $this->handler->getHook() && ! current_user_can( 'edit_users' ) ) {
-            tr_abort(401);
+            HttpError::abort(401);
         }
 
         $this->next->handle();

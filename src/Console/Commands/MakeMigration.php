@@ -28,7 +28,7 @@ class MakeMigration extends Command
     protected function exec()
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
-        $root = tr_config('paths.migrations');
+        $root = \TypeRocket\Core\Config::get('paths.migrations');
 
         // Make directories if needed
         if( ! file_exists($root) ) {

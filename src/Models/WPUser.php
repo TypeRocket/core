@@ -2,6 +2,7 @@
 namespace TypeRocket\Models;
 
 use ArrayObject;
+use TypeRocket\Core\Container;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPUserMeta;
@@ -211,7 +212,7 @@ class WPUser extends Model implements AuthUser
      */
     public function isCurrent()
     {
-        return $this->getID() == tr_container('user')->getID();
+        return $this->getID() == Container::resolveAlias(AuthUser::ALIAS)->getID();
     }
 
     /**

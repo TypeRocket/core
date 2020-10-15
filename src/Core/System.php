@@ -3,14 +3,18 @@ namespace TypeRocket\Core;
 
 use TypeRocket\Controllers\FieldsController;
 use TypeRocket\Controllers\RestController;
+use TypeRocket\Elements\BaseForm;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\ErrorCollection;
 use TypeRocket\Http\Request;
 use TypeRocket\Elements\Notice;
+use TypeRocket\Http\Response;
+use TypeRocket\Http\Route;
 use TypeRocket\Http\RouteCollection;
 use TypeRocket\Http\Router;
 use TypeRocket\Http\SSL;
 use TypeRocket\Register\Registry;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\RuntimeCache;
 use TypeRocket\Utility\Str;
 
@@ -18,6 +22,7 @@ class System
 {
     public const ALIAS = 'system';
     public const ADVANCED = 'TypeRocketPro\Core\AdvancedSystem';
+    public const STATE = '_typerocket_site_state_changed';
 
     protected $stash = [];
     protected $frontend_mode = false;
@@ -50,7 +55,7 @@ class System
         | Register system into the DI container.
         |
         */
-        Injector::singleton(self::class, function() use ($self) {
+        Container::singleton(self::class, function() use ($self) {
             return $self;
         }, static::ALIAS);
 
@@ -84,7 +89,7 @@ class System
 
     protected function loadRuntimeCache()
     {
-        $assets = tr_config('paths.assets');
+        $assets = Config::get('paths.assets');
         $manifest = json_decode(file_get_contents($assets . '/typerocket/mix-manifest.json'), true);
 
         $cache = RuntimeCache::getFromContainer();
@@ -94,7 +99,7 @@ class System
             $cache->update(ErrorCollection::KEY, ErrorCollection::new() );
         }
 
-        $url = SSL::fixSSLUrl(tr_config('urls.typerocket'));
+        $url = SSL::fixSSLUrl(Config::get('urls.typerocket'));
 
         $this->stash['url.typerocket'] = $url;
         $this->stash['manifest.typerocket'] = $manifest;
@@ -105,19 +110,19 @@ class System
      */
     public function loadRoutes()
     {
-        if(!immutable('TR_ROUTES', true)) {
+        if(!Config::env('TR_ROUTES', true)) {
             return;
         }
 
         do_action( 'tr_routes' );
         $this->addRewrites();
-        $routes = tr_config('paths.routes') . '/public.php';
+        $routes = Config::get('paths.routes') . '/public.php';
         if( file_exists($routes) ) {
             /** @noinspection PhpIncludeInspection */
             require( $routes );
         }
         /** @var RouteCollection $routes */
-        $routes = Injector::resolve(RouteCollection::class);
+        $routes = Container::resolve(RouteCollection::class);
         $request = new Request;
         $config = ['match' => 'site_url'];
 
@@ -157,7 +162,7 @@ class System
      * @param $user
      */
     public function userProfiles($user) {
-        echo tr_field_nonce('hook');
+        echo BaseForm::nonceInput('hook');
         echo '<div class="typerocket-wp-style-table">';
 
         /**
@@ -168,7 +173,7 @@ class System
         }
 
         if( has_action('tr_user_fields') ) {
-            $form = tr_form();
+            $form = Helper::form();
             do_action( 'tr_user_fields', $form, $user );
         }
         echo '</div>';
@@ -185,10 +190,10 @@ class System
      */
     function menuFields($item_id, $item, $depth, $args, $id) {
         if(has_action('tr_menu_fields')) {
-            echo tr_field_nonce('hook');
+            echo BaseForm::nonceInput('hook');
             $id = 'tr-fields-' . wp_generate_uuid4();
             echo '<div class="tr-menu-container typerocket-wp-style-subtle" id="'.$id.'">';
-            $form = tr_form($item)->useMenu($item_id);
+            $form = Helper::form($item)->useMenu($item_id);
             do_action( 'tr_menu_fields', $form, $item_id, $item, $depth, $args, $id);
             echo '<script>if(window.tr_apply_repeater_callbacks !== undefined) { window.tr_apply_repeater_callbacks(jQuery("#'.$id.'")) }</script>';
             echo '</div>';
@@ -207,9 +212,15 @@ class System
 
     /**
      * Enable Front-end
+     *
+     * @return static
      */
     public function frontendEnable()
     {
+        if($this->frontend_mode) {
+            return $this;
+        }
+
         $this->frontend_mode = true;
 
         add_action( 'wp_enqueue_scripts', function() {wp_enqueue_style( 'dashicons' );} );
@@ -217,6 +228,8 @@ class System
         add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
         add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
         add_action( 'wp_head', [ $this, 'addTopJs' ] );
+
+        return $this;
     }
 
     /**
@@ -228,7 +241,7 @@ class System
      */
     public function maybeFrontend($force = false)
     {
-        $this->frontend_mode = $force || tr_config('app.frontend');
+        $this->frontend_mode = $force || Config::get('app.frontend');
 
         if ( is_admin() || !$this->frontend_mode ) {
             $this->frontend_mode = false;
@@ -245,7 +258,7 @@ class System
      */
     public function loadExtensions()
     {
-        $conf = tr_config('app');
+        $conf = Config::get('app');
         $ext = apply_filters('tr_extensions', $conf['extensions'] );
 
         foreach ($ext as $extClass) {
@@ -363,7 +376,7 @@ class System
         if ( is_ssl() || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
             $scheme =  'https';
         }
-        ?><script>window.trHelpers = {site_uri: "<?php echo rtrim(esc_url(get_site_url( null, '', $scheme )), '/');?>", nonce: "<?php echo tr_nonce(); ?>"}</script><?php
+        ?><script>window.trHelpers = {site_uri: "<?php echo rtrim(esc_url(get_site_url( null, '', $scheme )), '/');?>", nonce: "<?php echo Response::new()->createNonce(); ?>"}</script><?php
         do_action('tr_top_assets', $url, $manifest);
     }
 
@@ -372,18 +385,19 @@ class System
      */
     public function addRewrites()
     {
-        $path = tr_request()->getPath();
+        $path = Request::new()->getPath();
 
-        if(Str::contains('tr-api', $path) || tr_debug() ) {
-            tr_route()->any()
+        if(Str::contains('tr-api', $path) || Config::get('app.debug') )
+        {
+            Route::new()->any()
                 ->match('tr-api/rest/([^/]+)/?([^/]+)?', ['resource', 'id'])
                 ->do([RestController::class, 'rest']);
 
-            tr_route()->post()
+            Route::new()->post()
                 ->match('tr-api/(builder|matrix)/([^/]+)/([^/]+)', ['caller', 'group', 'type'])
                 ->do([FieldsController::class, 'component']);
 
-            tr_route()->get()->post()
+            Route::new()->get()->post()
                 ->match('tr-api/search')->middleware('search')
                 ->do([FieldsController::class, 'search']);
         }
@@ -393,7 +407,7 @@ class System
      * Check site state
      */
     public function checkSiteStateChanged() {
-        if ( $site_state = get_option( '_tr_site_state_changed' ) ) {
+        if ( $site_state = get_option(static::STATE) ) {
 
             if( is_array( $site_state ) ) {
                 $site_state = array_unique( $site_state );
@@ -404,8 +418,40 @@ class System
                 }
             }
 
-            update_option( '_tr_site_state_changed', '0', 'yes');
+            update_option(static::STATE, '0', 'yes');
         }
+    }
+
+    /**
+     * Updates _typerocket_site_state_changed option in database
+     *
+     * Should be called when a theme or plugin has been activated or deactivated.
+     * Used to facilitate tasks like flushing rewrite rules for the registration
+     * and de-registration of post types and taxonomies.
+     *
+     * @link https://core.trac.wordpress.org/ticket/47526
+     *
+     * @param string|array $arg single function name or list of function names
+     */
+    public static function updateSiteState($arg)
+    {
+        $value = [];
+
+        if ($state = get_option(static::STATE)) {
+            $value = maybe_unserialize($state);
+
+            if (!is_array($value)) {
+                $value = [];
+            }
+        }
+
+        if (is_array($arg)) {
+            $value = array_merge($value, $arg);
+        } else {
+            $value[] = $arg;
+        }
+
+        update_option(static::STATE, array_unique($value), 'yes');
     }
 
     /**
@@ -413,6 +459,6 @@ class System
      */
     public static function getFromContainer()
     {
-        return tr_container(static::ALIAS);
+        return Container::resolve(static::ALIAS);
     }
 }

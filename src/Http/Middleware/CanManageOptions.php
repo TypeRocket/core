@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Http\Middleware;
 
+use TypeRocket\Exceptions\HttpError;
+
 /**
  * Class CanManageOptions
  *
@@ -14,7 +16,7 @@ class CanManageOptions extends Middleware
     public function handle() {
 
         if ( ! current_user_can( 'manage_options' ) && ! $this->isHook() ) {
-            tr_abort(401);
+            HttpError::abort(401);
         }
 
         $this->next->handle();

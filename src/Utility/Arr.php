@@ -28,4 +28,43 @@ class Arr
 
         return $result;
     }
+
+    /**
+     * Dots Set
+     *
+     * Set an array value using dot notation.
+     *
+     * @param string $dots dot notation path to set
+     * @param array $array the original array
+     * @param mixed $value the value to set
+     *
+     * @return array
+     */
+    public static function set($dots, array $array, $value)
+    {
+        $set      = &$array;
+        $traverse = explode('.', $dots);
+        foreach ($traverse as $step) {
+            $set = &$set[$step];
+        }
+        $set = $value;
+
+        return $array;
+    }
+
+    /**
+     * HTML class names helper
+     *
+     * @param array $array
+     *
+     * @return string
+     */
+    public static function reduceAllowedStr($array) {
+        $reduced = '';
+        array_walk($array, function($val, $key) use(&$reduced) {
+            $reduced .= $val ? " $key" : '';
+        });
+        $cleaned = implode(' ', array_unique(array_map('trim', explode(' ', trim($reduced)))));
+        return $cleaned;
+    }
 }

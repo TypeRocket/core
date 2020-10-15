@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Register;
 
+use TypeRocket\Core\Config;
+use TypeRocket\Elements\BaseForm;
 use TypeRocket\Utility\Sanitize;
 
 class MetaBox extends Registrable
@@ -214,12 +216,12 @@ class MetaBox extends Registrable
                     $callback = $obj->getCallback();
 
                     echo '<div class="typerocket-container">';
-                    echo tr_field_nonce('hook');
+                    echo BaseForm::nonceInput('hook');
                     if (is_callable( $callback )) :
                         call_user_func_array( $callback, [$obj]);
                     elseif (function_exists( $func )) :
                         $func( $obj );
-                    elseif ( tr_debug() ) :
+                    elseif ( Config::get('app.debug') ) :
                         echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by defining: <code>function {$func}() {}</code></div>";
                     endif;
                     echo '</div>';

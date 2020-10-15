@@ -28,13 +28,13 @@ class TaxonomiesResponder extends Responder
 
         if($singular = $registered['singular'] ?? null) {
             $prefix = Str::camelize( $singular );
-            $controller = $registered['controller'] ?? tr_app_class("Controllers\\{$prefix}Controller");
+            $controller = $registered['controller'] ?? \TypeRocket\Utility\Helper::appNamespace("Controllers\\{$prefix}Controller");
         }
 
         $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
 
         $resource = $registered['singular'] ?? 'category';
-        $response = tr_response()->blockFlash();
+        $response = \TypeRocket\Http\Response::getFromContainer()->blockFlash();
         $middlewareGroup = [$resource, 'term'];
 
         if (! class_exists( $controller ) ) {

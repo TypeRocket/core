@@ -5,17 +5,20 @@ use ArrayObject;
 use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
+use TypeRocket\Core\Container;
 use TypeRocket\Database\EagerLoader;
 use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
 use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Http\Auth;
 use TypeRocket\Http\Fields;
 use TypeRocket\Http\Request;
 use TypeRocket\Interfaces\Formable;
 use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Models\Traits\Searchable;
 use TypeRocket\Services\AuthorizerService;
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
 use wpdb;
@@ -130,10 +133,10 @@ class Model implements Formable, JsonSerializable
     public function can($action, $user = null)
     {
         /** @var AuthorizerService  $auth */
-        $auth = tr_container('auth');
+        $auth = Container::resolveAlias(Auth::ALIAS);
 
         if(!$user) {
-            $user = tr_container('user');
+            $user = Container::resolveAlias(AuthUser::ALIAS);
         }
 
         return $auth->authRegistered($user, $this, $action);
@@ -769,7 +772,7 @@ class Model implements Formable, JsonSerializable
                 $data = $data->getFormFields();
             }
 
-            if ( is_string($data) && tr_is_json($data)  ) {
+            if ( is_string($data) && Data::isJson($data)  ) {
                 $data = json_decode( $data, true );
             }
 
@@ -1431,7 +1434,7 @@ class Model implements Formable, JsonSerializable
             if($decode && is_string($result)) {
                 if(is_serialized($result)) {
                     $result = unserialize($result);
-                } elseif(tr_is_json($result)) {
+                } elseif(Data::isJson($result)) {
                     $result = json_decode($result);
                 }
             }
@@ -1547,7 +1550,7 @@ class Model implements Formable, JsonSerializable
 
         if ( ! empty( $this->cast[$property] ) ) {
             $handle = $this->cast[$property];
-            $value = tr_cast($value, $handle);
+            $value = Data::cast($value, $handle);
         }
 
         return $this->properties[$property] = $value;

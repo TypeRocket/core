@@ -21,9 +21,9 @@ class CoreUpdate extends Command
      */
     protected function exec()
     {
-        $path = tr_config('paths.assets') . '/typerocket';
-        $core = tr_config('paths.core') . '/assets/dist';
-        $pro = tr_config('paths.pro') . '/assets/dist';
+        $path = \TypeRocket\Core\Config::get('paths.assets') . '/typerocket';
+        $core = \TypeRocket\Core\Config::get('paths.core') . '/assets/dist';
+        $pro = \TypeRocket\Core\Config::get('paths.pro') . '/assets/dist';
 
         if(file_exists($core)) {
             (new File($core))->copyTo($path);

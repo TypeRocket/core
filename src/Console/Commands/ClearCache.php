@@ -30,7 +30,7 @@ class ClearCache extends Command
     {
         $folder = Sanitize::underscore($this->getArgument('folder'));
 
-        $cache_path = tr_config('paths.cache');
+        $cache_path = \TypeRocket\Core\Config::get('paths.cache');
         if(!file_exists($cache_path)) {
             mkdir($cache_path, 0755, true);
         }

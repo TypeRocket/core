@@ -38,7 +38,7 @@ class MakeCommand extends Command
         $replacements = [ $namespace, $class, $name ];
         $template = __DIR__ . '/../../../templates/Command.txt';
 
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
         $command_file = $app_path . '/Commands/' . str_replace("\\",'/', $command) . ".php";
         $command_path = substr($command_file, 0, -1 + -strlen(basename($command_file)) ) ;
 

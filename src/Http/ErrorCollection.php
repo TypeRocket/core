@@ -42,4 +42,12 @@ class ErrorCollection
     {
         return new static(...$args);
     }
+
+    /**
+     * @return static
+     */
+    public static function getFromRuntimeCache()
+    {
+        return RuntimeCache::getFromContainer()->get(static::KEY);
+    }
 }

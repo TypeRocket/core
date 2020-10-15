@@ -4,6 +4,45 @@ namespace TypeRocket\Utility;
 class Str
 {
     /**
+     * @param string $str
+     * @param string $delimiters
+     *
+     * @return false|string|string[]
+     */
+    public static function uppercaseWords($str, $delimiters = " \t\r\n\f\v" ) {
+        return mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
+    }
+
+    /**
+     * HTML class names helper
+     *
+     * @param string $defaults
+     * @param null|array $classes
+     * @param string $failed
+     * @return string
+     */
+    public static function classNames($defaults, $classes = null, $failed = '') {
+        if(!$result = Arr::reduceAllowedStr(is_array($defaults) ? $defaults : $classes)) {
+            $result = !is_array($classes) ? $classes : $failed;
+        }
+
+        $defaults = !is_array($defaults) ? $defaults : '';
+
+        return $defaults . ' ' . $result;
+    }
+
+    /**
+     * Not blank string
+     *
+     * @param string|null $value
+     *
+     * @return bool
+     */
+    public static function notBlank($value) {
+        return !(!isset($value) || $value === '');
+    }
+
+    /**
      * String Ends
      *
      * @param string $needle
@@ -188,7 +227,7 @@ class Str
     public static function makeWords($subject, $uppercase, $separator = '_')
     {
         $words = str_replace($separator, ' ', $subject);
-        return $uppercase ? tr_mb_ucwords($words) : $words;
+        return $uppercase ? static::uppercaseWords($words) : $words;
     }
 
 }

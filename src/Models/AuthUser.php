@@ -8,6 +8,8 @@ namespace TypeRocket\Models;
  */
 interface AuthUser
 {
+    public const ALIAS = 'user';
+
     /**
      * @return bool
      */

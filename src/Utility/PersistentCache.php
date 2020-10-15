@@ -12,7 +12,7 @@ class PersistentCache
      */
     public function __construct($folder = 'app')
     {
-        $this->path = tr_config('paths.cache') . "/$folder";
+        $this->path = \TypeRocket\Core\Config::get('paths.cache') . "/$folder";
 
         if(!is_dir( $this->path )) {
             mkdir( $this->path, 0777, true );

@@ -1,7 +1,9 @@
 <?php
 namespace TypeRocket\Template;
 
+use TypeRocket\Core\Config;
 use TypeRocket\Http\Request;
+use TypeRocket\Utility\PersistentCache;
 
 class View
 {
@@ -37,7 +39,17 @@ class View
             $this->data = $data;
         }
 
-        $this->views = $path ?? $this->views ?? tr_config('paths.views');
+        $this->views = $path ?? $this->views ?? Config::get('paths.views');
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 
     /**
@@ -181,8 +193,8 @@ class View
             }, 101);
         }
 
-        $location = $this->getFile() ?? tr_config('paths.' . $context) . '/' . $this->getLocation();
-        $templateEngine = $this->viewsEngine ?? tr_config('app.templates.' . $context) ?? tr_config('app.templates.views');
+        $location = $this->getFile() ?? Config::get('paths.' . $context) . '/' . $this->getLocation();
+        $templateEngine = $this->viewsEngine ?? Config::get('app.templates.' . $context) ?? Config::get('app.templates.views');
         (new $templateEngine($location, $this->getData(), $context, $this))->load();
     }
 
@@ -226,7 +238,7 @@ class View
      */
     public function cache($key, $time = 9999999999)
     {
-        return tr_cache()->getOtherwisePut($key, function() {
+        return PersistentCache::new()->getOtherwisePut($key, function() {
             return $this->toString();
         }, $time);
     }

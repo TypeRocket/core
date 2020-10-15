@@ -282,7 +282,7 @@ class WPPost extends Model
      */
     public function author()
     {
-        $user = tr_app_class('Models\User');
+        $user = \TypeRocket\Utility\Helper::appNamespace('Models\User');
         return $this->belongsTo( $user, 'post_author' );
     }
 

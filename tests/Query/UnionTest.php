@@ -33,11 +33,11 @@ class UnionTest extends TestCase
 
     public function testSimpleUnion()
     {
-        $first = tr_query()->table('wp_posts')->setIdColumn('ID');
+        $first = \TypeRocket\Database\Query::new()->table('wp_posts')->setIdColumn('ID');
         $first->select('post_title', 'ID')
               ->where('ID', 1);
 
-        $last = tr_query()->table('wp_posts')->setIdColumn('ID');
+        $last = \TypeRocket\Database\Query::new()->table('wp_posts')->setIdColumn('ID');
         $last->select('post_title', 'ID')
              ->where('ID', 2)
              ->union($first) // union

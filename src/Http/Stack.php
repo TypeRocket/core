@@ -7,16 +7,16 @@ class Stack
 {
     /** @var array  */
     protected $middleware = [];
-    /** @var Kernel  */
+    /** @var HttpKernel  */
     protected $kernel;
 
     /**
      * Stack Constructor
      *
-     * @param Kernel $kernel
+     * @param HttpKernel $kernel
      * @param array $middleware
      */
-    public function __construct(Kernel $kernel, array $middleware = null)
+    public function __construct(HttpKernel $kernel, array $middleware = null)
     {
         $this->kernel = $kernel;
         $this->setMiddleware($middleware);
@@ -65,7 +65,7 @@ class Stack
     /**
      * Get Kernel
      *
-     * @return Kernel
+     * @return HttpKernel
      */
     public function getKernel()
     {

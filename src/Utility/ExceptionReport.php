@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Utility;
 
+use TypeRocket\Core\Config;
 use TypeRocket\Services\ErrorService;
 
 /**
@@ -37,7 +38,7 @@ class ExceptionReport
      */
     public function report()
     {
-        if(tr_debug() || $this->debug) {
+        if(Config::get('app.debug') || $this->debug) {
             if(class_exists(ErrorService::WHOOPS)) {
                 $this->whoops();
             }

@@ -1,7 +1,10 @@
 <?php
 namespace TypeRocket\Http;
 
+use TypeRocket\Core\Container;
+use TypeRocket\Models\AuthUser;
 use TypeRocket\Models\WPUser;
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Str;
 
 class Request
@@ -38,6 +41,16 @@ class Request
         if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
             $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
+    }
+
+    /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
     }
 
     /**
@@ -322,7 +335,7 @@ class Request
     {
         if(!$this->input) {
             $input = file_get_contents('php://input');
-            if(tr_is_json($input)) { $data = json_decode($input, true); }
+            if(Data::isJson($input)) { $data = json_decode($input, true); }
             else { $data = $this->post; /* parse_str($input, $data); */ }
             $this->input = $data;
         }
@@ -456,17 +469,50 @@ class Request
      */
     public function getCurrentUser()
     {
-        return tr_container('user');
+        return Container::resolveAlias(AuthUser::ALIAS);
     }
 
     /**
-     * @param mixed ...$args
+     * Check Field Nonce
      *
-     * @return static
+     * Works the same as check_ajax_referer but also include
+     * request header checks for: X-CSRF-TOKEN and X-WP-NONCE
+     *
+     * @param string $action
+     * @param bool $die
+     *
+     * @return bool|int
      */
-    public static function new(...$args)
+    function checkNonce($action = '', $die = false)
     {
-        return new static(...$args);
+        $query_arg = '_tr_nonce_form'.$action;
+        $action = 'form_' . $action . \TypeRocket\Core\Config::get('app.seed');
+        $nonce = '';
+
+        if ( isset( $_REQUEST[$query_arg] ) ) {
+            $nonce = $_REQUEST[$query_arg];
+        } elseif ( isset( $_REQUEST['_ajax_nonce'] ) ) {
+            $nonce = $_REQUEST['_ajax_nonce'];
+        } elseif ( isset( $_REQUEST['_wpnonce'] ) ) {
+            $nonce = $_REQUEST['_wpnonce'];
+        } elseif ( isset( $_SERVER['HTTP_X_CSRF_TOKEN'] ) ) {
+            $nonce = $_SERVER['HTTP_X_CSRF_TOKEN'];
+        } elseif ( isset( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
+            $nonce = $_SERVER['HTTP_X_WP_NONCE'];
+        }
+
+        $result = wp_verify_nonce( $nonce, $action );
+        do_action( 'check_ajax_referer', $action, $result );
+
+        if ( $die && false === $result ) {
+            if ( wp_doing_ajax() ) {
+                wp_die( -1, 403 );
+            } else {
+                die( '-1' );
+            }
+        }
+
+        return $result;
     }
 
 }

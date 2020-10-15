@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Http;
 
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Sanitize;
 
 class Cookie
@@ -131,10 +132,67 @@ class Cookie
      */
     public function oldFields($delete = true) {
         if( !empty($_COOKIE['tr_old_fields']) ) {
-            return (new Cookie)->getTransient('tr_old_fields', $delete);
+            return $this->getTransient('tr_old_fields', $delete);
         }
 
         return null;
+    }
+
+    /**
+     * @param string $name the name of the field
+     * @param string $default a default value
+     * @param bool $delete should delete old data when getting the last field
+     *
+     * @return string
+     */
+    function oldField($name, $default = '', $delete = false)
+    {
+        return Data::walk($name, $this->getTransient('tr_old_fields', $delete), $default);
+    }
+
+    /**
+     * @return bool
+     */
+    function oldFieldsRemove()
+    {
+        $this->getTransient('tr_old_fields', true);
+
+        return ! (bool) $this->getTransient('tr_old_fields');
+    }
+
+    /**
+     * @param null|array $default
+     * @param bool $delete
+     *
+     * @return array
+     */
+    public function redirectMessage($default = null, $delete = true)
+    {
+        $data = $this->getTransient('tr_redirect_message', $delete);
+        return ! is_null($data) ? $data : $default;
+    }
+
+    /**
+     * @param null $default
+     *
+     * @return array
+     */
+    function redirectErrors($default = null)
+    {
+        $errors = \TypeRocket\Http\ErrorCollection::getFromRuntimeCache();
+        return !is_null($errors) ? $errors->errors() : $default;
+    }
+
+    /**
+     * @param null $default
+     * @param bool $delete
+     *
+     * @return array
+     */
+    function redirectData($default = null, $delete = true)
+    {
+        $data = $this->getTransient('tr_redirect_data', $delete);
+        return ! is_null($data) ? $data : $default;
     }
 
     /**

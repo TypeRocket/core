@@ -5,7 +5,7 @@
 echo $form->useConfirm()->open();
 
 // Post Types
-$pt_tabs = tr_tabs();
+$pt_tabs = \TypeRocket\Elements\Tabs::new();
 $singular = $form->getModel()->getProperty('singular');
 
 $pt_tabs->tab(__('Basic', 'typerocket-ui'))->setFields(
@@ -95,7 +95,7 @@ $pt = $form->fieldset('Post Types','Fast and simple registration of post types.'
 ]);
 
 // Taxonomies
-$tax_tabs = tr_tabs();
+$tax_tabs = \TypeRocket\Elements\Tabs::new();
 
 $tax_tabs->tab('Basic')->setFields(
     $form->row(
@@ -128,7 +128,7 @@ $tax = $form->fieldset('Taxonomies', 'Fast and simple registration of taxonomies
 ]);
 
 // Meta boxes
-$meta_tabs = tr_tabs();
+$meta_tabs = \TypeRocket\Elements\Tabs::new();
 
 $meta_tabs->tab('Basic')->setFields(
     $form->text('Meta Box Title', ['placeholder' => __('Required', 'typerocket-ui')])->markLabelRequired(),
@@ -158,7 +158,7 @@ $meta = $form->fieldset('Meta Boxes', 'Fast and simple registration of meta boxe
 $save = $form->submit('Save Changes');
 
 // Layout
-$tabs = tr_tabs()->setFooter( $save )->layoutTopEnclosed();
+$tabs = \TypeRocket\Elements\Tabs::new()->setFooter( $save )->layoutTopEnclosed();
 $tabs->tab('Post Types', 'dashicons-admin-post', $pt);
 $tabs->tab('Taxonomies', 'dashicons-tag', $tax);
 $tabs->tab('Meta Boxes', 'dashicons-move', $meta);

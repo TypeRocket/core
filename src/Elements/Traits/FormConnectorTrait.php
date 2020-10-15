@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Elements\Traits;
 
+use TypeRocket\Core\Config;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Interfaces\Formable;
 use TypeRocket\Models\Model;
@@ -79,7 +80,7 @@ trait FormConnectorTrait
      */
     public function getDebugStatus()
     {
-        return $this->debugStatus === false ? $this->debugStatus : tr_debug();
+        return $this->debugStatus === false ? $this->debugStatus : Config::get('app.debug');
     }
 
     /**

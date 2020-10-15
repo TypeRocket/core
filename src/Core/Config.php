@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Core;
 
+use TypeRocket\Utility\Data;
+
 class Config
 {
     public const ALIAS = 'config';
@@ -49,7 +51,7 @@ class Config
                 return $this->config[$root];
             }
 
-            return tr_dots_walk($rest, $this->config[$root], $default);
+            return Data::walk($rest, $this->config[$root], $default);
         }
 
         return $default;
@@ -67,7 +69,7 @@ class Config
      */
     public function locate($dots, $default = null)
     {
-        $value = tr_dots_walk($dots, $this->config);
+        $value = Data::walk($dots, $this->config);
         if( isset($dots) && is_null($value) ) {
             return self::jitLocate($dots, $default);
         }
@@ -76,10 +78,37 @@ class Config
     }
 
     /**
+     * Get Constant Variable
+     *
+     * @param string $name the constant variable name
+     * @param null|mixed $default The default value
+     *
+     * @return mixed
+     */
+    public static function env($name, $default = null)
+    {
+        return defined($name) ? constant($name) : $default;
+    }
+
+    /**
      * @return static
      */
     public static function getFromContainer()
     {
-        return tr_container(static::ALIAS);
+        return Container::resolve(static::ALIAS);
+    }
+
+    /**
+     * Locate Config Setting
+     *
+     * Traverse array with dot notation.
+     *
+     * @param string $dots dot notation key.next.final
+     * @param null|mixed $default default value to return if null
+     *
+     * @return array|mixed|null
+     */
+    public static function get($dots, $default = null) {
+        return static::getFromContainer()->locate($dots, $default);
     }
 }

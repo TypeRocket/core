@@ -23,9 +23,6 @@
         "phpunit/phpunit": "7.4.*"
     },
     "autoload": {
-        "files": [
-            "functions/helpers.php"
-        ],
         "psr-4": {
             "TypeRocket\\": "src/"
         }

@@ -44,7 +44,7 @@ class MakeMiddleware extends Command
         $replacements = [ $namespace, $class ];
 
         $template = __DIR__ . '/../../../templates/Middleware.txt';
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
 
         $middleware_file = $app_path . '/Http/Middleware/' . str_replace("\\",'/', $middleware) . ".php";
         $middleware_path = substr($middleware_file, 0, -1 + -strlen(basename($middleware_file)) ) ;

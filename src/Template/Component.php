@@ -84,7 +84,7 @@ class Component
     public function thumbnail($url = null)
     {
         if(func_num_args() == 0) {
-            return $this->thumbnail ?? tr_config('urls.components') . '/' . $this->registeredAs() . '.png';
+            return $this->thumbnail ?? \TypeRocket\Core\Config::get('urls.components') . '/' . $this->registeredAs() . '.png';
         }
 
         $this->thumbnail = $url;

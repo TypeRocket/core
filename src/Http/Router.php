@@ -146,7 +146,7 @@ class Router
             ->setController( $this->route->do );
 
         $responder->respond( $this->args );
-        tr_response()->finish();
+        \TypeRocket\Http\Response::getFromContainer()->finish();
     }
 
     /**

@@ -16,7 +16,7 @@ class HttpResponder extends Responder
     public function respond( $args )
     {
         $request  = new Request;
-        $response = tr_response();
+        $response = \TypeRocket\Http\Response::getFromContainer();
         $this->handler->setArgs($args);
 
         $this->runKernel($request, $response, $this->handler);

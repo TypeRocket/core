@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
+use TypeRocket\Core\Container;
+use TypeRocket\Core\System;
 use TypeRocket\Elements\Traits\DefaultSetting;
 use TypeRocket\Html\Html;
 use TypeRocket\Utility\Sanitize;
@@ -45,7 +47,7 @@ class Color extends Field implements ScriptField
             wp_localize_script( 'typerocket-scripts', $palette, $this->getSetting( 'palette' ) );
         };
 
-        if ( !is_admin() && tr_container(\TypeRocket\Core\System::class)->frontendIsEnabled() ) {
+        if ( !is_admin() && System::getFromContainer()->frontendIsEnabled() ) {
             add_action('wp_footer', $callback, 999999999999 );
         } else {
             add_action('admin_footer', $callback, 999999999999 );

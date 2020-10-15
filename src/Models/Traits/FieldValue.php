@@ -3,6 +3,7 @@ namespace TypeRocket\Models\Traits;
 
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
+use TypeRocket\Utility\Data;
 
 trait FieldValue
 {
@@ -18,11 +19,11 @@ trait FieldValue
         $data = $this->getFormFields();
 
         if( $this->old ) {
-            $data = tr_dots_walk($field, $this->old);
+            $data = Data::walk($field, $this->old);
             $data = wp_unslash($data);
         }
         elseif( ! $this->onlyOld ) {
-            $data = tr_dots_walk($field, $data);
+            $data = Data::walk($field, $data);
         }
         else {
             return null;

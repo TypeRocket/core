@@ -44,7 +44,7 @@ class Select extends Field
 
         // Use Chosen JS
         if($this->getSetting('search')) {
-            $url = tr_config('urls.typerocket');
+            $url = \TypeRocket\Core\Config::get('urls.typerocket');
             wp_enqueue_script( 'typerocket-chosen', $url . '/js/lib/chosen.min.js', ['jquery'], false, true );
             $this->attrClass('tr-chosen-select-js');
 

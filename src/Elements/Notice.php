@@ -87,4 +87,24 @@ class Notice
             echo $notice;
         });
     }
+
+    /**
+     * @param array|null $data keys include message and type
+     * @param bool $dismissible
+     *
+     * @return false|string|null
+     */
+    public static function flash($data = null, $dismissible = false)
+    {
+        if( !empty($_COOKIE['tr_admin_flash']) || !empty($data) ) {
+            $flash = (new \TypeRocket\Http\Cookie)->getTransient('tr_admin_flash');
+
+            return static::html([
+                'message' => $data['message'] ?? $flash['message'] ?? null,
+                'type' => $data['type'] ?? $flash['type'] ?? 'info',
+            ], $dismissible);
+        }
+
+        return null;
+    }
 }

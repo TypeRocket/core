@@ -5,6 +5,7 @@ use TypeRocket\Auth\Roles;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Sanitize;
+use TypeRocket\Utility\Str;
 
 /**
  * Taxonomy
@@ -84,7 +85,7 @@ class Taxonomy extends Registrable
 
         $this->args = array_merge( $this->args, $defaults, $settings );
 
-        if(class_exists( $model = tr_model($singular, false) ) ) {
+        if(class_exists( $model = \TypeRocket\Utility\Helper::modelClass($singular, false) ) ) {
             $this->setModelClass($model);
         }
 
@@ -139,8 +140,8 @@ class Taxonomy extends Registrable
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
         // make lowercase
-        $upperPlural   = $keep_case ? $plural : tr_mb_ucwords( $plural );
-        $upperSingular = $keep_case ? $singular : tr_mb_ucwords( $singular );
+        $upperPlural   = $keep_case ? $plural : Str::uppercaseWords( $plural );
+        $upperSingular = $keep_case ? $singular : Str::uppercaseWords( $singular );
         $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $context = 'taxonomy:' . $this->getId();

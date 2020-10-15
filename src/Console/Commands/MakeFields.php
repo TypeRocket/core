@@ -34,7 +34,7 @@ class MakeFields extends Command
         $replacements = [ $namespace, $class];
         $tags = ['{{namespace}}', '{{fields}}'];
 
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
         $service_file = $app_path . '/Http/Fields/' . str_replace("\\",'/', $name) . ".php";
         $service_path = substr($service_file, 0, -1 + -strlen(basename($service_file)) ) ;
 

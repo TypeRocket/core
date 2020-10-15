@@ -1,11 +1,10 @@
 <?php
 namespace TypeRocket\Utility;
 
-use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\RedirectError;
-use TypeRocket\Http\Fields;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
+use TypeRocket\Utility\Str;
 use TypeRocket\Utility\Validators\ValidatorRule;
 use TypeRocket\Utility\Validators\CallbackValidator;
 use TypeRocket\Utility\Validators\EmailValidator;
@@ -65,6 +64,16 @@ class Validator
     }
 
     /**
+     * @param mixed ...$args
+     *
+     * @return static
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
+    }
+
+    /**
      * Run Validation
      *
      * @param bool $returnSelf
@@ -90,10 +99,10 @@ class Validator
     {
         if($this->failed()) {
             if($flash) {
-                $this->flashErrors(tr_response());
+                $this->flashErrors(\TypeRocket\Http\Response::getFromContainer());
             }
 
-            $redirect = tr_redirect()->withOldFields()->withErrors([$key => $this->getErrorFields()])->back();
+            $redirect = \TypeRocket\Http\Redirect::new()->withOldFields()->withErrors([$key => $this->getErrorFields()])->back();
 
             if(is_callable($callback)) {
                 call_user_func($callback, $redirect);
@@ -116,7 +125,7 @@ class Validator
     {
         if( $this->failed() && $this->ran) {
 
-            $response = tr_response()->withOldFields()->withRedirectErrors([$key => $this->getErrorFields()]);
+            $response = \TypeRocket\Http\Response::getFromContainer()->withOldFields()->withRedirectErrors([$key => $this->getErrorFields()]);
 
             if($flash) {
                 $this->flashErrors($response->allowFlash());
@@ -362,7 +371,7 @@ class Validator
      * @throws \Exception
      */
     protected function validateField($handle, $value, $fullName) {
-        $field_name = '<strong>"' . tr_mb_ucwords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
+        $field_name = '<strong>"' . Str::uppercaseWords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
 
         $args = [
             'validator' => $this,
@@ -436,15 +445,5 @@ class Validator
         } else {
             $this->passes[$fullName . ':' . $class::KEY] = $value;
         }
-    }
-
-    /**
-     * @param mixed ...$args
-     *
-     * @return static
-     */
-    public static function new(...$args)
-    {
-        return new static(...$args);
     }
 }

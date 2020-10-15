@@ -9,7 +9,7 @@ use TypeRocket\Template\ErrorTemplate;
 
 abstract class Responder
 {
-    /** @var \TypeRocket\Http\Kernel */
+    /** @var \TypeRocket\Http\HttpKernel */
     protected $kernel;
     /** @var Handler */
     protected $handler;
@@ -41,7 +41,7 @@ abstract class Responder
     public function runKernel(Request $request, Response $response, Handler $handler )
     {
         try {
-            $Kernel = tr_app_class("Http\\Kernel");
+            $Kernel = \TypeRocket\Utility\Helper::appNamespace("Http\\Kernel");
             $this->kernel = new $Kernel( $request, $response, $handler);
             $this->kernel->run();
         } catch (\Throwable $e ) {
@@ -56,7 +56,7 @@ abstract class Responder
 
             if(!$e instanceof \Requests_Exception_HTTP) {
                 $code = 500;
-                tr_report($e);
+                \TypeRocket\Utility\Helper::reportError($e);
             }
 
             $response->setStatus($code);
@@ -86,7 +86,7 @@ abstract class Responder
     /**
      * Get Kernel
      *
-     * @return \TypeRocket\Http\Kernel
+     * @return \TypeRocket\Http\HttpKernel
      */
     public function getKernel()
     {

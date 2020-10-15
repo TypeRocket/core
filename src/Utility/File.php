@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Utility;
 
+use TypeRocket\Utility\Helper;
+
 class File
 {
     public $existing = false;
@@ -291,7 +293,7 @@ class File
     public function removeRecursiveDirectory($path = null, $removeSelf = true, $root = null )
     {
         $path = realpath($path ? $path : $this->file);
-        $project_root = tr_wp_root();
+        $project_root = Helper::wordPressRootPath();
 
         if(!$root) {
             if( !Str::starts($project_root, TR_PATH) ) {

@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Http;
 
-use TypeRocket\Core\Injector;
+use TypeRocket\Core\Container;
 use TypeRocket\Models\Model;
 use TypeRocket\Utility\Str;
 
@@ -178,7 +178,7 @@ class Redirect
     public function toRoute($name, $values = [], $site = true, $routes = null)
     {
         /** @var RouteCollection $routes */
-        $routes = $routes ?? Injector::resolve(RouteCollection::class);
+        $routes = $routes ?? Container::resolve(RouteCollection::class);
         $located = $routes->getNamedRoute($name);
 
         if($values instanceof Model) {
@@ -234,7 +234,7 @@ class Redirect
      */
     public function withFlash($message, $type = 'success', $force_transient = false)
     {
-        tr_response()->flashNext($message, $type, $force_transient);
+        \TypeRocket\Http\Response::getFromContainer()->flashNext($message, $type, $force_transient);
 
         return $this;
     }

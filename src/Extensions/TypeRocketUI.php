@@ -1,12 +1,15 @@
 <?php
 namespace TypeRocket\Extensions;
 
+use TypeRocket\Core\Config;
+use TypeRocket\Core\System;
 use TypeRocket\Elements\Dashicons;
 use TypeRocket\Http\Redirect;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPOption;
 use TypeRocket\Template\View;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Validator;
 
@@ -17,11 +20,11 @@ class TypeRocketUI
 
     public function __construct()
     {
-        if(!immutable('TR_POST_TYPES', true)) {
+        if(!Config::env('TR_POST_TYPES', true)) {
             return;
         }
 
-        $this->menu = immutable('TR_POST_TYPES_MENU', false);
+        $this->menu = Config::env('TR_POST_TYPES_MENU', false);
         add_action( 'typerocket_loaded', [$this, 'setup']);
     }
 
@@ -32,7 +35,7 @@ class TypeRocketUI
     {
         add_filter( 'tr_model', [$this, 'fillable'], 9999999999 );
 
-        $page = tr_page('typerocket_ui@'.self::class, 'register', 'Register')
+        $page = \TypeRocket\Register\Page::add('typerocket_ui@'.self::class, 'register', 'Register')
             ->setMenuTitle('TypeRocket UI')
             ->setTitle('TypeRocket UI')
             ->mapActions([
@@ -89,7 +92,7 @@ class TypeRocketUI
             $plural = esc_html(trim($tax['plural']) ?: null);
 
             if($singular) {
-                $t = tr_taxonomy($singular, $plural);
+                $t = \TypeRocket\Register\Taxonomy::add($singular, $plural);
 
                 if(isset($tax['taxonomy_id']) && trim($tax['taxonomy_id']) ) {
                     $t->setId($tax['taxonomy_id']);
@@ -159,7 +162,7 @@ class TypeRocketUI
             $id = esc_html(trim($box['meta_box_id']) ?: null);
 
             if($title) {
-                $mb = tr_meta_box($title, []);
+                $mb = \TypeRocket\Register\MetaBox::add($title, []);
 
                 if($id) {
                     $mb->setId($id);
@@ -217,7 +220,7 @@ class TypeRocketUI
             $plural = esc_html(trim($type['plural']) ?: null);
 
             if($singular) {
-                $pt = tr_post_type($singular, $plural);
+                $pt = \TypeRocket\Register\PostType::add($singular, $plural);
 
                 if(isset($type['post_type_id']) && trim($type['post_type_id']) ) {
                     $pt->setId($type['post_type_id']);
@@ -391,7 +394,7 @@ class TypeRocketUI
 
         if($fields['tr_registered'] ?? null) {
             update_option('tr_registered', json_encode($fields['tr_registered']), 'yes');
-            tr_update_site_state('flush_rewrite_rules');
+            System::updateSiteState('flush_rewrite_rules');
             $response->flashNext('Saved settings. Post types and taxonomies registered and permalinks flushed.');
         }
 
@@ -429,7 +432,7 @@ class TypeRocketUI
             return true;
         }
 
-        return tr_redirect()->toPage('typerocket_ui_register', null, null, $this->menu ? $this->menu . '.php' : null );
+        return \TypeRocket\Http\Redirect::new()->toPage('typerocket_ui_register', null, null, $this->menu ? $this->menu . '.php' : null );
     }
 
     /**
@@ -441,7 +444,7 @@ class TypeRocketUI
     public function show()
     {
         $icons = Dashicons::new()->iconNames();
-        $form = tr_form()->useErrors()->useOld()->setDebugStatus(false)->setGroup('tr_registered');
+        $form = Helper::form()->useErrors()->useOld()->setDebugStatus(false)->setGroup('tr_registered');
 
         $values = json_decode(get_option('tr_registered'), true);
         $list = [
@@ -464,6 +467,6 @@ class TypeRocketUI
             $supports[ esc_attr__($key, 'typerocket-ui') ] = $v;
         }
 
-        return tr_view( __DIR__ .'/views/typerocket-ui.php', compact('form', 'icons', 'supports', 'values'));
+        return View::new( __DIR__ .'/views/typerocket-ui.php', compact('form', 'icons', 'supports', 'values'));
     }
 }

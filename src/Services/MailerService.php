@@ -1,6 +1,9 @@
 <?php
 namespace TypeRocket\Services
 {
+    use TypeRocket\Core\Config;
+    use TypeRocket\Core\Container;
+
     class MailerService extends Service
     {
         protected $driver;
@@ -11,13 +14,13 @@ namespace TypeRocket\Services
          */
         public function register() : Service
         {
-            $default = tr_config('mail.default');
+            $default = Config::get('mail.default');
 
             if($default) {
                 throw new \Exception('mail.php config is missing.');
             }
 
-            $driver = tr_config("mail.mailers.{$default}.driver");
+            $driver = Config::get("mail.mailers.{$default}.driver");
 
             $this->driver = new $driver;
 
@@ -42,6 +45,14 @@ namespace TypeRocket\Services
         {
             return $this->driver()->send(...func_get_args());
         }
+
+        /**
+         * @return static
+         */
+        public static function getFromContainer()
+        {
+            return Container::resolve(static::ALIAS);
+        }
     }
 }
 
@@ -49,13 +60,13 @@ namespace
 {
     use TypeRocket\Services\MailerService;
 
-    if(!function_exists('wp_mail') && tr_config('mail.default')) {
+    if(!function_exists('wp_mail') && \TypeRocket\Core\Config::get('mail.default')) {
         function wp_mail( $to, $subject, $message, $headers = '', $attachments = [] )
         {
             /**
              * @var MailerService $mailer
              */
-            $mailer = tr_container(MailerService::ALIAS);
+            $mailer = MailerService::getFromContainer();
 
             return $mailer->send(...func_get_args());
         }

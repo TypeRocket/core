@@ -17,7 +17,7 @@ class Resolver
      */
     public function resolve($class, $args = null)
     {
-        if( $instance = Injector::resolve($class)) {
+        if( $instance = Container::resolve($class)) {
             return $instance;
         }
 
@@ -136,6 +136,20 @@ class Resolver
         }
 
         throw new ResolverException('Resolver failed because there is no default value for the parameter: $' . $parameter->getName());
+    }
+
+    /**
+     * Resolve Class
+     *
+     * @param string $class
+     * @param null|array $args
+     *
+     * @return object
+     * @throws \ReflectionException
+     */
+    public static function build($class, $args = null)
+    {
+        return (new static)->resolve($class, $args);
     }
 
     /**

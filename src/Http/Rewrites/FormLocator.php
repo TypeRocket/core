@@ -2,6 +2,7 @@
 namespace TypeRocket\Http\Rewrites;
 
 use TypeRocket\Elements\BaseForm;
+use TypeRocket\Utility\Helper;
 
 class FormLocator
 {
@@ -15,9 +16,9 @@ class FormLocator
     {
         $formGroup = $_POST['form_group'] ?? null;
         $prefix = $_POST['_tr_form_prefix'] ?? null;
-        $index = tr_hash();
+        $index = Helper::hash();
 
-        $form_class = tr_config('app.class.form', BaseForm::class);
+        $form_class = \TypeRocket\Core\Config::get('app.class.form', BaseForm::class);
         /** @var BaseForm $form */
         $form = new $form_class;
 

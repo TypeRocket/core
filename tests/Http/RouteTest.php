@@ -5,7 +5,7 @@ namespace Http;
 
 
 use PHPUnit\Framework\TestCase;
-use TypeRocket\Core\Injector;
+use TypeRocket\Core\Container;
 use TypeRocket\Elements\BaseForm;
 use TypeRocket\Http\ApplicationRoutes;
 use TypeRocket\Http\CustomRequest;
@@ -20,7 +20,7 @@ class RouteTest extends TestCase
 
     public function testMakeGetRoute()
     {
-        $route = tr_route()->get()->match('/app-test')->do(function() {
+        $route = \TypeRocket\Http\Route::new()->get()->match('/app-test')->do(function() {
             return 'Hi';
         });
 
@@ -38,24 +38,24 @@ class RouteTest extends TestCase
 
     public function testRouteNewCollection()
     {
-        tr_route()->get()->match('/app-test')->do(function() {
+        \TypeRocket\Http\Route::new()->get()->match('/app-test')->do(function() {
             return 'Hi';
         });
 
-        $count = Injector::resolve(RouteCollection::class)->count();
+        $count = Container::resolve(RouteCollection::class)->count();
 
         $route = new Route;
 
         $route->register(new class extends RouteCollection {});
 
-        $count_new = Injector::resolve(RouteCollection::class)->count();
+        $count_new = Container::resolve(RouteCollection::class)->count();
 
         $this->assertTrue($count_new == $count);
     }
 
     public function testRouteDoWithArg()
     {
-        tr_route()->get()->match('about/([^\/]+)', ['id'])->do(function($id, RouteCollection $routes) {
+        \TypeRocket\Http\Route::new()->get()->match('about/([^\/]+)', ['id'])->do(function($id, RouteCollection $routes) {
             return [$id, $routes->count()];
         });
 
@@ -67,7 +67,7 @@ class RouteTest extends TestCase
         // basic
         $route = (new Router($request, [
             'root' => 'https://example.com/wordpress/'
-        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
+        ], Container::resolve(RouteCollection::class) ))->detectRoute();
 
 
         $this->assertTrue($route->args['id'] === '1');
@@ -75,14 +75,14 @@ class RouteTest extends TestCase
         // no slash
         $route = (new Router($request, [
             'root' => 'https://example.com/wordpress'
-        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
+        ], Container::resolve(RouteCollection::class) ))->detectRoute();
 
         $this->assertTrue($route->args['id'] === '1');
 
         // http
         $route = (new Router($request, [
             'root' => 'http://example.com/wordpress'
-        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
+        ], Container::resolve(RouteCollection::class) ))->detectRoute();
 
 
         $this->assertTrue($route->args['id'] === '1');
@@ -90,7 +90,7 @@ class RouteTest extends TestCase
 
     public function testRoutesCount()
     {
-        $count = Injector::resolve(RouteCollection::class)->count();
+        $count = Container::resolve(RouteCollection::class)->count();
         $this->assertTrue($count >= '2');
     }
 
@@ -103,7 +103,7 @@ class RouteTest extends TestCase
 
         $route = (new Router($request, [
             'root' => 'https://example.com/wordpress/'
-        ], Injector::resolve(RouteCollection::class)))->detectRoute();
+        ], Container::resolve(RouteCollection::class)))->detectRoute();
 
         $matched_route = $route->path;
 
@@ -119,7 +119,7 @@ class RouteTest extends TestCase
 
         $route = (new Router($request, [
             'root' => 'https://example.com/wordpress/'
-        ], Injector::resolve(RouteCollection::class) ))->detectRoute();
+        ], Container::resolve(RouteCollection::class) ))->detectRoute();
 
         $matched_route = $route->path;
 
@@ -129,19 +129,19 @@ class RouteTest extends TestCase
     public function testRouteNamedWithHelpers()
     {
         /** @var RouteCollection $routes */
-        tr_route()
+        \TypeRocket\Http\Route::new()
             ->get()
             ->match('/about/me/(.+)', ['id'])
             ->name('about.me', '/about/me/:id/:given-name');
 
-        $located = tr_route_find('about.me');
+        $located = \TypeRocket\Http\RouteCollection::getFromContainer()->getNamedRoute('about.me');
 
         $built = $located->buildUrlFromPattern([
             ':id' => 123,
             'given-name' => 'kevin'
         ], false);
 
-        $built_helper = tr_route_url('about.me', [
+        $built_helper = \TypeRocket\Http\Route::buildUrl('about.me', [
             ':id' => 987,
             'given-name' => 'ben'
         ], false);

@@ -6,6 +6,7 @@ use TypeRocket\Elements\Traits\ControlsSetting;
 use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Elements\Traits\Limits;
 use TypeRocket\Html\Html;
+use TypeRocket\Utility\Str;
 
 class Repeater extends Field implements ScriptField
 {
@@ -146,7 +147,7 @@ class Repeater extends Field implements ScriptField
         $templateFields = str_replace( ' name="', ' data-tr-name="', $this->getTemplateFields($form, $name) );
 
         // render js template data
-        $classes = tr_class_names('tr-repeater-group', [
+        $classes = Str::classNames('tr-repeater-group', [
             'tr-repeater-clones' => !empty($group_control_list['clone'])
         ]);
 

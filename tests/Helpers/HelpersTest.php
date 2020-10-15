@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+use TypeRocket\Utility\Data;
+use TypeRocket\Utility\ModelField;
+
 class HelpersTest extends \PHPUnit\Framework\TestCase
 {
 
@@ -9,7 +12,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
         $cp = $GLOBALS['post'];
         $GLOBALS['post'] = get_post(1);
 
-        $title = tr_post_field('post_title');
+        $title = ModelField::post('post_title');
 
         $GLOBALS['post'] = $cp;
 
@@ -18,14 +21,14 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
     public function testTermFieldHelper()
     {
-        $tax = tr_term_field('taxonomy', 'category', 1);
+        $tax = \TypeRocket\Utility\ModelField::term('taxonomy', 'category', 1);
 
         $this->assertTrue('category' == $tax);
     }
 
     public function testTermFieldWithIddHelper()
     {
-        $tax = tr_term_field('taxonomy', null, 1);
+        $tax = \TypeRocket\Utility\ModelField::term('taxonomy', null, 1);
 
         $this->assertTrue('category' == $tax);
     }
@@ -36,7 +39,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
         $id = 1;
         $GLOBALS['comment'] = get_comment($id);
 
-        $post_id = tr_comment_field('comment_post_id');
+        $post_id = \TypeRocket\Utility\ModelField::comment('comment_post_id');
         $GLOBALS['comment'] = $cc;
 
         $this->assertTrue(1 == $post_id);
@@ -44,7 +47,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
     public function testCommentFieldNotGlobalHelper()
     {
-        $post_id = tr_comment_field('comment_post_id', 1);
+        $post_id = \TypeRocket\Utility\ModelField::comment('comment_post_id', 1);
 
         $this->assertTrue(1 == $post_id);
     }
@@ -54,7 +57,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
         $cp = $GLOBALS['post'];
         $GLOBALS['post'] = get_post(1);
 
-        $email = tr_user_field('user_email');
+        $email = \TypeRocket\Utility\ModelField::user('user_email');
 
         $GLOBALS['post'] = $cp;
 
@@ -66,7 +69,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
         $cp = $GLOBALS['user_id'];
         $GLOBALS['user_id'] = 1;
 
-        $email = tr_user_field('user_email');
+        $email = \TypeRocket\Utility\ModelField::user('user_email');
 
         $GLOBALS['user_id'] = $cp;
 
@@ -102,13 +105,13 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($nulls as $v) {
             foreach($types as $t) {
-                $this->assertTrue(tr_cast($v, $t) === null);
+                $this->assertTrue(Data::cast($v, $t) === null);
             }
         }
 
         foreach ($ints as $v) {
             foreach($types as $t) {
-                $int = tr_cast($v, $t);
+                $int = Data::cast($v, $t);
                 $this->assertTrue(is_int($int));
             }
         }
@@ -144,13 +147,13 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($nulls as $v) {
             foreach($types as $t) {
-                $this->assertTrue(tr_cast($v, $t) === null);
+                $this->assertTrue(Data::cast($v, $t) === null);
             }
         }
 
         foreach ($ints as $v) {
             foreach($types as $t) {
-                $int = tr_cast($v, $t);
+                $int = Data::cast($v, $t);
                 $this->assertTrue(is_float($int));
             }
         }
@@ -182,7 +185,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($values as $v) {
             foreach($types as $t) {
-                $str = tr_cast($v, $t);
+                $str = Data::cast($v, $t);
                 $this->assertTrue(is_string($str));
             }
         }
@@ -214,7 +217,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($values as $v) {
             foreach($types as $t) {
-                $bool = tr_cast($v, $t);
+                $bool = Data::cast($v, $t);
                 $this->assertTrue(is_bool($bool));
             }
         }
@@ -249,14 +252,14 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($values as $v) {
             foreach($types as $t) {
-                $c = tr_cast($v, $t);
+                $c = Data::cast($v, $t);
                 $this->assertTrue(is_object($c));
             }
         }
 
         foreach ($same as $v) {
             foreach($types as $t) {
-                $c = tr_cast($v, $t);
+                $c = Data::cast($v, $t);
                 $this->assertTrue($c === $v);
             }
         }
@@ -290,14 +293,14 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($values as $v) {
             foreach($types as $t) {
-                $c = tr_cast($v, $t);
+                $c = Data::cast($v, $t);
                 $this->assertTrue(is_array($c));
             }
         }
 
         foreach ($same as $v) {
             foreach($types as $t) {
-                $c = tr_cast($v, $t);
+                $c = Data::cast($v, $t);
                 $this->assertTrue($c === $v);
             }
         }
@@ -328,8 +331,8 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($values as $v) {
             foreach($types as $t) {
-                $c = tr_cast($v, $t);
-                $this->assertTrue(tr_is_json($c));
+                $c = Data::cast($v, $t);
+                $this->assertTrue(\TypeRocket\Utility\Data::isJson($c));
             }
         }
     }
@@ -360,7 +363,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         foreach ($values as $v) {
             foreach($types as $t) {
-                $c = tr_cast($v, $t);
+                $c = Data::cast($v, $t);
                 $this->assertTrue(is_serialized($c));
             }
         }

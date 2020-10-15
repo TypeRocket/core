@@ -168,7 +168,7 @@ class Html
      */
     protected function a($text = '', $url = '#', array $attributes = [])
     {
-        $attributes = array_merge( array_filter(['href' => $url], 'not_blank_string'), $attributes );
+        $attributes = array_merge( array_filter(['href' => $url], '\TypeRocket\Utility\Str::notBlank'), $attributes );
         $this->tag = new Tag( 'a', $attributes, $text );
 
         return $this;
@@ -202,7 +202,7 @@ class Html
      */
     protected function input($type, $name, $value, array $attributes = [])
     {
-        $defaults = array_filter(['type' => $type, 'name' => $name, 'value' => $value], 'not_blank_string');
+        $defaults = array_filter(['type' => $type, 'name' => $name, 'value' => $value], '\TypeRocket\Utility\Str::notBlank');
         $this->tag = new Tag( 'input', array_merge( $defaults, $attributes ) );
 
         return $this;

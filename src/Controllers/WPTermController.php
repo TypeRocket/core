@@ -40,7 +40,7 @@ class WPTermController extends Controller
             do_action('tr_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
-                tr_abort(401);
+                \TypeRocket\Exceptions\HttpError::abort(401);
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 

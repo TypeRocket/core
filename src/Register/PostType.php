@@ -1,11 +1,13 @@
 <?php
 namespace TypeRocket\Register;
 
+use Exception;
 use TypeRocket\Auth\Roles;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Str;
+use WP_Post_Type;
 
 class PostType extends Registrable
 {
@@ -125,7 +127,7 @@ class PostType extends Registrable
 
         $this->args = array_merge( $this->args, $defaults, $settings );
 
-        if(class_exists( $model = tr_model($singular, false) ) ) {
+        if(class_exists( $model = \TypeRocket\Utility\Helper::modelClass($singular, false) ) ) {
             $this->setModelClass($model);
         }
 
@@ -181,9 +183,9 @@ class PostType extends Registrable
     {
         if(!$plural) { $plural = Inflect::pluralize($singular); }
 
-        $upperSingular = $keep_case ? $singular : tr_mb_ucwords( $singular );
+        $upperSingular = $keep_case ? $singular : Str::uppercaseWords( $singular );
         $lowerSingular = $keep_case ? $singular : mb_strtolower( $singular );
-        $upperPlural   = $keep_case ? $plural : tr_mb_ucwords( $plural );
+        $upperPlural   = $keep_case ? $plural : Str::uppercaseWords( $plural );
         $pluralLower   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $context = 'post_type:' . $this->getId();
@@ -241,7 +243,7 @@ class PostType extends Registrable
     /**
      * Get Existing Post Type
      *
-     * @return \WP_Post_Type|null
+     * @return WP_Post_Type|null
      */
     public function getExisting()
     {
@@ -938,7 +940,7 @@ class PostType extends Registrable
      * the post type.
      *
      * @return PostType $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function register()
     {

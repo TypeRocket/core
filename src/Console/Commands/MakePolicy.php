@@ -31,11 +31,11 @@ class MakePolicy extends Command
 
         list($namespace, $class) = Str::splitAt('\\', $name, true);
         $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Auth', $namespace]));
-        $replacements = [ $namespace, $class, tr_app_class('Models\User') ];
+        $replacements = [ $namespace, $class, \TypeRocket\Utility\Helper::appNamespace('Models\User') ];
         $tags = ['{{namespace}}', '{{auth}}', '{{user}}'];
 
 
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
         $policy_file = $app_path . '/Auth/' . str_replace("\\",'/', $name) . ".php";
         $policy_path = substr($policy_file, 0, -1 + -strlen(basename($policy_file)) ) ;
 

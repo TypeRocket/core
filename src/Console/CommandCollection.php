@@ -50,7 +50,7 @@ class CommandCollection extends \ArrayObject
      */
     public function enableCustom()
     {
-        $commands = tr_config('galaxy.commands');
+        $commands = \TypeRocket\Core\Config::get('galaxy.commands');
         if( $commands) {
             foreach ( $commands as $command ) {
                 $this->append($command);
@@ -63,7 +63,7 @@ class CommandCollection extends \ArrayObject
      */
     public function enableAdvanced()
     {
-        $file = tr_config('paths.pro') . '/commands.php';
+        $file = \TypeRocket\Core\Config::get('paths.pro') . '/commands.php';
 
         if(file_exists($file)) {
             $commands = include($file);

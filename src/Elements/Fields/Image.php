@@ -3,6 +3,8 @@ namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\ImageFeaturesTrait;
 use TypeRocket\Html\Html;
+use TypeRocket\Utility\Data;
+use TypeRocket\Utility\Str;
 
 class Image extends Field implements ScriptField
 {
@@ -47,7 +49,7 @@ class Image extends Field implements ScriptField
             $value = $value['id'];
         }
 
-        $value = tr_cast($value, 'int');
+        $value = Data::cast($value, 'int');
 
         $this->removeAttribute( 'name' );
 
@@ -69,7 +71,7 @@ class Image extends Field implements ScriptField
             $value = '';
         }
 
-        $classes = tr_class_names('tr-image-picker-placeholder', [
+        $classes = Str::classNames('tr-image-picker-placeholder', [
             'tr-dark-image-background' => $this->getSetting('background', 'light') == 'dark'
         ]);
 

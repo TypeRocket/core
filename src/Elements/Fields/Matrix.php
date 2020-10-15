@@ -41,8 +41,8 @@ class Matrix extends Field implements ScriptField
     protected function init()
     {
         $this->setType( 'matrix' );
-        $this->urls = tr_config('urls');
-        $this->paths = tr_config('paths');
+        $this->urls = \TypeRocket\Core\Config::get('urls');
+        $this->paths = \TypeRocket\Core\Config::get('paths');
     }
 
     /**
@@ -251,7 +251,7 @@ class Matrix extends Field implements ScriptField
     {
         $name = $this->getComponentGroup();
         $options = $this->popAllOptions();
-        $options = $options ?: tr_config("components.{$name}");
+        $options = $options ?: \TypeRocket\Core\Config::get("components.{$name}");
         $list = array_merge($options, $this->staticOptions);
 
         foreach ($list as $name) {
@@ -314,7 +314,7 @@ class Matrix extends Field implements ScriptField
     public static function getComponentClass($type, $group = null)
     {
         // This is to help with migration from v4/v1 to v5
-        $reg = tr_config("components.registry");
+        $reg = \TypeRocket\Core\Config::get("components.registry");
         $component_class = $reg["{$group}:{$type}"] ?? $reg[$type] ?? null;
 
         if(!$component_class) {
@@ -421,6 +421,47 @@ class Matrix extends Field implements ScriptField
             echo '<div class="tr-control-section tr-divide tr-dummy-editor" style="display: none; visibility: hidden;">';
             wp_editor('', 'tr_dummy_editor');
             echo '</div>';
+        }
+    }
+
+    /**
+     * Loop Components
+     *
+     * @param array $builder_data
+     * @param array $other be sure to pass $name, $item_id, $model
+     * @param string $group
+     */
+    public static function componentsLoop($builder_data, $other = [], $group = 'builder') {
+        /**
+         * @var $name
+         * @var $item_id
+         * @var $model
+         * @var $nested
+         */
+        extract($other);
+        $model = $model ?? null;
+        $item_id = $item_id ?? null;
+        $nested = $nested ?? false;
+        $i = $nested ? 1 : 0;
+        $group = $name ?? $group; // This is to help with migration from v4/v1 to v5
+        $len = count($builder_data);
+
+        do_action('tr_components_loop', $builder_data, $other, $len);
+        foreach ($builder_data as $hash => $data) {
+            $first_item = $last_item = false;
+
+            if ($i == 0) {
+                $first_item = true;
+            } else if ($i == $len - 1) {
+                $last_item = true;
+            }
+
+            $component_id = key($data);
+            $component = strtolower(key($data));
+            $info = compact('name', 'item_id', 'model', 'first_item', 'last_item', 'component_id', 'hash');
+            $class = static::getComponentClass($component, $group);
+            $class->render($data[$component_id], $info);
+            $i++;
         }
     }
 

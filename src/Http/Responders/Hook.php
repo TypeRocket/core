@@ -1,6 +1,9 @@
 <?php
 namespace TypeRocket\Http\Responders;
 
+use TypeRocket\Http\Request;
+use TypeRocket\Models\WPMenu;
+
 /**
  * Class Hook
  *
@@ -22,7 +25,7 @@ class Hook
     {
         $verified = false;
 
-        if( isset($_REQUEST['_tr_nonce_formhook']) && tr_field_nonce_check('hook') ) {
+        if( isset($_REQUEST['_tr_nonce_formhook']) && Request::new()->checkNonce('hook') ) {
             $verified = true;
         }
 
@@ -115,8 +118,8 @@ class Hook
     public static function menus( $menu_id, $menu_item_db_id, $args )
     {
         if (current_user_can('edit_theme_options') || !static::verified('menus', $menu_item_db_id)) {
-            $fields = tr_request()->getDataPost('tr-menu-'.$menu_item_db_id);
-            $menu = (new \TypeRocket\Models\WPMenu)->wpPost($menu_item_db_id, true);
+            $fields = Request::new()->getDataPost('tr-menu-'.$menu_item_db_id);
+            $menu = (new WPMenu)->wpPost($menu_item_db_id, true);
             $menu->saveMeta($fields);
         }
     }

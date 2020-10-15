@@ -48,9 +48,9 @@ class ValueAndNilTest extends TestCase
         $arr['one'] = [];
         $arr['one']['two'] = [true];
 
-        $this->assertTrue(tr_nils(Value::nils($arr['one'])['two'])->three['four'] instanceof Nil);
-        $this->assertTrue(tr_nils(Value::nils($arr['one'])['two'])->three['four']->get() === null);
-        $this->assertTrue(isset(tr_nils($arr)['one']->two));
-        $this->assertTrue(!isset(tr_nils($arr['one']['two'])['three']['four']));
+        $this->assertTrue(Value::nils(Value::nils($arr['one'])['two'])->three['four'] instanceof Nil);
+        $this->assertTrue(Value::nils(Value::nils($arr['one'])['two'])->three['four']->get() === null);
+        $this->assertTrue(isset(Value::nils($arr)['one']->two));
+        $this->assertTrue(!isset(Value::nils($arr['one']['two'])['three']['four']));
     }
 }

@@ -139,8 +139,8 @@ class Handler
         $provided = $controller;
 
         if ( !is_callable($controller) && is_string($controller) ) {
-            list($action, $controller) = array_pad(explode('@', $controller), 2, null);
-            $maybeController = tr_controller($controller);
+            [$action, $controller] = array_pad(explode('@', $controller), 2, null);
+            $maybeController = \TypeRocket\Utility\Helper::controllerClass($controller, false);
 
             if( strpos($controller, "\\") === false && class_exists($maybeController) ) {
                 $controller = $maybeController;
@@ -177,7 +177,7 @@ class Handler
              */
             if($this->controller[0][0] === '@') {
                 $resource = Str::camelize( substr($this->controller[0], 1) );
-                $this->controller[0] = tr_controller($resource);
+                $this->controller[0] = \TypeRocket\Utility\Helper::controllerClass($resource, false);
             }
 
             $this->controller[0] = (new Resolver)->resolve($this->controller[0], $this->constructController);

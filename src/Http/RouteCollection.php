@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Http;
 
+use TypeRocket\Core\Container;
+
 /**
  * Class RouteCollection
  *
@@ -93,6 +95,6 @@ class RouteCollection
      */
     public static function getFromContainer()
     {
-        return tr_container(static::ALIAS);
+        return Container::resolveAlias(static::ALIAS);
     }
 }

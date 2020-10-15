@@ -78,7 +78,7 @@ class MakeController extends Command
         $replacements = [ $namespace, $class, $model, TR_APP_NAMESPACE, $mc, Str::snake($mc) ];
 
         $template = __DIR__ . '/../../../templates/Controllers/' . $directive . '.txt';
-        $app_path = tr_config('paths.app');
+        $app_path = \TypeRocket\Core\Config::get('paths.app');
         $controller_file = $app_path . '/Controllers/' . str_replace("\\",'/', $controller) . ".php";
         $controller_path = substr($controller_file, 0, -1 + -strlen(basename($controller_file)) ) ;
 

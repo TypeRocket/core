@@ -64,7 +64,7 @@ class Migrate extends Command
     protected function sqlMigrationDirectory($type, $steps = 1, $reload = false) {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $migrations_folder = tr_config('paths.migrations');
+        $migrations_folder = \TypeRocket\Core\Config::get('paths.migrations');
 
         if(!file_exists($migrations_folder)) {
             $this->error('Migration folder does not exist: ' . $migrations_folder);

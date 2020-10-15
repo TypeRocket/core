@@ -3,6 +3,7 @@ namespace TypeRocket\Register;
 
 use Closure;
 use TypeRocket\Controllers\Controller;
+use TypeRocket\Core\Config;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Responders\HttpResponder;
 use TypeRocket\Utility\Sanitize;
@@ -52,7 +53,7 @@ class Page extends Registrable
      */
     public function __construct(string $resource, string $action, string $title, array $settings = [], $handler = null)
     {
-        list($resource, $handle) = array_pad(explode('@', $resource), 2, null);
+        [$resource, $handle] = array_pad(explode('@', $resource), 2, null);
         $handler = $handler ?? $handle;
 
         $settings['capability'] = $settings['capability'] ?? $settings['cap'] ?? null;
@@ -518,7 +519,7 @@ class Page extends Registrable
             elseif ( is_string($response)) {
                 echo $response;
             }
-            elseif( tr_debug() ) {
+            elseif( Config::get('app.debug') ) {
                 echo "<div class=\"tr-dev-alert-helper\"><i class=\"icon dashicons dashicons-editor-code\"></i> Add content here by creating or setting a view.</div>";
             }
             echo '</div></div>';
@@ -659,9 +660,9 @@ class Page extends Registrable
 
             $responder->respond( $args );
 
-            $response = tr_response();
+            $response = \TypeRocket\Http\Response::getFromContainer();
             $returned = $response->getReturn();
-            $rest = tr_request()->isMarkedAjax();
+            $rest = Request::new()->isMarkedAjax();
 
             if( !$rest && $returned instanceof View) {
                 status_header( $response->getStatus() );
@@ -739,7 +740,7 @@ class Page extends Registrable
      */
     protected function loadGlobalVars() {
         $GLOBALS['_tr_page'] = $this;
-        $class = tr_app_class('Models\\' . Str::camelize($this->resource));
+        $class = \TypeRocket\Utility\Helper::appNamespace('Models\\' . Str::camelize($this->resource));
         if( class_exists( $class ) ) {
             $GLOBALS['_tr_resource'] = new $class;
         }

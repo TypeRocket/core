@@ -3,6 +3,7 @@ namespace TypeRocket\tests\Utility;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Http\Request;
+use TypeRocket\Utility\PersistentCache;
 
 class CacheTest  extends TestCase
 {
@@ -12,7 +13,7 @@ class CacheTest  extends TestCase
     public function testPutCache()
     {
         $value = self::$storedValue = time();
-        $file = tr_cache()->put('kevin', $value, 10);
+        $file = PersistentCache::new()->put('kevin', $value, 10);
         $content = $file->readFirstCharactersTo(null, 10);
         $cached = unserialize($content);
 
@@ -21,9 +22,9 @@ class CacheTest  extends TestCase
 
     public function testGetCache()
     {
-        $content = tr_cache()->get('kevin');
-        tr_cache()->remove('kevin');
-        $hello = tr_cache()->get('kevin', 'hello');
+        $content = PersistentCache::new()->get('kevin');
+        PersistentCache::new()->remove('kevin');
+        $hello = PersistentCache::new()->get('kevin', 'hello');
 
         $this->assertTrue( $content === self::$storedValue );
         $this->assertTrue( $hello === 'hello' );
@@ -31,30 +32,30 @@ class CacheTest  extends TestCase
 
     public function testOtherwiseCache()
     {
-        $data = tr_cache()->getOtherwisePut('kevin', function(Request $request) {
+        $data = PersistentCache::new()->getOtherwisePut('kevin', function(Request $request) {
             return $request;
         }, 10);
 
         $this->assertInstanceOf(Request::class, $data);
-        $this->assertInstanceOf(Request::class, tr_cache()->get('kevin') );
+        $this->assertInstanceOf(Request::class, PersistentCache::new()->get('kevin') );
     }
 
     public function testPutCacheLong()
     {
-        tr_cache()->put('longterm', 'something', 60);
+        PersistentCache::new()->put('longterm', 'something', 60);
         sleep(2);
-        $sec = tr_cache()->getSecondsRemaining('longterm');
+        $sec = PersistentCache::new()->getSecondsRemaining('longterm');
 
         $this->assertTrue( $sec === 57 || $sec === 58 );
-        $this->assertTrue( !tr_cache()->hasExpired('longterm') );
+        $this->assertTrue( !PersistentCache::new()->hasExpired('longterm') );
     }
 
     public function testGetCacheNamedFolder()
     {
-        tr_cache('test')->put('kevin', 12345, 10);
-        $content = tr_cache('test')->get('kevin');
-        tr_cache('test')->remove('kevin');
-        $hello = tr_cache('test')->get('kevin', 'hello');
+        PersistentCache::new('test')->put('kevin', 12345, 10);
+        $content = PersistentCache::new('test')->get('kevin');
+        PersistentCache::new('test')->remove('kevin');
+        $hello = PersistentCache::new('test')->get('kevin', 'hello');
 
         $this->assertTrue( $content === 12345 );
         $this->assertTrue( $hello === 'hello' );
