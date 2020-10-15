@@ -14,7 +14,7 @@ class UsersResponder extends Responder {
      */
     public function respond( $args ) {
         $controller = \TypeRocket\Utility\Helper::appNamespace("Controllers\\UserController");
-        $controller  = apply_filters('tr_users_responder_controller', $controller);
+        $controller  = apply_filters('typerocket_users_responder_controller', $controller);
         $response = \TypeRocket\Http\Response::getFromContainer()->blockFlash();
 
         $this->handler

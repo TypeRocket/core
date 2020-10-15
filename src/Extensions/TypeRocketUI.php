@@ -17,6 +17,7 @@ class TypeRocketUI
 {
     protected $menu = false;
     protected $postTypeTaxonomies = [];
+    public CONST OPTION = 'typerocket_registered';
 
     public function __construct()
     {
@@ -29,7 +30,7 @@ class TypeRocketUI
      */
     public function setup()
     {
-        add_filter( 'tr_model', [$this, 'fillable'], 9999999999 );
+        add_filter('typerocket_model', [$this, 'fillable'], 9999999999 );
 
         $page = \TypeRocket\Register\Page::add('typerocket_ui@'.self::class, 'register', 'Register')
             ->setMenuTitle('TypeRocket UI')
@@ -55,7 +56,7 @@ class TypeRocketUI
      */
     public function loadRegistered()
     {
-        if($regs = get_option('tr_registered')) {
+        if($regs = get_option(static::OPTION)) {
             $regs = json_decode($regs, true);
 
             if(isset($regs['post_types']) && is_array($regs['post_types'])) {
@@ -142,7 +143,7 @@ class TypeRocketUI
                     $t->customCapabilities();
                 }
 
-                do_action('tr_registered_ui_taxonomy', $t, $t->getId() );
+                do_action('typerocket_registered_ui_taxonomy', $t, $t->getId() );
             }
         }
     }
@@ -195,7 +196,7 @@ class TypeRocketUI
                     }
                 }
 
-                do_action('tr_registered_ui_meta_box', $mb, $mb->getId() );
+                do_action('typerocket_registered_ui_meta_box', $mb, $mb->getId() );
             }
         }
     }
@@ -358,7 +359,7 @@ class TypeRocketUI
                     $pt->customCapabilities();
                 }
 
-                do_action('tr_registered_ui_post_type', $pt, $pt->getId() );
+                do_action('typerocket_registered_ui_post_type', $pt, $pt->getId() );
             }
         }
     }
@@ -371,7 +372,7 @@ class TypeRocketUI
     public function fillable( $model )
     {
         if ($model instanceof WPOption) {
-            $model->mightNeedFillable('tr_registered');
+            $model->mightNeedFillable(static::OPTION);
         }
     }
 
@@ -388,31 +389,31 @@ class TypeRocketUI
     {
         $fields = $request->getFields();
 
-        if($fields['tr_registered'] ?? null) {
-            update_option('tr_registered', json_encode($fields['tr_registered']), 'yes');
+        if($fields[static::OPTION] ?? null) {
+            update_option(static::OPTION, json_encode($fields[static::OPTION]), 'yes');
             System::updateSiteState('flush_rewrite_rules');
             $response->flashNext('Saved settings. Post types and taxonomies registered and permalinks flushed.');
         }
 
         $validator = Validator::new([
-            'tr_registered.post_types.?.singular' => 'required',
-            'tr_registered.post_types.?.post_type_id' => 'max:20|required|key',
-            'tr_registered.taxonomies.?.singular' => 'required',
-            'tr_registered.taxonomies.?.taxonomy_id' => 'max:32|required|key',
-            'tr_registered.meta_boxes.?.meta_box_title' => 'required',
-            'tr_registered.meta_boxes.?.meta_box_id' => 'required|key',
+            static::OPTION . '.post_types.?.singular' => 'required',
+            static::OPTION . '.post_types.?.post_type_id' => 'max:20|required|key',
+            static::OPTION . '.taxonomies.?.singular' => 'required',
+            static::OPTION . '.taxonomies.?.taxonomy_id' => 'max:32|required|key',
+            static::OPTION . '.meta_boxes.?.meta_box_title' => 'required',
+            static::OPTION . '.meta_boxes.?.meta_box_id' => 'required|key',
         ], $fields)->setErrorMessages([
-            'tr_registered.post_types.\d+.singular:required' => _x('Post type singular name {error}', 'required'),
-            'tr_registered.post_types.\d+.post_type_id:max' => _x('Post type ID {error}', 'max'),
-            'tr_registered.post_types.\d+.post_type_id:required' => _x('Post type ID {error}', 'required'),
-            'tr_registered.post_types.\d+.post_type_id:key' => _x('Post type ID {error}', 'key'),
-            'tr_registered.taxonomies.\d+.singular:required' => __('Taxonomy singular name {error}'),
-            'tr_registered.taxonomies.\d+.taxonomy_id:max' => _x('Taxonomy ID {error}', 'max'),
-            'tr_registered.taxonomies.\d+.taxonomy_id:required' => _x('Taxonomy ID {error}', 'required'),
-            'tr_registered.taxonomies.\d+.taxonomy_id:key' => _x('Taxonomy ID {error}', 'key'),
-            'tr_registered.meta_boxes.\d+.meta_box_title:required' => _x('Meta box title {error}', 'required'),
-            'tr_registered.meta_boxes.\d+.meta_box_id:required' => _x('Meta box ID {error}', 'required'),
-            'tr_registered.meta_boxes.\d+.meta_box_id:key' => _x('Meta box ID {error}', 'key'),
+            static::OPTION . '.post_types.\d+.singular:required' => _x('Post type singular name {error}', 'required'),
+            static::OPTION . '.post_types.\d+.post_type_id:max' => _x('Post type ID {error}', 'max'),
+            static::OPTION . '.post_types.\d+.post_type_id:required' => _x('Post type ID {error}', 'required'),
+            static::OPTION . '.post_types.\d+.post_type_id:key' => _x('Post type ID {error}', 'key'),
+            static::OPTION . '.taxonomies.\d+.singular:required' => __('Taxonomy singular name {error}'),
+            static::OPTION . '.taxonomies.\d+.taxonomy_id:max' => _x('Taxonomy ID {error}', 'max'),
+            static::OPTION . '.taxonomies.\d+.taxonomy_id:required' => _x('Taxonomy ID {error}', 'required'),
+            static::OPTION . '.taxonomies.\d+.taxonomy_id:key' => _x('Taxonomy ID {error}', 'key'),
+            static::OPTION . '.meta_boxes.\d+.meta_box_title:required' => _x('Meta box title {error}', 'required'),
+            static::OPTION . '.meta_boxes.\d+.meta_box_id:required' => _x('Meta box ID {error}', 'required'),
+            static::OPTION . '.meta_boxes.\d+.meta_box_id:key' => _x('Meta box ID {error}', 'key'),
         ], true)->validate(true);
 
         if($validator->failed()) {
@@ -440,9 +441,9 @@ class TypeRocketUI
     public function show()
     {
         $icons = Dashicons::new()->iconNames();
-        $form = Helper::form()->useErrors()->useOld()->setDebugStatus(false)->setGroup('tr_registered');
+        $form = Helper::form()->useErrors()->useOld()->setDebugStatus(false)->setGroup(static::OPTION);
 
-        $values = json_decode(get_option('tr_registered'), true);
+        $values = json_decode(get_option(static::OPTION), true);
         $list = [
             'Force None *' => '0',
             'Title' => 'title',

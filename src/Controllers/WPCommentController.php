@@ -38,7 +38,7 @@ class WPCommentController extends Controller
 
             $model = $model->findById( $id );
 
-            do_action('tr_controller_update', $this, $model, $user);
+            do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
                 throw new ModelException('Policy does not give the current user access to write.');

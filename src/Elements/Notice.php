@@ -97,7 +97,7 @@ class Notice
     public static function flash($data = null, $dismissible = false)
     {
         if( !empty($_COOKIE['tr_admin_flash']) || !empty($data) ) {
-            $flash = (new \TypeRocket\Http\Cookie)->getTransient('tr_admin_flash');
+            $flash = (new \TypeRocket\Http\Cookie)->getTransient('typerocket_admin_flash');
 
             return static::html([
                 'message' => $data['message'] ?? $flash['message'] ?? null,

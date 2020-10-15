@@ -42,7 +42,7 @@ class AuthorizerService extends Service
             $pass = $policy->{$action}($user, $model);
         }
 
-        return apply_filters('tr_auth_policy_check', $pass, $policy, 'authRegistered');
+        return apply_filters('typerocket_auth_policy_check', $pass, $policy, 'authRegistered');
     }
 
     /**
@@ -83,7 +83,7 @@ class AuthorizerService extends Service
             $pass = $policy->{$action}($user, $option);
         }
 
-        return apply_filters('tr_auth_policy_check', $pass, $policy, 'auth');
+        return apply_filters('typerocket_auth_policy_check', $pass, $policy, 'auth');
     }
 
 }

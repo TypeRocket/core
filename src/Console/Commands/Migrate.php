@@ -74,7 +74,7 @@ class Migrate extends Command
         $migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
         $migrations = array_flip($migrations);
 
-        $migrations_run = maybe_unserialize(get_option('tr_migrations')) ?: [];
+        $migrations_run = maybe_unserialize(get_option('typerocket_migrations')) ?: [];
 
         if($type == 'up') {
             $to_run = array_diff_key($migrations, $migrations_run);
@@ -150,7 +150,7 @@ class Migrate extends Command
 
         }
 
-        update_option('tr_migrations', $migrations_run);
+        update_option('typerocket_migrations', $migrations_run);
 
         if($reload) {
             $command = $this->getApplication()->find('migrate');

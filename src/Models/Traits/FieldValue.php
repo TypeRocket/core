@@ -45,7 +45,7 @@ trait FieldValue
     public function oldStore( $load_only_old = false)
     {
         if( !empty($_COOKIE['tr_old_fields']) ) {
-            $this->old = (new Cookie)->getTransient('tr_old_fields');
+            $this->old = (new Cookie)->getTransient('typerocket_old_fields');
         }
 
         $this->onlyOld = $load_only_old;

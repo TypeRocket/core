@@ -23,7 +23,7 @@ class PageBuilder
             return;
         }
 
-        $this->postTypes = apply_filters('tr_ext_builder_post_types', $post_types);
+        $this->postTypes = apply_filters('typerocket_ext_builder_post_types', $post_types);
         $this->fieldName = $field_name;
         $this->options = [];
 
@@ -31,7 +31,7 @@ class PageBuilder
         add_action('edit_form_after_title', [$this, 'edit_form_after_title'], 9999999999999);
         add_action('edit_form_after_editor', [$this, 'edit_form_after_editor'], 0);
 
-        do_action('tr_builder_plugin_init', $this);
+        do_action('typerocket_builder_plugin_init', $this);
 
         add_action( 'enqueue_block_editor_assets', function() {
             global $post;
@@ -161,9 +161,9 @@ class PageBuilder
                 ->setLabel(__("Builder", 'typerocket-ext-pb'));
 
             echo '<div id="tr_page_builder" ' . $hide_builder . ' class="typerocket-container typerocket-dev">';
-            do_action('tr_before_builder_field', $this, $form, $use_builder);
-            echo apply_filters('tr_page_builder_field', $field);
-            do_action('tr_after_builder_field', $this, $form, $use_builder);
+            do_action('typerocket_before_builder_field', $this, $form, $use_builder);
+            echo apply_filters('typerocket_page_builder_field', $field);
+            do_action('typerocket_after_builder_field', $this, $form, $use_builder);
             echo '</div><div id="builderStandardEditor" ' . $hide_editor . '>';
 
         endif;

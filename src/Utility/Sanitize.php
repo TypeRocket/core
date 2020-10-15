@@ -93,7 +93,7 @@ class Sanitize
             $output = trim($input);
         } else {
             global $allowedtags;
-            $output =  wp_kses( trim($input), apply_filters('tr_sanitize_editor_tags', $allowed_tags ?? $allowedtags) );
+            $output =  wp_kses( trim($input), apply_filters('typerocket_sanitize_editor_tags', $allowed_tags ?? $allowedtags) );
         }
 
         if($auto_p) {
@@ -125,7 +125,7 @@ class Sanitize
      * @return string
      */
     public static function html($input, $allowed_tags = null, $namespace = null, $auto_p = false) {
-        $tags = apply_filters('tr_sanitize_html_tags_' . ($namespace ?? 'default'), $allowed_tags ?? [
+        $tags = apply_filters('typerocket_sanitize_html_tags_' . ($namespace ?? 'default'), $allowed_tags ?? [
             'em' => [],
             'strong' => [],
             'small' => [],

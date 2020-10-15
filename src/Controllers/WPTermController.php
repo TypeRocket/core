@@ -37,7 +37,7 @@ class WPTermController extends Controller
 
             $model->wpTerm($id);
 
-            do_action('tr_controller_update', $this, $model, $user);
+            do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
                 \TypeRocket\Exceptions\HttpError::abort(401);

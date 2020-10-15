@@ -338,7 +338,7 @@ class Matrix extends Field implements ScriptField
             'remove' => ['class' => "tr-repeater-remove tr-control-icon tr-control-icon-remove", 'title' => __('Remove', 'typerocket-domain'), 'tabindex' => '0'],
         ];
 
-        $group_control_list = apply_filters('tr_component_item_controls', $group_control_list);
+        $group_control_list = apply_filters('typerocket_component_item_controls', $group_control_list);
 
         if(!$component->feature('cloneable')) {
             $group_control_list['clone'] = null;
@@ -367,7 +367,7 @@ class Matrix extends Field implements ScriptField
                 $component->fields();
                 ?>
             </div>
-            <?php do_action('tr_component_include', 'matrix', $component, $group); ?>
+            <?php do_action('typerocket_component_include', 'matrix', $component, $group); ?>
         </li>
         <?php
     }
@@ -446,7 +446,7 @@ class Matrix extends Field implements ScriptField
         $group = $name ?? $group; // This is to help with migration from v4/v1 to v5
         $len = count($builder_data);
 
-        do_action('tr_components_loop', $builder_data, $other, $len);
+        do_action('typerocket_components_loop', $builder_data, $other, $len);
         foreach ($builder_data as $hash => $data) {
             $first_item = $last_item = false;
 

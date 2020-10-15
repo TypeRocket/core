@@ -19,7 +19,7 @@ class Rooter
      */
     public function boot()
     {
-        do_action('tr_rooter');
+        do_action('typerocket_rooter');
 
         if(!\TypeRocket\Core\Config::get('app.root.themes.override', true)) {
             return;
@@ -33,7 +33,7 @@ class Rooter
             WP_CONTENT_DIR . '/themes',
         ];
 
-        apply_filters('tr_rooter_wp_themes', $themes);
+        apply_filters('typerocket_rooter_wp_themes', $themes);
 
         foreach ($themes as $loc) {
             register_theme_directory( $loc );

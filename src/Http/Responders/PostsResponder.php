@@ -40,7 +40,7 @@ class PostsResponder extends Responder
             $controller = $registered['controller'] ?? \TypeRocket\Utility\Helper::appNamespace("Controllers\\{$prefix}Controller");
         }
 
-        $controller = apply_filters('tr_posts_responder_controller', $controller);
+        $controller = apply_filters('typerocket_posts_responder_controller', $controller);
 
         $resource = $registered['singular'] ?? 'post';
         $response = \TypeRocket\Http\Response::getFromContainer()->blockFlash();

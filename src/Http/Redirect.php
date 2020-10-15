@@ -19,7 +19,7 @@ class Redirect
     public function withData($data) {
 
         if( !empty($data) ) {
-            (new Cookie)->setTransient('tr_redirect_data', $data);
+            (new Cookie)->setTransient('typerocket_redirect_data', $data);
         }
 
         return $this;
@@ -51,7 +51,7 @@ class Redirect
     public function withMessage($message, $type = 'success')
     {
         if(!empty($message) && is_string($message)) {
-            (new Cookie)->setTransient('tr_redirect_message', ['message' => $message, 'type' => $type]);
+            (new Cookie)->setTransient('typerocket_redirect_message', ['message' => $message, 'type' => $type]);
         }
 
         return $this;
@@ -75,7 +75,7 @@ class Redirect
 
         if( !empty($fields) ) {
             $send = array_diff_key($fields, array_flip($notFields));
-            (new Cookie)->setTransient('tr_old_fields', $send);
+            (new Cookie)->setTransient('typerocket_old_fields', $send);
         }
 
         return $this;

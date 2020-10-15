@@ -29,7 +29,7 @@ class Hook
             $verified = true;
         }
 
-        return apply_filters('tr_hook_verified', $verified, $context, $id);
+        return apply_filters('typerocket_hook_verified', $verified, $context, $id);
     }
 
     /**

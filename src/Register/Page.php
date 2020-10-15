@@ -477,7 +477,7 @@ class Page extends Registrable
                 $all_pages = $this->pages;
             }
 
-            do_action('tr_page_start_view_' . $this->id, $this);
+            do_action('typerocket_page_start_view_' . $this->id, $this);
             echo '<div id="typerocket-admin-page" class="wrap typerocket-container">';
 
             foreach ($all_pages as $page) {
@@ -496,7 +496,7 @@ class Page extends Registrable
                 $action = ' <a href="'.$url.'" class="page-title-action">'.$add_text.'</a>';
             }
 
-            $action = apply_filters('tr_page_title_actions', $action, $this);
+            $action = apply_filters('typerocket_page_title_actions', $action, $this);
 
             if( $this->showTitle ) {
                 echo '<h1 class="tr-admin-page-title">'. $this->title . $action . '</h1>';

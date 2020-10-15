@@ -114,7 +114,7 @@ class System
             return;
         }
 
-        do_action( 'tr_routes' );
+        do_action('typerocket_routes' );
         $this->addRewrites();
         $routes = Config::get('paths.routes') . '/public.php';
         if( file_exists($routes) ) {
@@ -168,13 +168,13 @@ class System
         /**
          * @depreciated action tr_user_profile
          */
-        if( has_action('tr_user_profile') ) {
-            do_action( 'tr_user_profile', $user );
+        if( has_action('typerocket_user_profile') ) {
+            do_action('typerocket_user_profile', $user );
         }
 
-        if( has_action('tr_user_fields') ) {
+        if( has_action('typerocket_user_fields') ) {
             $form = Helper::form();
-            do_action( 'tr_user_fields', $form, $user );
+            do_action('typerocket_user_fields', $form, $user );
         }
         echo '</div>';
     }
@@ -189,12 +189,12 @@ class System
      * @param $id
      */
     function menuFields($item_id, $item, $depth, $args, $id) {
-        if(has_action('tr_menu_fields')) {
+        if(has_action('typerocket_menu_fields')) {
             echo BaseForm::nonceInput('hook');
             $id = 'tr-fields-' . wp_generate_uuid4();
             echo '<div class="tr-menu-container typerocket-wp-style-subtle" id="'.$id.'">';
             $form = Helper::form($item)->useMenu($item_id);
-            do_action( 'tr_menu_fields', $form, $item_id, $item, $depth, $args, $id);
+            do_action('typerocket_menu_fields', $form, $item_id, $item, $depth, $args, $id);
             echo '<script>if(window.tr_apply_repeater_callbacks !== undefined) { window.tr_apply_repeater_callbacks(jQuery("#'.$id.'")) }</script>';
             echo '</div>';
         }
@@ -259,7 +259,7 @@ class System
     public function loadExtensions()
     {
         $conf = Config::get('app');
-        $ext = apply_filters('tr_extensions', $conf['extensions'] );
+        $ext = apply_filters('typerocket_extensions', $conf['extensions'] );
 
         foreach ($ext as $extClass) {
             if(class_exists($extClass)) {
@@ -290,7 +290,7 @@ class System
      */
     public function setFlash() {
         if( !empty($_COOKIE['tr_admin_flash']) ) {
-            $data = (new Cookie)->getTransient('tr_admin_flash');
+            $data = (new Cookie)->getTransient('typerocket_admin_flash');
             Notice::dismissible($data);
         }
     }
@@ -362,7 +362,7 @@ class System
 
         wp_enqueue_script( 'typerocket-scripts', $url . $manifest['/js/core.js'], [ 'jquery', 'wp-i18n' ], false, true );
         wp_set_script_translations( 'typerocket-scripts', 'typerocket-domain' );
-        do_action('tr_bottom_assets', $url, $manifest);
+        do_action('typerocket_bottom_assets', $url, $manifest);
     }
 
     /**
@@ -377,7 +377,7 @@ class System
             $scheme =  'https';
         }
         ?><script>window.trHelpers = {site_uri: "<?php echo rtrim(esc_url(get_site_url( null, '', $scheme )), '/');?>", nonce: "<?php echo Response::new()->createNonce(); ?>"}</script><?php
-        do_action('tr_top_assets', $url, $manifest);
+        do_action('typerocket_top_assets', $url, $manifest);
     }
 
     /**

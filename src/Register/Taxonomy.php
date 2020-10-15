@@ -362,7 +362,7 @@ class Taxonomy extends Registrable
             }
         }
 
-        do_action( 'tr_register_taxonomy_' . $this->id, $this );
+        do_action('typerocket_register_taxonomy_' . $this->id, $this );
         register_taxonomy( $this->id, $this->postTypes, $this->args );
         Registry::addTaxonomyResource($this->id, $this->resource);
         $this->attachHooks();

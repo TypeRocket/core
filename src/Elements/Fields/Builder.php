@@ -192,7 +192,7 @@ class Builder extends Matrix
                 $component->fields();
                 ?>
             </div>
-            <?php do_action('tr_component_include', 'builder', $component, $group); ?>
+            <?php do_action('typerocket_component_include', 'builder', $component, $group); ?>
         </div>
         <?php
     }

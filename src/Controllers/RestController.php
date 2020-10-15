@@ -50,7 +50,7 @@ class RestController extends Controller
             ->setController([$handler, $action])
             ->setMiddlewareGroups([$resource, $middleware]);
 
-        do_action('tr_rest', $responder, $id, $action, $resource);
+        do_action('typerocket_rest', $responder, $id, $action, $resource);
 
         $responder->respond(['@first' => (int) $id]);
         $rest = $request->isMarkedAjax();

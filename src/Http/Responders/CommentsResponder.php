@@ -16,7 +16,7 @@ class CommentsResponder extends Responder {
      */
     public function respond( $args ) {
         $controller = \TypeRocket\Utility\Helper::appNamespace("Controllers\\CommentController");
-        $controller  = apply_filters('tr_comments_responder_controller', $controller);
+        $controller  = apply_filters('typerocket_comments_responder_controller', $controller);
         $response = \TypeRocket\Http\Response::getFromContainer()->blockFlash();
 
         $this->handler

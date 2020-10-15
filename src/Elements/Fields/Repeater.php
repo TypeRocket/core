@@ -95,7 +95,7 @@ class Repeater extends Field implements ScriptField
             'remove' => ['class' => "tr-repeater-remove tr-control-icon tr-control-icon-remove", 'title' => __('Remove', 'typerocket-domain'), 'tabindex' => '0'],
         ];
 
-        $group_control_list = apply_filters('tr_repeater_item_controls', $group_control_list, $this);
+        $group_control_list = apply_filters('typerocket_repeater_item_controls', $group_control_list, $this);
 
         foreach ($group_control_list as $control_name => $options)
         {
@@ -126,7 +126,7 @@ class Repeater extends Field implements ScriptField
             'clear' => ['class' => 'tr-repeater-action-clear button', 'value' => $controls['clear'], 'title' => $controls['clear'] ],
         ];
 
-        apply_filters('tr_repeater_controls', $control_list, $this);
+        apply_filters('typerocket_repeater_controls', $control_list, $this);
 
         foreach ($this->hide as $control_name => $hide) {
             if($hide) { unset($control_list[$control_name]); }

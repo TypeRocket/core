@@ -6,8 +6,8 @@ class Pro
     public function __construct()
     {
         add_action( 'wp_update_nav_menu_item', 'TypeRocket\Http\Responders\Hook::menus', 10, 3 );
-        add_filter( 'tr_repeater_item_controls', [$this, 'addCloneToRepeatable']);
-        add_filter( 'tr_component_item_controls', [$this, 'addCloneToRepeatable']);
+        add_filter('typerocket_repeater_item_controls', [$this, 'addCloneToRepeatable']);
+        add_filter('typerocket_component_item_controls', [$this, 'addCloneToRepeatable']);
         add_action('', [$this, 'bottomJs'], 10, 2);
     }
 

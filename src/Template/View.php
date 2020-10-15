@@ -135,11 +135,11 @@ class View
             throw new \Exception('TypeRocket SEO Extension required for the `setMeta()` view method.');
         }
 
-        add_filter('tr_seo_meta', function($old_meta) use ($meta) {
+        add_filter('typerocket_seo_meta', function($old_meta) use ($meta) {
             return $meta;
         });
 
-        add_filter('tr_seo_url', function($old_url) use ($url) {
+        add_filter('typerocket_seo_url', function($old_url) use ($url) {
             return $url ?? (new Request)->getUriFull();
         });
 

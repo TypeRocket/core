@@ -952,7 +952,7 @@ class PostType extends Registrable
 
         $supports = array_filter(array_unique(array_merge($this->args['supports'] ?: [], $this->metaBoxes)));
         $this->args['supports'] = $this->featureless && empty($supports) ? false : $supports;
-        do_action('tr_post_type_register_' . $this->id, $this);
+        do_action('typerocket_post_type_register_' . $this->id, $this);
         register_post_type( $this->id, $this->args );
         Registry::addPostTypeResource($this->id, $this->resource);
         $this->attachHooks();

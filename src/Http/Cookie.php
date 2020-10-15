@@ -132,7 +132,7 @@ class Cookie
      */
     public function oldFields($delete = true) {
         if( !empty($_COOKIE['tr_old_fields']) ) {
-            return $this->getTransient('tr_old_fields', $delete);
+            return $this->getTransient('typerocket_old_fields', $delete);
         }
 
         return null;
@@ -147,7 +147,7 @@ class Cookie
      */
     function oldField($name, $default = '', $delete = false)
     {
-        return Data::walk($name, $this->getTransient('tr_old_fields', $delete), $default);
+        return Data::walk($name, $this->getTransient('typerocket_old_fields', $delete), $default);
     }
 
     /**
@@ -155,9 +155,9 @@ class Cookie
      */
     function oldFieldsRemove()
     {
-        $this->getTransient('tr_old_fields', true);
+        $this->getTransient('typerocket_old_fields', true);
 
-        return ! (bool) $this->getTransient('tr_old_fields');
+        return ! (bool) $this->getTransient('typerocket_old_fields');
     }
 
     /**
@@ -168,7 +168,7 @@ class Cookie
      */
     public function redirectMessage($default = null, $delete = true)
     {
-        $data = $this->getTransient('tr_redirect_message', $delete);
+        $data = $this->getTransient('typerocket_redirect_message', $delete);
         return ! is_null($data) ? $data : $default;
     }
 
@@ -191,7 +191,7 @@ class Cookie
      */
     function redirectData($default = null, $delete = true)
     {
-        $data = $this->getTransient('tr_redirect_data', $delete);
+        $data = $this->getTransient('typerocket_redirect_data', $delete);
         return ! is_null($data) ? $data : $default;
     }
 

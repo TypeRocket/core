@@ -27,7 +27,7 @@ abstract class HttpKernel
         $this->response = $response;
         $this->request = $request;
         $this->handler = $handler;
-        do_action('tr_kernel', $this);
+        do_action('typerocket_kernel', $this);
     }
 
     /**
@@ -96,7 +96,7 @@ abstract class HttpKernel
         $middleware = call_user_func_array('array_merge', $stacks);
         $middleware = array_reverse( array_unique($middleware) );
 
-        return apply_filters('tr_middleware', $middleware, $globalGroup);
+        return apply_filters('typerocket_middleware', $middleware, $globalGroup);
     }
 
 }

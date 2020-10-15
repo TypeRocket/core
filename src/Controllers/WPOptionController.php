@@ -29,7 +29,7 @@ class WPOptionController extends Controller
         /** @var WPOption $model */
         $model = new $this->modelClass;
 
-        do_action('tr_controller_update', $this, $model, $user);
+        do_action('typerocket_controller_update', $this, $model, $user);
 
         try {
             if(!$model->can('update', $user)) {

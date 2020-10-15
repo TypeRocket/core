@@ -65,7 +65,7 @@ abstract class Field
             $this->enqueueScripts();
         }
 
-        do_action('tr_field', $this);
+        do_action('typerocket_field', $this);
     }
 
     /**
@@ -243,14 +243,14 @@ abstract class Field
         $help   = $help ? "<div {$idHelp} class=\"tr-form-field-help\"><p>{$help}</p></div>" : '';
 
         if ($this->rawHtml) {
-            $html = apply_filters( 'tr_field_html_raw', $fieldString, $this, $contextId );
+            $html = apply_filters('typerocket_field_html_raw', $fieldString, $this, $contextId );
         } else {
             $type = strtolower( str_ireplace( '\\', '-', get_class( $this ) ) );
             $condition = $this->getConditionalAttribute();
             $html = "<div {$condition} data-tr-context=\"{$contextId}\" class=\"tr-control-section tr-divide {$section_class} {$type}\" {$id}>{$label}<div class=\"control\">{$fieldString}{$help}</div></div>";
         }
 
-        return apply_filters( 'tr_field_html', $html, $this );
+        return apply_filters('typerocket_field_html', $html, $this );
     }
 
     /**

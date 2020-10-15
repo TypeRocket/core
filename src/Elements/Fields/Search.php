@@ -337,7 +337,7 @@ class Search extends Field implements ScriptField
             $title = "<b class='tr-search-model-error'>{$title}</b>";
         }
 
-        return apply_filters('tr_search_field_result', $title, $value, $options, $error);
+        return apply_filters('typerocket_search_field_result', $title, $value, $options, $error);
     }
 
     /**
@@ -380,6 +380,6 @@ class Search extends Field implements ScriptField
             $error = true;
         }
 
-        return apply_filters('tr_search_field_result_url', $url, $value, $options, $error);
+        return apply_filters('typerocket_search_field_result_url', $url, $value, $options, $error);
     }
 }

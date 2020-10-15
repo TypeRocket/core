@@ -103,7 +103,7 @@ class Controller
      */
     public function getFields($field = null)
     {
-        return apply_filters('tr_controller_fields', Request::new()->getFields($field), $this);
+        return apply_filters('typerocket_controller_fields', Request::new()->getFields($field), $this);
     }
 
 }

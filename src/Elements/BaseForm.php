@@ -106,7 +106,7 @@ class BaseForm
             $this->resource = $this->model->getRouteResource();
         }
 
-        do_action('tr_from', $this);
+        do_action('typerocket_from', $this);
     }
 
     /**

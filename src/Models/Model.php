@@ -88,7 +88,7 @@ class Model implements Formable, JsonSerializable
         $this->query->table($this->getTable());
         $this->query->setIdColumn($this->idColumn);
 
-        do_action( 'tr_model', $this );
+        do_action('typerocket_model', $this );
 
         $this->init();
     }
@@ -718,7 +718,7 @@ class Model implements Formable, JsonSerializable
             $fields = $this->formatFields($fields);
         }
 
-        return apply_filters( 'tr_model_provision_fields', $fields, $this );
+        return apply_filters('typerocket_model_provision_fields', $fields, $this );
     }
 
     /**
@@ -1100,7 +1100,7 @@ class Model implements Formable, JsonSerializable
     {
         $fields = $this->provisionFields( $fields );
 
-        do_action('tr_model_create', $this, $fields);
+        do_action('typerocket_model_create', $this, $fields);
 
         return $this->query->create($fields);
     }
@@ -1116,7 +1116,7 @@ class Model implements Formable, JsonSerializable
     {
         $fields = $this->provisionFields( $fields );
 
-        do_action('tr_model_update', $this, $fields);
+        do_action('typerocket_model_update', $this, $fields);
 
         return $this->query->where($this->idColumn, $this->getID())->update($fields);
     }
@@ -1324,7 +1324,7 @@ class Model implements Formable, JsonSerializable
             $ids = $this->getID();
         }
 
-        do_action('tr_model_delete', $this, $ids);
+        do_action('typerocket_model_delete', $this, $ids);
 
         return $this->query->delete($ids);
     }
@@ -1518,7 +1518,7 @@ class Model implements Formable, JsonSerializable
         foreach ($this->properties as $name => $property ) {
             $cast[$name] = $this->getCast($name);
         }
-        $this->properties = apply_filters( 'tr_model_cast_fields', $cast, $this );
+        $this->properties = apply_filters('typerocket_model_cast_fields', $cast, $this );
 
         $this->afterCastProperties();
 

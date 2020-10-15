@@ -31,7 +31,7 @@ class TaxonomiesResponder extends Responder
             $controller = $registered['controller'] ?? \TypeRocket\Utility\Helper::appNamespace("Controllers\\{$prefix}Controller");
         }
 
-        $controller  = apply_filters('tr_taxonomies_responder_controller', $controller);
+        $controller  = apply_filters('typerocket_taxonomies_responder_controller', $controller);
 
         $resource = $registered['singular'] ?? 'category';
         $response = \TypeRocket\Http\Response::getFromContainer()->blockFlash();

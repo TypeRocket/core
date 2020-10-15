@@ -56,7 +56,7 @@ class Validator
         $this->modelClass = $modelClass;
         $this->fields = $fields ?? (new Request)->getFields();
         $this->rules = $rules;
-        $this->validatorMap = apply_filters('tr_validator_map', $this->validatorMap);
+        $this->validatorMap = apply_filters('typerocket_validator_map', $this->validatorMap);
 
         if($run) {
             $this->mapFieldsToValidation();

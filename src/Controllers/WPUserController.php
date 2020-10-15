@@ -38,7 +38,7 @@ class WPUserController extends Controller
 
             $model->wpUser($id);
 
-            do_action('tr_controller_update', $this, $model, $authUser);
+            do_action('typerocket_controller_update', $this, $model, $authUser);
 
             if(!$model->can('update', $authUser)) {
                 throw new ModelException('Policy does not give the current user access to write.');
