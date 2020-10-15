@@ -27,6 +27,7 @@ class AuthorizerService extends Service
     public function authRegistered(AuthUser $user, Model $model, $action)
     {
         $policy = null;
+        $pass = false;
         $modelClass = '\\' . get_class($model);
 
         if(!array_key_exists($modelClass, $this->policies)) {
@@ -38,10 +39,10 @@ class AuthorizerService extends Service
         }
 
         if($policy && method_exists($policy, $action)) {
-            return $policy->{$action}($user, $model);
+            $pass = $policy->{$action}($user, $model);
         }
 
-        throw new \Exception("Policy is not registered or it's action does not exist.");
+        return apply_filters('tr_auth_policy_check', $pass, $policy, 'authRegistered');
     }
 
     /**
@@ -57,6 +58,8 @@ class AuthorizerService extends Service
      */
     public function auth(AuthUser $user, $option, $action, $policy = null)
     {
+        $pass = false;
+
         if(is_string($option)) {
             $option = (new Resolver)->resolve($option);
         }
@@ -77,10 +80,10 @@ class AuthorizerService extends Service
         }
 
         if($policy && method_exists($policy, $action)) {
-            return $policy->{$action}($user, $option);
+            $pass = $policy->{$action}($user, $option);
         }
 
-        throw new \Exception("Policy or it's action does not exist.");
+        return apply_filters('tr_auth_policy_check', $pass, $policy, 'auth');
     }
 
 }
