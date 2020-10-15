@@ -29,7 +29,7 @@ class SQL extends Command
     protected function exec()
     {
         $name = $this->getArgument('name');
-        $file_sql = TR_PATH . '/sql/' . $name . '.sql';
+        $file_sql = TYPEROCKET_PATH . '/sql/' . $name . '.sql';
         $this->runQueryFile($file_sql);
     }
 

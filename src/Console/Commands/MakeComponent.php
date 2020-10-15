@@ -3,6 +3,7 @@ namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Str;
 
@@ -44,8 +45,8 @@ class MakeComponent extends Command
             $command = Str::camelize($key);
         }
 
-        list($namespace, $class) = Str::splitAt('\\', $command, true);
-        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Components', $namespace]));
+        [$namespace, $class] = Str::splitAt('\\', $command, true);
+        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Components', $namespace]));
 
         $tags = ['{{namespace}}', '{{component}}', '{{title}}'];
         $replacements = [ $namespace, $class, $title ];
@@ -69,7 +70,7 @@ class MakeComponent extends Command
         if( $command_file ) {
             $this->success('Component created: ' . $command );
 
-            $file = new File(TR_CORE_CONFIG_PATH . '/components.php');
+            $file = new File(TYPEROCKET_CORE_CONFIG_PATH . '/components.php');
 
             if($file->exists()) {
                 $eol = PHP_EOL;

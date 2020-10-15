@@ -3,6 +3,7 @@ namespace TypeRocket\Console\Commands;
 
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Str;
 
 class MakeMiddleware extends Command
@@ -38,9 +39,9 @@ class MakeMiddleware extends Command
      * @param string $middleware
      */
     private function makeFile( $middleware ) {
-        list($namespace, $class) = Str::splitAt('\\', $middleware, true);
+        [$namespace, $class] = Str::splitAt('\\', $middleware, true);
         $tags = ['{{namespace}}', '{{middleware}}'];
-        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Http\Middleware', $namespace]));
+        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Http\Middleware', $namespace]));
         $replacements = [ $namespace, $class ];
 
         $template = __DIR__ . '/../../../templates/Middleware.txt';

@@ -16,7 +16,7 @@ namespace TypeRocket\Core
         {
             // Initial singletons
             Container::singleton(Config::class, function() {
-                return new Config(TR_CORE_CONFIG_PATH);
+                return new Config(TYPEROCKET_CORE_CONFIG_PATH);
             }, Config::ALIAS);
 
             if(Config::env('TR_ROUTES', true) ) {

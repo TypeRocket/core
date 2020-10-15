@@ -8,13 +8,13 @@ Author URI: http://typerocket.com
 */
 namespace TypeRocket\Core;
 
-if(!defined('TR_ROOT_INSTALL'))
-    define('TR_ROOT_INSTALL', true);
+if(!defined('TYPEROCKET_ROOT_INSTALL'))
+    define('TYPEROCKET_ROOT_INSTALL', true);
 
-if( defined('TR_PATH') ) {
+if( defined('TYPEROCKET_PATH') ) {
 
-    if( file_exists(TR_ALT_PATH . '/rooter.php') ) {
-        include(TR_ALT_PATH . '/rooter.php');
+    if( file_exists(TYPEROCKET_ALT_PATH . '/rooter.php') ) {
+        include(TYPEROCKET_ALT_PATH . '/rooter.php');
     }
 
     (new System)->boot();

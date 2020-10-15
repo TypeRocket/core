@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
 
@@ -73,11 +74,11 @@ class MakeModel extends Command
      */
     private function makeFile( $model, $directive, $id ) {
 
-        list($namespace, $class) = Str::splitAt('\\', $model, true);
+        [$namespace, $class] = Str::splitAt('\\', $model, true);
 
         $tags = ['{{namespace}}', '{{model}}', '{{id}}', '{{app}}'];
-        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Models', $namespace]));
-        $replacements = [ $namespace, $class, str_replace('\\', '_', $id), TR_APP_NAMESPACE ];
+        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Models', $namespace]));
+        $replacements = [ $namespace, $class, str_replace('\\', '_', $id), Helper::appNamespace() ];
         $template =  __DIR__ . '/../../../templates/Models/' . $directive . '.txt';
 
         $app_path = \TypeRocket\Core\Config::get('paths.app');

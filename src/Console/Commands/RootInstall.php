@@ -35,17 +35,17 @@ class RootInstall extends Command
     protected function exec()
     {
         // Check for WordPress folder
-        if( ! file_exists( TR_PATH . '/wordpress' ) ) {
+        if( ! file_exists( TYPEROCKET_PATH . '/wordpress' ) ) {
             $this->error('WordPress folder missing or moved');
             die();
         }
 
         // Define file paths
-        $this->configSampleWP = TR_PATH . '/wordpress/wp-config-sample.php';
-        $this->configWP = TR_PATH . '/wp-config.php';
+        $this->configSampleWP = TYPEROCKET_PATH . '/wordpress/wp-config-sample.php';
+        $this->configWP = TYPEROCKET_PATH . '/wp-config.php';
 
-        if(!defined('TR_ROOT_INSTALL'))
-            define('TR_ROOT_INSTALL', true);
+        if(!defined('TYPEROCKET_ROOT_INSTALL'))
+            define('TYPEROCKET_ROOT_INSTALL', true);
 
         // Fail if already installed
         if( file_exists( $this->configSampleWP ) ) {

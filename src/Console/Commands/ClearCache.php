@@ -35,8 +35,8 @@ class ClearCache extends Command
             mkdir($cache_path, 0755, true);
         }
 
-        if(!Str::starts( TR_ALT_PATH, $cache_path)) {
-            $this->error('Error cache path found must be define in paths.php as "cache" using TR_ALT_PATH as root.');
+        if(!Str::starts( TYPEROCKET_ALT_PATH, $cache_path)) {
+            $this->error('Error cache path found must be define in paths.php as "cache" using TYPEROCKET_ALT_PATH as root.');
         }
 
         $location = $cache_path . "/{$folder}/*";
@@ -47,7 +47,7 @@ class ClearCache extends Command
         }
 
         foreach ($glob as $value) {
-            if( Str::starts( TR_ALT_PATH, $value) && file_exists( $value ) ) {
+            if( Str::starts( TYPEROCKET_ALT_PATH, $value) && file_exists( $value ) ) {
                 ( new File($value) )->removeRecursiveDirectory();
                 $this->warning('Deleted ' . $value);
             } else {

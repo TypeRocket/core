@@ -21,7 +21,7 @@ class DownloadWordPress extends Command
 
     protected function config()
     {
-        $this->archiveWP = TR_PATH . '/wp.zip';
+        $this->archiveWP = TYPEROCKET_PATH . '/wp.zip';
         $this->addArgument('type', self::OPTIONAL, 'Process WordPress themes and plugins: all, core, or cleanup');
         $this->addArgument('path', self::OPTIONAL, 'The absolute path where WP will download');
         $this->addOption('build', 'b', InputOption::VALUE_REQUIRED, 'Download nightly build or specific version of WordPress' );

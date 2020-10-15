@@ -20,15 +20,15 @@ class Helper
             return TR_ROOT_WP;
         }
 
-        if( defined('TR_ROOT_INSTALL') ) {
-            return TR_PATH . '/' . trim(Config::get('app.root.wordpress', 'wordpress'), '/');
+        if( defined('TYPEROCKET_ROOT_INSTALL') ) {
+            return TYPEROCKET_PATH . '/' . trim(Config::get('app.root.wordpress', 'wordpress'), '/');
         }
 
         if( defined('ABSPATH') ) {
             return ABSPATH;
         }
 
-        $depth = TR_PATH;
+        $depth = TYPEROCKET_PATH;
         $looking = 5;
         while ($looking--) {
             if(is_file($depth . '/wp-load.php')) {
@@ -64,10 +64,10 @@ class Helper
         }
 
         if(defined('TR_PLUGIN_INSTALL') && function_exists('plugins_url')) {
-            $url = plugins_url( '/typerocket/wordpress/' . $path, TR_PATH );
+            $url = plugins_url( '/typerocket/wordpress/' . $path, TYPEROCKET_PATH );
         }
 
-        if(defined('TR_ROOT_INSTALL')) {
+        if(defined('TYPEROCKET_ROOT_INSTALL')) {
             $url = home_url($path);
         }
 
@@ -135,11 +135,11 @@ class Helper
     /**
      * Get Namespaced Class
      *
-     * @param string $append
+     * @param string|null $append
      * @return string
      */
-    public static function appNamespace($append) {
-        $space = "\\" . TR_APP_NAMESPACE . "\\";
+    public static function appNamespace($append = null) {
+        $space = $append ? "\\" . TYPEROCKET_APP_NAMESPACE . "\\" : TYPEROCKET_APP_NAMESPACE;
         return $space . ltrim($append, '\\');
     }
 

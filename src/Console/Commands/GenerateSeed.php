@@ -23,7 +23,7 @@ class GenerateSeed extends Command
     protected function exec()
     {
         try {
-            $file = new File(TR_CORE_CONFIG_PATH . '/app.php');
+            $file = new File(TYPEROCKET_CORE_CONFIG_PATH . '/app.php');
             $seed = 'seed_' . escapeshellcmd( uniqid() );
             $found = $file->replaceOnLine('PUT_TYPEROCKET_SEED_HERE', $seed );
 

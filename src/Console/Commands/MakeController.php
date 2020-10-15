@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
+use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Str;
 
 class MakeController extends Command
@@ -71,11 +72,11 @@ class MakeController extends Command
      * @throws \Exception
      */
     private function makeFile( $controller, $directive, $model ) {
-        list($namespace, $class) = Str::splitAt('\\', $controller, true);
+        [$namespace, $class] = Str::splitAt('\\', $controller, true);
         $mc = Str::splitAt('\\', $model, true)[1];
         $tags = ['{{namespace}}', '{{controller}}', '{{model}}', '{{app}}', '{{mc}}', '{{var}}'];
-        $namespace = implode('\\',array_filter([TR_APP_NAMESPACE, 'Controllers', $namespace]));
-        $replacements = [ $namespace, $class, $model, TR_APP_NAMESPACE, $mc, Str::snake($mc) ];
+        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Controllers', $namespace]));
+        $replacements = [ $namespace, $class, $model, Helper::appNamespace(), $mc, Str::snake($mc) ];
 
         $template = __DIR__ . '/../../../templates/Controllers/' . $directive . '.txt';
         $app_path = \TypeRocket\Core\Config::get('paths.app');

@@ -32,9 +32,9 @@ class PublishExtension extends Command
             /** @noinspection PhpIncludeInspection */
             require_once $package . '/publish.php';
         }
-        elseif(file_exists($path = TR_PATH . '/vendor/'.$package.'/publish.php')) {
+        elseif(file_exists($path = TYPEROCKET_PATH . '/vendor/'.$package.'/publish.php')) {
             /** @noinspection PhpIncludeInspection */
-            require_once TR_PATH . '/vendor/'.$package.'/publish.php';
+            require_once TYPEROCKET_PATH . '/vendor/'.$package.'/publish.php';
         } else {
             $this->error('Package not found.' . $path);
             die();

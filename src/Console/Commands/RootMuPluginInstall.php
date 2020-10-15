@@ -28,7 +28,7 @@ class RootMuPluginInstall extends Command
     protected function exec()
     {
         $wp_content = rtrim( $this->getArgument('path'), '/');
-        $path = $wp_content ?: TR_PATH . '/wordpress/wp-content';
+        $path = $wp_content ?: TYPEROCKET_PATH . '/wordpress/wp-content';
 
         if( file_exists($path) ) {
             $template = __DIR__ . '/../../../templates/MU.txt';
