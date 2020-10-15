@@ -8,6 +8,11 @@ use TypeRocket\Utility\Str;
 class Redirect
 {
     public $url;
+    public const KEY_DATA = 'typerocket_redirect_data';
+    public const KEY_ERROR = 'typerocket_redirect_errors';
+    public const KEY_MESSAGE = 'typerocket_redirect_message';
+    public const KEY_OLD = 'typerocket_old_fields';
+    public const KEY_ADMIN = 'typerocket_redirect_flash';
 
     /**
      * Redirect with data
@@ -19,7 +24,7 @@ class Redirect
     public function withData($data) {
 
         if( !empty($data) ) {
-            (new Cookie)->setTransient('typerocket_redirect_data', $data);
+            (new Cookie)->setTransient(static::KEY_DATA, $data);
         }
 
         return $this;
@@ -51,7 +56,7 @@ class Redirect
     public function withMessage($message, $type = 'success')
     {
         if(!empty($message) && is_string($message)) {
-            (new Cookie)->setTransient('typerocket_redirect_message', ['message' => $message, 'type' => $type]);
+            (new Cookie)->setTransient(static::KEY_MESSAGE, ['message' => $message, 'type' => $type]);
         }
 
         return $this;
@@ -75,7 +80,7 @@ class Redirect
 
         if( !empty($fields) ) {
             $send = array_diff_key($fields, array_flip($notFields));
-            (new Cookie)->setTransient('typerocket_old_fields', $send);
+            (new Cookie)->setTransient(static::KEY_OLD, $send);
         }
 
         return $this;

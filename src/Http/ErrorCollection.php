@@ -5,7 +5,7 @@ use TypeRocket\Utility\RuntimeCache;
 
 class ErrorCollection
 {
-    public const KEY = 'tr_redirect_errors';
+    public const KEY = Redirect::KEY_ERROR;
 
     /**
      * @var array|null

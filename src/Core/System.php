@@ -6,6 +6,7 @@ use TypeRocket\Controllers\RestController;
 use TypeRocket\Elements\BaseForm;
 use TypeRocket\Http\Cookie;
 use TypeRocket\Http\ErrorCollection;
+use TypeRocket\Http\Redirect;
 use TypeRocket\Http\Request;
 use TypeRocket\Elements\Notice;
 use TypeRocket\Http\Response;
@@ -289,8 +290,8 @@ class System
      *  Set flashing for admin notices
      */
     public function setFlash() {
-        if( !empty($_COOKIE['tr_admin_flash']) ) {
-            $data = (new Cookie)->getTransient('typerocket_admin_flash');
+        if( !empty($_COOKIE[Redirect::KEY_ADMIN]) ) {
+            $data = (new Cookie)->getTransient(Redirect::KEY_ADMIN);
             Notice::dismissible($data);
         }
     }

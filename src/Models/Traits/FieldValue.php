@@ -3,6 +3,7 @@ namespace TypeRocket\Models\Traits;
 
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\Cookie;
+use TypeRocket\Http\Redirect;
 use TypeRocket\Utility\Data;
 
 trait FieldValue
@@ -44,8 +45,8 @@ trait FieldValue
      */
     public function oldStore( $load_only_old = false)
     {
-        if( !empty($_COOKIE['tr_old_fields']) ) {
-            $this->old = (new Cookie)->getTransient('typerocket_old_fields');
+        if( !empty($_COOKIE[Redirect::KEY_OLD]) ) {
+            $this->old = (new Cookie)->getTransient('Redirect::KEY_OLD');
         }
 
         $this->onlyOld = $load_only_old;

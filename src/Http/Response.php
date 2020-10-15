@@ -676,7 +676,7 @@ class Response implements JsonSerializable
         $data = $data ?? $this->data;
 
         if( !empty( $data ) ) {
-            (new Cookie)->setTransient('typerocket_redirect_data', $data);
+            (new Cookie)->setTransient(Redirect::KEY_DATA, $data);
         }
 
         return $this;
@@ -712,7 +712,7 @@ class Response implements JsonSerializable
         $message = $message ?? $this->message;
 
         if(!empty($message)) {
-            (new Cookie)->setTransient('typerocket_redirect_message', [
+            (new Cookie)->setTransient(Redirect::KEY_MESSAGE, [
                 'message' => $message,
                 'type' => $type ?? $this->getMessageType()
             ]);
@@ -739,7 +739,7 @@ class Response implements JsonSerializable
 
         if( !empty($fields) ) {
             $send = array_diff_key($fields, array_flip($notFields));
-            (new Cookie)->setTransient('typerocket_old_fields', $send);
+            (new Cookie)->setTransient(Redirect::KEY_OLD, $send);
         }
 
         return $this;
@@ -769,7 +769,7 @@ class Response implements JsonSerializable
             ];
 
             if($force_transient || !(new Request)->isMarkedAjax()) {
-                (new Cookie)->setTransient('typerocket_admin_flash', $data);
+                (new Cookie)->setTransient(Redirect::KEY_ADMIN, $data);
             }
         }
 

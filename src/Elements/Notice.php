@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Elements;
 
+use TypeRocket\Http\Redirect;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Str;
 
@@ -96,8 +97,8 @@ class Notice
      */
     public static function flash($data = null, $dismissible = false)
     {
-        if( !empty($_COOKIE['tr_admin_flash']) || !empty($data) ) {
-            $flash = (new \TypeRocket\Http\Cookie)->getTransient('typerocket_admin_flash');
+        if( !empty($_COOKIE[Redirect::KEY_ADMIN]) || !empty($data) ) {
+            $flash = (new \TypeRocket\Http\Cookie)->getTransient(Redirect::KEY_ADMIN);
 
             return static::html([
                 'message' => $data['message'] ?? $flash['message'] ?? null,
