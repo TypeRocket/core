@@ -57,10 +57,15 @@ class File
         }
 
         if($content) {
-            file_put_contents($this->file, $content);
-        }
+            $name = basename($this->file);
+            $dir = substr($this->file, 0, -strlen($name));
 
-        $this->existing = true;
+            if (!is_dir($dir)) {
+                mkdir($dir);
+            }
+
+            $this->existing = (bool) file_put_contents($this->file, $content);
+        }
 
         return $this;
     }
