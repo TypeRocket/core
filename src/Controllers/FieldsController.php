@@ -88,7 +88,7 @@ class FieldsController extends Controller
 
             $results = array_map(function($value) use ($params) {
                 return [
-                    'title' => Search::getSearchTitle($value, ['id' => 'post_type', 'registered' => $params['post_type']]),
+                    'title' => Search::getSearchTitle($value, ['id' => 'post_type', 'registered' => $params['post_type'] ?? 'post']),
                     'id' => $value->ID,
                     'url' => get_permalink($value->ID),
                 ];
