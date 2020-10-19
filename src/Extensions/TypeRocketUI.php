@@ -160,11 +160,7 @@ class TypeRocketUI
             $id = trim($box['meta_box_id']) ?: null;
 
             if($title && $id) {
-                $mb = \TypeRocket\Register\MetaBox::add($title, []);
-
-                if($id) {
-                    $mb->setId($id);
-                }
+                $mb = \TypeRocket\Register\MetaBox::add($title, null, [], $id);
 
                 if(!empty($box['gutenberg'])) {
                     $mb->gutenbergCompatibility(true, false);
