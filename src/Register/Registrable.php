@@ -10,6 +10,7 @@ abstract class Registrable
     protected $id = null;
     protected $maxIdLength = 10000;
     protected $args = [];
+    protected $blocked = false;
     protected $reservedNames = [
         'attachment',
         'attachment_id',
@@ -205,11 +206,19 @@ abstract class Registrable
         if (in_array($this->id, $this->reservedNames)) {
             $exception = sprintf(__('You can not register a post type or taxonomy using the WordPress reserved name "%s".', 'typerocket-domain'),  $this->id);
             Notice::admin(['type' => 'error', 'message' => $exception]);
-
+            $this->blocked = true;
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBlocked()
+    {
+        return $this->blocked;
     }
 
     /**
@@ -243,7 +252,9 @@ abstract class Registrable
      */
     public function addToRegistry()
     {
-        Registry::addRegistrable($this);
+        if(!$this->blocked) {
+            Registry::addRegistrable($this);
+        }
 
         return $this;
     }

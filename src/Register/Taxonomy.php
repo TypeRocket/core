@@ -28,38 +28,62 @@ class Taxonomy extends Registrable
      * Make Taxonomy. Do not use before init.
      *
      * @param string $singular singular name is required
-     * @param string $plural plural name
-     * @param array $settings args override and extend
+     * @param string|null $plural plural name
+     * @param array|null $settings args override and extend
+     * @param string|null $id taxonomy ID
      */
-    public function __construct( $singular, $plural = null, $settings = [])
+    public function __construct( $singular, $plural = null, $settings = null, $id = null)
     {
         $lowerSingular = strtolower( trim($singular) );
+        $id = $id ?? $lowerSingular;
 
-        if (is_null( $plural )) {
-            $plural = Inflect::pluralize($singular);
-            $existing = get_taxonomy( strtolower($lowerSingular) );
+        if(is_array($plural) && is_null($settings)) {
+            $settings = $plural;
+            $plural = null;
+        } elseif(is_null($settings)) {
+            $settings = [];
+        }
 
-            if($existing) {
-                $this->existing = $existing;
+        if(empty($plural)) {
+            $plural = trim(strtolower(Inflect::pluralize($singular)));
+        }
 
-                $singular = Sanitize::underscore( $singular );
-                $plural  = Sanitize::underscore( $plural );
+        $labelSingular = $singular;
+        $labelPlural = $plural;
+        $keep_case = false;
 
-                $this->id = $this->existing->name;
-                $this->resource = Registry::getTaxonomyResource($this->id) ?? [
+        if(!empty($settings['labeled'])) {
+            $labelSingular = $settings['labeled'][0] ?? $labelSingular;
+            $labelPlural = $settings['labeled'][1] ?? $labelPlural;
+            $keep_case = $settings['labeled'][2] ?? $keep_case;
+            unset($settings['labeled']);
+        }
+
+        if(empty($settings['labeled'])) {
+            $this->applyQuickLabels($labelSingular, $labelPlural, $keep_case);
+        }
+
+        $existing = get_taxonomy( strtolower($lowerSingular) );
+
+        if ($existing) {
+            $this->existing = $existing;
+
+            $singular = Sanitize::underscore( $singular );
+            $plural  = Sanitize::underscore( $plural );
+
+            $this->id = $this->existing->name;
+            $args = (array) $this->existing;
+            $this->resource = Registry::getTaxonomyResource($this->id) ?? [
                     'singular' => $singular,
                     'plural' => $plural,
                     'model' => null,
                     'controller' => null
                 ];
-                $this->postTypes = $this->existing->object_type;
-                $this->args = array_merge($this->args, (array) $this->existing, $settings);
+            $this->postTypes = $this->existing->object_type;
+            $this->args = array_merge($args, $this->args, $settings);
 
-                return $this;
-            }
+            return $this;
         }
-
-        $this->applyQuickLabels($singular, $plural);
 
         // setup object for later use
         $plural       = Sanitize::underscore( $plural );
@@ -72,7 +96,7 @@ class Taxonomy extends Registrable
             'controller' => null
         ];
 
-        $this->setId(! $this->id ? $singular : $this->id);
+        $this->setId($this->id ?: ($id ?? $singular));
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
             $settings['capabilities'] = (new Roles)->getTaxonomyCapabilities($singular, $plural);

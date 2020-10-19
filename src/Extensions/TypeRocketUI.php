@@ -81,15 +81,16 @@ class TypeRocketUI
     public function registerTaxonomies(array $taxonomies)
     {
         foreach ($taxonomies as $tax) {
-            if(!isset($tax['singular']) || !isset($tax['plural'])) {
+            if(empty($tax['singular']) || empty($tax['plural']) || empty($tax['taxonomy_id'])) {
                 continue;
             }
 
             $singular = esc_html(trim($tax['singular']) ?: null);
             $plural = esc_html(trim($tax['plural']) ?: null);
+            $request_tax_id = trim($tax['taxonomy_id']) ?: null;
 
             if($singular) {
-                $t = \TypeRocket\Register\Taxonomy::add($singular, $plural);
+                $t = \TypeRocket\Register\Taxonomy::add($singular, $plural, null, $request_tax_id);
 
                 if(isset($tax['taxonomy_id']) && trim($tax['taxonomy_id']) ) {
                     $t->setId($tax['taxonomy_id']);
@@ -151,14 +152,14 @@ class TypeRocketUI
     public function registerMetaBoxes(array $boxes)
     {
         foreach ($boxes as $box) {
-            if (!isset($box['meta_box_title']) || !isset($box['meta_box_id'])) {
+            if (empty($box['meta_box_title']) || empty($box['meta_box_id'])) {
                 continue;
             }
 
             $title = esc_html(trim($box['meta_box_title']) ?: null);
-            $id = esc_html(trim($box['meta_box_id']) ?: null);
+            $id = trim($box['meta_box_id']) ?: null;
 
-            if($title) {
+            if($title && $id) {
                 $mb = \TypeRocket\Register\MetaBox::add($title, []);
 
                 if($id) {
@@ -209,19 +210,16 @@ class TypeRocketUI
     public function registerPostTypes(array $types)
     {
         foreach ($types as $type) {
-            if(!isset($type['singular']) || !isset($type['plural'])) {
+            if(empty($type['singular']) || empty($type['plural']) || empty($type['post_type_id'])) {
                 continue;
             }
 
             $singular = esc_html(trim($type['singular']) ?: null);
             $plural = esc_html(trim($type['plural']) ?: null);
+            $request_pt_id = trim($type['post_type_id']);
 
-            if($singular) {
-                $pt = \TypeRocket\Register\PostType::add($singular, $plural);
-
-                if(isset($type['post_type_id']) && trim($type['post_type_id']) ) {
-                    $pt->setId($type['post_type_id']);
-                }
+            if($singular && $request_pt_id) {
+                $pt = \TypeRocket\Register\PostType::add($singular, $plural, null, $request_pt_id);
 
                 if(isset($type['slug']) && trim($type['slug'])) {
                     $pt->setSlug($type['slug']);
@@ -397,17 +395,21 @@ class TypeRocketUI
 
         $validator = Validator::new([
             static::OPTION . '.post_types.?.singular' => 'required',
+            static::OPTION . '.post_types.?.plural' => 'required',
             static::OPTION . '.post_types.?.post_type_id' => 'max:20|required|key',
             static::OPTION . '.taxonomies.?.singular' => 'required',
+            static::OPTION . '.taxonomies.?.plural' => 'required',
             static::OPTION . '.taxonomies.?.taxonomy_id' => 'max:32|required|key',
             static::OPTION . '.meta_boxes.?.meta_box_title' => 'required',
             static::OPTION . '.meta_boxes.?.meta_box_id' => 'required|key',
         ], $fields)->setErrorMessages([
             static::OPTION . '.post_types.\d+.singular:required' => _x('Post type singular name {error}', 'required'),
+            static::OPTION . '.post_types.\d+.plural:required' => _x('Post type plural name {error}', 'required'),
             static::OPTION . '.post_types.\d+.post_type_id:max' => _x('Post type ID {error}', 'max'),
             static::OPTION . '.post_types.\d+.post_type_id:required' => _x('Post type ID {error}', 'required'),
             static::OPTION . '.post_types.\d+.post_type_id:key' => _x('Post type ID {error}', 'key'),
             static::OPTION . '.taxonomies.\d+.singular:required' => __('Taxonomy singular name {error}'),
+            static::OPTION . '.taxonomies.\d+.plural:required' => __('Taxonomy plural name {error}'),
             static::OPTION . '.taxonomies.\d+.taxonomy_id:max' => _x('Taxonomy ID {error}', 'max'),
             static::OPTION . '.taxonomies.\d+.taxonomy_id:required' => _x('Taxonomy ID {error}', 'required'),
             static::OPTION . '.taxonomies.\d+.taxonomy_id:key' => _x('Taxonomy ID {error}', 'key'),

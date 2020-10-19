@@ -20,11 +20,12 @@ class MetaBox extends Registrable
      * @param string $name
      * @param null|string|array $screen
      * @param array $settings
+     * @param string|null $id
      */
-    public function __construct( $name, $screen = null, array $settings = [])
+    public function __construct( $name, $screen = null, array $settings = [], $id = null)
     {
         $this->label = $this->id = $name;
-        $this->id    = Sanitize::underscore( $this->id );
+        $this->setId($id ?? $this->id);
 
         if ( ! empty( $screen )) {
             $this->screens = array_merge( $this->screens, (array) $screen );

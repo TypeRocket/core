@@ -42,10 +42,12 @@ class PostType extends Registrable
      * @param string $singular singular name is required
      * @param string|array|null $plural plural name or settings array override
      * @param array|null $settings args override and extend
+     * @param string|null $id post type ID
      */
-    public function __construct( $singular, $plural = null, $settings = null )
+    public function __construct( $singular, $plural = null, $settings = null, $id = null )
     {
         $singularLower = strtolower( trim($singular) );
+        $id = $id ?? $singularLower;
 
         if(is_array($plural) && is_null($settings)) {
             $settings = $plural;
@@ -54,29 +56,8 @@ class PostType extends Registrable
             $settings = [];
         }
 
-        if(is_null($plural)) {
-            $plural = strtolower(Inflect::pluralize($singular));
-        }
-
-        $this->existing = get_post_type_object($singularLower);
-
-        if($this->existing) {
-            $this->id = $this->existing->name;
-            $this->args = (array) $this->existing;
-
-            $singular = Sanitize::underscore( $singular );
-            $plural  = Sanitize::underscore( $plural );
-
-            $this->resource = Registry::getPostTypeResource($this->id) ?? [
-                    'singular' => $singular,
-                    'plural' => $plural,
-                    'model' => null,
-                    'controller' => null
-                ];
-            $this->args['supports'] = array_keys(get_all_post_type_supports($this->id));
-            $this->args = array_merge($this->args, $settings);
-
-            return $this;
+        if(empty($plural)) {
+            $plural = trim(strtolower(Inflect::pluralize($singular)));
         }
 
         $labelSingular = $singular;
@@ -94,6 +75,27 @@ class PostType extends Registrable
             $this->applyQuickLabels($labelSingular, $labelPlural, $keep_case);
         }
 
+        $this->existing = get_post_type_object($id);
+
+        if($this->existing) {
+            $this->id = $this->existing->name;
+            $args = (array) $this->existing;
+
+            $singular = Sanitize::underscore( $singular );
+            $plural  = Sanitize::underscore( $plural );
+
+            $this->resource = Registry::getPostTypeResource($this->id) ?? [
+                    'singular' => $singular,
+                    'plural' => $plural,
+                    'model' => null,
+                    'controller' => null
+                ];
+            $args['supports'] = array_keys(get_all_post_type_supports($this->id));
+            $this->args = array_merge($args, $this->args, $settings);
+
+            return $this;
+        }
+
         // setup object for later use
         $plural   = Sanitize::underscore( $plural );
         $singular = Sanitize::underscore( $singular );
@@ -104,7 +106,7 @@ class PostType extends Registrable
             'controller' => null
         ];
 
-        $this->setId(! $this->id ? $singular : $this->id);
+        $this->setId( $this->id ?: ($id ?? $singular) );
 
         if (array_key_exists( 'capabilities', $settings ) && $settings['capabilities'] === true) :
             $settings['capabilities'] = (new Roles)->getCustomPostTypeCapabilities($singular, $plural);
