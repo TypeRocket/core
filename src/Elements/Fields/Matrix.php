@@ -444,6 +444,7 @@ class Matrix extends Field implements ScriptField
         $nested = $nested ?? false;
         $i = $nested ? 1 : 0;
         $group = $name ?? $group; // This is to help with migration from v4/v1 to v5
+        $name = $group;
         $len = count($builder_data);
 
         do_action('typerocket_components_loop', $builder_data, $other, $len);
