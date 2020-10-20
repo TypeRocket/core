@@ -40,7 +40,9 @@ class Taxonomy extends Registrable
         if(is_array($plural) && is_null($settings)) {
             $settings = $plural;
             $plural = null;
-        } elseif(is_null($settings)) {
+        }
+
+        if(is_null($settings)) {
             $settings = [];
         }
 
@@ -63,7 +65,7 @@ class Taxonomy extends Registrable
             $this->applyQuickLabels($labelSingular, $labelPlural, $keep_case);
         }
 
-        $existing = get_taxonomy( strtolower($lowerSingular) );
+        $existing = get_taxonomy( $id );
 
         if ($existing) {
             $this->existing = $existing;

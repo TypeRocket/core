@@ -52,7 +52,9 @@ class PostType extends Registrable
         if(is_array($plural) && is_null($settings)) {
             $settings = $plural;
             $plural = null;
-        } elseif(is_null($settings)) {
+        }
+
+        if(is_null($settings)) {
             $settings = [];
         }
 
