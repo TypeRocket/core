@@ -16,7 +16,6 @@ use TypeRocket\Utility\Validator;
 class TypeRocketUI
 {
     protected $menu = false;
-    protected $pageSuffix = false;
     protected $postTypeTaxonomies = [];
     public CONST OPTION = 'typerocket_registered';
 
