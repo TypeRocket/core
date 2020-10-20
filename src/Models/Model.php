@@ -1674,12 +1674,12 @@ class Model implements Formable, JsonSerializable
      */
     public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null, $reselect = true )
     {
-        $id = $this->getID();
-
         // Column ID
         if( ! $id_column && $this->resource ) {
             $id_column =  $this->resource . '_id';
         }
+
+        $id = $this->$id_column ?? $this->getID();
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
