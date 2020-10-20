@@ -16,6 +16,7 @@ use TypeRocket\Utility\Validator;
 class TypeRocketUI
 {
     protected $menu = false;
+    protected $pageSuffix = false;
     protected $postTypeTaxonomies = [];
     public CONST OPTION = 'typerocket_registered';
 
@@ -430,6 +431,13 @@ class TypeRocketUI
         return \TypeRocket\Http\Redirect::new()->toPage('typerocket_ui_register', null, null, $this->menu ? $this->menu . '.php' : null );
     }
 
+    public function helpTabAdvanced()
+    {
+        ob_start() ?>
+        <p>You can use the ID of an existing post type or taxonomy to override its settings. Use the override feature with caution.</p>
+        <?php return ob_get_clean();
+    }
+
     /**
      * Controller
      *
@@ -438,6 +446,15 @@ class TypeRocketUI
      */
     public function show()
     {
+        add_action('current_screen', function() {
+            $screen = get_current_screen();
+            $screen->add_help_tab( array(
+                'id' => 'typerocket-ui-help',
+                'title' => 'Overrides',
+                'content' => __($this->helpTabAdvanced(), 'typerocket-ui')
+            ));
+        });
+
         $icons = Dashicons::new()->iconNames();
         $form = Helper::form()->useErrors()->useOld()->setDebugStatus(false)->setGroup(static::OPTION);
 

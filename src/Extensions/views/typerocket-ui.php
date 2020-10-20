@@ -9,17 +9,21 @@ $pt_tabs = \TypeRocket\Elements\Tabs::new();
 $singular = $form->getModel()->getProperty('singular');
 
 $pt_tabs->tab(__('Basic', 'typerocket-ui'))->setFields(
-    $form->row(
-        $form->text('Singular', ['placeholder' => __('Singular label', 'typerocket-ui')])->markLabelRequired(),
-        $form->text('Plural', ['placeholder' => __('Plural label', 'typerocket-ui')])
-    ),
-    $form->row(
-        $form->text('Post Type ID', ['placeholder' => __('Lowercase alphanumeric and underscores only', 'typerocket-ui')])->maxlength(20)->markLabelRequired(),
-        $form->text('Slug', ['placeholder' => __('Default value will be plural', 'typerocket-ui')])
-    ),
+    $form->text('Singular', ['placeholder' => __('Singular label', 'typerocket-ui')])
+        ->markLabelRequired()
+        ->setHelp(__('The singular name for the post type labels and settings.', 'typerocket-ui')),
+    $form->text('Plural', ['placeholder' => __('Plural label', 'typerocket-ui')])
+        ->markLabelRequired()
+        ->setHelp(__('The plural name for the post type labels and settings.', 'typerocket-ui')),
+    $form->text('Post Type ID', ['placeholder' => __('Lowercase alphanumeric and underscores only', 'typerocket-ui')])
+        ->maxlength(20)
+        ->markLabelRequired(),
+    $form->text('Slug', ['placeholder' => __('Default value will be plural', 'typerocket-ui')])
+        ->setHelp(__('Customize the permastruct slug. Defaults to plural name.', 'typerocket-ui')),
     $form->select('Icon')->setOptions($icons, 'flat')->searchable(),
     $form->toggle('Gutenberg')->setText('Whether the post type should use Gutenberg.'),
-    $form->toggle('REST API')->setText('Whether to include the post type in the REST API.'),
+    $form->toggle('REST API')->setText('Whether to include the post type in the REST API.')
+        ->setHelp(__('When Gutenberg is enabled this setting will be enabled automatically.', 'typerocket-ui')),
     $form->toggle('Hierarchical')->setText('Whether the post type is hierarchical (e.g. page).'),
     $form->items('Taxonomies')->setHelp('The IDs of taxonomies you want applied to this post type.')
 );
@@ -98,14 +102,17 @@ $pt = $form->fieldset('Post Types','Fast and simple registration of post types.'
 $tax_tabs = \TypeRocket\Elements\Tabs::new();
 
 $tax_tabs->tab('Basic')->setFields(
-    $form->row(
-        $form->text('Singular', ['placeholder' => __('Singular label', 'typerocket-ui')])->markLabelRequired(),
-        $form->text('Plural', ['placeholder' => __('Plural label', 'typerocket-ui')])
-    ),
-    $form->row(
-        $form->text('Taxonomy ID', ['placeholder' => __('Lowercase alphanumeric and underscores only', 'typerocket-ui')])->maxlength(32)->markLabelRequired(),
-        $form->text('Slug', ['placeholder' => __('Default value will be plural', 'typerocket-ui')])
-    ),
+    $form->text('Singular', ['placeholder' => __('Singular label', 'typerocket-ui')])
+        ->markLabelRequired()
+        ->setHelp(__('The singular name for the taxonomy labels and settings.', 'typerocket-ui')),
+    $form->text('Plural', ['placeholder' => __('Plural label', 'typerocket-ui')])
+        ->markLabelRequired()
+        ->setHelp(__('The plural name for the taxonomy labels and settings.', 'typerocket-ui')),
+    $form->text('Taxonomy ID', ['placeholder' => __('Lowercase alphanumeric and underscores only', 'typerocket-ui')])
+        ->maxlength(32)
+        ->markLabelRequired(),
+    $form->text('Slug', ['placeholder' => __('Default value will be plural', 'typerocket-ui')])
+        ->setHelp(__('Customize the permastruct slug. Defaults to plural name.', 'typerocket-ui')),
     $form->toggle('Hierarchical')->setText('Whether the post type is hierarchical (e.g. category).'),
     $form->toggle('REST API')->setText('Whether to include the post type in the REST API.'),
     $form->items('Post Types')->setHelp('The IDs of post types you want applied to this taxonomy.')

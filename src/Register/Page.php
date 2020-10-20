@@ -745,4 +745,87 @@ class Page extends Registrable
             $GLOBALS['_tr_resource'] = new $class;
         }
     }
+
+    /**
+     * @param string $singular
+     * @param string|array|null $plural
+     * @param array $settings
+     * @param null $resource
+     * @param null $handler
+     *
+     * @return static
+     * @throws \Exception
+     */
+    public static function addResourcePages($singular, $plural = null, array $settings = [], $resource = null, $handler = null)
+    {
+        [$singular, $handle] = array_pad(explode('@', $singular), 2, null);
+        $handler = $handler ?? $handle;
+
+        if(is_array($plural)) {
+            $settings = $plural;
+
+            if(isset($settings['plural'])) {
+                $plural = $settings['plural'];
+                unset($settings['plural']);
+            } else {
+                $plural = null;
+            }
+        }
+
+        if ( ! $plural) {
+            $plural = \TypeRocket\Utility\Inflect::pluralize($singular);
+        }
+
+        if(!$handler) {
+            $handler = \TypeRocket\Utility\Helper::controllerClass($singular, false);
+        }
+
+        if( ! $resource) {
+            $resource = $singular;
+        }
+
+        $menu_id = 'add_resource_' . \TypeRocket\Utility\Sanitize::underscore($singular);
+
+        $add = \TypeRocket\Register\Page::add($resource, 'add', __('Add ' . $singular))
+            ->setMenuTitle(__('Add New'))
+            ->adminBar($menu_id, $singular, 'new-content')
+            ->mapActions([
+                'GET' => 'add',
+                'POST' => 'create',
+            ]);
+
+        $delete = \TypeRocket\Register\Page::add($resource, 'delete', 'Delete ' . $singular)
+            ->removeMenu()
+            ->mapActions([
+                'GET' => 'delete',
+                'DELETE' => 'destroy',
+            ]);
+
+        $show = \TypeRocket\Register\Page::add($resource, 'show', $singular)
+            ->addNewButton()
+            ->removeMenu()
+            ->mapActions([
+                'GET' => 'show'
+            ]);
+
+        $edit = \TypeRocket\Register\Page::add($resource, 'edit', __('Edit ' . $singular))
+            ->addNewButton()
+            ->removeMenu()
+            ->mapActions([
+                'GET' => 'edit',
+                'PUT' => 'update',
+            ]);
+
+        $index = \TypeRocket\Register\Page::add($resource, 'index', $plural, $settings)
+            ->apply($edit, $show, $delete, $add)
+            ->setSubMenuTitle(__('All ' . $plural))
+            ->addNewButton();
+
+        foreach ([$add, $edit, $delete, $show, $index] as $page) {
+            /** @var \TypeRocket\Register\Page $page */
+            $page->setHandler($handler);
+        }
+
+        return $index;
+    }
 }
