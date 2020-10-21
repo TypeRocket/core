@@ -88,6 +88,14 @@ class WPComment extends Model
     }
 
     /**
+     * @return string|null
+     */
+    public function getRestMetaType()
+    {
+        return 'comment';
+    }
+
+    /**
      * Get WP_Comment Instance
      *
      * @param \WP_Comment|null|int $comment

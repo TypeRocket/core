@@ -67,4 +67,42 @@ class Arr
         $cleaned = implode(' ', array_unique(array_map('trim', explode(' ', trim($reduced)))));
         return $cleaned;
     }
+
+    /**
+     * Used to format fields
+     *
+     * @param string|array $dots
+     * @param array|\ArrayObject $arr
+     * @param string|callable $callback
+     *
+     * @return array|null
+     */
+    public static function format($dots, &$arr, $callback)
+    {
+        $loc = &$arr;
+        $search = is_array($dots) ? $dots : explode('.', $dots);
+        foreach($search as $i => $step)
+        {
+            array_shift($search);
+            if($step === '*' && is_array($loc)) {
+                $new_loc = &$loc;
+                $indies = array_keys($new_loc);
+                foreach($indies as $index) {
+                    if(isset($new_loc[$index])) {
+                        static::format($search, $new_loc[$index], $callback);
+                    }
+                }
+            } elseif( isset($loc[$step] ) ) {
+                $loc = &$loc[$step];
+            } else {
+                return null;
+            }
+        }
+
+        if(!isset($indies) && is_callable($callback)) {
+            $loc = call_user_func($callback, $loc);
+        }
+
+        return $loc;
+    }
 }

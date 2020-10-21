@@ -113,6 +113,22 @@ class WPPost extends Model
     }
 
     /**
+     * @return string|null
+     */
+    public function getRestMetaType()
+    {
+        return 'post';
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRestMetaSubtype()
+    {
+        return $this->getPostType();
+    }
+
+    /**
      * Get WP_Post Instance
      *
      * @param WP_Post|null|int|false $post

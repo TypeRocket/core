@@ -97,6 +97,22 @@ class WPTerm extends Model
     }
 
     /**
+     * @return string|null
+     */
+    public function getRestMetaType()
+    {
+        return 'term';
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRestMetaSubtype()
+    {
+        return $this->getTaxonomy();
+    }
+
+    /**
      * Get Meta Model Class
      *
      * @return string

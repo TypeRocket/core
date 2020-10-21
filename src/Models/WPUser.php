@@ -80,6 +80,14 @@ class WPUser extends Model implements AuthUser
     }
 
     /**
+     * @return string|null
+     */
+    public function getRestMetaType()
+    {
+        return 'user';
+    }
+
+    /**
      * Users Posts
      *
      * @param string $modelClass

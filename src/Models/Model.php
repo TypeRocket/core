@@ -18,6 +18,7 @@ use TypeRocket\Interfaces\Formable;
 use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Models\Traits\Searchable;
 use TypeRocket\Services\AuthorizerService;
+use TypeRocket\Utility\Arr;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
@@ -28,6 +29,7 @@ class Model implements Formable, JsonSerializable
     use Searchable, FieldValue;
 
     protected $fillable = [];
+    protected $restMetaFields = [];
     protected $closed = false;
     protected $guard = ['id'];
     protected $format = [];
@@ -421,6 +423,50 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getRestMetaFieldsCompiled()
+    {
+        $fields = $this->getRestMetaFields();
+        $compiled = [];
+
+        foreach ($fields as $field => $args) {
+            $compiled[$field] = array_filter( array_merge([
+                'sanitize_callback' => $this->format[$field] ?? null,
+                'object_subtype' => $this->getRestMetaSubtype(),
+                'single' => true,
+                'show_in_rest' => true
+            ], $args) );
+        }
+
+        return $compiled;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRestMetaFields()
+    {
+        return $this->restMetaFields;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRestMetaType()
+    {
+        return $this->resource;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRestMetaSubtype()
+    {
+        return null;
+    }
+
+    /**
      * Get Route Resource
      *
      * @return string|null
@@ -804,57 +850,13 @@ class Model implements Formable, JsonSerializable
      *
      * @return array
      */
-    protected function formatFields( $fields) {
+    protected function formatFields($fields) {
 
         foreach ($this->format as $path => $fn) {
-            $this->ArrayDots($fields, $path, $fn);
+            Arr::format($path, $fields, $fn);
         }
 
         return $fields;
-    }
-
-    /**
-     * Used to format fields
-     *
-     * @param array|ArrayObject $arr
-     * @param string $path
-     * @param string $fn
-     *
-     * @return array|null
-     */
-    protected function ArrayDots( &$arr, $path, $fn)
-    {
-        $loc = &$arr;
-        $dots = explode('.', $path);
-        foreach($dots as $step)
-        {
-            array_shift($dots);
-            if($step === '*' && is_array($loc)) {
-                $new_loc = &$loc;
-                $indies = array_keys($new_loc);
-                foreach($indies as $index) {
-                    if(isset($new_loc[$index])) {
-                        $this->ArrayDots($new_loc[$index], implode('.', $dots), $fn);
-                    }
-                }
-            } elseif( isset($loc[$step] ) ) {
-                $loc = &$loc[$step];
-            } else {
-                return null;
-            }
-
-        }
-
-        if(!isset($indies)) {
-            if( is_callable($fn) ) {
-                $loc = call_user_func($fn, $loc);
-            } elseif( is_callable('\\TypeRocket\\Sanitize::' . $fn ) ) {
-                $fn = '\\TypeRocket\\Sanitize::' . $fn;
-                $loc = call_user_func($fn, $loc);
-            }
-        }
-
-        return $loc;
     }
 
     /**
