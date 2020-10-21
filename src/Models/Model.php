@@ -431,6 +431,11 @@ class Model implements Formable, JsonSerializable
         $compiled = [];
 
         foreach ($fields as $field => $args) {
+
+            if(in_array($field, $this->private)) {
+                continue;
+            }
+
             $compiled[$field] = array_filter( array_merge([
                 'sanitize_callback' => $this->format[$field] ?? null,
                 'object_subtype' => $this->getRestMetaSubtype(),
