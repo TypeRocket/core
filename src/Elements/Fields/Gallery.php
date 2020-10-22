@@ -52,9 +52,10 @@ class Gallery extends Field implements ScriptField
                 if ( ! empty( $image )) {
                     $list .= Html::el( 'li',
                         [
-                            'class' => 'tr-image-picker-placeholder'
+                            'tabindex' => '0',
+                            'class' => 'tr-gallery-item tr-image-picker-placeholder'
                         ],
-                        '<a class="dashicons dashicons-no-alt" title="'.__('Remove Image', 'typerocket-domain').'" href="'.$remove.'"></a>' . $image . $input
+                        '<a tabindex="0" class="dashicons dashicons-no-alt tr-gallery-remove" title="'.__('Remove Image', 'typerocket-domain').'" href="'.$remove.'"></a>' . $image . $input
                     );
                 }
 
