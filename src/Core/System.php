@@ -35,6 +35,8 @@ class System
     {
         $self = $this;
 
+        $this->loadRuntimeCache();
+
         /**
          * Maybe Load TypeRocket Pro
          */
@@ -42,7 +44,6 @@ class System
             (new Resolver())->resolve(static::ADVANCED);
         }
 
-        $this->loadRuntimeCache();
         $this->loadExtensions();
         $this->initHooks();
         $this->loadResponders();
