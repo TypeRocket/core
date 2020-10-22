@@ -1,12 +1,11 @@
 dist: bionic
 language: php
-sudo: required
 
 env:
  global:
   - SETUP=stable
 
-matrix:
+jobs:
  fast_finish: true
  include:
   - php: 7.2
@@ -18,7 +17,7 @@ cache:
   - $HOME/.composer/cache
 
 services:
- - redis-server
+ - redis
  - mysql
 
 before_install:
@@ -35,7 +34,3 @@ install:
 
 script:
  - vendor/bin/phpunit
-
-notifications:
- on_success: never
- on_failure: always
