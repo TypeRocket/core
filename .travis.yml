@@ -1,23 +1,40 @@
+dist: bionic
 language: php
 sudo: required
-php:
- - '7.1'
+
+env:
+ global:
+  - SETUP=stable
+
+matrix:
+ fast_finish: true
+ include:
+  - php: 7.2
+  - php: 7.3
+  - php: 7.4
+
+cache:
+ directories:
+  - $HOME/.composer/cache
 
 services:
+ - redis-server
  - mysql
 
-before_script:
- - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp bin/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
- - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then sudo cp bin/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
- - composer self-update
+before_install:
+ - phpenv config-rm xdebug.ini || true
+ - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+ - printf "\n" | pecl install -f redis
+ - travis_retry composer self-update
+ - mysql -e 'SET NAMES utf8; create database IF NOT EXISTS wordpress;'
  - chmod ugo+x bin/travis.sh
  - ./bin/travis.sh $(phpenv version-name) $(pwd)
 
-before_install:
- - mysql -e 'SET NAMES utf8; create database IF NOT EXISTS wordpress;'
-
 install:
  - travis_retry composer install --no-interaction --prefer-source
+
+script:
+ - vendor/bin/phpunit
 
 notifications:
  on_success: never
