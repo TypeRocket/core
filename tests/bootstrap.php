@@ -25,6 +25,13 @@ function getWordpressPath()
     return str_replace("/$fileToCheck", '', array_shift($filtered));
 }
 
+function __test_false() { return false; }
+define('TYPEROCKET_AUTO_LOADER', '__test_false');
+
+if(file_exists( __DIR__ . '/vendor/typerocket/typerocket/init.php')) {
+    require __DIR__ . '/vendor/typerocket/typerocket/init.php';
+}
+
 $wp_load = getWordpressPath();
 
 if( ! file_exists($wp_load) ) {
