@@ -130,7 +130,7 @@ class ResultsTest extends TestCase
         $this->assertTrue(is_array($array));
         $this->assertTrue($array['links']['next'] === 'http://example.com/php-unit-tests?phpunit=yes&paged=2');
         $this->assertTrue($array['links']['previous'] === null);
-        $this->assertContains('http://example.com/php-unit-tests?phpunit=yes&paged=', $array['links']['last']);
+        $this->assertStringContainsString('http://example.com/php-unit-tests?phpunit=yes&paged=', $array['links']['last']);
         $this->assertTrue($array['links']['first'] === 'http://example.com/php-unit-tests?phpunit=yes&paged=1');
     }
 

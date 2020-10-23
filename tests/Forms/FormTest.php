@@ -21,8 +21,8 @@ class FormTest extends TestCase
         $title = $form->text('post_title')->getValue();
         $content = $form->textarea('post_content')->getValue();
 
-        $this->assertContains('Hello', $title );
-        $this->assertContains('Welcome', $content );
+        $this->assertStringContainsString('Hello', $title );
+        $this->assertStringContainsString('Welcome', $content );
         $this->assertInstanceOf( BaseForm::class, $form);
         $this->assertTrue( $form->getAction() == 'update');
     }
@@ -33,8 +33,8 @@ class FormTest extends TestCase
         $title = $form->text('post_title')->getValue();
         $content = $form->textarea('post_content')->getValue();
 
-        $this->assertContains('Hello', $title );
-        $this->assertContains('Welcome', $content );
+        $this->assertStringContainsString('Hello', $title );
+        $this->assertStringContainsString('Welcome', $content );
         $this->assertTrue( $form->getAction() == 'update');
         $this->assertInstanceOf( BaseForm::class, $form);
     }
@@ -87,8 +87,8 @@ class FormTest extends TestCase
         $title = $form->text('post_title')->getValue();
         $content = $form->textarea('post_content')->getValue();
 
-        $this->assertContains('Hello', $title );
-        $this->assertContains('Welcome', $content );
+        $this->assertStringContainsString('Hello', $title );
+        $this->assertStringContainsString('Welcome', $content );
         $this->assertTrue( $form->getAction() == 'update');
         $this->assertInstanceOf( BaseForm::class, $form);
     }
@@ -134,8 +134,8 @@ class FormTest extends TestCase
         $form->toUrl('/posts/create', 'delete');
         $value = $form->open();
         $needle = 'action="' . get_site_url(null, '/posts/create');
-        $this->assertContains( $needle, $value );
-        $this->assertContains( 'name="_method" value="DELETE"', $value );
+        $this->assertStringContainsString( $needle, $value );
+        $this->assertStringContainsString( 'name="_method" value="DELETE"', $value );
     }
 
     public function testUseAbsURL()
@@ -144,8 +144,8 @@ class FormTest extends TestCase
         $form->toUrl('http://example.com/posts/create', 'patch');
         $value = $form->open();
         $needle = 'action="http://example.com/posts/create';
-        $this->assertContains( $needle, $value );
-        $this->assertContains( 'name="_method" value="PATCH"', $value );
+        $this->assertStringContainsString( $needle, $value );
+        $this->assertStringContainsString( 'name="_method" value="PATCH"', $value );
     }
 
     public function testUseAbsURLSecure()
@@ -154,8 +154,8 @@ class FormTest extends TestCase
         $form->toUrl('https://example.com/posts/create', 'patch');
         $value = $form->open();
         $needle = 'action="https://example.com/posts/create';
-        $this->assertContains( $needle, $value );
-        $this->assertContains( 'name="_method" value="PATCH"', $value );
+        $this->assertStringContainsString( $needle, $value );
+        $this->assertStringContainsString( 'name="_method" value="PATCH"', $value );
     }
 
     public function testQuickForm()

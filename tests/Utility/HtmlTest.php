@@ -35,8 +35,8 @@ class HtmlTest extends TestCase
         $v = (new WPPost)->find(1);
         $text = (new Text('post_title', ['data-test' => 'X']))->setModel($v)->getString();
 
-        $this->assertContains('data-test="X"', $text);
-        $this->assertContains('value="Hello', $text);
+        $this->assertStringContainsString('data-test="X"', $text);
+        $this->assertStringContainsString('value="Hello', $text);
     }
 
     public function testCloseElement()

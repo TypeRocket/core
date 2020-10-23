@@ -23,9 +23,9 @@ class ItemsFieldTest extends TestCase
         // delete data before assert
         delete_post_meta($id, $field);
 
-        $this->assertContains('name="tr['.$field.']" value="0" data-test="X"', $text);
-        $this->assertContains('data-tr-name="tr['.$field.']"', $text);
-        $this->assertContains('name="tr['.$field.'][]" value="'.$data[0].'"', $text);
-        $this->assertContains('name="tr['.$field.'][]" value="'.$data[1].'"', $text);
+        $this->assertStringContainsString('name="tr['.$field.']" value="0" data-test="X"', $text);
+        $this->assertStringContainsString('data-tr-name="tr['.$field.']"', $text);
+        $this->assertStringContainsString('name="tr['.$field.'][]" value="'.$data[0].'"', $text);
+        $this->assertStringContainsString('name="tr['.$field.'][]" value="'.$data[1].'"', $text);
     }
 }

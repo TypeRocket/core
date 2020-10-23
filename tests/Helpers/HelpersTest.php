@@ -16,7 +16,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         $GLOBALS['post'] = $cp;
 
-        $this->assertContains('Hello', $title);
+        $this->assertStringContainsString('Hello', $title);
     }
 
     public function testTermFieldHelper()
@@ -61,7 +61,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         $GLOBALS['post'] = $cp;
 
-        $this->assertContains('@', $email);
+        $this->assertStringContainsString('@', $email);
     }
 
     public function testUserFieldGlobalUserIdHelper()
@@ -73,7 +73,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
 
         $GLOBALS['user_id'] = $cp;
 
-        $this->assertContains('@', $email);
+        $this->assertStringContainsString('@', $email);
     }
 
     public function testCastingInt()

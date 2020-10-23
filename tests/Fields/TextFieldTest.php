@@ -16,8 +16,8 @@ class TextFieldTest extends TestCase
         $v = (new WPPost)->find(1);
         $text = (new Text('post_title', ['data-test' => 'X']))->setModel($v)->getString();
 
-        $this->assertContains('value="'.esc_attr($v->post_title).'"', $text);
-        $this->assertContains('data-test="X"', $text);
+        $this->assertStringContainsString('value="'.esc_attr($v->post_title).'"', $text);
+        $this->assertStringContainsString('data-test="X"', $text);
     }
 
 }

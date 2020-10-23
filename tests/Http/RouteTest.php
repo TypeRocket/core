@@ -152,7 +152,7 @@ class RouteTest extends TestCase
         $form = new BaseForm('post', 'update', 1, WPPost::class);
 
         $formUrl = $form->toRoute('about.me')->getFormUrl();
-        $this->assertContains('/about/me/1/:given-name', $formUrl);
+        $this->assertStringContainsString('/about/me/1/:given-name', $formUrl);
     }
 
     public function testRouteNamedNoPatternAutoDetect()
@@ -174,7 +174,7 @@ class RouteTest extends TestCase
             ':job' => 987,
         ]);
 
-        $this->assertContains('/user/123/job/987', $built);
+        $this->assertStringContainsString('/user/123/job/987', $built);
     }
 
     public function testRedirectToRoute()
@@ -185,7 +185,7 @@ class RouteTest extends TestCase
             'given-name' => 'kevin'
         ]);
 
-        $this->assertContains('/about/me/345/kevin', $redirect->url);
+        $this->assertStringContainsString('/about/me/345/kevin', $redirect->url);
     }
 
 }

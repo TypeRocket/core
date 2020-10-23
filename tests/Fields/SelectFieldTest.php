@@ -17,16 +17,16 @@ class SelectFieldTest extends TestCase
         $id = (int) wp_unique_id();
         $id--;
 
-        $this->assertContains("id=\"tr_field_${id}_tr_post_title\"", $text);
-        $this->assertContains('data-test="X"', $text);
+        $this->assertStringContainsString("id=\"tr_field_${id}_tr_post_title\"", $text);
+        $this->assertStringContainsString('data-test="X"', $text);
     }
 
     public function testSelectFieldOptions()
     {
         $text = (new Select('post_title'))->removeAttribute('id')->setOptions(['t' => '', 'c' => 'c'])->setModel((new WPPost)->find(1))->getString();
 
-        $this->assertContains('name="tr[post_title]', $text);
-        $this->assertContains('<option value>t</option>', $text);
-        $this->assertContains('<option value="c">c</option>', $text);
+        $this->assertStringContainsString('name="tr[post_title]', $text);
+        $this->assertStringContainsString('<option value>t</option>', $text);
+        $this->assertStringContainsString('<option value="c">c</option>', $text);
     }
 }
