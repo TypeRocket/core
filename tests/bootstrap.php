@@ -25,13 +25,6 @@ function getWordpressPath()
     return str_replace("/$fileToCheck", '', array_shift($filtered));
 }
 
-function __test_false() { return false; }
-define('TYPEROCKET_AUTO_LOADER', '__test_false');
-
-if(file_exists( __DIR__ . '/vendor/typerocket/typerocket/init.php')) {
-    require __DIR__ . '/vendor/typerocket/typerocket/init.php';
-}
-
 $wp_load = getWordpressPath();
 
 if( ! file_exists($wp_load) ) {
@@ -43,6 +36,15 @@ if( ! file_exists($wp_load) ) {
     // Disable email
     function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) { return true; }
     global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
+
+
+    function __test_false() { return false; }
+    define('TYPEROCKET_AUTO_LOADER', '__test_false');
+
+    if(file_exists( __DIR__ . '/../typerocket/init.php')) {
+        require __DIR__ . '/../typerocket/init.php';
+    }
+
     require BASE_WP . '/wp-load.php';
     require BASE_WP . '/wp-admin/includes/user.php';
     require BASE_WP . '/wp-admin/includes/upgrade.php';
