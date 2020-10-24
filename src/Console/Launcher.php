@@ -32,7 +32,10 @@ class Launcher
             define('WP_USE_THEMES', true);
             global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
             require( $wp_root . '/wp-load.php' );
-            require( $wp_root . '/wp-admin/includes/upgrade.php' );
+            
+            if(!function_exists('wp_install_maybe_enable_pretty_permalinks')) {
+                require( $wp_root . '/wp-admin/includes/upgrade.php' );
+            }
 
             $commands->enableWordPress();
         }
