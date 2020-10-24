@@ -21,6 +21,10 @@ class TypeRocketUI
 
     public function __construct()
     {
+        if(!Config::env('TYPEROCKET_UI', true)) {
+            return;
+        }
+
         $this->menu = Config::env('TYPEROCKET_UI_MENU', false);
         add_action( 'typerocket_loaded', [$this, 'setup']);
     }

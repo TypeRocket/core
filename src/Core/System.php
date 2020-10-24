@@ -71,10 +71,10 @@ class System
         | the typerocket_loaded hook to access TypeRocket from your WP plugins.
         |
         */
-        add_action('after_setup_theme', function () {
+        add_action('after_setup_theme', function() {
             do_action('typerocket_loaded');
             Registry::initHooks();
-        });
+        }, 20);
 
         /*
         |--------------------------------------------------------------------------
