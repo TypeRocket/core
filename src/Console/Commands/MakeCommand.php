@@ -61,7 +61,7 @@ class MakeCommand extends Command
 
             if($file->exists()) {
                 $eol = PHP_EOL;
-                $new = "         \\$namespace\\$class::class,{$eol}";
+                $new = "        \\$namespace\\$class::class,{$eol}";
 
                 if(!$file->replaceOnLine("'commands' => [", "'commands' => [{$eol}{$new}")) {
                     $this->warning('Register your new command ' . $command . ' to config/galaxy.php' );
