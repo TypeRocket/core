@@ -1,21 +1,21 @@
 <?php
 namespace TypeRocket\Utility;
 
-use TypeRocket\Utility\Helper;
-
 class File
 {
     public $existing = false;
     public $file;
+    public $folder_permissions = 0755;
 
     /**
      * File constructor.
      *
      * @param string $file
      */
-    public function __construct( $file )
+    public function __construct( $file, $folder_permissions = null )
     {
         $this->file = $file;
+        $this->folder_permissions = $folder_permissions ?? $this->folder_permissions;
 
         if( file_exists( $file ) ) {
             $this->existing = true;
@@ -57,17 +57,27 @@ class File
         }
 
         if($content) {
-            $name = basename($this->file);
-            $dir = substr($this->file, 0, -strlen($name));
-
-            if (!is_dir($dir)) {
-                mkdir($dir);
-            }
+            $this->tryToMakeDir($this->file);
 
             $this->existing = (bool) file_put_contents($this->file, $content);
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $destination
+     */
+    protected function tryToMakeDir($destination) {
+
+        if(!is_dir($destination)) {
+            $file_name = basename($destination);
+            $destination = substr($destination, 0, -strlen($file_name));
+        }
+
+        if (!is_dir($destination)) {
+            mkdir($destination, $this->folder_permissions, true);
+        }
     }
 
     /**
@@ -379,13 +389,15 @@ class File
                 echo 'Make dir: ' . $destination . PHP_EOL;
             }
 
-            mkdir($destination, 0755);
+            $this->tryToMakeDir($destination);
         }
 
         if(!is_dir($path) && is_file($path)) {
             $dont_replace_it = file_exists($destination) && !$replace;
 
             if(!$dont_replace_it) {
+                $this->tryToMakeDir($destination);
+
                 if($verbose) {
                     echo 'Copy file: ' . $destination . PHP_EOL;
                 }
@@ -430,11 +442,11 @@ class File
                 mkdir($file);
             }
             elseif(!$skip && !$item->isDir() ) {
-
-
                 $dont_replace_it = file_exists($file) && !$replace;
 
                 if(!$dont_replace_it) {
+                    $this->tryToMakeDir($destination);
+
                     if($verbose) {
                         echo 'Copy file: ' . $file . PHP_EOL;
                     }
