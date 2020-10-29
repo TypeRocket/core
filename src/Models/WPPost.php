@@ -239,7 +239,6 @@ class WPPost extends Model
         return get_permalink($this->wpPost);
     }
 
-
     /**
      * @param mixed|null $value
      *
