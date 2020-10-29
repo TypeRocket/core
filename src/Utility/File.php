@@ -53,12 +53,11 @@ class File
     public function create($content = null)
     {
         if(!$this->existing) {
+            $this->tryToMakeDir($this->file);
             fclose(fopen($this->file, 'w'));
         }
 
         if($content) {
-            $this->tryToMakeDir($this->file);
-
             $this->existing = (bool) file_put_contents($this->file, $content);
         }
 
