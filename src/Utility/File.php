@@ -310,6 +310,10 @@ class File
         $path = realpath($path ? $path : $this->file);
         $project_root = Helper::wordPressRootPath();
 
+        if( !file_exists($path) ) {
+            throw new \Exception('Nothing deleted.' . $path . ' does not exist.');
+        }
+
         if(!$root) {
             if( !Str::starts($project_root, TYPEROCKET_PATH) ) {
                 $project_root = TYPEROCKET_PATH;
@@ -320,10 +324,6 @@ class File
 
         if( !Str::starts($root, $path) ) {
             throw new \Exception('Nothing deleted. ' . $path . ' file must be within your project scope or ' . $root);
-        }
-
-        if( !file_exists($path) ) {
-            throw new \Exception('Nothing deleted.' . $path . ' does not exist.');
         }
 
         $dir = rtrim($path);
