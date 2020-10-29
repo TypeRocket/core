@@ -7,6 +7,36 @@ use TypeRocket\Models\Meta\WPPostMeta;
 use TypeRocket\Models\Traits\MetaData;
 use WP_Post;
 
+/**
+ * Class WPPost
+ *
+ * @property bool $is_published;
+ *
+ * @property string $post_status;
+ * @property int $post_author;
+ * @property string $post_date;
+ * @property string $post_date_gmt;
+ * @property string $post_content;
+ * @property string $post_content_filtered;
+ * @property string $post_title;
+ * @property string $comment_status;
+ * @property string $ping_status;
+ * @property string $post_name;
+ * @property string $to_ping;
+ * @property string $pinged;
+ * @property string $post_modified;
+ * @property string $post_modified_gmt;
+ * @property int $post_parent;
+ * @property string $guid;
+ * @property int $menu_order;
+ * @property string $post_type;
+ * @property string $post_mime_type;
+ * @property int $comment_count;
+ * @property string $post_password;
+ * @property int $ID;
+ *
+ * @package TypeRocket\Models
+ */
 class WPPost extends Model
 {
     use MetaData;
@@ -49,6 +79,10 @@ class WPPost extends Model
     protected $guard = [
         'post_type',
         'id'
+    ];
+
+    protected $private = [
+        'post_password'
     ];
 
     /**
@@ -203,6 +237,15 @@ class WPPost extends Model
     public function permalink()
     {
         return get_permalink($this->wpPost);
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function getIsPublishedProperty()
+    {
+        return $this->post_status == 'publish';
     }
 
     /**
