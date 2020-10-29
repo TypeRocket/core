@@ -246,7 +246,7 @@ class WPPost extends Model
      */
     public function getIsPublishedProperty($value = null)
     {
-        return (bool) $value ?? $this->post_status == 'publish';
+        return (bool) ( $value ?? $this->post_status == 'publish' );
     }
 
     /**
