@@ -319,7 +319,7 @@ class File
             }
         }
 
-        $root = rtrim($root ?? $project_root, '/');
+        $root = rtrim($root ?? $project_root, DIRECTORY_SEPARATOR);
 
         if( !Str::starts($root, $path) ) {
             throw new \Exception('Nothing deleted. ' . $path . ' file must be within your project scope or ' . $root);
@@ -380,7 +380,7 @@ class File
         $path = $this->file;
 
         if($relative) {
-            $destination = TYPEROCKET_PATH . '/' . ltrim($destination, DIRECTORY_SEPARATOR);
+            $destination = TYPEROCKET_PATH . DIRECTORY_SEPARATOR . ltrim($destination, DIRECTORY_SEPARATOR);
         }
 
         if(!file_exists($destination) && is_dir($path)) {

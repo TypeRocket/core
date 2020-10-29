@@ -249,7 +249,7 @@ class Request
      */
     public function getHeader($header)
     {
-        $header = preg_replace( '/[^A-Z0-9_]/', '', strtoupper($header));
+        $header = preg_replace( '/[^A-Z0-9_]/', '', strtoupper(str_replace('-', '_',$header)));
 
         return $_SERVER['HTTP_' . $header] ?? null;
     }
