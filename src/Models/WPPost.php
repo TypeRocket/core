@@ -241,11 +241,13 @@ class WPPost extends Model
 
 
     /**
+     * @param mixed|null $value
+     *
      * @return bool
      */
-    public function getIsPublishedProperty()
+    public function getIsPublishedProperty($value = null)
     {
-        return $this->post_status == 'publish';
+        return (bool) $value ?? $this->post_status == 'publish';
     }
 
     /**
