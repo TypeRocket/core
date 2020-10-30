@@ -9,7 +9,7 @@ use TypeRocket\Models\Model;
 
 class AuthorizerService extends Service
 {
-    protected $alias = 'auth';
+    public const ALIAS = 'auth';
     protected $policies = [];
 
     /**

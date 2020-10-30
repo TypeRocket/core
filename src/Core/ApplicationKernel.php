@@ -53,7 +53,7 @@ namespace TypeRocket\Core
             foreach ($services as $service) {
                 $instance = (new Resolver)->resolve($service);
                 if($instance instanceof Service) {
-                    Container::register($service, [$instance, 'register'], $instance->isSingleton(), $instance->alias());
+                    Container::register($service, [$instance, 'register'], $instance->isSingleton(), $instance::ALIAS);
                 }
             }
 

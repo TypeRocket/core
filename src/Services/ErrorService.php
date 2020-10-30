@@ -5,8 +5,8 @@ use TypeRocket\Core\Config;
 
 class ErrorService extends Service
 {
-    protected $alias = 'tr-error';
-    const WHOOPS = 'TypeRocketPro\Features\Whoops';
+    public const ALIAS = 'tr-error';
+    public const WHOOPS = 'TypeRocketPro\Features\Whoops';
 
     /**
      * ErrorService constructor.

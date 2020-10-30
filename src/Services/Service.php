@@ -4,7 +4,7 @@ namespace TypeRocket\Services;
 abstract class Service
 {
     protected $singleton = true;
-    protected $alias = null;
+    public const ALIAS = null;
 
     /**
      * @return $this
@@ -27,6 +27,6 @@ abstract class Service
      */
     public function alias()
     {
-        return $this->alias;
+        return static::ALIAS;
     }
 }
