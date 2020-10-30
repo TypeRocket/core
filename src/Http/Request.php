@@ -473,6 +473,20 @@ class Request
     }
 
     /**
+     * Check Honey Pot
+     *
+     * @param array|null $fields
+     *
+     * @return bool|array
+     */
+    public function checkHoneypot(?array $fields = null)
+    {
+        $honey = $fields ?? $_REQUEST['__hny'] ?? $this->input('__hny', []);
+
+        return apply_filters('typerocket_honeypot_check', empty(array_filter($honey)) ?: $honey, $honey);
+    }
+
+    /**
      * Check Field Nonce
      *
      * Works the same as check_ajax_referer but also include

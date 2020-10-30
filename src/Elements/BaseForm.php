@@ -696,6 +696,20 @@ class BaseForm
     }
 
     /**
+     * Check Spam Honeypot
+     *
+     * @param null|string $name
+     *
+     * @return Html
+     */
+    public function honeypot($name = null)
+    {
+        $fields = (string) $this->text($name ?? 'my_name_' . md5(time()))->raw(true)->setPrefix('__hny');
+        $fields .= (string) $this->checkbox('send_message')->raw(true)->setPrefix('__hny');
+        return Html::div(['style' => 'display: none', 'class' => 'tr-bot-tasty-treat'], $fields);
+    }
+
+    /**
      * Field object into input
      *
      * @param Fields\Field $field

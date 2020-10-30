@@ -2,6 +2,8 @@
 namespace TypeRocket\Elements\Traits;
 
 use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Html\Html;
+use TypeRocket\Html\Tag;
 
 trait Fieldable
 {
@@ -58,7 +60,11 @@ trait Fieldable
         foreach ($this->fields as $field) {
             if(is_string($field)) {
                 $html .= $field;
-            } else {
+            }
+            elseif($field instanceof Tag || $field instanceof Html) {
+                $html .= $field;
+            }
+            else {
                 if(method_exists($field, 'cloneToForm')) {
                     $html .= $field->cloneToForm($this);
                 }
