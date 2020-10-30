@@ -4,6 +4,7 @@ namespace TypeRocket\Utility;
 class File
 {
     public $existing = false;
+    public $wrote;
     public $file;
     public $folder_permissions = 0755;
 
@@ -44,6 +45,14 @@ class File
     }
 
     /**
+     * @return mixed
+     */
+    public function wrote()
+    {
+        return $this->wrote;
+    }
+
+    /**
      * Create File
      *
      * @param null|string $content
@@ -52,13 +61,10 @@ class File
      */
     public function create($content = null)
     {
-        if(!$this->existing) {
-            $this->tryToMakeDir($this->file);
-            fclose(fopen($this->file, 'w'));
-        }
+        $this->tryToMakeFileWithDir();
 
         if($content) {
-            $this->existing = (bool) file_put_contents($this->file, $content);
+            $this->wrote = (bool) file_put_contents($this->file, $content);
         }
 
         return $this;
@@ -67,8 +73,8 @@ class File
     /**
      * @param string $destination
      */
-    protected function tryToMakeDir($destination) {
-
+    protected function tryToMakeDir($destination)
+    {
         if(!is_dir($destination)) {
             $file_name = basename($destination);
             $destination = substr($destination, 0, -strlen($file_name));
@@ -76,6 +82,19 @@ class File
 
         if (!is_dir($destination)) {
             mkdir($destination, $this->folder_permissions, true);
+        }
+    }
+
+    /**
+     * @param string|null $destination
+     */
+    protected function tryToMakeFileWithDir($destination = null)
+    {
+        if(!$this->existing) {
+            $destination = $destination ?? $this->file;
+            $this->tryToMakeDir($destination);
+            fclose(fopen($destination, 'w'));
+            $this->existing = true;
         }
     }
 
@@ -88,15 +107,11 @@ class File
      */
     public function append($content = null)
     {
-        if(!$this->existing) {
-            fclose(fopen($this->file, 'w'));
-        }
+        $this->tryToMakeFileWithDir();
 
         if($content) {
-            file_put_contents($this->file, $content, FILE_APPEND);
+            $this->wrote = (bool) file_put_contents($this->file, $content, FILE_APPEND);
         }
-
-        $this->existing = true;
 
         return $this;
     }
@@ -219,7 +234,7 @@ class File
             }
 
             if($found) {
-                file_put_contents($this->file, $fileContent);
+                $this->wrote = (bool) file_put_contents($this->file, $fileContent);
                 return true;
             } else {
                 return false;
@@ -244,7 +259,7 @@ class File
 
         if( ! file_exists($new) ) {
             $file = fopen($new, "w") or die("Unable to open file!");
-            fwrite($file, $newContent);
+            $this->wrote = (bool) fwrite($file, $newContent);
             fclose($file);
             return realpath( $new );
         } else {
@@ -401,7 +416,7 @@ class File
                     echo 'Copy file: ' . $destination . PHP_EOL;
                 }
 
-                copy($path, $destination);
+                $this->wrote = copy($path, $destination);
             }
             elseif($verbose) {
                 echo 'Kept existing file: ' . $destination . PHP_EOL;
@@ -450,7 +465,7 @@ class File
                         echo 'Copy file: ' . $file . PHP_EOL;
                     }
 
-                    copy($item, $file);
+                    $this->wrote = copy($item, $file);
                 }
                 elseif($verbose) {
                     echo 'Kept existing file: ' . $destination . PHP_EOL;
