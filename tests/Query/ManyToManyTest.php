@@ -8,11 +8,11 @@ use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 
 class CategoryMockClass extends WPTerm {
-    protected $taxonomy = 'category';
+    public const TAXONOMY = 'category';
 }
 
 class PostMockClass extends WPPost {
-    protected $postType = 'post';
+    public const POST_TYPE = 'post';
 
     public function terms() {
         return $this->belongsToMany( WPTerm::class, 'posts_terms' );

@@ -20,7 +20,7 @@ class TermTest extends TestCase
         $term = $term->create($data);
         $id = $term->getID();
 
-        wp_delete_term($id, $term->taxonomy);
+        wp_delete_term($id, $term->getTaxonomy());
 
         $name = $term->getProperty('name');
         $description = $term->getProperty('description');

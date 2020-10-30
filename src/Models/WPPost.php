@@ -43,6 +43,7 @@ class WPPost extends Model
 
     protected $idColumn = 'ID';
     protected $resource = 'posts';
+    public const POST_TYPE = null;
     protected $postType = null;
     protected $wpPost = null;
     protected $fieldOptions = [
@@ -94,8 +95,22 @@ class WPPost extends Model
      */
     public function __construct($postType = null)
     {
-        if($postType) { $this->postType = $postType; }
+        $this->setPostType($postType ?? static::POST_TYPE);
         parent::__construct();
+    }
+
+    /**
+     * @param null|string $postType
+     * @param bool $init
+     *
+     * @return $this
+     */
+    protected function setPostType($postType = null, $init = false)
+    {
+        if($postType) { $this->postType = $postType; }
+        if($init) { $this->initQuery($this->query); }
+
+        return $this;
     }
 
     /**
@@ -129,8 +144,8 @@ class WPPost extends Model
      */
     protected function initQuery( Query $query )
     {
-        if($this->postType) {
-            $query->where('post_type', $this->getPostType());
+        if($pt = $this->getPostType()) {
+            $query->where('post_type', $pt);
         }
 
         return $query;
@@ -187,7 +202,7 @@ class WPPost extends Model
         $post = get_post($post);
 
         if($post instanceof WP_Post) {
-            $this->postType = $post->post_type;
+            $this->setPostType($post->post_type);
             $this->wpPost = $post;
 
             $this->castProperties( get_object_vars( $post ) );
@@ -403,8 +418,8 @@ class WPPost extends Model
             $builtin = $this->slashBuiltinFields($builtin);
             remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
-            if(!empty($this->postType)) {
-                $builtin['post_type'] = $this->postType;
+            if(!empty($this->getPostType())) {
+                $builtin['post_type'] = $this->getPostType();
             }
 
             if( empty($builtin['post_title']) ) {

@@ -197,6 +197,31 @@ class Str
     }
 
     /**
+     * @param array|object $patterns
+     * @param string $subject
+     *
+     * @return false|mixed
+     */
+    public static function pregMatchFindFirst(array $patterns, string $subject)
+    {
+        $regex = ['#^(?'];
+        foreach ($patterns as $i => $pattern) {
+            if($reg = is_string($pattern) ? $pattern : Data::walk(['regex'], $pattern)) {
+                $regex[] = $reg . '(*MARK:'.$i.')';
+            }
+        }
+        $regex = implode('|', $regex) . ')$#x';
+        preg_match($regex, $subject, $m);
+
+        if(empty($m)) { return null; }
+
+        $found = $patterns[$m['MARK']];
+        if(empty($found)) { return null; }
+
+        return $found;
+    }
+
+    /**
      * Split At
      *
      * @param $pattern

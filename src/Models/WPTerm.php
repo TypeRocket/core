@@ -12,6 +12,7 @@ class WPTerm extends Model
 
     protected $idColumn = 'term_id';
     protected $resource = 'terms';
+    public const TAXONOMY = null;
     protected $taxonomy = null;
     /** @var \WP_Term */
     protected $wpTerm = null;
@@ -38,7 +39,7 @@ class WPTerm extends Model
 
     public function __construct($taxonomy = null)
     {
-        if($taxonomy) { $this->taxonomy = $taxonomy; }
+        $this->setTaxonomy($taxonomy ?? static::TAXONOMY);
         parent::__construct();
     }
 
@@ -50,6 +51,21 @@ class WPTerm extends Model
     public function getTaxonomy()
     {
         return $this->taxonomy;
+    }
+
+    /**
+     * Set Taxonomy
+     *
+     * @param string|null $taxonomy
+     * @param bool $init init query when setting taxonomy
+     * @return $this
+     */
+    public function setTaxonomy($taxonomy = null, $init = false)
+    {
+        if($taxonomy) { $this->taxonomy = $taxonomy; }
+        if($init) { $this->initQuery($this->query); }
+
+        return $this;
     }
 
     /**
@@ -73,14 +89,14 @@ class WPTerm extends Model
      */
     protected function initQuery(Query $query)
     {
-        if($this->taxonomy) {
+        if($tax = $this->getTaxonomy()) {
             /** @var \wpdb $wpdb */
             global $wpdb;
             $tt = $wpdb->term_taxonomy;
             $query->setSelectTable(null);
             $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
             $query->join($tt, $tt.'.term_id', $this->table.'.term_id');
-            $query->where($tt.'.taxonomy', $this->taxonomy);
+            $query->where($tt.'.taxonomy', $tax);
         }
 
         return $query;
@@ -142,7 +158,7 @@ class WPTerm extends Model
      */
     public function permalink()
     {
-        return get_term_link($this->wpTerm, $this->taxonomy);
+        return get_term_link($this->wpTerm, $this->getTaxonomy());
     }
 
     /**
@@ -177,28 +193,13 @@ class WPTerm extends Model
      */
     protected function afterCastProperties()
     {
-        if(!$this->wpTerm && $this->taxonomy && $this->getCache()) {
-            $_term = sanitize_term( (object) $this->properties, $this->taxonomy, 'raw' );
+        if(!$this->wpTerm && $this->getTaxonomy() && $this->getCache()) {
+            $_term = sanitize_term( (object) $this->properties, $this->getTaxonomy(), 'raw' );
             wp_cache_add( $_term->term_id, $_term, 'terms' );
             $this->wpTerm = new \WP_Term($_term);
         }
 
         return parent::afterCastProperties();
-    }
-
-    /**
-     * Set Taxonomy
-     *
-     * @param string $taxonomy
-     * @param bool $init init query when setting taxonomy
-     * @return $this
-     */
-    public function setTaxonomy($taxonomy, $init = true)
-    {
-        $this->taxonomy = $taxonomy;
-        if($init) { $this->initQuery($this->query); }
-
-        return $this;
     }
 
     /**
@@ -236,7 +237,7 @@ class WPTerm extends Model
         $term = get_term( $term );
 
         if( $term instanceof \WP_Term) {
-            $this->taxonomy = $term->taxonomy;
+            $this->setTaxonomy($term->taxonomy, true);
             $this->wpTerm = $term;
             $this->castProperties( $term->to_array() );
         }
@@ -329,11 +330,11 @@ class WPTerm extends Model
     {
         $id = $this->getID();
 
-        if(!$this->taxonomy || !$id) {
+        if(!$this->getTaxonomy() || !$id) {
             throw new ModelException('Taxonomy and ID required to use updateTermCount()');
         }
 
-        wp_update_term_count_now([$id], $this->taxonomy);
+        wp_update_term_count_now([$id], $this->getTaxonomy());
 
         return $this;
     }
