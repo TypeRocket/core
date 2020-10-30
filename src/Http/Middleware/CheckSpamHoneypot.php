@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Http\Middleware
 {
-    class SpamHoneypot extends Middleware
+    class CheckSpamHoneypot extends Middleware
     {
         public function handle()
         {
