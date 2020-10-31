@@ -6,21 +6,28 @@ class File
     public $existing = false;
     public $wrote;
     public $file;
-    public $folder_permissions = 0755;
+    public $isDir;
+    public $dirPermissions;
+    public const DIR_PERMISSIONS = 0755;
 
     /**
      * File constructor.
      *
      * @param string $file
+     * @param null|int $folder_permissions
      */
     public function __construct( $file, $folder_permissions = null )
     {
         $this->file = $file;
-        $this->folder_permissions = $folder_permissions ?? $this->folder_permissions;
+        $this->dirPermissions = $folder_permissions ?? static::DIR_PERMISSIONS;
+        $this->isDir = is_dir($this->file);
 
         if( file_exists( $file ) ) {
             $this->existing = true;
-            $this->file = realpath($file);
+
+            if($this->exists()) {
+                $this->file = realpath($file);
+            }
         }
     }
 
@@ -81,7 +88,7 @@ class File
         }
 
         if (!is_dir($destination)) {
-            mkdir($destination, $this->folder_permissions, true);
+            mkdir($destination, $this->dirPermissions, true);
         }
     }
 
@@ -321,11 +328,11 @@ class File
      */
     public function removeRecursiveDirectory($path = null, $removeSelf = true, $root = null )
     {
-        $path = realpath($path ? $path : $this->file);
+        $path = $path ? realpath($path) : $this->file;
         $project_root = Helper::wordPressRootPath();
 
         if( !file_exists($path) ) {
-            throw new \Exception('Nothing deleted.' . $path . ' does not exist.');
+            throw new \Exception('Nothing deleted. ' . $path . ' does not exist.');
         }
 
         if(!$root) {

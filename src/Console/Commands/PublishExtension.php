@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
+use Symfony\Component\Console\Input\InputOption;
 use TypeRocket\Console\Command;
 
 class PublishExtension extends Command
@@ -14,6 +15,8 @@ class PublishExtension extends Command
     protected function config()
     {
         $this->addArgument('package', self::REQUIRED, 'The package: vendor/package or path.');
+        $this->addArgument('submodule', self::OPTIONAL, 'The package submodule to publish.');
+        $this->addOption('mode', 'M', InputOption::VALUE_OPTIONAL, 'Modes of publishing: publish or unpublish', 'publish');
     }
 
     /**
@@ -25,21 +28,17 @@ class PublishExtension extends Command
      */
     protected function exec()
     {
-        $this->confirm('Publishing can be destructive... Continue anyways? (y/n)');
-        $package = $this->getArgument('package');
+        // $this->confirm('Publishing can be destructive... Continue anyways? (y/n)');
+        $package = trim($this->getArgument('package'), '\\/');
+        $script = ltrim($this->getArgument('submodule', 'publish'), '/.\\');
 
-        if(file_exists($path = $package . '/publish.php')) {
+        if(is_file($path = TYPEROCKET_PATH . '/vendor/'.$package.'/ext/'.$script.'.php')) {
             /** @noinspection PhpIncludeInspection */
-            require_once $package . '/publish.php';
-        }
-        elseif(file_exists($path = TYPEROCKET_PATH . '/vendor/'.$package.'/publish.php')) {
-            /** @noinspection PhpIncludeInspection */
-            require_once TYPEROCKET_PATH . '/vendor/'.$package.'/publish.php';
+            $cb = function($path) { require_once $path; };
+            $cb($path);
+            $this->success(sprintf('Package %s published with %s', $package, $path));
         } else {
-            $this->error('Package not found.' . $path);
-            die();
+            $this->error('Package script not found: ' . $path);
         }
-
-        $this->success(sprintf('Package %s published', $package));
     }
 }

@@ -91,6 +91,25 @@ class Cookie
     }
 
     /**
+     * Get a cookie otherwise set one cookie
+     *
+     * @param string $name name of cookie
+     * @param string $data value of cookie
+     * @param int|null $time expire time in seconds
+     * @param string $path path cookie can be access from. `/` == all paths
+     *
+     * @return string|null
+     */
+    public function getOtherwiseSet($name, $data, $time = MINUTE_IN_SECONDS, $path = '/')
+    {
+        if($content = $this->get($name)) {
+            return $content;
+        }
+
+        $this->set(...func_get_args());
+    }
+
+    /**
      * Delete a cookie
      *
      * Only call if headers are not sent yet
@@ -110,11 +129,12 @@ class Cookie
      * Get a cookie
      *
      * @param string $name name of cookie
+     * @param null|string $default
      *
      * @return null
      */
-    public function get( $name ) {
-        $data = null;
+    public function get( $name, $default = null ) {
+        $data = $default;
 
         if( !empty($_COOKIE[$name]) ) {
             $data = wp_unslash($_COOKIE[$name]);

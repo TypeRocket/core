@@ -42,7 +42,6 @@ class Command extends SymfonyCommand
      */
     protected function configure()
     {
-
         $signature = explode(' ', $this->command[0], 2);
         $name = array_shift($signature);
 
@@ -197,11 +196,12 @@ class Command extends SymfonyCommand
      * Get Argument
      *
      * @param string $name
+     * @param null|string $default
      *
      * @return mixed
      */
-    protected function getArgument( $name ) {
-        return $this->input->getArgument($name);
+    protected function getArgument( $name, ?string $default = null ) {
+        return $this->input->getArgument($name) ?? $default;
     }
 
     /**
@@ -220,11 +220,12 @@ class Command extends SymfonyCommand
      * Get Option
      *
      * @param string $name
+     * @param string|null $default
      *
      * @return mixed
      */
-    protected function getOption( $name ) {
-        return $this->input->getOption($name);
+    protected function getOption( $name, ?string $default = null ) {
+        return $this->input->getOption($name) ?? $default;
     }
 
     /**

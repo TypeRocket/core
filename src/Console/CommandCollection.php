@@ -13,7 +13,6 @@ class CommandCollection extends \ArrayObject
         Commands\MakeService::class,
         Commands\MakeModel::class,
         Commands\GenerateSeed::class,
-        Commands\RootMuPluginInstall::class,
         Commands\RootInstall::class,
         Commands\PublishExtension::class,
         Commands\ClearCache::class,

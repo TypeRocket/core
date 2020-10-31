@@ -108,7 +108,7 @@ class DownloadWordPress extends Command
             $location = $this->path . '/wp-unzip';
 
             if( ! file_exists( $location ) ) {
-                mkdir($location, 0755, true);
+                mkdir($location, File::DIR_PERMISSIONS, true);
             }
 
             $zip->extractTo( $location );

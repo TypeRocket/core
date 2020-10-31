@@ -29,6 +29,14 @@ class Helper
         }
 
         $depth = TYPEROCKET_PATH;
+        $root_install = $depth . '/' . Config::get('app.root.wordpress');
+
+        if(is_dir($root_install)) {
+            $depth = $root_install;
+        } else {
+            $root_install = null;
+        }
+
         $looking = 5;
         while ($looking--) {
             if(is_file($depth . '/wp-load.php')) {
@@ -39,7 +47,7 @@ class Helper
             $depth .= '/..';
         }
 
-        return false;
+        return $root_install ?? false;
     }
 
     /**

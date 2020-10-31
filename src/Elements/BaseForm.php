@@ -10,6 +10,7 @@ use TypeRocket\Html\Tag;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Http\ErrorCollection;
 use TypeRocket\Http\Request;
+use TypeRocket\Http\Response;
 use TypeRocket\Http\RouteCollection;
 use TypeRocket\Interfaces\Formable;
 use TypeRocket\Models\WPPost;
@@ -119,7 +120,7 @@ class BaseForm
      * @param mixed|null $model
      * @param null|string $action
      *
-     * @return $this
+     * @return static
      * @throws \Exception
      */
     protected function autoConfigModel($model = null, $action = null)
@@ -189,7 +190,7 @@ class BaseForm
      * Set Resource
      *
      * @param string $resource
-     * @return $this
+     * @return static
      */
     public function setResource(string $resource)
     {
@@ -213,7 +214,7 @@ class BaseForm
      *
      * @param string $action
      *
-     * @return BaseForm
+     * @return static
      */
     public function setAction(string $action)
     {
@@ -227,7 +228,7 @@ class BaseForm
      *
      * @param string $method POST, PUT, DELETE
      *
-     * @return BaseForm $this
+     * @return static
      */
     public function setMethod($method)
     {
@@ -238,7 +239,7 @@ class BaseForm
     /**
      * Get Form method
      *
-     * @return BaseForm $this
+     * @return static
      */
     public function getMethod()
     {
@@ -248,7 +249,7 @@ class BaseForm
     /**
      * Disable Ajax
      *
-     * @return BaseForm $this
+     * @return static
      */
     public function disableAjax() {
         $this->useAjax = null;
@@ -259,7 +260,7 @@ class BaseForm
     /**
      * Use Ajax
      *
-     * @return BaseForm $this
+     * @return $this
      */
     public function useAjax() {
         $this->useAjax = true;
@@ -272,7 +273,7 @@ class BaseForm
      *
      * Only works with form's open HTML tag
      *
-     * @return $this
+     * @return static
      */
     public function useConfirm()
     {
@@ -287,7 +288,7 @@ class BaseForm
      * @param null|string $resource override resource name useful for setting custom post type IDs etc.
      * @param null|int|string $item_id
      *
-     * @return BaseForm $this
+     * @return static
      */
     public function useRest($resource = null, $item_id = null)
     {
@@ -305,7 +306,7 @@ class BaseForm
      *
      * @param bool $load_only_old
      *
-     * @return $this
+     * @return static
      */
     public function useOld($load_only_old = false)
     {
@@ -320,7 +321,7 @@ class BaseForm
      * @param string|null $key
      * @param null|array $override
      *
-     * @return $this
+     * @return static
      */
     public function useErrors($key = 'fields', $override = null)
     {
@@ -342,7 +343,7 @@ class BaseForm
     /**
      * @param $key
      *
-     * @return null
+     * @return null|string
      */
     public function getError($key)
     {
@@ -355,7 +356,7 @@ class BaseForm
      * @param \WP_Widget $widget
      * @param array $data
      *
-     * @return $this
+     * @return static
      * @throws \ReflectionException
      */
     public function useWidget(\WP_Widget $widget, $data = [])
@@ -369,7 +370,7 @@ class BaseForm
      *
      * @param $menu_id
      *
-     * @return BaseForm|$this
+     * @return static
      */
     public function useMenu($menu_id)
     {
@@ -383,7 +384,7 @@ class BaseForm
      * @param string $method
      * @param bool $site
      *
-     * @return BaseForm $this
+     * @return static
      */
     public function toUrl($url, $method = null, $site = null)
     {
@@ -416,7 +417,7 @@ class BaseForm
      * @param null|array $values
      * @param null|string $method
      *
-     * @return BaseForm
+     * @return static
      */
     public function toRoute($name, $values = null, $method = null)
     {
@@ -433,7 +434,7 @@ class BaseForm
      * @param string $path
      * @param array $query
      *
-     * @return BaseForm
+     * @return static
      */
     public function toAdmin($path, $query = [])
     {
@@ -454,7 +455,7 @@ class BaseForm
      * @param null|int $item_id
      * @param string $root_path examples admin.php, tools.php, ect.
      *
-     * @return BaseForm $this
+     * @return static
      */
     public function toPage($resource = null, $action = null, $item_id = null, $root_path = 'admin.php')
     {
@@ -710,6 +711,18 @@ class BaseForm
     }
 
     /**
+     * Don't Cache Page
+     *
+     * @return static
+     */
+    public function noCache()
+    {
+        Response::getFromContainer()->noCache(true);
+
+        return $this;
+    }
+
+    /**
      * Field object into input
      *
      * @param Fields\Field $field
@@ -726,7 +739,7 @@ class BaseForm
      *
      * @param string $submit
      *
-     * @return BaseForm
+     * @return static
      */
     public function save($submit = 'Save')
     {

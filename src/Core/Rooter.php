@@ -3,6 +3,7 @@ namespace TypeRocket\Core;
 
 use TypeRocket\Database\Query;
 use TypeRocket\Utility\Str;
+use TypeRocket\Core\Config;
 
 class Rooter
 {
@@ -21,13 +22,13 @@ class Rooter
     {
         do_action('typerocket_rooter');
 
-        if(!\TypeRocket\Core\Config::get('app.root.themes.override', true)) {
+        if(!Config::get('app.root.themes.override', true)) {
             return;
         }
 
-        $paths = \TypeRocket\Core\Config::get('paths');
-        $urls = \TypeRocket\Core\Config::get('urls');
-        $root = \TypeRocket\Core\Config::get('app.root.themes');
+        $paths = Config::get('paths');
+        $urls = Config::get('urls');
+        $root = Config::get('app.root.themes');
         $themes = [
             $paths['themes'],
             WP_CONTENT_DIR . '/themes',

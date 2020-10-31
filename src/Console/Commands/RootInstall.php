@@ -56,7 +56,6 @@ class RootInstall extends Command
         // Run
         $this->runCommand('wp:download');
         $this->configWordPress();
-        $this->runCommand('root:mu');
         $this->runCommand('config:seed');
 
         $this->success('TypeRocket is connected, Happy coding!');

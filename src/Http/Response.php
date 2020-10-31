@@ -269,6 +269,21 @@ class Response implements JsonSerializable
     }
 
     /**
+     * Skip the TypeRocket Rapid Cache
+     *
+     * @param bool $tryHtml
+     *
+     * @return $this
+     */
+    public function noCache($tryHtml = false)
+    {
+        if(!headers_sent()) { $this->setHeader('X-No-Cache', 'yes'); }
+        elseif($tryHtml) { echo '<!-- ::No Cache:: -->'; }
+
+        return $this;
+    }
+
+    /**
      * Set Download Headers
      *
      * @param string $file full file path
@@ -553,9 +568,16 @@ class Response implements JsonSerializable
     /**
      * Get HTTP status
      *
+     * @param bool $real
+     *
      * @return int|null
      */
-    public function getStatus() {
+    public function getStatus($real = false) {
+
+        if($real) {
+            return http_response_code();
+        }
+
         return $this->status ? (int) $this->status : null;
     }
 
