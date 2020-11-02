@@ -3,6 +3,7 @@ namespace TypeRocket\Console;
 
 use Exception;
 use Symfony\Component\Console\Application;
+use TypeRocket\Core\ApplicationKernel;
 use TypeRocket\Core\System;
 
 class GalaxyConsoleLauncher
@@ -45,9 +46,9 @@ class GalaxyConsoleLauncher
                 }
 
                 // bypass maintenance mode
-                $GLOBALS['wp_filter']['enable_maintenance_mode'][0]['callbacks'] = ['function' => function() {return false;}, 'accepted_args' => 0];
+                ApplicationKernel::addFilter('enable_maintenance_mode', function() {return false;}, 0, 0);
                 // wp filters and actions are the same thing
-                $GLOBALS['wp_filter']['after_setup_theme'][30]['callbacks'] = ['function' => [$this, 'loadCommandsAndRun'], 'accepted_args' => 0];
+                ApplicationKernel::addFilter('after_setup_theme', [$this, 'loadCommandsAndRun'], 30, 0);
 
                 define('WP_USE_THEMES', true);
                 global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;

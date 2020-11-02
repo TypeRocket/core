@@ -10,6 +10,67 @@ namespace TypeRocket\Core
     class ApplicationKernel
     {
         /**
+         * Init Application
+         */
+        public static function init()
+        {
+            $app = new static;
+            $app->boot();
+
+            if (defined('WPINC')) {
+                $app->default();
+            }
+            elseif(!defined('TYPEROCKET_GALAXY')) {
+                $app->root();
+            }
+            else {
+                $app->galaxy();
+            }
+        }
+
+        /**
+         * Boot for default setup
+         */
+        public function default()
+        {
+            (new System)->boot();
+        }
+
+        /**
+         * Boot for root install
+         */
+        public function root()
+        {
+            if(!defined('TYPEROCKET_ROOT_INSTALL'))
+                define('TYPEROCKET_ROOT_INSTALL', true);
+
+            $this->bootSystemAfterMustUseLoaded();
+        }
+
+        /**
+         * Boot for Galaxy CLI
+         */
+        public function galaxy()
+        {
+            $this->bootSystemAfterMustUseLoaded();
+        }
+
+        /**
+         * Boot after MU plugins loaded
+         */
+        public function bootSystemAfterMustUseLoaded()
+        {
+            static::addFilter('muplugins_loaded', function() {
+                if( file_exists(TYPEROCKET_ALT_PATH . '/rooter.php') ) {
+                    include(TYPEROCKET_ALT_PATH . '/rooter.php');
+                }
+
+                (new System)->boot();
+                (new Rooter)->boot();
+            }, 0, 0);
+        }
+
+        /**
          * Boot Container
          */
         public function boot()
@@ -58,6 +119,21 @@ namespace TypeRocket\Core
             }
 
             return $this;
+        }
+
+        /**
+         * @param string $tag
+         * @param callable $function
+         * @param int $priority
+         * @param int $accepted_args
+         */
+        public static function addFilter(string $tag, callable $function, $priority = 10, $accepted_args = 1)
+        {
+            if(function_exists('add_filter')) {
+                add_filter(...func_get_args());
+            } else {
+                $GLOBALS['wp_filter'][$tag][$priority]['callbacks'] = ['function' => $function, 'accepted_args' => $accepted_args];
+            }
         }
 
         /**

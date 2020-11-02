@@ -321,7 +321,7 @@ class File
      *
      * @param null|string $path
      * @param bool $removeSelf
-     * @param bool $root
+     * @param string|null $root
      *
      * @return bool
      * @throws \Throwable
@@ -343,7 +343,7 @@ class File
 
         $root = rtrim($root ?? $project_root, DIRECTORY_SEPARATOR);
 
-        if( !Str::starts($root, $path) ) {
+        if( !empty($root) && !Str::starts($root, $path) ) {
             throw new \Exception('Nothing deleted. ' . $path . ' file must be within your project scope or ' . $root);
         }
 

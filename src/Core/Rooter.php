@@ -41,7 +41,10 @@ class Rooter
         }
 
         new \WP_Theme($root['theme'], $paths['themes']);
-        define( 'WP_DEFAULT_THEME', $root['theme'] );
+
+        if(defined('TYPEROCKET_ROOT_INSTALL')) {
+            define( 'WP_DEFAULT_THEME', $root['theme'] );
+        }
 
         if($root['flush']) {
             add_filter( "option_stylesheet_root", function($v, $option) use ($paths) {

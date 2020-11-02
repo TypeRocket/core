@@ -12,7 +12,7 @@ class Helper
     /**
      * Get WordPress Root
      *
-     * @return string
+     * @return string|false
      */
     public static function wordPressRootPath() {
 
@@ -21,7 +21,7 @@ class Helper
         }
 
         if( defined('TYPEROCKET_ROOT_INSTALL') ) {
-            return TYPEROCKET_PATH . '/' . trim(Config::get('app.root.wordpress', 'wordpress'), '/');
+            return TYPEROCKET_PATH . '/' . trim(Config::get('app.root.wordpress', 'wordpress'), '\\/');
         }
 
         if( defined('ABSPATH') ) {
@@ -29,25 +29,22 @@ class Helper
         }
 
         $depth = TYPEROCKET_PATH;
-        $root_install = $depth . '/' . Config::get('app.root.wordpress');
-
-        if(is_dir($root_install)) {
-            $depth = $root_install;
-        } else {
-            $root_install = null;
-        }
 
         $looking = 5;
         while ($looking--) {
-            if(is_file($depth . '/wp-load.php')) {
-                if(is_file($depth . '/wp-includes/wp-db.php')) {
-                    return $depth;
-                }
+            if(is_file($depth . '/wp-load.php') && is_file($depth . '/wp-includes/wp-db.php')) {
+                return $depth;
             }
             $depth .= '/..';
         }
 
-        return $root_install ?? false;
+        $galaxy_root = TYPEROCKET_PATH . '/' . trim(Config::get('app.root.wordpress'), '\\/');
+
+        if(is_dir($galaxy_root)) {
+            return $galaxy_root;
+        }
+
+        return false;
     }
 
     /**
