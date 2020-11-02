@@ -711,18 +711,6 @@ class BaseForm
     }
 
     /**
-     * Don't Cache Page
-     *
-     * @return static
-     */
-    public function noCache()
-    {
-        Response::getFromContainer()->noCache(true);
-
-        return $this;
-    }
-
-    /**
      * Field object into input
      *
      * @param Fields\Field $field

@@ -262,25 +262,49 @@ class Response implements JsonSerializable
      * Last-Modified: <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
      *
      * @param int $utc_time UTC unix timestamp
-     */
-    public function setHeaderLastModified($utc_time)
-    {
-        $this->setHeader('Last-Modified', (new \DateTime)->setTimestamp($utc_time)->format('D, d M Y H:i:s') . ' GMT');
-    }
-
-    /**
-     * Skip the TypeRocket Rapid Cache
-     *
-     * @param bool $tryHtml
      *
      * @return $this
      */
-    public function noCache($tryHtml = false)
+    public function setHeaderLastModified($utc_time)
     {
-        if(!headers_sent()) { $this->setHeader('X-No-Cache', 'yes'); }
-        elseif($tryHtml) { echo '<!-- ::No Cache:: -->'; }
+        return $this->setHeader('Last-Modified', (new \DateTime)->setTimestamp($utc_time)->format('D, d M Y H:i:s') . ' GMT');
+    }
 
-        return $this;
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+     *
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setCacheControl($value)
+    {
+        return $this->setHeader('Cache-Control', $value);
+    }
+
+    /**
+     * Do Not Cache
+     *
+     * Works for HTTP 1.1 only
+     *
+     * @return $this
+     */
+    public function noCache()
+    {
+        return $this->setHeaders([
+            'Cache-Control' => 'no-store, must-revalidate',
+            'Expires' => 0
+        ]);
+    }
+
+    /**
+     * Do not cache with TypeRocket Pro Rapid Pages extension
+     *
+     * @return $this
+     */
+    public function noRapidPagesCache()
+    {
+        return $this->setHeader( 'X-No-Cache', 'yes');
     }
 
     /**

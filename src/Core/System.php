@@ -142,8 +142,8 @@ class System
         add_action( 'edit_user_profile', [$this, 'userProfiles'] );
         add_action( 'show_user_profile', [$this, 'userProfiles'] );
         add_action( 'wp_nav_menu_item_custom_fields', [$this, 'menuFields'], 10, 5 );
-        add_action( 'admin_footer', [$this, 'addBottomJs']);
         add_action( 'admin_head', [$this, 'addTopJs']);
+        add_action( 'admin_footer', [$this, 'addBottomJs']);
         add_action( 'admin_notices', [$this, 'setFlash']);
         add_filter( 'wp_handle_upload_prefilter', [$this, 'restrictUploadMimeTypes'] );
     }
@@ -228,8 +228,8 @@ class System
         add_action( 'wp_enqueue_scripts', function() {wp_enqueue_style( 'dashicons' );} );
         add_action( 'wp_enqueue_scripts', [ $this, 'addCss' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'addJs' ] );
-        add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
         add_action( 'wp_head', [ $this, 'addTopJs' ] );
+        add_action( 'wp_footer', [ $this, 'addBottomJs' ] );
 
         return $this;
     }
