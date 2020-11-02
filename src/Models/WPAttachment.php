@@ -5,7 +5,7 @@ use TypeRocket\Html\Html;
 
 class WPAttachment extends WPPost
 {
-    protected $postType = 'attachment';
+    public const POST_TYPE = 'attachment';
 
     /**
      * Get Attachment URL
