@@ -13,6 +13,8 @@ class SSL
      */
 	public static function fixSSLUrl( $url, $secure_only = false )
     {
+        $scheme = null;
+
 	    if(function_exists('is_ssl')) {
             $scheme = $secure_only || \is_ssl() ? 'https' : 'http';
         } elseif ($secure_only) {
