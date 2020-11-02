@@ -11,7 +11,7 @@ class SSL
 	 * @return mixed
 	 */
 	public static function fixSSLUrl( $url ) {
-		$scheme = is_ssl() ? 'https' : 'http';
+		$scheme = \is_ssl() ? 'https' : 'http';
 		if( $scheme == 'https' ) {
 			$url = preg_replace('/^http:/i', 'https:', $url);
 		}
