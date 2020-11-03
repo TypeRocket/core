@@ -11,6 +11,7 @@ namespace TypeRocket\Services
 
         /**
          * @return $this|Service
+         * @throws \Exception
          */
         public function register() : Service
         {
@@ -22,7 +23,7 @@ namespace TypeRocket\Services
 
             $driver = Config::get("mail.drivers.{$default}.driver");
 
-            $this->driver = new $driver;
+            $this->driver( apply_filters('typerocket_mailer_service_driver', new $driver ) );
 
             return $this;
         }
