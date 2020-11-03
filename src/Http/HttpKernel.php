@@ -23,7 +23,8 @@ abstract class HttpKernel
      * @param Response $response
      * @param Handler $handler
      */
-    public function __construct(Request $request, Response $response, Handler $handler) {
+    public function __construct(Request $request, Response $response, Handler $handler)
+    {
         $this->response = $response;
         $this->request = $request;
         $this->handler = $handler;
@@ -44,7 +45,8 @@ abstract class HttpKernel
     /**
      * Compile middleware from controller, router and kernel
      */
-    public function compileMiddleware() : array {
+    public function compileMiddleware() : array
+    {
         $stacks = [];
 
         // Route middleware
