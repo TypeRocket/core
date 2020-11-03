@@ -58,7 +58,7 @@ abstract class HttpKernel
             $routeMiddleware = [];
             foreach ($route->middleware as $m) {
                 $routeGroup = null;
-                if(is_string($m)) {
+                if(is_string($m) && !empty($this->middleware[$m])) {
                     $routeMiddleware = array_merge($routeMiddleware, $this->middleware[$m] ?? []);
                 } else {
                     $routeMiddleware[] = $m;

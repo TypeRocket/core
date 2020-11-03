@@ -482,8 +482,9 @@ class Request
     public function checkHoneypot(?array $fields = null)
     {
         $honey = $fields ?? $_REQUEST['__hny'] ?? $this->input('__hny', []);
+        $honey_taken = array_filter($honey);
 
-        return apply_filters('typerocket_honeypot_check', empty(array_filter($honey)) ?: $honey, $honey);
+        return apply_filters('typerocket_honeypot_check', empty($honey_taken), $honey);
     }
 
     /**

@@ -7,7 +7,7 @@ namespace TypeRocket\Http\Middleware
         {
             if( ! $this->request->isGet() ) {
                 $honey = $this->request->checkHoneypot();
-                if ( ! empty($honey) ) {
+                if ( !$honey ) {
                     add_action('typerocket_honeypot_touched', 'typerocket_honeypot_touched', 20, 2);
                     $this->response->setError('honeypot', true);
                     $this->response->setMessage('A tasty treat.', 'error');
