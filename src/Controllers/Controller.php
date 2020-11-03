@@ -68,28 +68,24 @@ class Controller
     /**
      * @return array
      */
-    public function getMiddleware() {
+    public function getMiddleware()
+    {
         return $this->middleware;
     }
 
     /**
-     * @param string $group Kernel named group
-     * @param array $actions ['show', 'index']
+     * @param string|array $group Kernel named group or array of middleware
+     * @param array $actions ['only' => ['show', 'index']]
      *
      * @return $this
      */
-    public function addMiddleware( $group, $actions = []) {
-        $middleware['group'] = $group;
-
-        if(array_key_exists('except', $actions)) {
-            $middleware['except'] = $actions['except'];
-        }
-
-        if(array_key_exists('only', $actions)) {
-            $middleware['only'] = $actions['only'];
-        }
-
-        $this->middleware[] = $middleware;
+    public function addMiddleware( $group, $actions = [])
+    {
+        $this->middleware[] = [
+            'group' => $group,
+            'except' => $actions['except'] ?? null,
+            'only' => $actions['only'] ?? null,
+        ];
 
         return $this;
     }

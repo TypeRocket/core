@@ -11,7 +11,7 @@ namespace TypeRocket\Http\Middleware
                     add_action('typerocket_honeypot_touched', 'typerocket_honeypot_touched', 20, 2);
                     $this->response->setError('honeypot', true);
                     $this->response->setMessage('A tasty treat.', 'error');
-                    do_action('typerocket_honeypot_touched', $honey, $this->response);
+                    do_action('typerocket_honeypot_touched', $this->response);
                 }
             }
 
@@ -24,7 +24,7 @@ namespace
 {
     use TypeRocket\Http\Response;
 
-    function typerocket_honeypot_touched($honey, Response $response)
+    function typerocket_honeypot_touched(Response $response)
     {
         $response->exitAny(200);
     }

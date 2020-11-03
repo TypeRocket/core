@@ -550,6 +550,20 @@ class BaseForm
     }
 
     /**
+     * Check Spam Honeypot
+     *
+     * @param null|string $name
+     *
+     * @return Html
+     */
+    public static function honeypotInputs($name = null)
+    {
+        $name = $name ?? 'my_name_' . md5(time());
+        $fields = "<input type='text' name='__hny[{$name}]' /><input type='checkbox' name='__hny[send_message]' />";
+        return Html::div(['style' => 'display: none', 'class' => 'tr-bot-tasty-treat'], $fields);
+    }
+
+    /**
      * Open Form Element
      *
      * Not needed post types, for example, since WordPress already opens this for you.
@@ -697,17 +711,13 @@ class BaseForm
     }
 
     /**
-     * Check Spam Honeypot
-     *
      * @param null|string $name
      *
      * @return Html
      */
     public function honeypot($name = null)
     {
-        $fields = (string) $this->text($name ?? 'my_name_' . md5(time()))->raw(true)->setPrefix('__hny');
-        $fields .= (string) $this->checkbox('send_message')->raw(true)->setPrefix('__hny');
-        return Html::div(['style' => 'display: none', 'class' => 'tr-bot-tasty-treat'], $fields);
+        return static::honeypotInputs(...func_get_args());
     }
 
     /**

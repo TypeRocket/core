@@ -83,11 +83,21 @@ abstract class HttpKernel
         $controllerMiddleware = [];
         $groups = $this->controller->getMiddlewareGroups();
         foreach( $groups as $group ) {
-            $controllerMiddleware[] = $this->middleware[$group];
+            if(!is_array($group)) {
+                $group = [$group];
+            }
+
+            foreach ($group as $g) {
+                if(is_string($g) && !empty($this->middleware[$g])) {
+                    $controllerMiddleware = array_merge($controllerMiddleware, $this->middleware[$g] ?? []);
+                } else {
+                    $controllerMiddleware[] = $g;
+                }
+            }
         }
 
         if( !empty($controllerMiddleware) ) {
-            $stacks[] = call_user_func_array('array_merge', $controllerMiddleware);
+            $stacks[] = $controllerMiddleware;
         }
 
         // Global middleware

@@ -52,7 +52,8 @@ class ControllerContainer
      *
      * @return array ['group_name', 'group_name']
      */
-    public function getMiddlewareGroups() {
+    public function getMiddlewareGroups()
+    {
         $groups = [];
         $action = null;
         $middleware = null;
@@ -68,25 +69,23 @@ class ControllerContainer
             return $groups;
         }
 
-        foreach ($middleware as $set ) {
-            if (array_key_exists('group', $set)) {
-                $use = null;
+        foreach ($middleware as $set) {
+            $use = null;
 
-                if( ! array_key_exists('except', $set) && ! array_key_exists('only', $set) ) {
-                    $use = $set['group'];
-                }
+            if( ! $set['except'] && ! $set['only'] ) {
+                $use = $set['group'];
+            }
 
-                if (array_key_exists('except', $set) && ! in_array($action, $set['except'])) {
-                    $use = $set['group'];
-                }
+            if ($set['except'] && ! in_array($action, is_array($set['except']) ? $set['except'] : [$set['except']])) {
+                $use = $set['group'];
+            }
 
-                if (array_key_exists('only', $set) && in_array($action, $set['only'])) {
-                    $use = $set['group'];
-                }
+            if ($set['only'] && in_array($action, is_array($set['only']) ? $set['only'] : [$set['only']])) {
+                $use = $set['group'];
+            }
 
-                if($use) {
-                    $groups[] = $use;
-                }
+            if($use) {
+                $groups[] = $use;
             }
         }
 
