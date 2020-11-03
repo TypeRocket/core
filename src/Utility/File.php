@@ -42,6 +42,14 @@ class File
     }
 
     /**
+     * @return null|string
+     */
+    public function file()
+    {
+        return $this->file;
+    }
+
+    /**
      * File Exists
      *
      * @return bool
@@ -484,6 +492,14 @@ class File
         if($delete) {
             $this->removeRecursiveDirectory();
         }
+    }
+
+    /**
+     * @return false|string
+     */
+    public function __toString()
+    {
+        return $this->file;
     }
 
 }

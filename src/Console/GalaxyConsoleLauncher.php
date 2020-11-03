@@ -4,6 +4,7 @@ namespace TypeRocket\Console;
 use Exception;
 use Symfony\Component\Console\Application;
 use TypeRocket\Core\ApplicationKernel;
+use TypeRocket\Core\Config;
 use TypeRocket\Core\System;
 
 class GalaxyConsoleLauncher
@@ -13,6 +14,8 @@ class GalaxyConsoleLauncher
     public $commands;
     public $console;
     public $loaded = false;
+    /** @var \TypeRocket\Core\Config */
+    public $config;
 
     /**
      * Launch CLI
@@ -24,7 +27,7 @@ class GalaxyConsoleLauncher
     {
         $this->console = new Application();
         $this->commands = new CommandCollection();
-        $this->commands->enableCustom();
+        $this->commands->configure(Config::getFromContainer());
         $wp_root = \TypeRocket\Core\Config::get('galaxy.wordpress');
 
         // Set common headers, to prevent warnings from plugins.
@@ -66,9 +69,9 @@ class GalaxyConsoleLauncher
                 echo $has_config ? '' : 'wp-config.php not found'.PHP_EOL;
                 echo 'WP Commands not enabled.'.PHP_EOL;
             }
+        } else {
+            $this->loadCommandsAndRun();
         }
-
-        $this->loadCommandsAndRun();
     }
 
     /**
@@ -79,6 +82,8 @@ class GalaxyConsoleLauncher
         if($this->loaded) {
             return;
         }
+
+        $this->commands->enableCustom();
 
         if($this->wordpress) {
             $this->commands->enableWordPress();

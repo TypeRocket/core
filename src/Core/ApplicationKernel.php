@@ -1,7 +1,6 @@
 <?php
 namespace TypeRocket\Core
 {
-    use TypeRocket\Http\RouteCollection;
     use TypeRocket\Models\AuthUser;
     use TypeRocket\Models\WPUser;
     use TypeRocket\Services\Service;
@@ -9,6 +8,8 @@ namespace TypeRocket\Core
 
     class ApplicationKernel
     {
+        protected $loaded = false;
+
         /**
          * Init Application
          */
@@ -33,6 +34,7 @@ namespace TypeRocket\Core
          */
         public function default()
         {
+            $this->loadServices();
             (new System)->boot();
         }
 
@@ -61,8 +63,10 @@ namespace TypeRocket\Core
         public function bootSystemAfterMustUseLoaded()
         {
             static::addFilter('muplugins_loaded', function() {
-                if( file_exists(TYPEROCKET_ALT_PATH . '/rooter.php') ) {
-                    include(TYPEROCKET_ALT_PATH . '/rooter.php');
+                $this->loadServices();
+
+                if( is_file(TYPEROCKET_ALT_PATH . '/rooter.php') ) {
+                    require(TYPEROCKET_ALT_PATH . '/rooter.php');
                 }
 
                 (new System)->boot();
@@ -75,16 +79,15 @@ namespace TypeRocket\Core
          */
         public function boot()
         {
-            // Initial singletons
+            if($this->loaded) {
+                return $this;
+            }
+
+            $this->loaded = true;
+
             Container::singleton(Config::class, function() {
                 return new Config(TYPEROCKET_CORE_CONFIG_PATH);
             }, Config::ALIAS);
-
-            if(Config::env('TYPEROCKET_ROUTES', true) ) {
-                Container::singleton(RouteCollection::class, function() {
-                    return new RouteCollection();
-                }, RouteCollection::ALIAS);
-            }
 
             Container::singleton(RuntimeCache::class, function() {
                 return new RuntimeCache();
@@ -105,6 +108,14 @@ namespace TypeRocket\Core
                 return $user;
             }, AuthUser::ALIAS);
 
+            return $this;
+        }
+
+        /**
+         * @throws \ReflectionException
+         */
+        public function loadServices()
+        {
             // Application Services
             $services = Config::get('app.services');
 
@@ -117,8 +128,6 @@ namespace TypeRocket\Core
                     Container::register($service, [$instance, 'register'], $instance->isSingleton(), $instance::ALIAS);
                 }
             }
-
-            return $this;
         }
 
         /**

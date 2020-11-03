@@ -26,6 +26,7 @@ class System
     public const STATE = '_typerocket_site_state_changed';
 
     protected $stash = [];
+    protected $loaded = false;
     protected $frontend_mode = false;
 
     /**
@@ -33,21 +34,11 @@ class System
      */
     public function boot()
     {
-        $self = $this;
-
-        $this->loadRuntimeCache();
-
-        /**
-         * Maybe Load TypeRocket Pro
-         */
-        if(class_exists(static::ADVANCED)) {
-            (new Resolver())->resolve(static::ADVANCED);
+        if($this->loaded) {
+            return $this;
         }
 
-        $this->loadExtensions();
-        $this->initHooks();
-        $this->loadResponders();
-        $this->maybeFrontend();
+        $this->loaded = true;
 
         /*
         |--------------------------------------------------------------------------
@@ -57,22 +48,28 @@ class System
         | Register system into the DI container.
         |
         */
-        Container::singleton(self::class, function() use ($self) {
-            return $self;
+        Container::singleton(self::class, function() {
+            return $this;
         }, static::ALIAS);
 
         /*
         |--------------------------------------------------------------------------
-        | Run Registry
+        | Load TypeRocket
         |--------------------------------------------------------------------------
         |
-        | Runs after hooks muplugins_loaded, plugins_loaded and setup_theme
-        | This allows the registry to work outside of the themes folder. Use
-        | the typerocket_loaded hook to access TypeRocket from your WP plugins.
+        | Use the typerocket_loaded and typerocket_before_load hooks to access
+        | TypeRocket from your WP plugins and themes.
         |
         */
         add_action('after_setup_theme', function() {
-            do_action('typerocket_loaded');
+            do_action('typerocket_before_load', $this);
+            $this->loadRuntimeCacheValues();
+            $this->maybeLoadAdvancedSystem();
+            $this->loadExtensions();
+            $this->initHooks();
+            $this->loadResponders();
+            $this->maybeFrontend();
+            do_action('typerocket_loaded', $this);
             Registry::initHooks();
         }, 20);
 
@@ -81,15 +78,27 @@ class System
         | Router
         |--------------------------------------------------------------------------
         |
-        | Load TypeRocket Router
+        | Load TypeRocket router through the typerocket_loaded action so it can
+        | be unregistered if desired.
         |
         */
-        add_action('typerocket_loaded', [$this, 'loadRoutes']);
+        add_action('typerocket_loaded', static::class."::loadRoutes");
 
         return $this;
     }
 
-    protected function loadRuntimeCache()
+    /**
+     * Maybe Load TypeRocket Pro Advanced System
+     */
+    public function maybeLoadAdvancedSystem() {
+        if(class_exists(static::ADVANCED)) {
+            (new Resolver())->resolve(static::ADVANCED);
+        }
+
+        return $this;
+    }
+
+    public function loadRuntimeCacheValues()
     {
         $assets = Config::get('paths.assets');
         $manifest = json_decode(file_get_contents($assets . '/typerocket/mix-manifest.json'), true);
@@ -110,21 +119,25 @@ class System
     /**
      * Load Routes
      */
-    public function loadRoutes()
+    public static function loadRoutes()
     {
         if(!Config::env('TYPEROCKET_ROUTES', true)) {
             return;
         }
 
+        Container::singleton(RouteCollection::class, function() {
+            return new RouteCollection();
+        }, RouteCollection::ALIAS);
+
         do_action('typerocket_routes' );
-        $this->addRewrites();
-        $routes = Config::get('paths.routes') . '/public.php';
-        if( file_exists($routes) ) {
+        static::addRewrites();
+        $public_routes = Config::get('paths.routes') . '/public.php';
+        if( file_exists($public_routes) ) {
             /** @noinspection PhpIncludeInspection */
-            require( $routes );
+            require( $public_routes );
         }
         /** @var RouteCollection $routes */
-        $routes = Container::resolve(RouteCollection::class);
+        $routes = RouteCollection::getFromContainer();
         $request = new Request;
         $config = ['match' => 'site_url'];
 
@@ -151,7 +164,7 @@ class System
     /**
      * Admin Init
      */
-    protected function initHooks()
+    public function initHooks()
     {
         add_action( 'wp_loaded', [$this, 'checkSiteStateChanged']);
         add_action( 'admin_init', [$this, 'initAdminHooks'] );
@@ -190,7 +203,7 @@ class System
      * @param $args
      * @param $id
      */
-    function menuFields($item_id, $item, $depth, $args, $id) {
+    public function menuFields($item_id, $item, $depth, $args, $id) {
         if(has_action('typerocket_menu_fields')) {
             echo BaseForm::nonceInput('hook');
             $id = 'tr-fields-' . wp_generate_uuid4();
@@ -273,7 +286,7 @@ class System
     /**
      * Load Responders
      */
-    protected function loadResponders() {
+    public function loadResponders() {
         if( defined('WP_INSTALLING') && WP_INSTALLING) {
             return;
         }
@@ -385,7 +398,7 @@ class System
     /**
      * Add Rewrite rules
      */
-    public function addRewrites()
+    public static function addRewrites()
     {
         $path = Request::new()->getPath();
 

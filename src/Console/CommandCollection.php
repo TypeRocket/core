@@ -1,8 +1,13 @@
 <?php
 namespace TypeRocket\Console;
 
+use TypeRocket\Core\Config;
+
 class CommandCollection extends \ArrayObject
 {
+    /** @var Config */
+    public $config;
+
     public $commands = [
         Commands\MakeController::class,
         Commands\MakeComponent::class,
@@ -35,6 +40,18 @@ class CommandCollection extends \ArrayObject
     }
 
     /**
+     * @param Config $config
+     *
+     * @return $this
+     */
+    public function configure(Config $config)
+    {
+        $this->config = $config;
+
+        return $this;
+    }
+
+    /**
      * Enable WordPress Commands
      */
     public function enableWordPress()
@@ -49,7 +66,7 @@ class CommandCollection extends \ArrayObject
      */
     public function enableCustom()
     {
-        $commands = \TypeRocket\Core\Config::get('galaxy.commands');
+        $commands = $this->config->locate('galaxy.commands');
         if( $commands) {
             foreach ( $commands as $command ) {
                 $this->append($command);
@@ -62,10 +79,10 @@ class CommandCollection extends \ArrayObject
      */
     public function enableAdvanced()
     {
-        $file = \TypeRocket\Core\Config::get('paths.pro') . '/commands.php';
+        $file = $this->config->locate('paths.pro') . '/commands.php';
 
         if(file_exists($file)) {
-            $commands = include($file);
+            $commands = require($file);
         } else {
             echo 'Can not load pro commands... ' . $file . PHP_EOL;
         }
