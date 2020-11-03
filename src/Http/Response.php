@@ -902,7 +902,7 @@ class Response implements JsonSerializable
     {
         $code = $code ?? $this->getStatus();
         $this->setStatus($code);
-        wp_die($this->getMessage());
+        wp_die($this->getMessage(), '', $code);
     }
 
     /**
