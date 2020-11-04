@@ -69,9 +69,9 @@ class GalaxyConsoleLauncher
                 echo $has_config ? '' : 'wp-config.php not found'.PHP_EOL;
                 echo 'WP Commands not enabled.'.PHP_EOL;
             }
-        } else {
-            $this->loadCommandsAndRun();
         }
+
+        $this->loadCommandsAndRun();
     }
 
     /**
