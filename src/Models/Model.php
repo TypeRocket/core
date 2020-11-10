@@ -2279,6 +2279,21 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * @param mixed $value
+     * @param callable $function
+     *
+     * @return $this
+     */
+    public function when($value, callable $function)
+    {
+        if(!empty($value)) {
+            $function($this, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param $value
      *
      * @return object
