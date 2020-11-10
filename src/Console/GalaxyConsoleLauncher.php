@@ -16,6 +16,7 @@ class GalaxyConsoleLauncher
     public $loaded = false;
     /** @var \TypeRocket\Core\Config */
     public $config;
+    public $wpRoot;
 
     /**
      * Launch CLI
@@ -37,6 +38,7 @@ class GalaxyConsoleLauncher
         $_SERVER['REMOTE_ADDR']     = '127.0.0.1';
 
         if( !empty($wp_root) ) {
+            $this->wpRoot = $wp_root = realpath($wp_root);
             $is_file = is_file( $wp_root . '/wp-load.php' );
             $has_config = is_file( $wp_root . '/wp-config.php' );
             $has_config = $has_config ?: is_file( $wp_root . '/../wp-config.php' );
@@ -51,14 +53,14 @@ class GalaxyConsoleLauncher
                 // bypass maintenance mode
                 ApplicationKernel::addFilter('enable_maintenance_mode', function() {return false;}, 0, 0);
                 // wp filters and actions are the same thing
+                ApplicationKernel::addFilter('after_setup_theme', [$this, 'loadWordPressFunctions'], 28, 0);
                 ApplicationKernel::addFilter('after_setup_theme', [$this, 'loadCommandsAndRun'], 30, 0);
 
                 define('WP_USE_THEMES', true);
                 global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
+
                 /** @noinspection PhpIncludeInspection */
                 require( $wp_root . '/wp-load.php');
-                /** @noinspection PhpIncludeInspection */
-                require( $wp_root . '/wp-admin/includes/upgrade.php' );
 
                 add_filter('enable_maintenance_mode', function(){
                     return true;
@@ -72,6 +74,15 @@ class GalaxyConsoleLauncher
         }
 
         $this->loadCommandsAndRun();
+    }
+
+    /**
+     * Load WordPress Functions
+     */
+    public function loadWordPressFunctions()
+    {
+        /** @noinspection PhpIncludeInspection */
+        require( $this->wpRoot . '/wp-admin/includes/upgrade.php' );
     }
 
     /**
