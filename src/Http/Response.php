@@ -925,8 +925,9 @@ class Response implements JsonSerializable
      */
     public function exitServerError($message = null, $code = 500)
     {
-        status_header( $code >= 500 ?: 500 );
-        wp_die(WP_DEBUG ? $message ?? $this->getMessage() : __('Something went wrong!', 'typerocket-domain') );
+        $code = $code >= 500 ?: 500;
+        status_header( $code );
+        wp_die(WP_DEBUG ? ($message ?? $this->getMessage()) : __('Something went wrong!', 'typerocket-domain'), $code );
     }
 
     /**

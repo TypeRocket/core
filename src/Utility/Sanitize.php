@@ -197,6 +197,30 @@ class Sanitize
     }
 
     /**
+     * Sanitize Html with Encoding
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    public static function encodeHtml($input)
+    {
+        return esc_html($input);
+    }
+
+    /**
+     * Sanitize Attribute with Encoding
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    public static function encodeAttribute($input)
+    {
+        return esc_attr($input);
+    }
+
+    /**
      * Sanitize Hex Color Value
      *
      * If the hex does not validate return a default instead.

@@ -660,9 +660,9 @@ abstract class Field
      *
      * @return mixed
      */
-    protected function sanitize( $value, $default = null )
+    protected function sanitize( string $value, $default = null )
     {
-        $sanitize = "\\TypeRocket\\Sanitize::" . $this->getSetting('sanitize', $default );
+        $sanitize = "\\TypeRocket\\Utility\\Sanitize::" . $this->getSetting('sanitize', $default );
 
         if ( is_callable($sanitize)) {
             $value = call_user_func($sanitize, $value);

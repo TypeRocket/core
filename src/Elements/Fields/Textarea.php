@@ -32,7 +32,7 @@ class Textarea extends Field
         $default = $this->getDefault();
 
         $value = !empty($value) ? $value : $default;
-        $value = $this->sanitize($value, 'textarea');
+        $value = $this->sanitize($value, 'raw');
         $max = $this->getMaxlength($value, $this->getAttribute('maxlength'));
 
         if($max) {
