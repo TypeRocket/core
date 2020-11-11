@@ -655,12 +655,12 @@ abstract class Field
     /**
      * Sanitize field value
      *
-     * @param string $value
+     * @param string|null $value
      * @param null $default
      *
      * @return mixed
      */
-    protected function sanitize( string $value, $default = null )
+    protected function sanitize( $value, $default = null )
     {
         $sanitize = "\\TypeRocket\\Utility\\Sanitize::" . $this->getSetting('sanitize', $default );
 
