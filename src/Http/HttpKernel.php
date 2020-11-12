@@ -59,7 +59,6 @@ abstract class HttpKernel
 
             $routeMiddleware = [];
             foreach ($route->middleware as $m) {
-                $routeGroup = null;
                 if(is_string($m) && !empty($this->middleware[$m])) {
                     $routeMiddleware = array_merge($routeMiddleware, $this->middleware[$m] ?? []);
                 } else {
@@ -78,6 +77,16 @@ abstract class HttpKernel
                 break; // Take the first group only
             }
         }
+
+        $handlerMiddleware = [];
+        foreach ($this->handler->getMiddleware() as $m) {
+            if(is_string($m) && !empty($this->middleware[$m])) {
+                $handlerMiddleware = array_merge($handlerMiddleware, $this->middleware[$m] ?? []);
+            } else {
+                $handlerMiddleware[] = $m;
+            }
+        }
+        $stacks[] = $handlerMiddleware;
 
         // Controller middleware
         $controllerMiddleware = [];

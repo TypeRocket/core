@@ -12,6 +12,7 @@ class Handler
     protected $hook;
     protected $template;
     protected $middlewareGroups = [];
+    protected $middleware = [];
     protected $route;
 
     /**
@@ -105,6 +106,26 @@ class Handler
         $this->middlewareGroups = $groups;
 
         return $this;
+    }
+
+    /**
+     * @param array|string $middleware
+     *
+     * @return $this
+     */
+    public function setMiddleware($middleware)
+    {
+        $this->middleware = is_array($middleware) ? $middleware : [$middleware];
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
     }
 
     /**
