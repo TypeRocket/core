@@ -129,13 +129,14 @@ class System
             return new RouteCollection();
         }, RouteCollection::ALIAS);
 
-        do_action('typerocket_routes' );
+        do_action('typerocket_routes');
         static::addRewrites();
         $public_routes = Config::get('paths.routes') . '/public.php';
         if( file_exists($public_routes) ) {
             /** @noinspection PhpIncludeInspection */
             require( $public_routes );
         }
+        do_action('typerocket_after_routes');
         /** @var RouteCollection $routes */
         $routes = RouteCollection::getFromContainer();
         $request = new Request;
