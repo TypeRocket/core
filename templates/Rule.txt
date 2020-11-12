@@ -1,0 +1,31 @@
+<?php
+namespace {{namespace}};
+
+use TypeRocket\Utility\Validators\ValidatorRule;
+use TypeRocket\Utility\Validator;
+
+class {{class}} extends ValidatorRule
+{
+    public CONST KEY = '{{key}}';
+
+    public function validate(): bool
+    {
+        /**
+         * @var $option
+         * @var $option2
+         * @var $option3
+         * @var $full_name
+         * @var $field_name
+         * @var $value
+         * @var $type
+         * @var Validator $validator
+         */
+        extract($this->args);
+
+        if( false ) {
+            $this->error = "does not pass {{key}} rule.";
+        }
+
+        return !$this->error;
+    }
+}

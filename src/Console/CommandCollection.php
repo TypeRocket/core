@@ -15,6 +15,7 @@ class CommandCollection extends \ArrayObject
         Commands\MakeCommand::class,
         Commands\MakeFields::class,
         Commands\MakePolicy::class,
+        Commands\MakeRule::class,
         Commands\MakeService::class,
         Commands\MakeModel::class,
         Commands\GenerateSeed::class,
