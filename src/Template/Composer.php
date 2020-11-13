@@ -5,12 +5,12 @@ use TypeRocket\Models\Model;
 
 abstract class Composer
 {
-    /** @var array|Model $data */
+    /** @var array|object|Model $data */
     protected $data;
     protected $type;
 
     /**
-     * @param array|Model $data
+     * @param array|object|Model $data
      *
      * @return static
      */
@@ -20,12 +20,12 @@ abstract class Composer
     }
 
     /**
-     * @param mixed|Model $data
+     * @param array|object|Model $data
      */
     public function __construct($data)
     {
         $this->data = $data;
-        $this->type = is_array($this->data) ? 'array' : 'model';
+        $this->type = is_array($this->data) ? 'array' : 'object';
     }
 
     /**
