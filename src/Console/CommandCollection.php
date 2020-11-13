@@ -14,6 +14,7 @@ class CommandCollection extends \ArrayObject
         Commands\MakeMiddleware::class,
         Commands\MakeCommand::class,
         Commands\MakeFields::class,
+        Commands\MakeComposer::class,
         Commands\MakePolicy::class,
         Commands\MakeRule::class,
         Commands\MakeService::class,

@@ -11,7 +11,7 @@ class MakeService extends Command
     protected $command = [
         'make:service',
         'Make new service',
-        'This command allows you to make new services for the DI Container.',
+        'This command makes new services for the DI Container.',
     ];
 
     protected function config()

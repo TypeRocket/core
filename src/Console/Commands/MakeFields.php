@@ -11,7 +11,7 @@ class MakeFields extends Command
     protected $command = [
         'make:fields',
         'Make new HTTP fields container',
-        'This command allows you to make new HTTP fields container.',
+        'This command makes new HTTP fields container.',
     ];
 
     protected function config()

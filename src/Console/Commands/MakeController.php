@@ -13,7 +13,7 @@ class MakeController extends Command
     protected $command = [
         'make:controller',
         'Make new controller',
-        'This command allows you to make new controllers.',
+        'This command makes new controllers.',
     ];
 
     protected function config()
@@ -71,7 +71,8 @@ class MakeController extends Command
      * @param string $model
      * @throws \Exception
      */
-    private function makeFile( $controller, $directive, $model ) {
+    protected function makeFile( $controller, $directive, $model )
+    {
         [$namespace, $class] = Str::splitAt('\\', $controller, true);
         $mc = Str::splitAt('\\', $model, true)[1];
         $tags = ['{{namespace}}', '{{controller}}', '{{model}}', '{{app}}', '{{mc}}', '{{var}}'];
@@ -110,7 +111,5 @@ class MakeController extends Command
             ] );
             $command->run($input, $this->output);
         }
-
     }
-
 }

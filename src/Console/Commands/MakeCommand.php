@@ -11,7 +11,7 @@ class MakeCommand extends Command
     protected $command = [
         'make:command',
         'Make new command',
-        'This command allows you to make new galaxy commands.',
+        'This command makes new galaxy commands.',
     ];
 
     protected function config()

@@ -11,7 +11,7 @@ class MakeRule extends Command
     protected $command = [
         'make:rule',
         'Make new validation rule',
-        'This command allows you to make new validation rules.',
+        'This command makes new validation rules.',
     ];
 
     protected function config()
@@ -22,8 +22,6 @@ class MakeRule extends Command
 
     /**
      * Execute Command
-     *
-     * Example command: php galaxy make:command MyCommandClass space:name
      *
      * @return int|null|void
      */

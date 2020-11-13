@@ -12,7 +12,7 @@ class MakeMiddleware extends Command
     protected $command = [
         'make:middleware',
         'Make new middleware',
-        'This command allows you to make new middleware.',
+        'This command makes new middleware.',
     ];
 
     protected function config()
@@ -38,7 +38,8 @@ class MakeMiddleware extends Command
      *
      * @param string $middleware
      */
-    private function makeFile( $middleware ) {
+    protected function makeFile( $middleware )
+    {
         [$namespace, $class] = Str::splitAt('\\', $middleware, true);
         $tags = ['{{namespace}}', '{{middleware}}'];
         $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Http\Middleware', $namespace]));

@@ -46,6 +46,7 @@ class WPPost extends Model
     public const POST_TYPE = null;
     protected $postType = null;
     protected $wpPost = null;
+    protected $composer = 'TypeRocket\Template\PostTypeModelComposer';
     protected $fieldOptions = [
         'key' => 'post_title',
         'value' => 'ID',
@@ -381,6 +382,15 @@ class WPPost extends Model
     public function status($type)
     {
         return $this->where('post_status', $type);
+    }
+
+    /**
+     * @return mixed|\TypeRocket\Template\PostTypeModelComposer
+     */
+    public function composer()
+    {
+        $composer = $this->composer;
+        return new $composer($this);
     }
 
     /**

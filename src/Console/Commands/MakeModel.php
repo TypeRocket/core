@@ -14,7 +14,7 @@ class MakeModel extends Command
     protected $command = [
         'make:model',
         'Make new model',
-        'This command allows you to make new models.',
+        'This command makes new models.',
     ];
 
     protected function config()
@@ -72,8 +72,8 @@ class MakeModel extends Command
      *
      * @throws \Exception
      */
-    private function makeFile( $model, $directive, $id ) {
-
+    protected function makeFile( $model, $directive, $id )
+    {
         [$namespace, $class] = Str::splitAt('\\', $model, true);
 
         $tags = ['{{namespace}}', '{{model}}', '{{id}}', '{{app}}'];
@@ -106,7 +106,5 @@ class MakeModel extends Command
             ] );
             $command->run($input, $this->output);
         }
-
     }
-
 }

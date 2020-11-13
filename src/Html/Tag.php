@@ -15,8 +15,8 @@ class Tag
      * Html constructor.
      *
      * @param string $tag
-     * @param array $attributes
-     * @param string|Tag|Html|array $nest
+     * @param array|null $attributes
+     * @param string|Tag|Html|array|null $nest
      */
     public function __construct( string $tag, $attributes = null, $nest = null)
     {

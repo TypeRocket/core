@@ -11,7 +11,7 @@ class MakePolicy extends Command
     protected $command = [
         'make:policy',
         'Make new auth policy',
-        'This command allows you to make new auth policies.',
+        'This command makes new auth policies.',
     ];
 
     protected function config()

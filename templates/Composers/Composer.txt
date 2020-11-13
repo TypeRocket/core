@@ -1,0 +1,9 @@
+<?php
+namespace {{namespace}};
+
+use TypeRocket\Template\Composer;
+
+class {{class}} extends Composer
+{
+
+}

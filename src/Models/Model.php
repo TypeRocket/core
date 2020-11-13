@@ -41,6 +41,7 @@ class Model implements Formable, JsonSerializable
     protected $resource = null;
     protected $routeResource = null;
     protected $table = null;
+    protected $composer;
     protected $errors = null;
     /** @var mixed|Query  */
     protected $query;
@@ -2229,6 +2230,15 @@ class Model implements Formable, JsonSerializable
         return $this->query->paginate($number, $page, function($results) use ($obj) {
             return $obj->getQueryResult($results);
         });
+    }
+
+    /**
+     * @return mixed|\TypeRocket\Template\Composer
+     */
+    public function composer()
+    {
+        $composer = $this->composer;
+        return new $composer($this);
     }
 
     /**

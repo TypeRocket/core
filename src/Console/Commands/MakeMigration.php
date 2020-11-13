@@ -10,7 +10,7 @@ class MakeMigration extends Command
     protected $command = [
         'make:migration',
         'Make new migration',
-        'This command allows you to make new SQL migrations.',
+        'This command makes new SQL migrations.',
     ];
 
     protected function config()

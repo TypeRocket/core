@@ -237,6 +237,16 @@ class Html
     }
 
     /**
+     * Tag
+     *
+     * @return Tag
+     */
+    protected function tag()
+    {
+        return $this->tag;
+    }
+
+    /**
      * @param $name
      * @param $arguments
      * @return Html|string
