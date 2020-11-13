@@ -5,6 +5,7 @@ use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
 use TypeRocket\Models\Traits\MetaData;
+use TypeRocket\Template\Composer;
 use WP_Post;
 
 /**
@@ -385,12 +386,11 @@ class WPPost extends Model
     }
 
     /**
-     * @return mixed|\TypeRocket\Template\PostTypeModelComposer
+     * @return Composer|\TypeRocket\Template\PostTypeModelComposer
      */
     public function composer()
     {
-        $composer = $this->composer;
-        return new $composer($this);
+        return parent::composer();
     }
 
     /**
