@@ -46,7 +46,7 @@ trait FieldValue
     public function oldStore( $load_only_old = false)
     {
         if( !empty($_COOKIE[Redirect::KEY_OLD]) ) {
-            $this->old = (new Cookie)->getTransient('Redirect::KEY_OLD');
+            $this->old = (new Cookie)->getTransient(Redirect::KEY_OLD);
         }
 
         $this->onlyOld = $load_only_old;
