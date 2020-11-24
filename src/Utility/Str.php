@@ -215,7 +215,7 @@ class Str
 
         if(empty($m)) { return null; }
 
-        $found = !empty($m['MARK']) ? $patterns[$m['MARK'] ] : null;
+        $found = isset($m['MARK']) && is_numeric($m['MARK']) ? $patterns[$m['MARK'] ] : null;
         if(empty($found)) { return null; }
 
         return $found;
