@@ -975,8 +975,10 @@ class Response implements JsonSerializable
             $response->exitJson($statusCode);
         }
 
-        if( $returned instanceof Download) {
-            $returned->send();
+        if(class_exists('\TypeRocketPro\Http\Download')) {
+            if( $returned instanceof \TypeRocketPro\Http\Download) {
+                $returned->send();
+            }
         }
 
         if( $returned instanceof Redirect) {
