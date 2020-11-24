@@ -115,7 +115,7 @@ class Handler
      */
     public function setMiddleware($middleware)
     {
-        $this->middleware = is_array($middleware) ? $middleware : [$middleware];
+        $this->middleware = array_filter(is_array($middleware) ? $middleware : [$middleware]);
 
         return $this;
     }

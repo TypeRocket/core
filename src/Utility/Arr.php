@@ -105,4 +105,17 @@ class Arr
 
         return $loc;
     }
+
+    /**
+     * Array Keys Exist
+     *
+     * @param array $keys an array of key names
+     * @param array $array the array to check
+     *
+     * @return bool
+     */
+    public static function keysExist(array $keys, array $array)
+    {
+        return !array_diff_key(array_flip($keys), $array);
+    }
 }
