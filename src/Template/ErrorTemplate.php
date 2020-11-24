@@ -3,7 +3,6 @@ namespace TypeRocket\Template;
 
 class ErrorTemplate
 {
-
     /**
      * Error Template
      *
@@ -40,11 +39,12 @@ class ErrorTemplate
         };
 
         if($templates) {
+            $temp = $caller(null);
+            $temp = apply_filters( 'template_include', $temp );
             /** @noinspection PhpIncludeInspection */
-            include $caller(null);
+            include $temp;
         } else {
             add_action( 'template_include', $caller, 100);
         }
     }
-
 }
