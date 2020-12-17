@@ -5,6 +5,7 @@ use Exception;
 use TypeRocket\Elements\Fields\Matrix;
 use TypeRocket\Models\Model;
 use TypeRocket\Models\WPComment;
+use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\WPUser;
 use WP_Post;
@@ -78,7 +79,7 @@ class ModelField
      * Get the post's field
      *
      * @param string|array $name use dot notation
-     * @param null|int|WP_Post $item_id
+     * @param null|int|WP_Post|WPPost $item_id
      *
      * @return array|mixed|null|string
      */
@@ -86,15 +87,19 @@ class ModelField
     {
         global $post;
 
-        if (is_null($item_id) && isset($post->ID)) {
-            $item_id = $post->ID;
-        }
+        if($item_id instanceof WPPost) {
+            $model = $item_id;
+        } else {
+            if (is_null($item_id) && isset($post->ID)) {
+                $item_id = $post->ID;
+            }
 
-        try {
-            $model = new \TypeRocket\Models\WPPost();
-            $model->wpPost($item_id);
-        } catch (Exception $e) {
-            return null;
+            try {
+                $model = new WPPost();
+                $model->wpPost($item_id);
+            } catch (Exception $e) {
+                return null;
+            }
         }
 
         return static::model($model, $name);
@@ -106,7 +111,7 @@ class ModelField
      * Auto binding only for post types
      *
      * @param string $name use dot notation
-     * @param null|int $item_id
+     * @param null|int|Model $item_id
      *
      * @param null|string $modelClass
      *
@@ -117,14 +122,22 @@ class ModelField
     {
         global $post;
 
-        if (isset($post->ID) && is_null($item_id)) {
-            $item_id = $post->ID;
-        }
+        if($item_id instanceof Model) {
+            $model = $item_id;
+        } else {
+            if (isset($post->ID) && is_null($item_id)) {
+                $item_id = $post->ID;
+            }
 
-        /** @var Model $model */
-        $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
-        $model = new $modelClass;
-        $model->findById($item_id);
+            try {
+                /** @var Model $model */
+                $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
+                $model = new $modelClass;
+                $model->findById($item_id);
+            } catch (Exception $e) {
+                return null;
+            }
+        }
 
         $builder_data = $model->getFieldValue($name);
         if(is_array($builder_data)) {
@@ -138,7 +151,7 @@ class ModelField
      * Get users field
      *
      * @param string|array $name use dot notation
-     * @param null|int $item_id
+     * @param null|int|WPUser $item_id
      *
      * @return array|mixed|null|string
      */
@@ -146,17 +159,25 @@ class ModelField
     {
         global $user_id, $post;
 
-        if (isset($user_id) && is_null($item_id)) {
-            $item_id = $user_id;
-        } elseif (is_null($item_id) && isset($post->ID)) {
-            $item_id = $post->post_author;
-        } elseif (is_null($item_id)) {
-            $item_id = get_current_user_id();
-        }
+        if ($item_id instanceof WPUser) {
+            $model = $item_id;
+        } else {
+            if (isset($user_id) && is_null($item_id)) {
+                $item_id = $user_id;
+            } elseif (is_null($item_id) && isset($post->ID)) {
+                $item_id = $post->post_author;
+            } elseif (is_null($item_id)) {
+                $item_id = get_current_user_id();
+            }
 
-        /** @var WPUser $model */
-        $model = Helper::modelClass('User');
-        $model->wpUser($item_id);
+            try {
+                /** @var WPUser $model */
+                $model = Helper::modelClass('User');
+                $model->wpUser($item_id);
+            } catch (Exception $e) {
+                return null;
+            }
+        }
 
         return static::model($model, $name);
     }
@@ -187,13 +208,21 @@ class ModelField
     {
         global $comment;
 
-        if (isset($comment->comment_ID) && is_null($item_id)) {
-            $item_id = $comment->comment_ID;
-        }
+        if ($item_id instanceof WPComment) {
+            $model = $item_id;
+        } else {
+            if (isset($comment->comment_ID) && is_null($item_id)) {
+                $item_id = $comment->comment_ID;
+            }
 
-        /** @var WPComment $model */
-        $model = Helper::modelClass('Comment');
-        $model->wpComment($item_id);
+            try {
+                /** @var WPComment $model */
+                $model = Helper::modelClass('Comment');
+                $model->wpComment($item_id);
+            } catch (Exception $e) {
+                return null;
+            }
+        }
 
         return static::model($model, $name);
     }
@@ -202,19 +231,23 @@ class ModelField
      *  Get taxonomy field
      *
      * @param string|array $name use dot notation
-     * @param string|null $taxonomy taxonomy model class
+     * @param string|null|WPTerm $taxonomy taxonomy model class
      * @param int|null $item_id taxonomy id
      *
      * @return array|mixed|null|string
      */
     public static function term($name, $taxonomy = null, $item_id = null)
     {
-        try {
-            /** @var WPTerm $model */
-            $model = $taxonomy ? Helper::modelClass($taxonomy) : new WPTerm;
-            $model->wpTerm($item_id);
-        } catch (Exception $e) {
-            return null;
+        if ($taxonomy instanceof WPTerm && !$item_id) {
+            $model = $taxonomy;
+        } else {
+            try {
+                /** @var WPTerm $model */
+                $model = $taxonomy ? Helper::modelClass($taxonomy) : new WPTerm;
+                $model->wpTerm($item_id);
+            } catch (Exception $e) {
+                return null;
+            }
         }
 
         return static::model($model, $name);
@@ -231,9 +264,17 @@ class ModelField
      */
     public static function resource($name, $resource, $item_id = null)
     {
-        /** @var Model $model */
-        $model = Helper::modelClass($resource);
-        $model->findById($item_id);
+        if ($resource instanceof Model && !$item_id) {
+            $model = $resource;
+        } else {
+            try {
+                /** @var Model $model */
+                $model = Helper::modelClass($resource);
+                $model->findById($item_id);
+            } catch (Exception $e) {
+                return null;
+            }
+        }
 
         return static::model($model, $name);
     }

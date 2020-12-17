@@ -13,6 +13,18 @@ class AuthorizerService extends Service
     protected $policies = [];
 
     /**
+     * AuthorizerService constructor.
+     *
+     * @param null $policies
+     */
+    public function __construct($policies = null)
+    {
+        if(is_array($policies)) {
+            $this->policies = $policies;
+        }
+    }
+
+    /**
      * Auth Registered Policy
      *
      * This is used for models.
@@ -31,7 +43,14 @@ class AuthorizerService extends Service
         $modelClass = '\\' . get_class($model);
 
         if(!array_key_exists($modelClass, $this->policies)) {
-            $modelClass = '\\' . get_parent_class($model);
+            if($parent_classes = class_parents($model)) {
+                foreach ($parent_classes as $parent_class) {
+                    if(array_key_exists('\\' . $parent_class, $this->policies)) {
+                        $modelClass = '\\' . $parent_class;
+                        break;
+                    }
+                }
+            }
         }
 
         if(array_key_exists($modelClass, $this->policies)) {

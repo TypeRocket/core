@@ -19,6 +19,13 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Hello', $title);
     }
 
+    public function testPostsFieldModelHelper()
+    {
+        $model = \TypeRocket\Models\WPPost::new()->find(1);
+        $title = ModelField::post('post_title', $model);
+        $this->assertStringContainsString('Hello', $title);
+    }
+
     public function testTermFieldHelper()
     {
         $tax = \TypeRocket\Utility\ModelField::term('taxonomy', 'category', 1);
