@@ -140,7 +140,8 @@ class Query
      *
      * @return array|null|object|Results
      */
-    public function get() {
+    public function get()
+    {
         $this->setQueryType();
         return $this->runQuery();
     }
@@ -347,7 +348,8 @@ class Query
      *
      * @return array|bool|false|int|null|object
      */
-    public function first() {
+    public function first()
+    {
         $this->returnOne = true;
         $this->take(1);
         return $this->get();
@@ -420,7 +422,8 @@ class Query
      * @return object
      * @throws \Exception
      */
-    public function findOrDie($id) {
+    public function findOrDie($id)
+    {
         if( ! $data = $this->findById($id)->get() ) {
             throw new \Exception("Model not found: {$id} " . get_class($this));
         }
@@ -441,7 +444,8 @@ class Query
      * @throws \Exception
      * @internal param $id
      */
-    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND', $num = null) {
+    public function findFirstWhereOrDie($column, $arg1, $arg2 = null, $condition = 'AND', $num = null)
+    {
         if( ! $data = $this->where( $column, $arg1, $arg2, $condition, $num ?? func_num_args())->first() ) {
             throw new \Exception("Model not found: on {$column} " . get_class($this));
         }
@@ -456,7 +460,8 @@ class Query
      *
      * @return array|false|int|null|object
      */
-    public function delete( $ids = null ) {
+    public function delete( $ids = null )
+    {
         $this->setQueryType('delete');
 
         if(is_int($ids)) {
@@ -526,7 +531,8 @@ class Query
      *
      * @return array|bool|false|int|null
      */
-    public function countDerived() {
+    public function countDerived()
+    {
         $this->setQueryType('function', [ 'countDerived' => '*']);
 
         return $this->runQuery();
@@ -749,8 +755,8 @@ class Query
      *
      * @return $this
      */
-    protected function setQueryType( $type = null , $args = true ) {
-
+    protected function setQueryType( $type = null , $args = true )
+    {
         $actions = [
           'function', 'update', 'delete', 'create'
         ];
@@ -777,7 +783,8 @@ class Query
      *
      * @return array|bool|false|int|null|Results|object
      */
-    protected function runQuery( $query = [] ) {
+    protected function runQuery( $query = [] )
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
 
@@ -827,7 +834,8 @@ class Query
      *
      * @return string|null
      */
-    public function compileFullQuery() {
+    public function compileFullQuery()
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
 
@@ -940,7 +948,8 @@ class Query
      *
      * @return string
      */
-    protected function compileFunction() {
+    protected function compileFunction()
+    {
         $query = $this->query;
         $sql = '';
 
@@ -959,7 +968,8 @@ class Query
      *
      * @return string
      */
-    protected function compileGrouping() {
+    protected function compileGrouping()
+    {
         $query = $this->query;
         $sql = '';
 
@@ -976,7 +986,8 @@ class Query
      *
      * @return string
      */
-    protected function compileTake() {
+    protected function compileTake()
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $query = $this->query;
@@ -994,7 +1005,8 @@ class Query
      *
      * @return string
      */
-    protected function compileOrder() {
+    protected function compileOrder()
+    {
         $query = $this->query;
         $sql = '';
 
@@ -1018,7 +1030,8 @@ class Query
      *
      * @return string|array
      */
-    protected function compileInsert() {
+    protected function compileInsert()
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $query = $this->query;
@@ -1097,7 +1110,8 @@ class Query
      *
      * @return $this
      */
-    protected function setupInserts( $data, &$inserts ) {
+    protected function setupInserts( $data, &$inserts )
+    {
         $inserts[] = $this->prepareValue($data);
         return $this;
     }
@@ -1109,7 +1123,8 @@ class Query
      *
      * @return int|null|string
      */
-    protected function prepareValue( $value ) {
+    protected function prepareValue( $value )
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $prepared = null;
@@ -1198,7 +1213,8 @@ class Query
      *
      * @return string
      */
-    protected function compileWhere() {
+    protected function compileWhere()
+    {
         $sql = $this->composeWhereSql($this->query['where'] ?? null);
 
         if(!empty($this->query['raw']['where']) && is_array($this->query['raw']['where'])) {
@@ -1221,7 +1237,8 @@ class Query
      *
      * @return string
      */
-    protected function compileJoins() {
+    protected function compileJoins()
+    {
         $query = $this->query;
         $sql = '';
 
@@ -1252,7 +1269,8 @@ class Query
      *
      * @return string
      */
-    protected function compileTable() {
+    protected function compileTable()
+    {
         $table = $this->query['table'];
         $as = $this->tableAs ? " AS {$this->tableAs} " : '';
         return $table . $as;
