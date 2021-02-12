@@ -335,7 +335,7 @@ class Request
     {
         if(!$this->input) {
             $input = file_get_contents('php://input');
-            if(Data::isJson($input)) { $data = json_decode($input, true); }
+            if(Data::isJson($input)) { $data = json_decode($input, true, 512, JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING); }
             else { $data = $this->post; /* parse_str($input, $data); */ }
             $this->input = $data;
         }
