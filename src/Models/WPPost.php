@@ -564,7 +564,9 @@ class WPPost extends Model
                 $current_value = get_post_meta( $id, $key, true );
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
-                    update_post_meta( $id, $key, wp_slash($value) );
+                    $value = wp_slash($value);
+                    update_post_meta( $id, $key, $value );
+                    do_action('typerocket_after_save_meta_post', $id, $key, $value, $current_value);
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
                     delete_post_meta( $id, $key );
                 endif;

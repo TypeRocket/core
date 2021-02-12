@@ -3,7 +3,6 @@ namespace TypeRocket\Models;
 
 class WPTermTaxonomy extends Model
 {
-
     protected $idColumn = 'term_taxonomy_id';
     protected $resource = 'term_taxonomy';
 

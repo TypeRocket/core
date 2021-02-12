@@ -3,5 +3,5 @@ namespace TypeRocket\Models;
 
 class WPMenu extends WPPost
 {
-    protected $postType = 'nav_menu_item';
+    public const POST_TYPE = 'nav_menu_item';
 }
