@@ -443,6 +443,7 @@ class Matrix extends Field implements ScriptField
         $item_id = $item_id ?? null;
         $nested = $nested ?? false;
         $i = $nested ? 1 : 0;
+        $info = $info ?? null; // This is an open variable for misc data
         $group = $name ?? $group; // This is to help with migration from v4/v1 to v5
         $name = $group;
         $len = count($builder_data);
@@ -459,9 +460,9 @@ class Matrix extends Field implements ScriptField
 
             $component_id = key($data);
             $component = strtolower(key($data));
-            $info = compact('name', 'item_id', 'model', 'first_item', 'last_item', 'component_id', 'hash');
+            $vals = compact('name', 'item_id', 'model', 'first_item', 'last_item', 'component_id', 'hash', 'info');
             $class = static::getComponentClass($component, $group);
-            $class->render($data[$component_id], $info);
+            $class->render($data[$component_id], $vals);
             $i++;
         }
     }
