@@ -253,7 +253,7 @@ class WPPost extends Model
      */
     public function permalink()
     {
-        return get_permalink($this->wpPost);
+        return get_permalink($this->wpPost());
     }
 
     /**

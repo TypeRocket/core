@@ -158,7 +158,7 @@ class WPTerm extends Model
      */
     public function permalink()
     {
-        return get_term_link($this->wpTerm, $this->getTaxonomy());
+        return get_term_link($this->wpTerm(), $this->getTaxonomy());
     }
 
     /**
