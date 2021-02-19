@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Results;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\Results;
 use TypeRocket\Database\ResultsPaged;
 use TypeRocket\Database\ResultsPostMeta;
 use TypeRocket\Models\Model;
@@ -147,6 +148,23 @@ class ResultsTest extends TestCase
         $this->assertTrue($array['links']['previous'] === null);
         $this->assertTrue($array['links']['last'] === null);
         $this->assertTrue($array['links']['first'] === null);
+    }
+
+    public function testResultsFirstLast()
+    {
+        /** @var Results $posts */
+        $posts = (new WPPost)->with('meta')->findAll([1,2])->get();
+
+        /** @var Model $first */
+        $first = $posts->first();
+        /** @var Model $last */
+        $last = $posts->last();
+        $last2 = $posts->last();
+
+        $this->assertTrue($posts instanceof Results);
+        $this->assertTrue($last->getID() === "2");
+        $this->assertTrue($last2->getID() === "2");
+        $this->assertTrue($first->getID() === "1");
     }
 
     public function testResultsEagerLoading()

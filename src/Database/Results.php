@@ -75,6 +75,26 @@ class Results extends \ArrayObject implements Formable, JsonSerializable
     }
 
     /**
+     * First Item
+     *
+     * @return mixed
+     */
+    public function first()
+    {
+        return $this->offsetGet(0);
+    }
+
+    /**
+     * Last Item
+     *
+     * @return mixed
+     */
+    public function last()
+    {
+        return $this->offsetGet($this->count() - 1);
+    }
+
+    /**
      * Eager Load Results.
      *
      * @param string|array $with
