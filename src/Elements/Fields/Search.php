@@ -374,7 +374,7 @@ class Search extends Field implements ScriptField
                 }
             }
             elseif( $is_id && $value ) {
-                $url = get_post($value);
+                $url = get_permalink($value);
             }
         } catch(\Throwable $e) {
             $error = true;

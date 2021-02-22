@@ -60,7 +60,7 @@ class FieldsController extends Controller
                 return [
                     'title' => Search::getSearchTitle($value, ['id' => 'taxonomy', 'registered' => $params['taxonomy']]),
                     'id' => $value->term_id,
-                    'url' => get_term_link($value->term_id, $params['taxonomy']),
+                    'url' => Search::getSearchUrl($value->term_id, ['id' => 'taxonomy', 'registered' => $params['taxonomy']]),
                 ];
             }, $results);
 
@@ -90,7 +90,7 @@ class FieldsController extends Controller
                 return [
                     'title' => Search::getSearchTitle($value, ['id' => 'post_type', 'registered' => $params['post_type'] ?? 'post']),
                     'id' => $value->ID,
-                    'url' => get_permalink($value->ID),
+                    'url' => Search::getSearchUrl($value->ID, ['id' => 'post_type', 'registered' => $params['post_type'] ?? 'post']),
                 ];
             }, $results);
 
