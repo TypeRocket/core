@@ -275,7 +275,7 @@ class WPComment extends Model
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
                     $value = wp_slash($value);
                     update_comment_meta( $id, $key, $value );
-                    do_action('typerocket_after_save_meta_comment', $id, $key, $value, $current_value);
+                    do_action('typerocket_after_save_meta_comment', $id, $key, $value, $current_value, $this);
                 elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
                     delete_comment_meta( $id, $key );
                 endif;

@@ -3,7 +3,6 @@ namespace TypeRocket\Models;
 
 class WPOption extends Model
 {
-
     protected $idColumn = 'option_id';
     protected $resource = 'options';
     protected $routeResource = 'option';
@@ -82,11 +81,12 @@ class WPOption extends Model
                     $value = trim( $value );
                 }
 
-                $current_meta = get_option( $key );
+                $current_value = get_option( $key );
 
-                if (( isset( $value ) && $value !== "" ) && $current_meta !== $value) :
+                if (( isset( $value ) && $value !== "" ) && $current_value !== $value) :
                     update_option( $key, $value );
-                elseif ( ! isset( $value ) || $value === "" && ( isset( $current_meta ) || $current_meta === "" )) :
+                    do_action('typerocket_after_save_meta_option', null, $key, $value, $current_value, $this);
+                elseif ( ! isset( $value ) || $value === "" && ( isset( $current_value ) || $current_value === "" )) :
                     delete_option( $key );
                 endif;
 

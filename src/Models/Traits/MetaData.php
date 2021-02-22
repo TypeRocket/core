@@ -5,7 +5,6 @@ use TypeRocket\Models\Model;
 
 trait MetaData
 {
-
     protected static $metaQueries = 0;
 
     /**
