@@ -71,6 +71,9 @@ class Router
                     $q->query_vars['update_post_meta_cache'] = false;
                     $q->query_vars['update_post_term_cache'] = false;
 
+                    // disable sticky posts
+                    $q->query_vars['ignore_sticky_posts'] = true;
+
                     add_filter('body_class', function($classes) { array_push($classes, 'custom-route'); return $classes; });
                     return false;
                 }
