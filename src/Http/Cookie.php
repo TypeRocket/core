@@ -10,14 +10,19 @@ class Cookie
      * Set a transient with cookie to persist across page loads
      *
      * @param string $name name of transient
-     * @param string|array $data
-     * @param int $time
+     * @param string|array $data value of transient
+     * @param int $time expire time in seconds
+     * @param string $path path cookie can be access from. `/` == all paths
      *
      * @return $this
      */
-    public function setTransient( $name, $data, $time = MINUTE_IN_SECONDS ) {
+    public function setTransient( $name, $data, $time = MINUTE_IN_SECONDS, $path = '/' ) {
         $cookie_id = Sanitize::underscore( uniqid() . time() . uniqid() );
-        $this->set($name, $cookie_id);
+
+        if($path !== null) {
+            $this->set($name, $cookie_id, $time, $path);
+        }
+
         set_transient( $name . '_' . $cookie_id, $data, $time );
 
         return $this;
