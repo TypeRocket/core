@@ -122,23 +122,27 @@ class Router
      */
     private function runRoute()
     {
-        $requested_path = $this->request->getPath();
-        $uri = $this->request->getUri();
-
-        $addSlash = $this->route->addTrailingSlash ?? true;
-        $endsInSlash = Str::ends('/', $requested_path );
+        $wpTrailingslash = static::wpWantsTrailingSlash();
+        $requestedPath = $this->request->getPath();
+        $forceRemoveSlash = $this->route->addTrailingSlash === false;
+        $requestEndsInSlash = Str::ends('/', $requestedPath);
         $isGet = $this->request->isGet();
+        $redirect = null;
 
-        if( ! $endsInSlash && $addSlash && $isGet ) {
-            $new = $requested_path . '/';
-            $redirect = Str::replaceFirst($requested_path, $new, $uri);
-            wp_redirect($redirect);
-            die();
-        } elseif( ! $addSlash && $endsInSlash && $isGet ) {
-            $new = rtrim($requested_path, '/');
-            $redirect = Str::replaceFirst($requested_path, $new, $uri);
-            wp_redirect($redirect);
-            die();
+        if( !$forceRemoveSlash && !$requestEndsInSlash && $wpTrailingslash && $isGet ) {
+            $redirect = $requestedPath . '/';
+        } elseif( ($forceRemoveSlash || !$wpTrailingslash) && $requestEndsInSlash && $isGet ) {
+            $redirect = rtrim($requestedPath, '/');
+        }
+
+        if($redirect) {
+            $redirect = Str::replaceFirst($requestedPath, $redirect, $this->request->getUri());
+            $redirect = apply_filters('typerocket_route_redirect', $redirect, $this, $wpTrailingslash);
+
+            if($redirect) {
+                wp_redirect($redirect);
+                die();
+            }
         }
 
         $responder = new HttpResponder;
@@ -200,7 +204,7 @@ class Router
 
         $regex = ['#^(?'];
         foreach ($routes as $i => $route) {
-            $slash = $route['route']->addTrailingSlash ? '\/?$' : '';
+            $slash = $route['route']->addTrailingSlash || $route['route']->addTrailingSlash === null ? '\/?$' : '';
             $regex[] = rtrim($route['regex'], '/') . $slash . '(*MARK:'.$i.')';
         }
         $regex = implode('|', $regex) . ')$#x';
@@ -232,6 +236,14 @@ class Router
         $this->args = $args;
 
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function wpWantsTrailingSlash() {
+        global $wp_rewrite;
+        return Str::ends('/', $wp_rewrite->permalink_structure ?? '/');
     }
 
 }

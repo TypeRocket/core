@@ -12,7 +12,7 @@ class Route
     public $do;
     public $middleware;
     public $methods;
-    public $addTrailingSlash = true;
+    public $addTrailingSlash = null;
 
     /**
      * @param mixed ...$args
