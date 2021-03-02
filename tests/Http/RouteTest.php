@@ -146,8 +146,10 @@ class RouteTest extends TestCase
             'given-name' => 'ben'
         ], false);
 
-        $this->assertTrue($built == '/about/me/123/kevin/');
-        $this->assertTrue($built_helper == '/about/me/987/ben/');
+        $trail = Router::wpWantsTrailingSlash() ? '/' : '';
+
+        $this->assertTrue($built == '/about/me/123/kevin' . $trail);
+        $this->assertTrue($built_helper == '/about/me/987/ben' . $trail);
 
         $form = new BaseForm('post', 'update', 1, WPPost::class);
 

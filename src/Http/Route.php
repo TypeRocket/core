@@ -222,7 +222,7 @@ class Route
         $built = str_replace($keys, $values, $pattern);
         $url = $site ? site_url( ltrim($built, '/') ) : $built;
 
-        if($this->addTrailingSlash) {
+        if(!$this->addTrailingSlash === false || Router::wpWantsTrailingSlash()) {
             $url = trailingslashit($url);
         }
 
