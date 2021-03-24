@@ -190,7 +190,7 @@ class PostType extends Registrable
         $upperSingular = $keep_case ? $singular : Str::uppercaseWords( $singular );
         $lowerSingular = $keep_case ? $singular : mb_strtolower( $singular );
         $upperPlural   = $keep_case ? $plural : Str::uppercaseWords( $plural );
-        $pluralLower   = $keep_case ? $plural : mb_strtolower( $plural );
+        $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
 
         $context = 'post_type:' . $this->getId();
 
@@ -201,7 +201,7 @@ class PostType extends Registrable
             'add_new_item'          => sprintf( _x('Add New %s', $context, 'typerocket-core'), $upperSingular),
             'attributes'            => sprintf( _x('%s Attributes', $context, 'typerocket-core'), $upperSingular),
             'edit_item'             => sprintf( _x('Edit %s', $context, 'typerocket-core'), $upperSingular),
-            'filter_items_list'     => sprintf( _x('Filter %s list %s', $context, 'typerocket-core'), $pluralLower, $upperSingular),
+            'filter_items_list'     => sprintf( _x('Filter %s list %s', $context, 'typerocket-core'), $lowerPlural, $upperSingular),
             'insert_into_item'      => sprintf( _x('Insert into %s', $context, 'typerocket-core'), $lowerSingular),
             'item_published'        => sprintf( _x('%s published.', $context, 'typerocket-core'), $upperSingular),
             'item_published_privately' => sprintf( _x('%s published privately.', 'typerocket-core'), $upperSingular),
@@ -214,8 +214,8 @@ class PostType extends Registrable
             'name_admin_bar'        => sprintf( _x('%s', $context . ':add new from admin bar', 'typerocket-core'), $upperSingular),
             'items_list_navigation' => sprintf( _x('%s list navigation', $context, 'typerocket-core'), $upperPlural),
             'new_item'              => sprintf( _x('New %s', $context, 'typerocket-core'), $upperSingular),
-            'not_found'             => sprintf( _x('No %s found', $context, 'typerocket-core'), $pluralLower),
-            'not_found_in_trash'    => sprintf( _x('No %s found in Trash', $context, 'typerocket-core'), $pluralLower),
+            'not_found'             => sprintf( _x('No %s found', $context, 'typerocket-core'), $lowerPlural),
+            'not_found_in_trash'    => sprintf( _x('No %s found in Trash', $context, 'typerocket-core'), $lowerPlural),
             'parent_item_colon'     => sprintf( _x("Parent %s:", $context, 'typerocket-core'), $upperPlural),
             'search_items'          => sprintf( _x('Search %s', $context, 'typerocket-core'), $upperPlural),
             'singular_name'         => sprintf( _x('%s',  $context . ':post type singular name', 'typerocket-core'), $upperSingular),

@@ -194,9 +194,7 @@ class Taxonomy extends Registrable
             'view_item'                  => sprintf( _x( 'View %s', $context, 'typerocket-core' ), $upperSingular),
         ];
 
-        $this->setLabels($labels, $upperPlural);
-
-        return $this;
+        return $this->setLabels($labels, $upperPlural, false);;
     }
 
     /**
