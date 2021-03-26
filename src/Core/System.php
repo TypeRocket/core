@@ -140,7 +140,7 @@ class System
         /** @var RouteCollection $routes */
         $routes = RouteCollection::getFromContainer();
         $request = new Request;
-        $config = ['match' => 'site_url'];
+        $config = add_filter('typerocket_router_config', ['match' => 'site_url']);
 
         (new Router($request, $config, $routes))->detectRoute()->initHooks();
     }
