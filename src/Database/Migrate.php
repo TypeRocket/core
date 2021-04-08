@@ -5,7 +5,7 @@ use TypeRocket\Core\Config;
 
 class Migrate
 {
-    public function sqlMigrationDirectory($type, $steps = 1, $reload = false, $migrations_folder = null) {
+    public function sqlMigrationDirectory($type, $steps = 1, $reload = false, $migrations_folder = null, $callback = null) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $migrations_folder = $migrations_folder ?? Config::get('paths.migrations');
@@ -13,7 +13,7 @@ class Migrate
         $result = [
             'message' => null,
             'success' => true,
-            'type' => 'unfinished',
+            'type' => $type,
             'report' => [],
             'migrations_run' => [],
         ];
@@ -71,13 +71,13 @@ class Migrate
         }
 
         if(empty($query_strings)) {
-            $result['type'] = 'warning';
-
             if( $type == 'up') {
                 $result['message'] = 'No new migrations to run';
             } else {
                 $result['message'] = 'No migrations to rollback';
             }
+
+            throw new \Exception($result['message']);
         }
 
         foreach ($query_strings as $file => $query) {
@@ -93,12 +93,7 @@ class Migrate
                 $result['message'] =  'Migration down finished at ' . $dtime;
             }
 
-            $result['report'] = (new SqlRunner())->runQueryString($query, function($report) use ($result, $type) {
-                $this->success($report['message']);
-                $this->warning("{$type}:" );
-                $this->line($report['wpdb']);
-                $this->line($result['message']);
-            });
+            $result['report'] = (new SqlRunner())->runQueryString($query, $callback, $result);
         }
 
         $result['migrations_run'] = $migrations_run;

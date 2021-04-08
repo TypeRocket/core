@@ -8,25 +8,25 @@ class SqlRunner
 {
     protected $query_prefix_tag = '{!!prefix!!}';
 
-    public function runQueryFile($file_sql, $callback = null) {
+    public function runQueryFile($file_sql, $callback = null, $cb_data = null) {
         if( ! file_exists( $file_sql ) ) {
             throw new \Exception('Not Found: SQL '. $file_sql .' failed to run.');
             return;
         }
 
         $sql = file_get_contents($file_sql);
-        $this->runQueryString( $sql, $callback );
+        $this->runQueryString( $sql, $callback, $cb_data );
     }
 
-    public function runQueryString($sql, $callback = null) {
+    public function runQueryString($sql, $callback = null, $cb_data = null) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $prefix = $wpdb->prefix;
         $prefixed = str_replace($this->query_prefix_tag, $prefix, $sql);
-        return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ), $callback );
+        return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ), $callback, $cb_data );
     }
 
-    public function runQueryArray($queries, $callback = null) {
+    public function runQueryArray($queries, $callback = null, $cb_data = null) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         // $wpdb->show_errors();
@@ -38,6 +38,11 @@ class SqlRunner
             $query = ( ($query == '') ?  '' : trim(preg_replace( $RXSQLComments, '', $query )));
 
             if( Str::starts('create table', strtolower($query)) ) {
+
+                if(!function_exists('dbDelta')) {
+                    include ABSPATH . WPINC . '/upgrade.php';
+                }
+
                 $result = dbDelta($query);
             } elseif( !empty(trim($query)) ) {
                 $result = $wpdb->query( $query );
@@ -60,7 +65,7 @@ class SqlRunner
             ];
 
             if(is_callable($callback)) {
-                $callback($result);
+                $callback($result, $cb_data);
             }
 
             $succesess[] = $result;

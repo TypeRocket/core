@@ -57,8 +57,18 @@ class Migrate extends Command
         }
 
         try {
-            $results = (new \TypeRocket\Database\Migrate())->sqlMigrationDirectory($type, $steps, $reload);
+            $results = (new \TypeRocket\Database\Migrate())->sqlMigrationDirectory($type, $steps, $reload, null, function($report, $result) {
+                $this->success($report['message']);
+                $this->warning("{$result['type']}:" );
+                $this->line($report['wpdb']);
+                $this->line($result['message']);
+            });
         } catch (\Exception $e) {
+
+            if(typerocket_env('WP_DEBUG', false)) {
+                $this->error($e->getFile() . ':' . $e->getLine());
+            }
+
             $this->error($e->getMessage());
 
             if($e instanceof SqlException) {
