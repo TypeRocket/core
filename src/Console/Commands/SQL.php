@@ -1,13 +1,12 @@
 <?php
 namespace TypeRocket\Console\Commands;
 
-use TypeRocket\Console\CanQueryDB;
 use TypeRocket\Console\Command;
+use TypeRocket\Database\SqlRunner;
+use TypeRocket\Exceptions\SqlException;
 
 class SQL extends Command
 {
-    use CanQueryDB;
-
     protected $command = [
         'wp:sql',
         'WordPress database SQL script',
@@ -30,16 +29,21 @@ class SQL extends Command
     {
         $name = $this->getArgument('name');
         $file_sql = TYPEROCKET_PATH . '/sql/' . $name . '.sql';
-        $this->runQueryFile($file_sql);
-    }
+        $this->warning("Running {$file_sql}:" );
 
-    protected function sqlSuccess($message) {
-        $name = $this->getArgument('name');
-        $this->success('SQL '. $name .' successfully run.');
-    }
+        try {
+            (new SqlRunner())->runQueryFile($file_sql, function($report) use ($file_sql) {
+                $this->success($report['message']);
+                $this->line($report['wpdb']);
+            });
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
 
-    protected function sqlError($message) {
-        $name = $this->getArgument('name');
-        $this->error('Query Error: SQL '. $name .' failed to run.');
+            if($e instanceof SqlException) {
+                $this->warning('Failed SQL:' );
+                $this->line( $e->getSql() );
+                $this->error( $e->getSqlError() );
+            }
+        }
     }
 }
