@@ -5,10 +5,115 @@ use TypeRocket\Core\Config;
 
 class Migrate
 {
-    public function sqlMigrationDirectory($type, $steps = 1, $reload = false, $migrations_folder = null, $callback = null) {
+    public $migrationsFolder = null;
+    public $option = null;
+    public $callback = null;
+
+    /**
+     * Migrate constructor.
+     *
+     * @param null|string $migrationsFolder
+     * @param null|callable $callback
+     * @param string $option
+     */
+    public function __construct($migrationsFolder = null, $callback = null, $option = 'typerocket_migrations')
+    {
+        $this->setOption($option);
+        $this->setFolder($migrationsFolder ?? Config::get('paths.migrations'));
+        $this->setCallback($callback);
+    }
+
+    /**
+     * Set the migrartion folder
+     *
+     * @param null|string $migrationsFolder
+     */
+    public function setFolder(?string $migrationsFolder)
+    {
+        if(!file_exists($migrationsFolder)) {
+            throw new \Exception('Migration folder does not exist: ' . $migrationsFolder);
+        }
+
+        $this->migrationsFolder = $migrationsFolder;
+    }
+
+    /**
+     * Set WP Option Name
+     *
+     * Set wp_options name to save run migration timestamps too
+     *
+     * @param string $option
+     */
+    public function setOption(string $option)
+    {
+        $this->option = $option;
+    }
+
+    /**
+     * Set Function
+     *
+     * Accesses result run after a simple migration query completes.
+     *
+     * @param null|callable $callback
+     */
+    public function setCallback(?callable $callback)
+    {
+        $this->callback = $callback;
+    }
+
+    /**
+     * Get Migrations Run
+     *
+     * @return array|mixed|string
+     */
+    public function getMigrationsRun()
+    {
+        return maybe_unserialize(get_option($this->option)) ?: [];
+    }
+
+    /**
+     * Get Migrations From Folder
+     *
+     * @return array
+     */
+    public function getMirgationsFromFolder()
+    {
+        $migrations = array_diff(scandir($this->migrationsFolder), ['..', '.'] );
+        return array_flip($migrations);
+    }
+
+    /**
+     * Get Migrations Not Yet Run
+     *
+     * @return array
+     */
+    public function getMigrationsNotRun()
+    {
+        return array_diff_key($this->getMirgationsFromFolder(), $this->getMigrationsRun());
+    }
+
+    /**
+     * @param string $type up|down
+     * @param int $steps number of migrations to run
+     * @param false $reload only use with type 'down' and step 999999999
+     * @param null|string $migrationsFolder the folder with the migrartions in it
+     * @param null|callable $callback access result run after a simple migration query completes
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function sqlMigrationDirectory(string $type, $steps = 1, $reload = false, $migrationsFolder = null, $callback = null)
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $migrations_folder = $migrations_folder ?? Config::get('paths.migrations');
+
+        if($migrationsFolder) {
+            $this->setFolder($migrationsFolder);
+        }
+
+        if($callback) {
+            $this->setCallback($callback);
+        }
 
         $result = [
             'message' => null,
@@ -18,14 +123,8 @@ class Migrate
             'migrations_run' => [],
         ];
 
-        if(!file_exists($migrations_folder)) {
-            throw new \Exception('Migration folder does not exist: ' . $migrations_folder);
-        }
-
-        $migrations = array_diff(scandir($migrations_folder), ['..', '.'] );
-        $migrations = array_flip($migrations);
-
-        $migrations_run = maybe_unserialize(get_option('typerocket_migrations')) ?: [];
+        $migrations = $this->getMirgationsFromFolder();
+        $migrations_run = $this->getMigrationsRun();
 
         if($type == 'up') {
             $to_run = array_diff_key($migrations, $migrations_run);
@@ -40,7 +139,7 @@ class Migrate
         $query_strings = [];
         $count = 0;
         foreach ($to_run as $file => $index ) {
-            $file_full = $migrations_folder . '/' . $file;
+            $file_full = $this->migrationsFolder . '/' . $file;
             if( strpos($file, '.sql', -0) && is_file($file_full) ) {
                 $f = fopen($file_full, 'r');
                 $line = fgets($f);
@@ -93,15 +192,15 @@ class Migrate
                 $result['message'] =  'Migration down finished at ' . $dtime;
             }
 
-            $result['report'] = (new SqlRunner())->runQueryString($query, $callback, $result);
+            $result['report'] = (new SqlRunner())->runQueryString($query, $this->callback, $result);
         }
 
         $result['migrations_run'] = $migrations_run;
 
-        update_option('typerocket_migrations', $migrations_run);
+        update_option($this->option, $migrations_run);
 
         if($reload) {
-            $result['reload'] = static::sqlMigrationDirectory('up', 99999999999999);
+            $result['reload'] = $this->sqlMigrationDirectory('up', 99999999999999);
         }
 
         return $result;

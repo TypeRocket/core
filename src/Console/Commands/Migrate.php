@@ -56,12 +56,19 @@ class Migrate extends Command
             $steps = 99999999999999;
         }
 
+        if($type === 'down') {
+            $this->error('This action is highly destructive.');
+            if(!$this->continue()) {
+                return;
+            }
+        }
+
         try {
             $results = (new \TypeRocket\Database\Migrate())->sqlMigrationDirectory($type, $steps, $reload, null, function($report, $result) {
                 $this->success($report['message']);
+                $this->success($result['message']);
                 $this->warning("{$result['type']}:" );
                 $this->line($report['wpdb']);
-                $this->line($result['message']);
             });
         } catch (\Exception $e) {
 
