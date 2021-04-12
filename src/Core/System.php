@@ -170,6 +170,12 @@ class System
         add_action( 'wp_loaded', [$this, 'checkSiteStateChanged']);
         add_action( 'admin_init', [$this, 'initAdminHooks'] );
         add_filter( 'wp_handle_upload_prefilter', [$this, 'restrictUploadMimeTypes'] );
+
+        if(constant('WP_DEBUG') && !Config::get('app.errors.deprecated_file')) {
+            add_action('deprecated_file_included', function() {
+                add_filter('deprecated_file_trigger_error', '__return_false');
+            });
+        }
     }
 
     /**
