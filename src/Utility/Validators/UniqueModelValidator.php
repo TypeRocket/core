@@ -46,7 +46,7 @@ class UniqueModelValidator extends ValidatorRule
         }
 
         if($result) {
-            $this->error = 'is taken.';
+            $this->error = __('is taken.','typerocket-domain');
         }
 
         return !$this->error;

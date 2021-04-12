@@ -23,7 +23,7 @@ class KeyValidator extends ValidatorRule
         extract($this->args);
 
         if( Sanitize::underscore($value) !== $value ) {
-            $this->error = "may only contain lowercase alphanumeric characters and underscores.";
+            $this->error = __("may only contain lowercase alphanumeric characters and underscores.",'typerocket-domain');
         }
 
         return !$this->error;

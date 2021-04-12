@@ -22,7 +22,7 @@ class NumericValidator extends ValidatorRule
         extract($this->args);
 
         if( ! is_numeric($value) ) {
-            $this->error = "must be a numeric value.";
+            $this->error = __("must be a numeric value.",'typerocket-domain');
         }
 
         return !$this->error;

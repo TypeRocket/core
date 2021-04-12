@@ -22,7 +22,7 @@ class EmailValidator extends ValidatorRule
         extract($this->args);
 
         if( ! filter_var($value, FILTER_VALIDATE_EMAIL) ) {
-            $this->error = "must be an email address.";
+            $this->error = __("must be an email address.", 'typerocket-domain');
         }
 
         return !$this->error;

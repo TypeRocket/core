@@ -24,7 +24,7 @@ class MaxLengthValidator extends ValidatorRule
         $option = (int) $option;
 
         if( mb_strlen($value) > $option ) {
-            $this->error = "must be no more than $option characters.";
+            $this->error = sprintf(__("must be no more than %s characters.",'typerocket-domain'), $option);
         }
 
         return !$this->error;

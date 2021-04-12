@@ -22,7 +22,7 @@ class UrlValidator extends ValidatorRule
         extract($this->args);
 
         if( ! filter_var($value, FILTER_VALIDATE_URL) ) {
-            $this->error = "must be at a URL.";
+            $this->error = __("must be at a URL.",'typerocket-domain');
         }
 
         return !$this->error;

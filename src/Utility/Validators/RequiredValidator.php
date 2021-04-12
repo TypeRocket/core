@@ -26,7 +26,7 @@ class RequiredValidator extends ValidatorRule
         $weak = $option === 'weak' && is_null($value);
 
         if( !$weak && empty( $value ) ) {
-            $this->error = 'is required.';
+            $this->error = __('is required.','typerocket-domain');
         }
 
         return !$this->error;
