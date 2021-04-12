@@ -104,6 +104,8 @@ class Data
                 $value = unserialize($value);
             } elseif(!is_string($value)) {
                 $value = (array) $value;
+            } elseif (trim($value) == '""') {
+                $value = null;
             }
 
             return $value;
@@ -121,6 +123,8 @@ class Data
                 $value = (object) $value;
             } elseif (is_array($value)) {
                 $value = (object) $value;
+            } elseif (trim($value) == '""') {
+                $value = null;
             }
 
             return $value;
@@ -147,7 +151,9 @@ class Data
             return false;
         }
 
-        if (trim($args[0]) === '') {
+        $s = trim($args[0]);
+
+        if($s === '' || $s === '""') {
             return false;
         }
 

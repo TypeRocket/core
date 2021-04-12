@@ -326,7 +326,7 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
             false,
             true,
             [],
-            '',
+            ' ',
             new stdClass(),
             1,
             0,
