@@ -9,6 +9,7 @@ class TemplateEngine
     protected $view;
     /** @var string  */
     protected $context;
+    protected $folder;
     /** @var array  */
     protected $data;
     /**  @var array */
@@ -19,18 +20,19 @@ class TemplateEngine
     /**
      * TemplateEngine constructor.
      *
-     * @param $file
+     * @param string $file
      * @param array $data
-     * @param string $context
+     * @param null|string $context
      * @param null|View $view
      */
-    public function __construct($file, array $data, $context = 'views', $view = null)
+    public function __construct($file, array $data, $context = null, $view = null)
     {
         $this->file = $file;
         $this->data = $data;
         $this->view = $view;
         $this->ext = $view->getExtension();
-        $this->context = $context;
+        $this->context = $context ?? $view->getContext();
+        $this->folder = $view->getFolder();
     }
 
     /**

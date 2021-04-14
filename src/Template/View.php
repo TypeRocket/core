@@ -12,9 +12,9 @@ class View
     protected $ext = null;
     protected $file = null;
     protected $location = null;
-    protected $views = null;
     protected $viewsEngine = null;
     protected $context = null;
+    protected $folder = null;
 
     /**
      * View constructor.
@@ -24,22 +24,23 @@ class View
      * @param string $dots dot syntax or specific file path
      * @param array $data
      * @param string $ext file extension
-     * @param null|string $path
+     * @param null|string $folder
      */
-    public function __construct( $dots, array $data = [], $ext = '.php', $path = null )
+    public function __construct( $dots, array $data = [], $ext = null, $folder = null )
     {
         if( file_exists( $dots ) ) {
             $this->file = $dots;
         } else {
-            $this->ext = $ext;
-            $this->location = str_replace('.', '/', $dots) . $ext;
+            $this->ext = $ext ?? '.php';
+            $this->location = str_replace('.', '/', $dots) . $this->ext;
         }
 
         if( !empty( $data ) ) {
             $this->data = $data;
         }
 
-        $this->views = $path ?? $this->views ?? Config::get('paths.views');
+        $this->setContext('views');
+        $this->setFolder($folder);
     }
 
     /**
@@ -88,7 +89,7 @@ class View
      */
     public function getExtension()
     {
-        return $this->ext;
+        return $this->ext ?? '.php';
     }
 
     /**
@@ -173,13 +174,22 @@ class View
     }
 
     /**
+     * @return array|mixed|null
+     */
+    public function getComposedEngine()
+    {
+        return $this->viewsEngine ?? Config::get('app.templates.' . $this->getContext());
+    }
+
+    /**
      * Load Other Context
      *
      * @param null $context
      */
-    protected function load($context)
+    protected function load($context = null)
     {
         $view_title = $this->getTitle();
+        $this->setContext($context);
 
         if($view_title) {
             add_filter('document_title_parts', function( $title ) use ($view_title) {
@@ -193,9 +203,9 @@ class View
             }, 101);
         }
 
-        $location = $this->getFile() ?? Config::get('paths.' . $context) . '/' . $this->getLocation();
+        $file = $this->getComposedFilePath();
         $templateEngine = $this->viewsEngine ?? Config::get('app.templates.' . $context) ?? Config::get('app.templates.views');
-        (new $templateEngine($location, $this->getData(), $context, $this))->load();
+        (new $templateEngine($file, $this->getData(), $context, $this))->load();
     }
 
     /**
@@ -205,19 +215,23 @@ class View
      */
     public function render($context = null)
     {
-        $context = $type ?? $this->getContext() ?? 'views';
+        $context = $context ?? $this->getContext() ?? 'views';
 
         $this->load($context);
     }
 
     /**
-     * @param string $context
+     * Set Context
+     *
+     * Can be a key from config/paths like `views`.
+     *
+     * @param null|string $context the template engine context to use
      *
      * @return $this
      */
     public function setContext($context)
     {
-        $this->context = $context;
+        $this->context = $context ?? $this->getContext();
 
         return $this;
     }
@@ -227,7 +241,47 @@ class View
      */
     public function getContext()
     {
-        return $this->context;
+        return $this->context ?? 'views';
+    }
+
+    /**
+     * @param $folder
+     *
+     * @return $this
+     */
+    public function setFolder($folder) {
+        $this->folder = $folder;
+
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getFolder() {
+        return $this->folder;
+    }
+
+    /**
+     * @return string
+     */
+    public function getComposedFilePath()
+    {
+        return $this->getFile() ?? $this->getFolderPath() . DIRECTORY_SEPARATOR . $this->getLocation();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFolderPath()
+    {
+        if(is_dir($this->folder)) {
+            $folder = rtrim($this->folder, DIRECTORY_SEPARATOR);
+        } else {
+            $folder = rtrim(Config::get('paths.' . $this->getContext()), DIRECTORY_SEPARATOR);
+        }
+
+        return $folder;
     }
 
     /**

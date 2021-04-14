@@ -24,4 +24,13 @@ class ViewsTest extends TestCase
 
         $this->assertTrue(Str::contains($title, $str));
     }
+
+    public function testViewWithConextFolderPath()
+    {
+        $str = \TypeRocket\Template\View::new('test', [], null, __DIR__ . '/views' )->toString();
+        $this->assertTrue(Str::contains('testing', $str));
+
+        $str = \TypeRocket\Template\View::new('test')->setFolder(__DIR__ . '/views')->toString();
+        $this->assertTrue(Str::contains('testing', $str));
+    }
 }
