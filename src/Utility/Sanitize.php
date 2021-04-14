@@ -286,11 +286,18 @@ class Sanitize
      *
      * @return mixed|string
      */
-    public static function dash( $name )
+    public static function dash( $name, $keep_dots = false )
     {
         if (is_string( $name )) {
-            $name = preg_replace( '/[\.]+/', '_', $name );
-            $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
+
+            if($keep_dots) {
+                $name = preg_replace( '/[\.]+/', '.', $name );
+                $name = preg_replace("/[^A-Za-z0-9\.\\s\\-\\_?]/",'', strtolower(trim($name)) );
+            } else {
+                $name = preg_replace( '/[\.]+/', '_', $name );
+                $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
+            }
+
             $name = preg_replace( '/[_\\s]+/', '-', $name );
             $name = preg_replace( '/-+/', '-', $name );
         }

@@ -8,6 +8,13 @@ class SqlRunner
 {
     protected $query_prefix_tag = '{!!prefix!!}';
 
+    /**
+     * @param $file_sql
+     * @param null $callback
+     * @param null $cb_data
+     *
+     * @throws SqlException
+     */
     public function runQueryFile($file_sql, $callback = null, $cb_data = null) {
         if( ! file_exists( $file_sql ) ) {
             throw new \Exception('Not Found: SQL '. $file_sql .' failed to run.');
@@ -18,6 +25,14 @@ class SqlRunner
         $this->runQueryString( $sql, $callback, $cb_data );
     }
 
+    /**
+     * @param $sql
+     * @param null $callback
+     * @param null $cb_data
+     *
+     * @return array
+     * @throws SqlException
+     */
     public function runQueryString($sql, $callback = null, $cb_data = null) {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -26,7 +41,16 @@ class SqlRunner
         return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ), $callback, $cb_data );
     }
 
-    public function runQueryArray($queries, $callback = null, $cb_data = null) {
+    /**
+     * @param $queries
+     * @param null $callback
+     * @param null $cb_data
+     *
+     * @return array
+     * @throws SqlException
+     */
+    public function runQueryArray($queries, $callback = null, $cb_data = null)
+    {
         /** @var \wpdb $wpdb */
         global $wpdb;
         // $wpdb->show_errors();
@@ -39,11 +63,11 @@ class SqlRunner
 
             if( Str::starts('create table', strtolower($query)) ) {
 
-                if(!function_exists('dbDelta')) {
-                    include ABSPATH . WPINC . '/upgrade.php';
+                if(!function_exists('\dbDelta')) {
+                    include ABSPATH . 'wp-admin/includes/upgrade.php';
                 }
 
-                $result = dbDelta($query);
+                $result = \dbDelta($query);
             } elseif( !empty(trim($query)) ) {
                 $result = $wpdb->query( $query );
             } else {

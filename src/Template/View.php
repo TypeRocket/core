@@ -26,7 +26,7 @@ class View
      * @param string $ext file extension
      * @param null|string $path
      */
-    public function __construct( $dots , array $data = [], $ext = '.php', $path = null )
+    public function __construct( $dots, array $data = [], $ext = '.php', $path = null )
     {
         if( file_exists( $dots ) ) {
             $this->file = $dots;

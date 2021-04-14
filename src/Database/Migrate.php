@@ -2,6 +2,7 @@
 namespace TypeRocket\Database;
 
 use TypeRocket\Core\Config;
+use TypeRocket\Exceptions\MigrationException;
 
 class Migrate
 {
@@ -27,14 +28,26 @@ class Migrate
      * Set the migrartion folder
      *
      * @param null|string $migrationsFolder
+     *
+     * @return static
      */
     public function setFolder(?string $migrationsFolder)
     {
-        if(!file_exists($migrationsFolder)) {
+        if(!is_dir($migrationsFolder)) {
             throw new \Exception('Migration folder does not exist: ' . $migrationsFolder);
         }
 
         $this->migrationsFolder = $migrationsFolder;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFolder()
+    {
+        return $this->migrationsFolder;
     }
 
     /**
@@ -43,10 +56,22 @@ class Migrate
      * Set wp_options name to save run migration timestamps too
      *
      * @param string $option
+     *
+     * @return static
      */
     public function setOption(string $option)
     {
         $this->option = $option;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOption()
+    {
+        return $this->option;
     }
 
     /**
@@ -55,10 +80,22 @@ class Migrate
      * Accesses result run after a simple migration query completes.
      *
      * @param null|callable $callback
+     *
+     * @return static
      */
     public function setCallback(?callable $callback)
     {
         $this->callback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @return null|callable
+     */
+    public function getCallback()
+    {
+        return $this->callback;
     }
 
     /**
@@ -102,7 +139,7 @@ class Migrate
      * @return array
      * @throws \Exception
      */
-    public function sqlMigrationDirectory(string $type, $steps = 1, $reload = false, $migrationsFolder = null, $callback = null)
+    public function runMigrationDirectory(string $type, $steps = 1, $reload = false, $migrationsFolder = null, $callback = null)
     {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -176,7 +213,7 @@ class Migrate
                 $result['message'] = 'No migrations to rollback';
             }
 
-            throw new \Exception($result['message']);
+            throw new MigrationException($result['message']);
         }
 
         foreach ($query_strings as $file => $query) {
@@ -200,7 +237,7 @@ class Migrate
         update_option($this->option, $migrations_run);
 
         if($reload) {
-            $result['reload'] = $this->sqlMigrationDirectory('up', 99999999999999);
+            $result['reload'] = $this->runMigrationDirectory('up', 99999999999999);
         }
 
         return $result;

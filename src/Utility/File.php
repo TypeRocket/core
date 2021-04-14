@@ -5,6 +5,7 @@ class File
 {
     public $existing = false;
     public $wrote;
+    public $verbose;
     public $file;
     public $isDir;
     public $dirPermissions;
@@ -86,9 +87,37 @@ class File
     }
 
     /**
+     * @return false|string
+     */
+    public function getContainingFolder()
+    {
+        $file_name = basename($this->file);
+        return rtrim(substr($this->file, 0, -strlen($file_name)), '/\\');
+    }
+
+    /**
+     * @param string $name new file name
+     * @param bool $sanitize sanitize file name
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function rename($name, $sanitize = true)
+    {
+        if($this->existing) {
+            $name = $sanitize ? Sanitize::dash($name, true) : $name;
+            $to = $this->getContainingFolder() . '/' . $name;
+            $this->echoVerbose("Rename: {$this->file} >> {$to}");
+            return rename($this->file,$to);
+        }
+
+        throw new \Exception('File or folder must exist to rename.');
+    }
+
+    /**
      * @param string $destination
      */
-    protected function tryToMakeDir($destination)
+    protected function tryToMakeDir($destination, $verbos = 2)
     {
         if(!is_dir($destination)) {
             $file_name = basename($destination);
@@ -96,8 +125,12 @@ class File
         }
 
         if (!is_dir($destination)) {
-            mkdir($destination, $this->dirPermissions, true);
+            $this->echoVerbose("Make dir {$this->dirPermissions}: {$destination}", $verbos);
+
+            return mkdir($destination, $this->dirPermissions, true);
         }
+
+        return false;
     }
 
     /**
@@ -262,15 +295,15 @@ class File
     /**
      * Copy Template
      *
-     * @param string $new
-     * @param array $tags
-     * @param array $replacements
+     * @param string $new new file path
+     * @param array $tags array of strings
+     * @param array $replacements array of strings
      *
      * @return bool|string
      */
     public function copyTemplateFile( $new, $tags = [], $replacements = [] )
     {
-        $newContent = str_replace($tags, $replacements, file_get_contents( $this->file ) );
+        $newContent = $this->getReplacmentTemplateContent($tags, $replacements);
 
         if( ! file_exists($new) ) {
             $file = fopen($new, "w") or die("Unable to open file!");
@@ -280,6 +313,34 @@ class File
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param array $tags array of strings
+     * @param array $replacements array of strings
+     *
+     * @return $this|null
+     * @throws \Exception
+     */
+    public function replaceTemplateContent($tags = [], $replacements = [])
+    {
+        $newContent = $this->getReplacmentTemplateContent($tags, $replacements);
+        return $this->replace($newContent);
+    }
+
+    /**
+     * @param array $tags array of strings
+     * @param array $replacements array of strings
+     *
+     * @return false|string|string[]
+     */
+    public function getReplacmentTemplateContent($tags = [], $replacements = [])
+    {
+        if($this->isDir) {
+            throw new \Exception('File::getReplacmentTemplateContent() requires a file.');
+        }
+
+        return str_replace($tags, $replacements, file_get_contents( $this->file ) );
     }
 
     /**
@@ -392,6 +453,30 @@ class File
     }
 
     /**
+     * Echo Messages
+     *
+     * @param bool $verbose
+     *
+     * @return $this
+     */
+    public function verbose($verbose = true)
+    {
+        $this->verbose = $verbose;
+        return $this;
+    }
+
+    /**
+     * @param string $message
+     * @param int $message 2 is week and 1 is strong
+     */
+    public function echoVerbose($message, $level = 1)
+    {
+        if($this->verbose && $this->verbose !== $level) {
+            echo $message . PHP_EOL;
+        }
+    }
+
+    /**
      * Copy Recursive
      *
      * This function replaces all older files. Use with caution.
@@ -405,8 +490,10 @@ class File
      *
      * @throws \Throwable
      */
-    public function copyTo($destination, $relative = false, $delete = false, $ignore = null, $verbose = false, $replace = true)
+    public function copyTo($destination, $relative = false, $delete = false, $ignore = null, $verbose = null, $replace = true)
     {
+        $this->verbose = $verbose ?? $this->verbose ?? false;
+        $verbose = $this->verbose;
         $path = $this->file;
 
         if($relative) {
@@ -414,10 +501,6 @@ class File
         }
 
         if(!file_exists($destination) && is_dir($path)) {
-            if($verbose && $verbose !== 2) {
-                echo 'Make dir: ' . $destination . PHP_EOL;
-            }
-
             $this->tryToMakeDir($destination);
         }
 
@@ -427,11 +510,13 @@ class File
             if(!$dont_replace_it) {
                 $this->tryToMakeDir($destination);
 
-                if($verbose) {
-                    echo 'Copy file: ' . $destination . PHP_EOL;
-                }
+                $this->echoVerbose($path);
 
-                $this->wrote = copy($path, $destination);
+                if($this->wrote = copy($path, $destination)){
+                    $this->echoVerbose('Copy file: ' . $destination);
+                } else {
+                    $this->echoVerbose('Copy file failed: ' . $destination);
+                }
             }
             elseif($verbose) {
                 echo 'Kept existing file: ' . $destination . PHP_EOL;
@@ -452,11 +537,15 @@ class File
             $skip = false;
 
             if(is_array($ignore)) {
+                if($ignore['mode'] ?? null) { $imode = array_shift($ignore); }
                 foreach ($ignore as $loc) {
                     if(strpos($name, $loc, 0) !== false) {
-                        if($verbose && $verbose !== 2) {
-                            echo 'Ignoring: ' . $file . PHP_EOL;
+
+                        if($imode === 'mkdir') {
+                            $this->tryToMakeDir($file);
                         }
+
+                        $this->echoVerbose('Ignoring: ' . $file, 2);
 
                         $skip = true;
                         break;
@@ -465,22 +554,19 @@ class File
             }
 
             if (!$skip && $item->isDir() && !file_exists($file) ) {
-                if($verbose && $verbose !== 2) {
-                    echo 'Make dir: ' . $file . PHP_EOL;
-                }
-                mkdir($file);
+                $this->tryToMakeDir($file);
             }
-            elseif(!$skip && !$item->isDir() ) {
+            elseif(!$skip && !$item->isDir()) {
                 $dont_replace_it = file_exists($file) && !$replace;
 
                 if(!$dont_replace_it) {
-                    $this->tryToMakeDir($destination);
+                    $this->tryToMakeDir($file);
 
-                    if($verbose) {
-                        echo 'Copy file: ' . $file . PHP_EOL;
+                    if($this->wrote = copy($item, $file)){
+                        $this->echoVerbose('Copy file: ' . $item . ' >> ' . $file);
+                    } else {
+                        $this->echoVerbose('Copy file failed: ' . $item . ' >> ' . $file);
                     }
-
-                    $this->wrote = copy($item, $file);
                 }
                 elseif($verbose) {
                     echo 'Kept existing file: ' . $destination . PHP_EOL;

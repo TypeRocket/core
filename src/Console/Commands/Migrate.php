@@ -64,7 +64,7 @@ class Migrate extends Command
         }
 
         try {
-            $results = (new \TypeRocket\Database\Migrate())->sqlMigrationDirectory($type, $steps, $reload, null, function($report, $result) {
+            $results = (new \TypeRocket\Database\Migrate())->runMigrationDirectory($type, $steps, $reload, null, function($report, $result) {
                 $this->success($report['message']);
                 $this->success($result['message']);
                 $this->warning("{$result['type']}:" );

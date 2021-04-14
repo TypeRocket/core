@@ -68,7 +68,7 @@ class MakeComposer extends Command
         $composer_file = File::new($template)->copyTemplateFile( $composer_file, $tags, $replacements );
 
         if( $composer_file ) {
-            $this->success('Composer ' . $class . ' created at ' . $composer_file . '</>');
+            $this->success('Composer ' . $class . ' created at ' . $composer_file);
         } else {
             $this->error('Composer ' . $class . ' already exists.');
         }
