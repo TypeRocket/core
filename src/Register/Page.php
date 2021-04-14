@@ -526,7 +526,8 @@ class Page extends Registrable
         };
 
         if( $this->subMenu || array_key_exists( $this->resource, $this->builtin ) ) {
-            add_submenu_page( $this->builtin[$this->subMenu ?? $this->resource] ?? $this->subMenu, $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ) );
+            $subMenu = $this->builtin[$this->subMenu ?? $this->resource] ?? $this->subMenu;
+            add_submenu_page($subMenu, $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ) );
         } elseif( ! $this->parent ) {
             add_menu_page( $this->title, $menu_title, $capability, $slug, Closure::bind( $callback, $this ), $this->icon, $position);
             if( $this->hasShownSubPages() ) {

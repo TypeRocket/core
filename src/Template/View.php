@@ -38,10 +38,13 @@ class View
         if( !empty( $data ) ) {
             $this->data = $data;
         }
+        $this->init();
 
-        $this->setContext('views');
+        $this->setContext();
         $this->setFolder($folder);
     }
+
+    protected function init() {}
 
     /**
      * @param mixed ...$args
@@ -229,7 +232,7 @@ class View
      *
      * @return $this
      */
-    public function setContext($context)
+    public function setContext($context = null)
     {
         $this->context = $context ?? $this->getContext();
 
@@ -250,7 +253,7 @@ class View
      * @return $this
      */
     public function setFolder($folder) {
-        $this->folder = $folder;
+        $this->folder = $folder ?? $this->folder;
 
         return $this;
     }
