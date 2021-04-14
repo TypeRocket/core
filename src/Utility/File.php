@@ -127,10 +127,21 @@ class File
         if (!is_dir($destination)) {
             $this->echoVerbose("Make dir {$this->dirPermissions}: {$destination}", $verbos);
 
-            return mkdir($destination, $this->dirPermissions, true);
+            return $this->makeDir($destination);
         }
 
         return false;
+    }
+
+    /**
+     * @param string $directory
+     * @param null $premissions
+     *
+     * @return bool
+     */
+    public function makeDir($directory, $premissions = null)
+    {
+        return mkdir($directory, $premissions ?? $this->dirPermissions, true);
     }
 
     /**
@@ -537,14 +548,8 @@ class File
             $skip = false;
 
             if(is_array($ignore)) {
-                if($ignore['mode'] ?? null) { $imode = array_shift($ignore); }
                 foreach ($ignore as $loc) {
                     if(strpos($name, $loc, 0) !== false) {
-
-                        if($imode === 'mkdir') {
-                            $this->tryToMakeDir($file);
-                        }
-
                         $this->echoVerbose('Ignoring: ' . $file, 2);
 
                         $skip = true;
@@ -554,7 +559,7 @@ class File
             }
 
             if (!$skip && $item->isDir() && !file_exists($file) ) {
-                $this->tryToMakeDir($file);
+                $this->makeDir($file);
             }
             elseif(!$skip && !$item->isDir()) {
                 $dont_replace_it = file_exists($file) && !$replace;

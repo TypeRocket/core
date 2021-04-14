@@ -77,8 +77,8 @@ class MakeModel extends Command
         [$namespace, $class] = Str::splitAt('\\', $model, true);
 
         $tags = ['{{namespace}}', '{{model}}', '{{id}}', '{{app}}'];
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Models', $namespace]));
-        $replacements = [ $namespace, $class, str_replace('\\', '_', $id), Helper::appNamespace() ];
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Models', $namespace]));
+        $replacements = [ $namespace, $class, str_replace('\\', '_', $id), $this->getGalaxyMakeNamespace() ];
         $template =  __DIR__ . '/../../../templates/Models/' . $directive . '.txt';
 
         $app_path = \TypeRocket\Core\Config::get('paths.app');

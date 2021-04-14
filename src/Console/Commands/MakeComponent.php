@@ -46,7 +46,7 @@ class MakeComponent extends Command
         }
 
         [$namespace, $class] = Str::splitAt('\\', $command, true);
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Components', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Components', $namespace]));
 
         $tags = ['{{namespace}}', '{{component}}', '{{title}}'];
         $replacements = [ $namespace, $class, $title ];

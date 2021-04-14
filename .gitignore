@@ -2,6 +2,7 @@
 node_modules
 /vendor
 composer.lock
+/.phpunit.result.cache
 
 # WordPress
 wp-cli.phar
@@ -28,4 +29,3 @@ Thumbs.db
 .build
 .idea
 .vscode
-/.phpunit.result.cache

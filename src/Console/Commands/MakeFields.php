@@ -31,7 +31,7 @@ class MakeFields extends Command
         $name = $this->getClassArgument('name');
 
         [$namespace, $class] = Str::splitAt('\\', $name, true);
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Http\Fields', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Http\Fields', $namespace]));
         $replacements = [ $namespace, $class];
         $tags = ['{{namespace}}', '{{fields}}'];
 

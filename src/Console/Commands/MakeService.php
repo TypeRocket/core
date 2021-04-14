@@ -31,7 +31,7 @@ class MakeService extends Command
         $name = $this->getClassArgument('name');
 
         [$namespace, $class] = Str::splitAt('\\', $name, true);
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Services', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Services', $namespace]));
         $replacements = [ $namespace, $class];
         $tags = ['{{namespace}}', '{{service}}'];
 

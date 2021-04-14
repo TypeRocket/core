@@ -42,7 +42,7 @@ class MakeMiddleware extends Command
     {
         [$namespace, $class] = Str::splitAt('\\', $middleware, true);
         $tags = ['{{namespace}}', '{{middleware}}'];
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Http\Middleware', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Http\Middleware', $namespace]));
         $replacements = [ $namespace, $class ];
 
         $template = __DIR__ . '/../../../templates/Middleware.txt';

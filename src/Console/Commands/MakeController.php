@@ -76,8 +76,8 @@ class MakeController extends Command
         [$namespace, $class] = Str::splitAt('\\', $controller, true);
         $mc = Str::splitAt('\\', $model, true)[1];
         $tags = ['{{namespace}}', '{{controller}}', '{{model}}', '{{app}}', '{{mc}}', '{{var}}'];
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Controllers', $namespace]));
-        $replacements = [ $namespace, $class, $model, Helper::appNamespace(), $mc, Str::snake($mc) ];
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Controllers', $namespace]));
+        $replacements = [ $namespace, $class, $model, $this->getGalaxyMakeNamespace(), $mc, Str::snake($mc) ];
 
         $template = __DIR__ . '/../../../templates/Controllers/' . $directive . '.txt';
         $app_path = \TypeRocket\Core\Config::get('paths.app');

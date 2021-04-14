@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use TypeRocket\Utility\Helper;
 
 /**
  * Class Command
@@ -263,6 +264,21 @@ class Command extends SymfonyCommand
         $arg = preg_replace('/(\\\\+)/m','\\', $arg);
 
         return $arg;
+    }
+
+    /**
+     * @param null|string $append
+     *
+     * @return string
+     */
+    public function getGalaxyMakeNamespace($append = null)
+    {
+        if(!defined('TYPEROCKET_GALAXY_MAKE_NAMESPACE')) {
+            define('TYPEROCKET_GALAXY_MAKE_NAMESPACE', Helper::appNamespace());
+        }
+
+        $space = $append ? "\\" . TYPEROCKET_GALAXY_MAKE_NAMESPACE . "\\" : TYPEROCKET_GALAXY_MAKE_NAMESPACE;
+        return $space . ltrim($append, '\\');
     }
 
 }

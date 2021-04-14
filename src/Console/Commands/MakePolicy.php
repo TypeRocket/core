@@ -31,10 +31,9 @@ class MakePolicy extends Command
         $name = $this->getClassArgument('name');
 
         [$namespace, $class] = Str::splitAt('\\', $name, true);
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Auth', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Auth', $namespace]));
         $replacements = [ $namespace, $class, Helper::appNamespace('Models\User') ];
         $tags = ['{{namespace}}', '{{auth}}', '{{user}}'];
-
 
         $app_path = \TypeRocket\Core\Config::get('paths.app');
         $policy_file = $app_path . '/Auth/' . str_replace("\\",'/', $name) . ".php";

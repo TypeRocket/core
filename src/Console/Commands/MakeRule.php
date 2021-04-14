@@ -31,7 +31,7 @@ class MakeRule extends Command
         $ruleKey = $this->getClassArgument('key');
 
         [$namespace, $class] = Str::splitAt('\\', $ruleClass, true);
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Rules', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Rules', $namespace]));
 
         $tags = ['{{namespace}}', '{{class}}', '{{key}}'];
         $replacements = [ $namespace, $class, $ruleKey ];

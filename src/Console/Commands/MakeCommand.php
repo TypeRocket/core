@@ -33,7 +33,7 @@ class MakeCommand extends Command
         $name = strtolower( $this->getArgument('name') );
 
         [$namespace, $class] = Str::splitAt('\\', $command, true);
-        $namespace = implode('\\',array_filter([Helper::appNamespace(), 'Commands', $namespace]));
+        $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Commands', $namespace]));
 
         $tags = ['{{namespace}}', '{{command}}', '{{name}}'];
         $replacements = [ $namespace, $class, $name ];
