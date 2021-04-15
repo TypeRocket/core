@@ -30,7 +30,6 @@ class View
     {
         if( file_exists( $dots ) ) {
             $this->file = $dots;
-            $folder = $folder ?? rtrim(Config::get('paths.' . $this->getContext()), DIRECTORY_SEPARATOR);
         } else {
             $this->ext = $ext ?? '.php';
             $this->location = str_replace('.', '/', $dots) . $this->ext;
@@ -207,6 +206,7 @@ class View
             }, 101);
         }
 
+        $this->setFolder($this->getFolderPath());
         $file = $this->getComposedFilePath();
         $templateEngine = $this->viewsEngine ?? Config::get('app.templates.' . $context) ?? Config::get('app.templates.views');
         (new $templateEngine($file, $this->getData(), $context, $this))->load();
