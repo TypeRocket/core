@@ -392,7 +392,6 @@ class Taxonomy extends Registrable
      * Register the taxonomy with WordPress
      *
      * @return Taxonomy $this
-     * @throws \Exception
      */
     public function register()
     {

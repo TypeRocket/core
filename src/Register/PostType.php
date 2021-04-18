@@ -944,7 +944,6 @@ class PostType extends Registrable
      * the post type.
      *
      * @return PostType $this
-     * @throws Exception
      */
     public function register()
     {
