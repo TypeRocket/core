@@ -300,6 +300,25 @@ abstract class Registrable
     }
 
     /**
+     * @param string $id the registered ID
+     *
+     * @return Registrable|PostType|Page|Taxonomy|MetaBox
+     * @throws \Exception
+     */
+    public function getAppliedById($id)
+    {
+        foreach ($this->use as $obj) {
+            if ($obj instanceof Registrable) {
+                if($obj->getId() === $id) {
+                    return $object;
+                }
+            }
+        }
+
+        throw new \Exception('TypeRocket: Registrable object of ID ' . $id . ' not found.');
+    }
+
+    /**
      * Get the Use
      *
      * @return array
