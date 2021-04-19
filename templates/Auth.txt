@@ -7,11 +7,6 @@ use TypeRocket\Auth\Policy;
 
 class {{auth}} extends Policy
 {
-    public function delete(AuthUser $auth, $object)
-    {
-        return false;
-    }
-
     public function update(AuthUser $auth, $object)
     {
         return false;
@@ -23,6 +18,11 @@ class {{auth}} extends Policy
     }
 
     public function read(AuthUser $auth, $object)
+    {
+        return false;
+    }
+
+    public function destroy(AuthUser $auth, $object)
     {
         return false;
     }
