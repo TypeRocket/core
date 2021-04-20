@@ -1221,7 +1221,6 @@ class Model implements Formable, JsonSerializable
      * @param null|int $num
      *
      * @return Model
-     * @throws \Exception
      */
     public function findFirstWhereOrNew($column, $arg1, $arg2 = null, $condition = 'AND', $num = null)
     {
