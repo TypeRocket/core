@@ -5,6 +5,7 @@ use Closure;
 use TypeRocket\Core\Config;
 use TypeRocket\Elements\BaseForm;
 use TypeRocket\Models\WPPost;
+use TypeRocket\Utility\Str;
 use WP_Post;
 use WP_Query;
 use WP_Term;
@@ -454,7 +455,7 @@ class Registry
 
                     $value = $post_temp
                         ->setProperty($post_temp->getIdColumn(), $post_id)
-                        ->getBaseFieldValue($new_column['field']);
+                        ->getFieldValue($new_column['field']);
 
                     if($result = call_user_func_array($new_column['callback'], [$value, $data])) {
                         echo $result;
@@ -475,7 +476,8 @@ class Registry
 	    }
 
         foreach ($new_columns as $new_column) {
-            if(!empty($new_column['sort'])) {
+            // Only meta fields can be sortable
+            if(!empty($new_column['sort']) && !Str::contains('.', $new_column['field'])) {
                 add_filter( "manage_edit-{$pt}_sortable_columns", function($columns) use ($new_column) {
                     $columns[$new_column['field']] = $new_column['field'];
                     return $columns;

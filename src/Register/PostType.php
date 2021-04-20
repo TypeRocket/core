@@ -807,8 +807,12 @@ class PostType extends Registrable
      * @return PostType $this
      */
     public function addColumn($field, $sort_by_c = false, $label = null, $callback = null) {
-        if( ! $label ) { $label = ucwords($field); }
-        $field = Sanitize::underscore( $field );
+        if( ! $label ) {
+            $name_parts = explode('.', strrev($field), 2);
+            $label = ucwords(strrev($name_parts[0]));
+            $field = Sanitize::underscore( $field, true );
+        }
+        $field = Sanitize::underscore( $field, true );
         if( ! $callback ) {
             $callback = function($value) {
                 return $value;
