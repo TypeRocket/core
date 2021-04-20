@@ -1235,7 +1235,7 @@ class Model implements Formable, JsonSerializable
      *
      * @return static
      */
-    public function findFirstWhereOrCreateWith($column, $value)
+    public function findFirstWhereOrNewWith($column, $value)
     {
         if(!$item = $this->where($column, $value)->first()) {
             $item = new static;
