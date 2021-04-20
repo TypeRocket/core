@@ -60,12 +60,14 @@ class PostTest extends TestCase
     {
         $_POST['tr']['post_content'] = 'needed to enter builtin requirment';
         $_POST['tr']['model'] = null;
+        $_POST['tr']['type'] = null;
 
         $controller = new class extends WPPostController {
-            public function onActionCreate($model)
+            public function onActionSave($type, $model)
             {
                 global $myTestOnActionModel;
 
+                $_POST['tr']['type'] = $type;
                 $_POST['tr']['model'] = $model;
             }
         };
@@ -86,6 +88,7 @@ class PostTest extends TestCase
 
         $this->assertTrue( $hasErrors === true );
         $this->assertTrue( $_POST['tr']['model'] instanceof WPPost);
+        $this->assertTrue( $_POST['tr']['type'] === 'create');
         unset($_POST['tr']);
     }
 

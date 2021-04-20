@@ -36,7 +36,7 @@ class WPOptionController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('update', $model);
+            $this->onAction('save', 'update', $model);
 
             $model->update( $this->getFields() );
             $response->flashNext( 'Updated', 'success' );
@@ -68,7 +68,7 @@ class WPOptionController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('create', $model);
+            $this->onAction('save', 'create', $model);
 
             $model->create( $this->getFields() );
             $response->flashNext( 'Options created', 'success' );

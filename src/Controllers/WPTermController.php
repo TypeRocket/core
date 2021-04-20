@@ -43,7 +43,7 @@ class WPTermController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('update', $model);
+            $this->onAction('save', 'update', $model);
 
             $model->update( $this->getFields() );
             $response->flashNext($model->getRouteResource() . ' updated', 'success' );
@@ -78,7 +78,7 @@ class WPTermController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('create', $model);
+            $this->onAction('save', 'create', $model);
 
             $model->create( $this->getFields() );
             $response->flashNext($model->getRouteResource() . ' created', 'success' );
@@ -119,7 +119,7 @@ class WPTermController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('destroy', $model);
+            $this->onAction('save', 'destroy', $model);
 
             $model->delete();
             $response->flashNext( 'Term deleted', 'success' );

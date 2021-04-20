@@ -44,7 +44,7 @@ class WPCommentController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('update', $model);
+            $this->onAction('save', 'update', $model);
 
             $model->findById( $id )->update( $this->getFields() );
             $response->flashNext( 'Comment updated', 'success' );
@@ -79,7 +79,7 @@ class WPCommentController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('create', $model);
+            $this->onAction('save', 'create', $model);
 
             $model->create( $this->getFields() );
             $response->flashNext( 'Comment created', 'success' );
@@ -120,7 +120,7 @@ class WPCommentController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
-            $this->onAction('destroy', $model);
+            $this->onAction('save', 'destroy', $model);
 
             $model->delete();
             $response->flashNext( 'Comment deleted', 'success' );
