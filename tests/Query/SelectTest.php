@@ -14,8 +14,30 @@ class SelectTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID'; // uppercase
         $query->select('post_title', 'ID')->where('ID', 1)->get();
-        $sql = "SELECT post_title,ID FROM wp_posts WHERE ID = 1";
+        $sql = "SELECT `post_title`,`ID` FROM `wp_posts` WHERE `ID` = 1";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testSelectWithUppercaseIdColumnTicks()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID'; // uppercase
+        $query->select('`wp_posts`.`post_title` as name', 'ID')->where('ID', 1)->get();
+        $sql = "SELECT `wp_posts`.`post_title` as name,`ID` FROM `wp_posts` WHERE `ID` = 1";
+        $this->assertTrue( $query->lastCompiledSQL == $sql);
+    }
+
+    public function testSelectWithUppercaseIdColumnNoTicks()
+    {
+        $query = new \TypeRocket\Database\Query();
+        $query->table('wp_posts');
+        $query->idColumn = 'ID'; // uppercase
+        $result = $query->select('wp_posts.post_title as    name', 'ID')->where('ID', 1)->first();
+        $compiled = $query->lastCompiledSQL;
+        $sql = "SELECT `wp_posts`.`post_title` AS `name`,`ID` FROM `wp_posts` WHERE `ID` = 1 LIMIT 1 OFFSET 0";
+        $this->assertTrue( $compiled == $sql);
+        $this->assertTrue( !empty($result['name']));
     }
 
     public function testSelectTable()
@@ -24,7 +46,7 @@ class SelectTest extends TestCase
         $query->setSelectTable('wp_posts');
         $query->idColumn = 'ID'; // uppercase
         $compiled = (string) $query->where('ID', 1);
-        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1";
+        $sql = "SELECT `wp_posts`.* FROM `wp_posts` WHERE `ID` = 1";
         $this->assertTrue( $compiled == $sql);
     }
 
@@ -35,7 +57,7 @@ class SelectTest extends TestCase
         $query->idColumn = 'ID'; // uppercase
         $query->orderBy('post_title');
         $compiled = (string) $query->where('ID', 1);
-        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1 ORDER BY post_title ASC";
+        $sql = "SELECT `wp_posts`.* FROM `wp_posts` WHERE `ID` = 1 ORDER BY `post_title` ASC";
         $this->assertTrue( $compiled == $sql);
     }
 
@@ -47,7 +69,7 @@ class SelectTest extends TestCase
         $query->orderBy('post_title');
         $query->reorder('post_content');
         $compiled = (string) $query->where('ID', 1);
-        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1 ORDER BY post_content ASC";
+        $sql = "SELECT `wp_posts`.* FROM `wp_posts` WHERE `ID` = 1 ORDER BY `post_content` ASC";
         $this->assertTrue( $compiled == $sql);
     }
 
@@ -59,7 +81,7 @@ class SelectTest extends TestCase
         $query->orderBy('post_title');
         $query->reorder();
         $compiled = (string) $query->where('ID', 1);
-        $sql = "SELECT `wp_posts`.* FROM wp_posts WHERE ID = 1";
+        $sql = "SELECT `wp_posts`.* FROM `wp_posts` WHERE `ID` = 1";
         $this->assertTrue( $compiled == $sql);
     }
 
@@ -69,7 +91,7 @@ class SelectTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $query->select('post_title', 'ID')->take(10)->where('ID', 1)->get();
-        $sql = "SELECT post_title,ID FROM wp_posts WHERE ID = 1 LIMIT 10 OFFSET 0";
+        $sql = "SELECT `post_title`,`ID` FROM `wp_posts` WHERE `ID` = 1 LIMIT 10 OFFSET 0";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -79,7 +101,7 @@ class SelectTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $query->take(10)->where('ID', 1)->count();
-        $sql = "SELECT COUNT(*) FROM wp_posts WHERE ID = 1 LIMIT 10 OFFSET 0";
+        $sql = "SELECT COUNT(*) FROM `wp_posts` WHERE `ID` = 1 LIMIT 10 OFFSET 0";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 

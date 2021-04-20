@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Database;
 
+use TypeRocket\Utility\Str;
+
 class Query
 {
     public static $numberQueriesRun = 0;
@@ -11,7 +13,7 @@ class Query
     public $useResultsClass = false;
     public $resultsClass = Results::class;
     public $run = true;
-    protected $columnPattern = "/[^a-zA-Z0-9\\\\_]+/";
+    protected $columnPattern = "/[^a-zA-Z0-9\\\\_\\.\\`\\*\\s]+/";
     protected $query = [];
     protected $selectTable = null;
     protected $joinAs = null;
@@ -659,7 +661,7 @@ class Query
         $joinQuery['type'] = strtoupper($type) . ' JOIN';
         $joinQuery['table'] = $table;
         $joinQuery['on'] = 'ON';
-        $joinQuery['column1'] = $column;
+        $joinQuery['column1'] = $this->tickSqlName($column);
         $joinQuery['operator'] = '=';
         $joinQuery['column2'] = $arg1;
 
@@ -667,6 +669,8 @@ class Query
             $joinQuery['operator'] = $arg1;
             $joinQuery['column2'] = $arg2;
         }
+
+        $joinQuery['column2'] = $this->tickSqlName($joinQuery['column2']);
 
         $this->query['joins'][] = $joinQuery;
 
@@ -913,9 +917,13 @@ class Query
 
             if($selectTable) {
                 $query['select'] = array_map(function($value) use ($selectTable) {
-                   return mb_strpos( $value, '.' ) !== false ? $value : "`{$selectTable}`.{$value}";
+                   return mb_strpos( $value, '.' ) !== false ? $value : "{$selectTable}.{$value}";
                 }, $query['select']);
             }
+
+            $query['select'] = array_map(function($value) {
+                return $this->tickSqlName($value);
+            }, $query['select']);
 
             $sql = implode(',',$query['select']);
         }
@@ -956,7 +964,7 @@ class Query
         if( array_key_exists('function', $query) ) {
             $key = key($query['function']);
             $func = strtoupper( $key );
-            $column = $this->query['function'][$key];
+            $column = $this->tickSqlName($this->query['function'][$key]);
             $sql = $func.'('.$column.') ';
         }
 
@@ -974,7 +982,7 @@ class Query
         $sql = '';
 
         if( array_key_exists('group_by', $query) ) {
-            $column = $query['group_by']['column'];
+            $column = $this->tickSqlName($query['group_by']['column']);
             $sql = ' GROUP BY '.$column.' ';
         }
 
@@ -1014,7 +1022,7 @@ class Query
             $sql .= " ORDER BY ";
 
             $order = array_map(function($ordering) {
-                $order_column = preg_replace($this->columnPattern, '', $ordering['column']);
+                $order_column = $this->tickSqlName($ordering['column']);
                 $order_direction = $ordering['direction'] == 'ASC' ? 'ASC' : 'DESC';
                 return "{$order_column} {$order_direction}";
             }, $query['order_by']);
@@ -1042,7 +1050,7 @@ class Query
 
             if( !empty($query['data_values']) ) {
                 foreach( $query['data'] as $column ) {
-                    $columns[] =  preg_replace($this->columnPattern, '', $column);
+                    $columns[] = $this->tickSqlName($column);
                 }
 
                 $sql_insert['sql_insert_columns'] = ' (' . implode(',', $columns) . ') ';
@@ -1062,7 +1070,7 @@ class Query
 
             } else {
                 foreach( $query['data'] as $column => $data ) {
-                    $columns[] =  preg_replace($this->columnPattern, '', $column);
+                    $columns[] =  $this->tickSqlName($column);
                     $this->setupInserts($data, $inserts);
                 }
 
@@ -1088,7 +1096,7 @@ class Query
         if( !empty($query['update']) && !empty($query['data']) ) {
             $inserts = $columns = [];
             foreach( $query['data'] as $column => $data ) {
-                $columns[] = preg_replace($this->columnPattern, '', $column);
+                $columns[] = $this->tickSqlName($column);
                 $this->setupInserts($data, $inserts);
             }
 
@@ -1167,7 +1175,7 @@ class Query
                 {
                     $where = [
                         'condition' => $where['condition'] ?? null,
-                        'column' => $where['column'],
+                        'column' => $this->tickSqlName($where['column']),
                         'operator' => $where['operator'] ?? '=',
                         'value' => $where['value'] ?? null,
                     ];
@@ -1255,6 +1263,8 @@ class Query
                 } elseif ($join['table'] instanceof Query) {
                     $as = $join['table']->getJoinAs();
                     $join['table'] = trim('( ' . $join['table'] . ' ) `' . $as . '`' );
+                } else {
+                    $join['table'] = $this->tickSqlName($join['table']);
                 }
 
                 $sql .= ' ' . implode(' ', $join);
@@ -1272,8 +1282,30 @@ class Query
     protected function compileTable()
     {
         $table = $this->query['table'];
-        $as = $this->tableAs ? " AS {$this->tableAs} " : '';
-        return $table . $as;
+        $as = $this->tableAs ? ' AS ' . $this->tickSqlName($this->tableAs) . ' ' : '';
+        return $this->tickSqlName($table) . $as;
+    }
+
+    /**
+     * Tick Names
+     *
+     * Escapes keyword names in columns and tables.
+     *
+     * @param string $column
+     */
+    protected function tickSqlName($column)
+    {
+        $c = $column;
+
+        $c = preg_replace($this->columnPattern, '', $column);
+
+        if(!Str::contains('`', $column)) {
+            $c = '`' . str_replace('.', '`.`', $c) . '`';
+            $c = str_replace('`*`', '*', $c);
+            $c = preg_replace('/\s+(as)\s+/i', '` AS `', $c);
+        }
+
+        return $c;
     }
 
     /**

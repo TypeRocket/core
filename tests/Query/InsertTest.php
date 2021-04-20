@@ -19,7 +19,7 @@ class InsertTest extends TestCase
             [ 'post3', 'term2' ]
         ]);
 
-        $sql = "INSERT INTO mock_create (posts_id,terms_id)  VALUES  ( 'post','term' ) , ( 'post2','term2' ) , ( 'post3','term2' ) ";
+        $sql = "INSERT INTO `mock_create` (`posts_id`,`terms_id`)  VALUES  ( 'post','term' ) , ( 'post2','term2' ) , ( 'post3','term2' ) ";
 
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }

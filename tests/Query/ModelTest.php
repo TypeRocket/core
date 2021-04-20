@@ -147,7 +147,7 @@ class ModelTest extends TestCase
                 ]
             ])
             ->join('wp_postmeta', 'wp_posts.ID', 'wp_postmeta.post_id')->getQuery();
-        $sql = "SELECT DISTINCT `wp_posts`.* FROM wp_posts INNER JOIN wp_postmeta ON wp_posts.ID = wp_postmeta.post_id WHERE ID = 1 AND (  meta_key = 'meta_key' AND meta_value like 'Hello%' ) ";
+        $sql = "SELECT DISTINCT `wp_posts`.* FROM `wp_posts` INNER JOIN `wp_postmeta` ON `wp_posts`.`ID` = `wp_postmeta`.`post_id` WHERE `ID` = 1 AND (  `meta_key` = 'meta_key' AND `meta_value` like 'Hello%' ) ";
         $this->assertTrue( $compiled == $sql);
     }
 
@@ -158,7 +158,7 @@ class ModelTest extends TestCase
         $model->findFirstWhereOrNew('ID', 1); // returns a new item for test only
         $compiled = $model->getQuery()->lastCompiledSQL;
 
-        $sql = "SELECT * FROM wp_posts WHERE ID = 1 LIMIT 1 OFFSET 0";
+        $sql = "SELECT * FROM `wp_posts` WHERE `ID` = 1 LIMIT 1 OFFSET 0";
         $this->assertTrue( $compiled == $sql);
     }
 
@@ -168,8 +168,9 @@ class ModelTest extends TestCase
         $model->getQuery()->table('wp_posts')->run = false;
         $new = $model->findFirstWhereOrNew('ID', 1); // returns a new item for test only
 
-        $sql = "SELECT * FROM wp_posts WHERE ID = 1 LIMIT 1 OFFSET 0";
+        $sql = "SELECT * FROM `wp_posts` WHERE `ID` = 1 LIMIT 1 OFFSET 0";
         $this->assertTrue( empty($new->post_title) );
+        $this->assertTrue( $sql === $model->getQuery()->lastCompiledSQL );
     }
 
     public function testFindOrDie()
@@ -195,7 +196,7 @@ class ModelTest extends TestCase
         $model->update();
 
         $actual = $model->getQuery()->lastCompiledSQL;
-        $expected = "UPDATE users SET name='kevin dees' WHERE id = 1";
+        $expected = "UPDATE `users` SET `name`='kevin dees' WHERE `id` = 1";
         $this->assertEquals($expected, $actual);
     }
 }

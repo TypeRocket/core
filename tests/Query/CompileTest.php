@@ -14,7 +14,7 @@ class CompileTest extends TestCase
         $query->idColumn = 'ID';
         $query->run = false;
         $query->where('ID', 1)->update(['post_title' => 'My Title']);
-        $sql = "UPDATE wp_posts SET post_title='My Title' WHERE ID = 1";
+        $sql = "UPDATE `wp_posts` SET `post_title`='My Title' WHERE `ID` = 1";
         $last = $query->lastCompiledSQL;
         $this->assertTrue( $last == $sql);
     }
@@ -42,7 +42,7 @@ class CompileTest extends TestCase
             'post_date_gmt' => $time,
             'post_modified_gmt' => $time,
         ]);
-        $sql = "INSERT INTO wp_posts (post_title,post_content,post_content_filtered,post_mime_type,post_excerpt,post_name,guid,post_password,to_ping,pinged,post_date,post_modified,post_date_gmt,post_modified_gmt)  VALUES  ( 'My Title','My content.','','','My...','my-name','','','','','{$time}','{$time}','{$time}','{$time}' ) ";
+        $sql = "INSERT INTO `wp_posts` (`post_title`,`post_content`,`post_content_filtered`,`post_mime_type`,`post_excerpt`,`post_name`,`guid`,`post_password`,`to_ping`,`pinged`,`post_date`,`post_modified`,`post_date_gmt`,`post_modified_gmt`)  VALUES  ( 'My Title','My content.','','','My...','my-name','','','','','{$time}','{$time}','{$time}','{$time}' ) ";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -53,7 +53,7 @@ class CompileTest extends TestCase
         $query->idColumn = 'ID';
         $query->run = false;
         $query->where('ID', 1)->delete();
-        $sql = "DELETE FROM wp_posts WHERE ID = 1";
+        $sql = "DELETE FROM `wp_posts` WHERE `ID` = 1";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -63,7 +63,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $query->orderBy('ID', 'DESC')->get();
-        $sql = "SELECT * FROM wp_posts ORDER BY ID DESC";
+        $sql = "SELECT * FROM `wp_posts` ORDER BY `ID` DESC";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -73,7 +73,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $query->orderBy('ID')->get();
-        $sql = "SELECT * FROM wp_posts ORDER BY ID ASC";
+        $sql = "SELECT * FROM `wp_posts` ORDER BY `ID` ASC";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -83,7 +83,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $result = $query->orderBy('post_content')->orderBy('post_title', 'DESC')->get();
-        $sql = "SELECT * FROM wp_posts ORDER BY post_content ASC , post_title DESC";
+        $sql = "SELECT * FROM `wp_posts` ORDER BY `post_content` ASC , `post_title` DESC";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -94,7 +94,7 @@ class CompileTest extends TestCase
         $query->idColumn = 'ID';
         $result = (string) $query->orderBy('post_content')->orderBy('post_title', 'DESC');
                                         // extra space
-        $sql = "SELECT * FROM wp_posts AS p  ORDER BY post_content ASC , post_title DESC";
+        $sql = "SELECT * FROM `wp_posts` AS `p`  ORDER BY `post_content` ASC , `post_title` DESC";
         $this->assertTrue( $result == $sql);
     }
 
@@ -104,7 +104,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $result = $query->count();
-        $sql = "SELECT COUNT(*) FROM wp_posts";
+        $sql = "SELECT COUNT(*) FROM `wp_posts`";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
         $this->assertTrue( $result > 0 );
     }
@@ -115,7 +115,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $result = $query->max('ID');
-        $sql = "SELECT MAX(ID) FROM wp_posts";
+        $sql = "SELECT MAX(`ID`) FROM `wp_posts`";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -125,7 +125,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $result = $query->min('ID');
-        $sql = "SELECT MIN(ID) FROM wp_posts";
+        $sql = "SELECT MIN(`ID`) FROM `wp_posts`";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -135,7 +135,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $result = $query->sum('ID');
-        $sql = "SELECT SUM(ID) FROM wp_posts";
+        $sql = "SELECT SUM(`ID`) FROM `wp_posts`";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
     }
 
@@ -145,7 +145,7 @@ class CompileTest extends TestCase
         $query->table('wp_posts');
         $query->idColumn = 'ID';
         $result = $query->avg('ID');
-        $sql = "SELECT AVG(ID) FROM wp_posts";
+        $sql = "SELECT AVG(`ID`) FROM `wp_posts`";
         $this->assertTrue( $query->lastCompiledSQL == $sql);
         $this->assertTrue( $result > 0 );
     }
