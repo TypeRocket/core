@@ -141,6 +141,7 @@ class WPComment extends Model
     {
         $fields  = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields( $fields );
+        $comment = null;
 
         if ( ! empty( $builtin['comment_post_id'] ) &&
              ! empty( $builtin['comment_content'] )
@@ -152,7 +153,7 @@ class WPComment extends Model
             if ( empty( $comment ) ) {
                 throw new ModelException('WPComments not created');
             } else {
-                $this->findById($comment);
+                $comment = $this->findById($comment);
             }
         } else {
             $this->errors = [
@@ -163,7 +164,7 @@ class WPComment extends Model
 
         $this->saveMeta( $fields );
 
-        return $this;
+        return $comment;
     }
 
     /**
@@ -221,7 +222,7 @@ class WPComment extends Model
 
         $delete = wp_delete_comment($ids);
 
-        if ( $delete instanceof \WP_Error ) {
+        if ( !$delete || $delete instanceof \WP_Error ) {
             throw new ModelException('WPComment not deleted: ' . $delete->get_error_message());
         }
 

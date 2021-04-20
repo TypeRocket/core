@@ -235,6 +235,7 @@ class WPUser extends Model implements AuthUser
     {
         $fields = $this->provisionFields( $fields );
         $builtin = $this->getFilteredBuiltinFields( $fields );
+        $user = null;
 
         if ( ! empty( $builtin )) {
             $builtin = $this->slashBuiltinFields($builtin);
@@ -245,13 +246,13 @@ class WPUser extends Model implements AuthUser
             if ($user instanceof WP_Error || ! is_int( $user )) {
                 throw new ModelException('WPUser not created');
             } else {
-                $this->findById($user);
+                $user = $this->findById($user);
             }
         }
 
         $this->saveMeta( $fields );
 
-        return $this;
+        return $user;
     }
 
     /**

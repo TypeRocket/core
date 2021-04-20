@@ -58,15 +58,43 @@ class PostTest extends TestCase
 
     public function testCreateWithMetaMethodAndOnAction()
     {
+        $_POST['tr']['post_title'] = 'Hello World! Created by controller!';
+        $_POST['tr']['post_content'] = 'Content created by controller!';
+        $_POST = wp_slash($_POST);
+
+        $controller = new class extends WPPostController {
+            public function onActionSave($type, $model)
+            {
+                $_POST['tr']['type'] = $type;
+                $_POST['tr']['model'] = $model;
+            }
+        };
+
+        $request = new Request();
+        $response = new Response();
+        $user = (new WPUser)->find(1);
+        $message = null;
+
+        $controller->create($request, $response, $user);
+        $id = $response->getData('resourceId');
+
+        wp_delete_post( $id, true);
+
+        $this->assertTrue( $_POST['tr']['model'] instanceof WPPost);
+        $this->assertTrue( $_POST['tr']['type'] === 'create');
+        $this->assertTrue( !empty($id) );
+        unset($_POST['tr']);
+    }
+
+    public function testCreateWithMetaMethodAndOnActionError()
+    {
         $_POST['tr']['post_content'] = 'needed to enter builtin requirment';
         $_POST['tr']['model'] = null;
         $_POST['tr']['type'] = null;
 
         $controller = new class extends WPPostController {
-            public function onActionSave($type, $model)
+            public function onActionError($type, $e, $model)
             {
-                global $myTestOnActionModel;
-
                 $_POST['tr']['type'] = $type;
                 $_POST['tr']['model'] = $model;
             }

@@ -1,6 +1,14 @@
 <?php
 namespace TypeRocket\Models;
 
+/**
+ * Class WPOption
+ *
+ * This class is not to be used as a true model for create, delete, save,
+ * and update. It is kept here for legacy functionality.
+ *
+ * @package TypeRocket\Models
+ */
 class WPOption extends Model
 {
     protected $idColumn = 'option_id';
