@@ -29,6 +29,7 @@ class TermTest extends TestCase
 
         $this->assertTrue( $response->getData('resourceId') == 1 );
         $this->assertTrue( $meta == $request->getFields('meta_key') );
+        unset($_POST['tr']);
     }
 
 }

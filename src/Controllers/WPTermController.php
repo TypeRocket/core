@@ -40,9 +40,10 @@ class WPTermController extends Controller
             do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
-                \TypeRocket\Exceptions\HttpError::abort(401);
                 throw new ModelException('Policy does not give the current user access to write.');
             }
+
+            $this->onAction('update', $model);
 
             $model->update( $this->getFields() );
             $response->flashNext($model->getRouteResource() . ' updated', 'success' );
@@ -76,6 +77,8 @@ class WPTermController extends Controller
             if(!$model->can('create', $user)) {
                 throw new ModelException('Policy does not give the current user access to write.');
             }
+
+            $this->onAction('create', $model);
 
             $model->create( $this->getFields() );
             $response->flashNext($model->getRouteResource() . ' created', 'success' );
@@ -115,6 +118,8 @@ class WPTermController extends Controller
             if(!$model->can('destroy', $user)) {
                 throw new ModelException('Policy does not give the current user access to write.');
             }
+
+            $this->onAction('destroy', $model);
 
             $model->delete();
             $response->flashNext( 'Term deleted', 'success' );

@@ -44,6 +44,8 @@ class WPUserController extends Controller
                 throw new ModelException('Policy does not give the current user access to write.');
             }
 
+            $this->onAction('update', $model);
+
             $model->update( $this->getFields() );
             $response->flashNext( 'User updated', 'success' );
             $response->setData('resourceId', $model->getID());
@@ -76,6 +78,8 @@ class WPUserController extends Controller
             if(!$model->can('create', $authUser)) {
                 throw new ModelException('Policy does not give the current user access to write.');
             }
+
+            $this->onAction('create', $model);
 
             $model->create( $this->getFields() );
             $response->flashNext( 'User created', 'success' );
@@ -115,6 +119,8 @@ class WPUserController extends Controller
             if(!$model->can('destroy', $authUser)) {
                 throw new ModelException('Policy does not give the current user access to write.');
             }
+
+            $this->onAction('delete', $model);
 
             $model->delete();
             $response->flashNext( 'Term deleted', 'success' );

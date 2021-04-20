@@ -5,6 +5,7 @@ namespace Controllers;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Controllers\WPPostController;
+use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPPost;
@@ -29,6 +30,7 @@ class PostTest extends TestCase
 
         $this->assertTrue( $response->getData('resourceId') == 1 );
         $this->assertTrue( $meta == $request->getFields('meta_key') );
+        unset($_POST['tr']);
     }
 
     public function testCreateWithMetaMethod()
@@ -51,6 +53,40 @@ class PostTest extends TestCase
 
         $this->assertTrue( !empty($id) );
         $this->assertTrue( $meta == $request->getFields('meta_key') );
+        unset($_POST['tr']);
+    }
+
+    public function testCreateWithMetaMethodAndOnAction()
+    {
+        $_POST['tr']['post_content'] = 'needed to enter builtin requirment';
+        $_POST['tr']['model'] = null;
+
+        $controller = new class extends WPPostController {
+            public function onActionCreate($model)
+            {
+                global $myTestOnActionModel;
+
+                $_POST['tr']['model'] = $model;
+            }
+        };
+
+        $request = new Request();
+        $response = new Response();
+        $user = (new WPUser)->find(1);
+        $message = null;
+
+        $controller->create($request, $response, $user);
+        $id = $response->getData('resourceId');
+        $hasErrors = $response->hasErrors();
+
+        if($id) {
+            // cleanup just in case but this should not run
+            wp_delete_post( $response->getData('resourceId'), true);
+        }
+
+        $this->assertTrue( $hasErrors === true );
+        $this->assertTrue( $_POST['tr']['model'] instanceof WPPost);
+        unset($_POST['tr']);
     }
 
 }

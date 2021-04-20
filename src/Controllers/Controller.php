@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Controllers;
 
+use TypeRocket\Core\Container;
+use TypeRocket\Core\Resolver;
 use TypeRocket\Http\Redirect;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
@@ -100,6 +102,25 @@ class Controller
     public function getFields($field = null)
     {
         return apply_filters('typerocket_controller_fields', Request::new()->getFields($field), $this);
+    }
+
+    /**
+     * On Action
+     *
+     * @param string $type
+     * @param mixed ...$args
+     *
+     * @return $this
+     */
+    public function onAction($type, ...$args)
+    {
+        $action = 'onAction'.ucfirst($type);
+
+        if(method_exists($this, $action) && $action !== 'onAction') {
+            Resolver::new()->resolveCallable([$this, $action], $args);
+        }
+
+        return $this;
     }
 
 }
