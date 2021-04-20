@@ -1216,7 +1216,6 @@ class Model implements Formable, JsonSerializable
      *
      * @param string $column column to search
      * @param string $value exact value lookup only
-     * @param array|Fields $fields addisional fields
      *
      * @return static
      */
