@@ -20,6 +20,18 @@ class QueryCasterTest extends TestCase
         $this->assertTrue( $results->count() > 0 );
     }
 
+    public function testPostCasterFromModel()
+    {
+        $posts = new \WP_Query([
+            'post_status' => 'publish'
+        ]);
+
+        $results = Post::castArrayToModelResults($posts->posts);
+
+        $this->assertTrue( $results->first() instanceof Post);
+        $this->assertTrue( $results->count() > 0 );
+    }
+
     public function testTermCaster()
     {
         $results = QueryCaster::terms(Category::class, [
