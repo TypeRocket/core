@@ -82,7 +82,7 @@ abstract class Field
     {
         $this->attrExtend($attr);
         $this->setName( $name );
-        $this->settings = $settings;
+        $this->settingsExtend($settings);
         $this->label    = $label;
 
         if ( empty($this->settings['label']) ) {
