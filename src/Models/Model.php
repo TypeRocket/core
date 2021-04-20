@@ -2311,6 +2311,10 @@ class Model implements Formable, JsonSerializable
      */
     public function onDependencyInjection($value)
     {
+        if($value === $this) {
+            return $this;
+        }
+
         return $this->findFirstWhereOrDie($this->getDependencyInjectionKey(), $value);
     }
 
