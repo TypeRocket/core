@@ -17,7 +17,9 @@ use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\Model;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
+use TypeRocket\Register\PostType;
 use TypeRocket\Register\Registry;
+use TypeRocket\Register\Taxonomy;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\DataCollection;
 use TypeRocket\Utility\Str;
@@ -132,8 +134,15 @@ class BaseForm
                 $item_id  = $post->ID;
 
                 $reg = Registry::getPostTypeResource($post->post_type);
-                $Resource = Str::camelize($reg['singular'] ?? null);
-                $model = \TypeRocket\Utility\Helper::appNamespace("Models\\{$Resource}");
+
+                if(!empty($reg['object']) && $reg['object'] instanceof PostType) {
+                    $model = $reg['object']->getResource('model');
+                }
+
+                if(!$model) {
+                    $Resource = Str::camelize($reg['singular'] ?? null);
+                    $model = \TypeRocket\Utility\Helper::appNamespace("Models\\{$Resource}");
+                }
 
                 if( !class_exists($model) ) {
                     $model = new WPPost($post->post_type);
@@ -151,8 +160,15 @@ class BaseForm
             elseif ( isset( $taxonomy ) || isset($tag_ID) ) {
                 $item_id  = $tag_ID;
                 $reg = Registry::getTaxonomyResource($taxonomy);
-                $Resource = Str::camelize($reg['singular'] ?? null);
-                $model = \TypeRocket\Utility\Helper::appNamespace("Models\\{$Resource}");
+
+                if(!empty($reg['object']) && $reg['object'] instanceof Taxonomy) {
+                    $model = $reg['object']->getResource('model');
+                }
+
+                if(!$model) {
+                    $Resource = Str::camelize($reg['singular'] ?? null);
+                    $model = \TypeRocket\Utility\Helper::appNamespace("Models\\{$Resource}");
+                }
 
                 if( !class_exists($model) ) {
                     $model = new WPTerm($taxonomy);

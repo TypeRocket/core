@@ -6,6 +6,7 @@ use TypeRocket\Utility\Sanitize;
 trait Resourceful
 {
     protected $templates = null;
+    protected $resource = null;
 
     /**
      * Set the Registrable ID for WordPress to use. Don't use reserved names.
@@ -79,5 +80,15 @@ trait Resourceful
     public function getTemplates()
     {
         return $this->templates;
+    }
+
+    /**
+     * @param string $name options: controller, singular, plural, model, obj
+     *
+     * @return null
+     */
+    public function getResource($name)
+    {
+        return $this->resource[$name] ?? null;
     }
 }

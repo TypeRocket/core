@@ -19,7 +19,7 @@ class Taxonomy extends Registrable
     protected $postTypes = [];
     protected $modelClass = WPTerm::class;
     protected $form = [];
-    protected $resource = null;
+
     protected $existing = null;
     protected $hooksAttached = false;
     protected $maxIdLength = 32;
@@ -91,6 +91,7 @@ class Taxonomy extends Registrable
         $plural       = Sanitize::underscore( $plural );
         $singular     = Sanitize::underscore( $singular );
 
+        // obj is set on registration
         $this->resource = [
             'singular' => $singular,
             'plural' => $plural,
@@ -128,6 +129,9 @@ class Taxonomy extends Registrable
     public function setModelClass(string $modelClass)
     {
         $this->modelClass = $modelClass;
+
+        // Default resource model is not the same as the modelClass
+        $this->resource['model'] = $this->modelClass;
 
         return $this;
     }
@@ -403,6 +407,7 @@ class Taxonomy extends Registrable
 
         do_action('typerocket_register_taxonomy_' . $this->id, $this );
         register_taxonomy( $this->id, $this->postTypes, $this->args );
+        $this->resource['object'] = $this;
         Registry::addTaxonomyResource($this->id, $this->resource);
         $this->attachHooks();
 

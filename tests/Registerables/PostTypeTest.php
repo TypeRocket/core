@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+use TypeRocket\Register\PostType;
+use TypeRocket\Register\Registry;
+
 class PostTypeTest extends \PHPUnit\Framework\TestCase
 {
     public function testPostTypeReg()
@@ -14,6 +17,28 @@ class PostTypeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($labels['view_items'] === 'View Hats');
     }
 
+    public function testPostTypeRegModelResourceNull()
+    {
+        $pt = new \TypeRocket\Register\PostType('Hat');
+        $pt->register();
+
+        $reg = Registry::getPostTypeResource('hat');
+        $model = $reg['object']->getResource('model');
+
+        $this->assertTrue($model === null);
+    }
+
+    public function testPostTypeRegModelResource()
+    {
+        $pt = new \TypeRocket\Register\PostType('Hat');
+        $pt->setModelClass(\TypeRocket\Models\WPUser::class);
+        $pt->register();
+
+        $reg = Registry::getPostTypeResource('hat');
+        $model = $reg['object']->getResource('model');
+
+        $this->assertTrue($model === \TypeRocket\Models\WPUser::class);
+    }
 
     public function testPostTypeRegPlural()
     {
