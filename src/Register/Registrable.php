@@ -310,7 +310,7 @@ abstract class Registrable
         foreach ($this->use as $obj) {
             if ($obj instanceof Registrable) {
                 if($obj->getId() === $id) {
-                    return $object;
+                    return $obj;
                 }
             }
         }
