@@ -25,6 +25,16 @@ class AuthorizerService extends Service
     }
 
     /**
+     * Get Policies
+     *
+     * @return mixed|void
+     */
+    public function getPolicies()
+    {
+        return apply_filters('typerocket_auth_policies', $this->policies, $this);
+    }
+
+    /**
      * Auth Registered Policy
      *
      * This is used for models.
@@ -41,11 +51,12 @@ class AuthorizerService extends Service
         $policy = null;
         $pass = false;
         $modelClass = '\\' . get_class($model);
+        $policies = $this->getPolicies();
 
-        if(!array_key_exists($modelClass, $this->policies)) {
+        if(!array_key_exists($modelClass, $policies)) {
             if($parent_classes = class_parents($model)) {
                 foreach ($parent_classes as $parent_class) {
-                    if(array_key_exists('\\' . $parent_class, $this->policies)) {
+                    if(array_key_exists('\\' . $parent_class, $policies)) {
                         $modelClass = '\\' . $parent_class;
                         break;
                     }
@@ -53,8 +64,8 @@ class AuthorizerService extends Service
             }
         }
 
-        if(array_key_exists($modelClass, $this->policies)) {
-            $policy = (new Resolver)->resolve($this->policies[$modelClass]);
+        if(array_key_exists($modelClass, $policies)) {
+            $policy = (new Resolver)->resolve($policies[$modelClass]);
         }
 
         if($policy && method_exists($policy, $action)) {
@@ -87,15 +98,26 @@ class AuthorizerService extends Service
             $policy = (new Resolver)->resolve($policy);
         }
 
+        $policies = $this->getPolicies();
         $policy = $policy ?? ($option instanceof Policy ? $option : null);
-        $class = '\\' . get_class($option);
 
-        if(!$policy && !array_key_exists($class, $this->policies)) {
-            $class = '\\' . get_parent_class($option);
-        }
+        if(!$policy) {
+            $class = '\\' . get_class($option);
 
-        if(!$policy && array_key_exists($class, $this->policies)) {
-            $policy = (new Resolver)->resolve($this->policies[$class]);
+            if(!array_key_exists($class, $policies)) {
+                if($parent_classes = class_parents($option)) {
+                    foreach ($parent_classes as $parent_class) {
+                        if(array_key_exists('\\' . $parent_class, $policies)) {
+                            $class = '\\' . $parent_class;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(array_key_exists($class, $policies)) {
+                $policy = (new Resolver)->resolve($policies[$class]);
+            }
         }
 
         if($policy && method_exists($policy, $action)) {
