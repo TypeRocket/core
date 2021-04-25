@@ -750,7 +750,7 @@ class Model implements Formable, JsonSerializable
             foreach ( $fields->getFillable() as $field_name ) {
                 $this->unlockField($field_name);
             }
-            $fields = $fields->getArrayCopy();
+            $fields = $fields->getModelFields();
         }
 
         // Fillable

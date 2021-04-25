@@ -1,6 +1,7 @@
 <?php
 namespace TypeRocket\Http;
 
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Validator;
 
 class Fields extends \ArrayObject
@@ -8,9 +9,13 @@ class Fields extends \ArrayObject
     protected $fillable = [];
     protected $rules = [];
     protected $messages = [];
-    protected $run = false;
+    protected $run;
+    /** @var Validator|null */
     protected $validator;
+    /** @var string Model calss for validator */
     protected $modelClass;
+    /** @var string Requests fields group using dot notation to pass data to model */
+    protected $modelFieldsGroup;
 
     /**
      * Load commands
@@ -33,8 +38,48 @@ class Fields extends \ArrayObject
         $this->messages = array_merge($this->messages, $this->messages());
 
         if($this->run) {
+            $validator = $this->validate();
+
+            switch ($this->run) {
+                case 'response':
+                    $validator->respondWithErrors([$this, 'response']);
+                    break;
+                default :
+                    $validator->redirectWithErrorsIfFailed([$this, 'redirect']);
+                    break;
+            }
+        }
+
+        if($this->run == 'response') {
+            $this->validate()->respondWithErrors([$this, 'response']);
+        } elseif($this->run || $this->run == 'redirect') {
             $this->validate()->redirectWithErrorsIfFailed([$this, 'redirect']);
         }
+    }
+
+    /**
+     * Get Field
+     *
+     * @param array|string|null $key dot notation key.next.final
+     * @param mixed $default
+     *
+     * @return array|mixed|object|null
+     */
+    public function get($key = null, $default = null)
+    {
+        $data = $this->getArrayCopy() ?? $default;
+
+        return is_null($key) ? $data : Data::walk($key, $data, $default);
+    }
+
+    /**
+     * Get Fields For Model
+     *
+     * @return array|mixed|object|null
+     */
+    public function getModelFields()
+    {
+        return $this->get($this->modelFieldsGroup);
     }
 
     /**
@@ -66,6 +111,16 @@ class Fields extends \ArrayObject
     public function redirect(Redirect $redirect)
     {
         return $redirect;
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return Response
+     */
+    public function response(Response $response)
+    {
+        return $response;
     }
 
     /**
@@ -157,7 +212,17 @@ class Fields extends \ArrayObject
             $this->validator->setErrorMessages($this->messages, true);
         }
 
-        return $this->validator->validate(true);
+        $this->validator->validate(true);
+        $this->afterValidate($this->validator->passed());
+
+        return $this->validator;
+    }
+
+    /**
+     * @param bool $passed
+     */
+    public function afterValidate($passed)
+    {
     }
 
     /**

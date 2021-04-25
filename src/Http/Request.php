@@ -459,7 +459,7 @@ class Request
     public function getFields($key = null, $default = null, $prefix = 'tr')
     {
         $fields = $this->getDataJson($prefix);
-        return is_null($key) ? $fields : ($fields[$key] ?? $default);
+        return is_null($key) ? $fields : Data::walk($key, $fields, $default);
     }
 
     /**

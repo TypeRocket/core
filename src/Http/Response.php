@@ -35,6 +35,7 @@ class Response implements JsonSerializable
     protected $status = null;
     protected $flash = true;
     protected $blockFlash = false;
+    protected $lockFlash = false;
     protected $errors = [];
     protected $data = [];
     protected $cancel = false;
@@ -694,6 +695,30 @@ class Response implements JsonSerializable
     }
 
     /**
+     * Lock Flash
+     *
+     * @return $this
+     */
+    public function lockFlash()
+    {
+        $this->lockFlash = true;
+
+        return $this;
+    }
+
+    /**
+     * Unlock Flash
+     *
+     * @return $this
+     */
+    public function unlockFlash()
+    {
+        $this->lockFlash = false;
+
+        return $this;
+    }
+
+    /**
      * Get Response Properties
      *
      * Return the private properties that make up the response
@@ -805,7 +830,7 @@ class Response implements JsonSerializable
      */
     public function flashNext($message, $type = 'success', $force_transient = false)
     {
-        if( ! $this->blockFlash && ! headers_sent() ) {
+        if( ! $this->blockFlash && ! headers_sent() && ! ($this->flash && $this->lockFlash) ) {
             $this->flash       = true;
             $this->setMessage($message, $type);
 
@@ -835,7 +860,7 @@ class Response implements JsonSerializable
      */
     public function flashNow($message, $type, $hook = 'admin_notices')
     {
-        if( ! $this->blockFlash ) {
+        if( ! $this->blockFlash && ! ($this->flash && $this->lockFlash) ) {
             $this->flash       = true;
             $this->setMessage($message, $type);
 

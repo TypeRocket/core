@@ -21,4 +21,12 @@ class {{fields}} extends Fields
     protected function rules() {
         return [];
     }
+
+    /**
+     * @param bool $passed
+     */
+    public function afterValidate($passed)
+    {
+
+    }
 }

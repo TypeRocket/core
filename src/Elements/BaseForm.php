@@ -790,10 +790,21 @@ class BaseForm
     public function toString($attr = [], $request_params = [], $method = null, $submit = null) {
         $html = '';
         $html .= $this->open($attr, $request_params, $method);
+        $html .= $this->fieldsWrapperString();
+        $html .= $this->close($submit ?? $this->submitButton);
+
+        return $html;
+    }
+
+    /**
+     * @return string
+     */
+    public function fieldsWrapperString()
+    {
+        $html = '';
         $html .= '<div class="tr-form-fields">';
         $html .= $this->getFieldsString();
         $html .= '</div>';
-        $html .= $this->close($submit ?? $this->submitButton);
 
         return $html;
     }

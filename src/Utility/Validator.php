@@ -23,8 +23,8 @@ class Validator
     protected $passes = [];
     protected $errors = [];
     protected $errorFields = [];
+    protected $errorFieldsGroup;
     protected $modelClass;
-    protected $respondWithErrors;
     protected $errorMessages = ['messages' => [], 'regex' => false];
     protected $ran = false;
     protected $validatorMap = [
@@ -98,7 +98,9 @@ class Validator
     {
         if($this->failed()) {
             if($flash) {
-                $this->flashErrors(\TypeRocket\Http\Response::getFromContainer());
+                $response = \TypeRocket\Http\Response::getFromContainer();
+                $this->flashErrors($response);
+                $response->lockFlash();
             }
 
             $redirect = \TypeRocket\Http\Redirect::new()->withOldFields()->withErrors([$key => $this->getErrorFields()])->back();
@@ -128,6 +130,7 @@ class Validator
 
             if($flash) {
                 $this->flashErrors($response->allowFlash());
+                $response->lockFlash();
             }
 
             if(is_callable($callback)) {

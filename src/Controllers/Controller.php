@@ -110,14 +110,14 @@ class Controller
      * @param string $type
      * @param mixed ...$args
      *
-     * @return $this
+     * @return $this|mixed
      */
     public function onAction($type, ...$args)
     {
         $action = 'onAction'.ucfirst($type);
 
         if(method_exists($this, $action) && $action !== 'onAction') {
-            Resolver::new()->resolveCallable([$this, $action], $args);
+            return Resolver::new()->resolveCallable([$this, $action], $args);
         }
 
         return $this;
