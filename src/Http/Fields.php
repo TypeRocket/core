@@ -67,9 +67,10 @@ class Fields extends \ArrayObject
      */
     public function get($key = null, $default = null)
     {
-        $data = $this->getArrayCopy() ?? $default;
+        $data = $this->getArrayCopy();
+        $value = is_null($key) ? $data : Data::walk($key, $data);
 
-        return is_null($key) ? $data : Data::walk($key, $data, $default);
+        return $value ?? $default;
     }
 
     /**
