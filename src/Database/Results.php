@@ -6,7 +6,7 @@ use TypeRocket\Interfaces\Formable;
 use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Models\Model;
 
-class Results extends \ArrayObject implements Formable, JsonSerializable
+class Results extends \ArrayObject implements Formable, JsonSerializable, ResultsCollection
 {
     use FieldValue;
 
