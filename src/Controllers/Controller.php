@@ -117,10 +117,27 @@ class Controller
         $action = 'onAction'.ucfirst($type);
 
         if(method_exists($this, $action) && $action !== 'onAction') {
+            Resolver::new()->resolveCallable([$this, $action], $args);
+        }
+    }
+
+    /**
+     * On Validate
+     *
+     * @param string $type
+     * @param mixed ...$args
+     *
+     * @return $this|mixed
+     */
+    public function onValidate($type, ...$args)
+    {
+        $action = 'onValidate'.ucfirst($type);
+
+        if(method_exists($this, $action) && $action !== 'onValidate') {
             return Resolver::new()->resolveCallable([$this, $action], $args);
         }
 
-        return $this;
+        return true;
     }
 
 }

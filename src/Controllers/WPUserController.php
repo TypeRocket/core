@@ -33,15 +33,19 @@ class WPUserController extends Controller
 
         try {
             if(!$id) {
-                throw new ModelException('ID not found.');
+                throw new ModelException(__('ID not found.', 'typrocket-domain'));
             }
 
             $model->wpUser($id);
 
+            if(!$this->onValidate('save', 'update', $model)) {
+                throw new ModelException(__('Validation for update failed.', 'typrocket-domain'));
+            }
+
             do_action('typerocket_controller_update', $this, $model, $authUser);
 
             if(!$model->can('update', $authUser)) {
-                throw new ModelException('Policy does not give the current user access to write.');
+                throw new ModelException(__('Policy does not give the current user access to update.', 'typrocket-domain'));
             }
 
             $model->update( $this->getFields() );
@@ -75,8 +79,12 @@ class WPUserController extends Controller
         $model = new $this->modelClass;
 
         try {
+            if(!$this->onValidate('save', 'create', $model)) {
+                throw new ModelException(__('Validation for create failed.', 'typrocket-domain'));
+            }
+
             if(!$model->can('create', $authUser)) {
-                throw new ModelException('Policy does not give the current user access to write.');
+                throw new ModelException(__('Policy does not give the current user access to create.', 'typrocket-domain'));
             }
 
             $new = $model->create( $this->getFields() );
@@ -115,13 +123,13 @@ class WPUserController extends Controller
 
         try {
             if(!$id) {
-                throw new ModelException('ID not found.');
+                throw new ModelException(__('ID not found.', 'typrocket-domain'));
             }
 
             $model->wpUser( $id );
 
             if(!$model->can('destroy', $authUser)) {
-                throw new ModelException('Policy does not give the current user access to write.');
+                throw new ModelException(__('Policy does not give the current user access to destroy.', 'typrocket-domain'));
             }
 
             $model->delete();
