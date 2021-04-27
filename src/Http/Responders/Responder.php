@@ -2,7 +2,6 @@
 namespace TypeRocket\Http\Responders;
 
 use TypeRocket\Exceptions\RedirectError;
-use TypeRocket\Exceptions\SkipResponseException;
 use TypeRocket\Http\Handler;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
@@ -58,10 +57,6 @@ abstract class Responder
             if(!$e instanceof \Requests_Exception_HTTP) {
                 $code = 500;
                 \TypeRocket\Utility\Helper::reportError($e);
-            }
-
-            if($e instanceof SkipResponseException) {
-                return;
             }
 
             $response->setStatus($code);

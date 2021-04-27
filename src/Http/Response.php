@@ -546,11 +546,12 @@ class Response implements JsonSerializable
      * Set Error by key
      *
      * @param string $key
-     * @param string $value
+     * @param string|array $value
      *
      * @return $this
      */
-    public function setError($key, $value) {
+    public function setError($key, $value)
+    {
         $this->errors[$key] = $value;
         $this->setMessageType('error');
 
@@ -564,7 +565,8 @@ class Response implements JsonSerializable
      *
      * @return $this
      */
-    public function removeError($key) {
+    public function removeError($key)
+    {
         if(array_key_exists($key, $this->errors)) {
             unset($this->errors[$key]);
         }
@@ -584,7 +586,8 @@ class Response implements JsonSerializable
      *
      * @return Response
      */
-    public function setData( $key, $data ) {
+    public function setData( $key, $data )
+    {
         $this->data[$key] = $data;
 
         return $this;
@@ -597,8 +600,8 @@ class Response implements JsonSerializable
      *
      * @return int|null
      */
-    public function getStatus($real = false) {
-
+    public function getStatus($real = false)
+    {
         if($real) {
             return http_response_code();
         }
@@ -625,7 +628,8 @@ class Response implements JsonSerializable
      *
      * @return string
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
@@ -636,7 +640,8 @@ class Response implements JsonSerializable
      *
      * @return array|string|int
      */
-    public function getData( $key = null ) {
+    public function getData( $key = null )
+    {
         if( array_key_exists($key, $this->data)) {
             return $this->data[$key];
         }
@@ -651,7 +656,8 @@ class Response implements JsonSerializable
      *
      * @return bool
      */
-    public function getRedirect() {
+    public function getRedirect()
+    {
         return $this->redirect;
     }
 
@@ -663,7 +669,8 @@ class Response implements JsonSerializable
      *
      * @return bool
      */
-    public function getFlash() {
+    public function getFlash()
+    {
         return $this->flash;
     }
 
@@ -674,7 +681,8 @@ class Response implements JsonSerializable
      *
      * @return $this
      */
-    public function blockFlash() {
+    public function blockFlash()
+    {
         $this->blockFlash = true;
 
         return $this;
@@ -719,6 +727,16 @@ class Response implements JsonSerializable
     }
 
     /**
+     * Is Flash Locked
+     *
+     * @return bool
+     */
+    public function flashLocked()
+    {
+        return $this->lockFlash;
+    }
+
+    /**
      * Get Response Properties
      *
      * Return the private properties that make up the response
@@ -726,7 +744,8 @@ class Response implements JsonSerializable
      * @param bool $withReturn
      * @return array
      */
-    public function toArray($withReturn = false) {
+    public function toArray($withReturn = false)
+    {
         $vars = get_object_vars($this);
 
         if(!$withReturn) {
@@ -743,7 +762,8 @@ class Response implements JsonSerializable
      *
      * @return Response $this
      */
-    public function withRedirectData($data = null) {
+    public function withRedirectData($data = null)
+    {
         $data = $data ?? $this->data;
 
         if( !empty( $data ) ) {
@@ -756,12 +776,18 @@ class Response implements JsonSerializable
     /**
      * With with data
      *
-     * @param array $errors
+     * @param array|null $errors
+     * @param bool $merge
      *
      * @return Response $this
      */
-    public function withRedirectErrors($errors = null) {
-        $errors = $errors ?? $this->errors;
+    public function withRedirectErrors($errors = null, $merge = false)
+    {
+        if($merge) {
+            $errors = array_merge($this->errors, $errors ?? []);
+        } else {
+            $errors = $errors ?? $this->errors;
+        }
 
         if( !empty( $errors ) ) {
             (new Cookie)->setTransient(ErrorCollection::KEY, $errors);
@@ -895,7 +921,8 @@ class Response implements JsonSerializable
      *
      * @param int|null $code
      */
-    public function exitAny( $code = null ) {
+    public function exitAny( $code = null )
+    {
         $code = $code ?? $this->getStatus();
         $request = (new Request);
 

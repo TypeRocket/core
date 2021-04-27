@@ -9,6 +9,7 @@ class Fields extends \ArrayObject
     protected $fillable = [];
     protected $rules = [];
     protected $messages = [];
+    protected $messagesRegex = true;
     protected $run;
     /** @var Validator|null */
     protected $validator;
@@ -38,22 +39,43 @@ class Fields extends \ArrayObject
         $this->messages = array_merge($this->messages, $this->messages());
 
         if($this->run) {
-            $validator = $this->validate();
+            $this->runAndRespond();
+        }
+    }
 
-            switch ($this->run) {
-                case 'response':
-                    $validator->respondWithErrors([$this, 'response']);
-                    break;
-                default :
-                    $validator->redirectWithErrorsIfFailed([$this, 'redirect']);
-                    break;
-            }
+    /**
+     * Run Fields Validation
+     *
+     * @param null|string $type
+     */
+    public function runAndRespond($type = null)
+    {
+        $this->run = $type ?? $this->run;
+
+        if(!$this->validator) {
+            $this->validate();
         }
 
-        if($this->run == 'response') {
-            $this->validate()->respondWithErrors([$this, 'response']);
-        } elseif($this->run || $this->run == 'redirect') {
-            $this->validate()->redirectWithErrorsIfFailed([$this, 'redirect']);
+        if($this->run !== 'response') {
+            $this->validator->redirectWithErrorsIfFailed([$this, 'afterRespond']);
+        }
+
+        $this->validator->respondWithErrors([$this, 'afterRespond']);
+    }
+
+    /**
+     * @param Response|Redirect $object
+     *
+     * @throws \Exception
+     */
+    public function afterRespond($object)
+    {
+        if($object instanceof Redirect) {
+            $this->redirect($object);
+        }
+
+        if($object instanceof Response) {
+            $this->response($object);
         }
     }
 
@@ -207,22 +229,34 @@ class Fields extends \ArrayObject
             throw new \Exception('No options for validator set.');
         }
 
-        $this->validator = new Validator($rules, $this->getArrayCopy(), $this->modelClass ?? $modelClass, false);
-
-        if(!empty($this->messages)) {
-            $this->validator->setErrorMessages($this->messages, true);
+        if( $this->validator ) {
+            throw new \Exception('Validation already run.');
         }
 
+        $this->validator = new Validator($rules, $this->getArrayCopy(), $modelClass ?? $this->modelClass, false);
+
+        if(!empty($this->messages)) {
+            $this->validator->setErrorMessages($this->messages, $this->messagesRegex);
+        }
+
+        $this->beforeValidate($this->validator);
         $this->validator->validate(true);
-        $this->afterValidate($this->validator->passed());
+        $this->afterValidate($this->validator);
 
         return $this->validator;
     }
 
     /**
-     * @param bool $passed
+     * @param Validator $validator
      */
-    public function afterValidate($passed)
+    public function beforeValidate($validator)
+    {
+    }
+
+    /**
+     * @param Validator $validator
+     */
+    public function afterValidate($validator)
     {
     }
 

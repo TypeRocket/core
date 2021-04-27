@@ -109,7 +109,7 @@ class Validator
                 call_user_func($callback, $redirect);
             }
 
-            throw (new RedirectError(__('Validation failed', 'typerocket-domain')))->redirect( $redirect );
+            throw (new RedirectError(__('Validation failed.', 'typerocket-domain')))->redirect( $redirect );
         }
 
         return $this;
@@ -126,7 +126,10 @@ class Validator
     {
         if( $this->failed() && $this->ran) {
 
-            $response = \TypeRocket\Http\Response::getFromContainer()->withOldFields()->withRedirectErrors([$key => $this->getErrorFields()]);
+            $response = \TypeRocket\Http\Response::getFromContainer()
+                ->withOldFields()
+                ->setError($key, $this->getErrorFields())
+                ->withRedirectErrors();
 
             if($flash) {
                 $this->flashErrors($response->allowFlash());
