@@ -226,6 +226,25 @@ class Redirect
     }
 
     /**
+     * Redirect back to referrer if no URL is set
+     *
+     * Must be the same host
+     *
+     * @param false $self
+     * @param false $force
+     *
+     * @return $this
+     */
+    public function maybeBack($self = false, $force = false)
+    {
+        if(!$this->url) {
+            return $this->back($self, $force);
+        }
+
+        return $this;
+    }
+
+    /**
      * Flash message on next request
      *
      * When the request is marked as _tr_ajax_request transient is not
