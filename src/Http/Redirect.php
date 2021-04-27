@@ -96,7 +96,7 @@ class Redirect
      */
     public function toHome( $path = '', $schema = null)
     {
-        $this->url = esc_url_raw( home_url( $path ), $schema ?: (is_ssl() ? 'https' : 'http') );
+        $this->url = get_home_url( null, $path, $schema ?: (is_ssl() ? 'https' : 'http') );
 
         return $this;
     }
@@ -165,7 +165,7 @@ class Redirect
      * @return Redirect
      */
     public function toUrl( $url ) {
-        $this->url = esc_url_raw($url);
+        $this->url = $url;
 
         return $this;
     }
