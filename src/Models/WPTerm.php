@@ -263,6 +263,8 @@ class WPTerm extends Model
         $builtin = $this->getFilteredBuiltinFields($fields);
         $term = null;
 
+        do_action('typerocket_model_create', $this, $fields);
+
         if ( ! empty( $builtin ) ) {
             $builtin = $this->slashBuiltinFields($builtin);
             remove_action('create_term', 'TypeRocket\Http\Responders\Hook::taxonomies');
@@ -298,6 +300,8 @@ class WPTerm extends Model
         if($id != null) {
             $fields = $this->provisionFields( $fields );
             $builtin = $this->getFilteredBuiltinFields($fields);
+
+            do_action('typerocket_model_update', $this, $fields);
 
             if ( ! empty( $builtin ) ) {
                 $builtin = $this->slashBuiltinFields($builtin);
@@ -352,6 +356,8 @@ class WPTerm extends Model
         if(is_null($ids) && $this->hasProperties()) {
             $ids = $this->getID();
         }
+
+        do_action('typerocket_model_delete', $this, $ids);
 
         $delete = wp_delete_term($ids, $this->wpTerm($ids)->taxonomy);
 
@@ -424,7 +430,6 @@ class WPTerm extends Model
      */
     public function slashBuiltinFields( $builtin )
     {
-
         $fields = [
             'name',
             'description'

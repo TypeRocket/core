@@ -424,6 +424,8 @@ class WPPost extends Model
         $builtin = $this->getFilteredBuiltinFields($fields);
         $new_post = null;
 
+        do_action('typerocket_model_create', $this, $fields);
+
         if ( ! empty( $builtin )) {
             $builtin = $this->slashBuiltinFields($builtin);
             remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
@@ -468,6 +470,8 @@ class WPPost extends Model
             $fields = $this->provisionFields( $fields );
             $builtin = $this->getFilteredBuiltinFields($fields);
 
+            do_action('typerocket_model_update', $this, $fields);
+
             if ( ! empty( $builtin ) ) {
                 $builtin = $this->slashBuiltinFields($builtin);
                 remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
@@ -508,6 +512,8 @@ class WPPost extends Model
             $ids = $this->getID();
         }
 
+        do_action('typerocket_model_delete', $this, $ids);
+
         $delete = wp_delete_post($ids);
 
         if ( $delete instanceof \WP_Error ) {
@@ -530,6 +536,8 @@ class WPPost extends Model
         if(is_null($ids) && $this->hasProperties()) {
             $ids = $this->getID();
         }
+
+        do_action('typerocket_model_delete', $this, $ids);
 
         $delete = wp_delete_post($ids, true);
 
@@ -615,7 +623,6 @@ class WPPost extends Model
      */
     public function slashBuiltinFields( $builtin )
     {
-
         $fields = [
             'post_content',
             'post_excerpt',

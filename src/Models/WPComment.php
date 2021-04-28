@@ -105,7 +105,6 @@ class WPComment extends Model
      */
     public function wpComment($comment = null, $returnModel = false)
     {
-
         if( !$comment && $this->wpComment instanceof \WP_Comment ) {
             return $this->wpComment;
         }
@@ -142,6 +141,8 @@ class WPComment extends Model
         $fields  = $this->provisionFields($fields);
         $builtin = $this->getFilteredBuiltinFields( $fields );
         $comment = null;
+
+        do_action('typerocket_model_create', $this, $fields);
 
         if ( ! empty( $builtin['comment_post_id'] ) &&
              ! empty( $builtin['comment_content'] )
@@ -182,6 +183,8 @@ class WPComment extends Model
             $fields  = $this->provisionFields($fields);
             $builtin = $this->getFilteredBuiltinFields( $fields );
 
+            do_action('typerocket_model_update', $this, $fields);
+
             if ( ! empty( $builtin )) {
                 remove_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
                 $builtin['comment_id'] = $id;
@@ -220,6 +223,8 @@ class WPComment extends Model
             $ids = $this->getID();
         }
 
+        do_action('typerocket_model_delete', $this, $ids);
+
         $delete = wp_delete_comment($ids);
 
         if ( !$delete || $delete instanceof \WP_Error ) {
@@ -244,6 +249,8 @@ class WPComment extends Model
         if(is_null($ids) && $this->hasProperties()) {
             $ids = $this->getID();
         }
+
+        do_action('typerocket_model_delete', $this, $ids);
 
         $delete = wp_delete_comment($ids, true);
 

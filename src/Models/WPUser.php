@@ -237,6 +237,8 @@ class WPUser extends Model implements AuthUser
         $builtin = $this->getFilteredBuiltinFields( $fields );
         $user = null;
 
+        do_action('typerocket_model_create', $this, $fields);
+
         if ( ! empty( $builtin )) {
             $builtin = $this->slashBuiltinFields($builtin);
             remove_action( 'user_register', 'TypeRocket\Http\Responders\Hook::users' );
@@ -268,8 +270,10 @@ class WPUser extends Model implements AuthUser
         $id = $this->getID();
         if ($id != null) {
             $fields = $this->provisionFields( $fields );
-
             $builtin = $this->getFilteredBuiltinFields( $fields );
+
+            do_action('typerocket_model_update', $this, $fields);
+
             if ( ! empty( $builtin )) {
                 $builtin = $this->slashBuiltinFields($builtin);
                 remove_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
@@ -313,6 +317,8 @@ class WPUser extends Model implements AuthUser
             $user_id = $this->getID();
         }
 
+        do_action('typerocket_model_delete', $this, $user_id);
+
         $delete = wp_delete_user($user_id, $to_user_id);
 
         if ( $delete instanceof \WP_Error ) {
@@ -337,6 +343,8 @@ class WPUser extends Model implements AuthUser
         if(is_null($ids) && $this->hasProperties()) {
             $ids = $this->getID();
         }
+
+        do_action('typerocket_model_delete', $this, $ids);
 
         $delete = wp_delete_user($ids);
 
