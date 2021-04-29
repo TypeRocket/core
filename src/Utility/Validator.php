@@ -177,7 +177,8 @@ class Validator
      *
      * @return array
      */
-    public function getErrors() {
+    public function getErrors()
+    {
         return $this->errors;
     }
 
@@ -217,7 +218,8 @@ class Validator
      *
      * @return bool
      */
-    public function passed() {
+    public function passed()
+    {
         return empty($this->errors) && $this->ran;
     }
 
@@ -226,7 +228,8 @@ class Validator
      *
      * @return bool
      */
-    public function failed() {
+    public function failed()
+    {
         return !$this->passed();
     }
 
@@ -257,7 +260,8 @@ class Validator
     /**
      * Map fields to validators
      */
-    private function mapFieldsToValidation() {
+    private function mapFieldsToValidation()
+    {
         foreach ($this->rules as $path => $handle) {
             $this->walk($this->fields, $path, $handle, $path);
         }
@@ -286,7 +290,8 @@ class Validator
      * @return array|null
      * @throws \Exception
      */
-    protected function walk(array &$arr, $path, $handle, $fullPath) {
+    protected function walk(array &$arr, $path, $handle, $fullPath)
+    {
         $loc = &$arr;
         $dots = explode('.', $path);
         foreach($dots as $step)
@@ -356,7 +361,8 @@ class Validator
      * @param string $field_name
      * @param ValidatorRule $class
      */
-    protected function setErrorMessage($name, $field_name, $class) {
+    protected function setErrorMessage($name, $field_name, $class)
+    {
         $message = __($class->getError(), 'typerocket-domain');
         $this->errors[$name] = $field_name . ' ' .  $message;
         $this->errorFields[$name] = trim($message);
@@ -403,7 +409,8 @@ class Validator
      *
      * @throws \Exception
      */
-    protected function validateField($handle, $value, $fullName) {
+    protected function validateField($handle, $value, $fullName)
+    {
         $field_name = '<strong>"' . Str::uppercaseWords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
 
         $args = [
@@ -470,7 +477,8 @@ class Validator
      * @param $field_name
      * @param $value
      */
-    protected function runValidatorRule(ValidatorRule $class, $fullName, $field_name, $value) {
+    protected function runValidatorRule(ValidatorRule $class, $fullName, $field_name, $value)
+    {
         $pass = $class->validate();
 
         if( !$pass ) {
