@@ -5,10 +5,19 @@ use TypeRocket\Http\Fields;
 
 class {{fields}} extends Fields
 {
-    /** @var bool Validate & redirect on errors immediately */
+    /**
+     * Run On Import
+     *
+     * Validate and then redirect on failure with errors, immediately
+     * when imported by the application container resolver.
+     *
+     * @var bool
+     */
     protected $run = null;
 
     /**
+     * Model Fillable Property Override
+     *
      * @return array
      */
     protected function fillable() {
@@ -16,9 +25,20 @@ class {{fields}} extends Fields
     }
 
     /**
+     * Validation Rules
+     *
      * @return array
      */
     protected function rules() {
+        return [];
+    }
+
+    /**
+     * Custom Error Messages
+     *
+     * @return array
+     */
+    protected function messages() {
         return [];
     }
 }
