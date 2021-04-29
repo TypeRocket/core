@@ -183,6 +183,16 @@ class Validator
     }
 
     /**
+     * Has Errors
+     *
+     * @return bool
+     */
+    public function hasErrors()
+    {
+        return !empty($this->errors);
+    }
+
+    /**
      * Get passes
      *
      * @return array
