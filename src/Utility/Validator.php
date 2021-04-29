@@ -108,13 +108,7 @@ class Validator
     public function redirectWithErrorsIfFailed($callback = null, $flash = true, $key = 'fields')
     {
         if($this->failed()) {
-            if($flash) {
-                $response = Response::getFromContainer();
-                $this->flashErrors($response);
-                $response->lockFlash();
-            }
-
-            $redirect = $this->getRedirectWithFieldErrors()->withOldFields()->back();
+            $redirect = $this->getRedirectIfFailedWithFieldsAndErrors($flash, $key)->back();
 
             if(is_callable($callback)) {
                 call_user_func($callback, $redirect);
@@ -124,6 +118,29 @@ class Validator
         }
 
         return $this;
+    }
+
+    /**
+     * @param bool $flash flash errors to page
+     * @param string $key
+     *
+     * @return Redirect
+     */
+    public function getRedirectIfFailedWithFieldsAndErrors($flash = true, $key = 'fields')
+    {
+        $redirect = null;
+
+        if($this->failed()) {
+            if($flash) {
+                $response = Response::getFromContainer();
+                $this->flashErrors($response);
+                $response->lockFlash();
+            }
+
+            $redirect = $this->getRedirectWithFieldErrors($key)->withOldFields();
+        }
+
+        return $redirect ?? Redirect::new();
     }
 
     /**
