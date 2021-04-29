@@ -4,6 +4,7 @@ namespace TypeRocket\Utility;
 use TypeRocket\Exceptions\RedirectError;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
+use TypeRocket\Http\Redirect;
 use TypeRocket\Utility\Validators\ValidatorRule;
 use TypeRocket\Utility\Validators\CallbackValidator;
 use TypeRocket\Utility\Validators\EmailValidator;
@@ -87,6 +88,16 @@ class Validator
     }
 
     /**
+     * @param string $key
+     *
+     * @return Redirect
+     */
+    public function getRedirectWithFieldErrors($key = 'fields')
+    {
+        return Redirect::new()->withFieldErrors($this->getErrorFields(), $key);
+    }
+
+    /**
      * @param null|callable $callback
      * @param bool $flash flash errors to page
      * @param string $key
@@ -98,12 +109,12 @@ class Validator
     {
         if($this->failed()) {
             if($flash) {
-                $response = \TypeRocket\Http\Response::getFromContainer();
+                $response = Response::getFromContainer();
                 $this->flashErrors($response);
                 $response->lockFlash();
             }
 
-            $redirect = \TypeRocket\Http\Redirect::new()->withOldFields()->withErrors([$key => $this->getErrorFields()])->back();
+            $redirect = $this->getRedirectWithFieldErrors()->withOldFields()->back();
 
             if(is_callable($callback)) {
                 call_user_func($callback, $redirect);
@@ -126,7 +137,7 @@ class Validator
     {
         if( $this->failed() && $this->ran) {
 
-            $response = \TypeRocket\Http\Response::getFromContainer()
+            $response = Response::getFromContainer()
                 ->withOldFields()
                 ->setError($key, $this->getErrorFields())
                 ->withRedirectErrors();

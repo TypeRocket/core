@@ -21,8 +21,8 @@ class Redirect
      *
      * @return Redirect
      */
-    public function withData($data) {
-
+    public function withData($data)
+    {
         if( !empty($data) ) {
             (new Cookie)->setTransient(static::KEY_DATA, $data);
         }
@@ -33,11 +33,12 @@ class Redirect
     /**
      * With with data
      *
-     * @param array $errors
+     * @param array|null $errors
      *
      * @return Redirect $this
      */
-    public function withErrors( $errors = null) {
+    public function withErrors( $errors = null)
+    {
         if( !empty( $errors ) ) {
             (new Cookie)->setTransient(ErrorCollection::KEY, $errors);
         }
@@ -70,8 +71,8 @@ class Redirect
      *
      * @return Redirect
      */
-    public function withOldFields($fields = null, $notFields = []) {
-
+    public function withOldFields($fields = null, $notFields = [])
+    {
         $fields = $fields ?? (new Request)->getFields();
 
         if($fields instanceof Fields) {
@@ -84,6 +85,19 @@ class Redirect
         }
 
         return $this;
+    }
+
+    /**
+     * With Field Errors
+     *
+     * @param array $fields array of inline field errors that match field names
+     * @param string $key
+     *
+     * @return $this
+     */
+    public function withFieldErrors(array $fields, $key = 'fields')
+    {
+        return $this->withErrors([$key => $fields]);
     }
 
     /**
@@ -164,7 +178,8 @@ class Redirect
      *
      * @return Redirect
      */
-    public function toUrl( $url ) {
+    public function toUrl( $url )
+    {
         $this->url = $url;
 
         return $this;
@@ -266,7 +281,8 @@ class Redirect
     /**
      * Run the redirect
      */
-    public function now() {
+    public function now()
+    {
         wp_redirect( $this->url );
         exit();
     }
