@@ -26,6 +26,9 @@ class Validator
     protected $errorFields = [];
     protected $errorFieldsGroup;
     protected $modelClass;
+    protected $callbacks = [
+        'fieldLabel' => null
+    ];
     protected $errorMessages = ['messages' => [], 'regex' => false];
     protected $ran = false;
     protected $validatorMap = [
@@ -46,12 +49,12 @@ class Validator
      *
      * Validate data mapped to fields
      *
-     * @param array $rules the rules and validation handler
+     * @param array $rules the rules and validation handlers
      * @param array|\ArrayObject|null $fields the fields to be validated
      * @param null $modelClass must be a class of Model
      * @param bool $run run validation on new
      */
-    public function __construct($rules, $fields = null, $modelClass = null, $run = false)
+    public function __construct(array $rules, $fields = null, $modelClass = null, $run = false)
     {
         $this->modelClass = $modelClass;
         $this->fields = $fields ?? (new Request)->getFields();
@@ -193,6 +196,26 @@ class Validator
     }
 
     /**
+     * @param string $key
+     *
+     * @return mixed|null
+     */
+    public function getError(string $key)
+    {
+        return $this->errors[$key] ?? null;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed|null
+     */
+    public function getErrorField(string $key)
+    {
+        return $this->errorFields[$key] ?? null;
+    }
+
+    /**
      * Get passes
      *
      * @return array
@@ -246,7 +269,7 @@ class Validator
     /**
      * Flash validator errors on next request
      *
-     * @param \TypeRocket\Http\Response $response
+     * @param Response $response
      *
      * @return $this
      */
@@ -270,10 +293,10 @@ class Validator
     /**
      * Map fields to validators
      */
-    private function mapFieldsToValidation()
+    protected function mapFieldsToValidation()
     {
-        foreach ($this->rules as $path => $handle) {
-            $this->walk($this->fields, $path, $handle, $path);
+        foreach ($this->rules as $fullDotPath => $validationRules) {
+            $this->walk($this->fields, $fullDotPath, $validationRules, $fullDotPath);
         }
 
         $this->ran = true;
@@ -292,50 +315,48 @@ class Validator
     /**
      * Used to format fields
      *
-     * @param array $arr
-     * @param string $path
-     * @param string $handle
-     * @param string $fullPath
+     * @param array $fields array of fields to validate
+     * @param string $dotPath seeking fields path in dot notation
+     * @param array|string|ValidatorRule $validationRules
+     * @param string $fullDotPath main fields path in dot notation
      *
      * @return array|null
      * @throws \Exception
      */
-    protected function walk(array &$arr, $path, $handle, $fullPath)
+    protected function walk(array &$fields, string $dotPath, $validationRules, string $fullDotPath)
     {
-        $loc = &$arr;
-        $dots = explode('.', $path);
+        $value = &$fields;
+        $dots = explode('.', $dotPath);
         foreach($dots as $step)
         {
             array_shift($dots);
-            if(in_array($step, ['*', '?']) && is_array($loc)) {
-                $new_loc = &$loc;
+            if(in_array($step, ['*', '?']) && is_array($value)) {
+                $new_loc = &$value;
                 $indies = array_keys($new_loc);
                 foreach($indies as $index) {
                     if(isset($new_loc[$index])) {
-                        $newFullPath = preg_replace('(\*|\?)', "{$index}", $fullPath, 1);
-                        $this->walk($new_loc[$index], implode('.', $dots), $handle, $newFullPath);
+                        $newFullPath = preg_replace('(\*|\?)', "{$index}", $fullDotPath, 1);
+                        $this->walk($new_loc[$index], implode('.', $dots), $validationRules, $newFullPath);
                     }
                 }
-            } elseif( $step === '?' && empty($loc) ) {
-                $this->passes[substr($fullPath, 0, strpos($fullPath, '.?'))] = $loc;
+            } elseif( $step === '?' && empty($value) ) {
+                $this->passes[substr($fullDotPath, 0, strpos($fullDotPath, '.?'))] = $value;
                 return null;
-            } elseif( isset($loc[$step]) ) {
-                $loc = &$loc[$step];
+            } elseif( isset($value[$step]) ) {
+                $value = &$value[$step];
             } else {
-                if( !empty($handle) && !isset($indies) ) {
-                    $this->validateField( $handle, null, $fullPath );
+                if( !empty($validationRules) && !isset($indies) ) {
+                    $this->validateField( $validationRules, null, $fullDotPath );
                 }
-
                 return null;
             }
-
         }
 
-        if(!isset($indies) && !empty($handle)) {
-            $this->validateField( $handle, $loc, $fullPath );
+        if(!isset($indies) && !empty($validationRules)) {
+            $this->validateField( $validationRules, $value, $fullDotPath );
         }
 
-        return $loc;
+        return $value;
     }
 
     /**
@@ -367,29 +388,26 @@ class Validator
      *
      * Pulls message override from $errorMessages
      *
-     * @param string $name
-     * @param string $field_name
      * @param ValidatorRule $class
+     * @param string $fullDotPath name in dot notation
      */
-    protected function setErrorMessage($name, $field_name, $class)
+    protected function setErrorMessage(ValidatorRule $class, $fullDotPath)
     {
-        $message = __($class->getError(), 'typerocket-domain');
-        $this->errors[$name] = $field_name . ' ' .  $message;
-        $this->errorFields[$name] = trim($message);
+        $message = $class->getError();
+        $this->errors[$fullDotPath] = $class->getFieldLabel() . ' ' .  $message;
+        $this->errorFields[$fullDotPath] = trim($message);
         $type = $class::KEY;
-        $index = $name.':'.$type;
-        $validate = $value = $match = $matches = false;
+        $index = $fullDotPath.':'.$type;
+        $validate = $value = $matches = false;
 
         if($this->errorMessages['regex'] && !empty($this->errorMessages['messages'])) {
             foreach ($this->errorMessages['messages'] as $key => $value) {
-                $match = preg_match_all("/{$key}/", $index, $matches, PREG_SET_ORDER, 0);
-                if($match) {
+                if(preg_match_all("/{$key}/", $index, $matches, PREG_SET_ORDER, 0)) {
                     $validate = true;
                     break;
                 }
             }
-        }
-        else {
+        } else {
             $validate = !empty($this->errorMessages['messages'][$index]);
 
             if($validate) {
@@ -399,54 +417,74 @@ class Validator
 
         if($validate) {
             if(is_callable($value)) {
-                $this->errors[$name] = call_user_func($value, $name, $type, $this->errors[$name], $matches);
-                $this->errorFields[$name] = $this->errors[$name];
+                $this->errors[$fullDotPath] = call_user_func($value, $fullDotPath, $type, $this->errors[$fullDotPath], $matches);
+                $this->errorFields[$fullDotPath] = $this->errors[$fullDotPath];
             } else {
                 $error_message = $class->getError();
                 $error_message = isset($value) ? str_replace('{error}', $error_message, $value) : $error_message;
-                $this->errors[$name] = $error_message;
-                $this->errorFields[$name] = $error_message;
+                $this->errors[$fullDotPath] = $error_message;
+                $this->errorFields[$fullDotPath] = $error_message;
             }
         }
     }
 
     /**
+     * @param string $key
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function setCallback(string $key, callable $callback)
+    {
+        $this->callbacks[$key] = $callback;
+
+        return $this;
+    }
+
+    /**
      * Validate the Field
      *
-     * @param string|ValidatorRule $handle
-     * @param string $value
-     * @param string $fullName
+     * @param string|array|ValidatorRule $validationRules
+     * @param array|string $value
+     * @param string $fullDotPath
      *
      * @throws \Exception
      */
-    protected function validateField($handle, $value, $fullName)
+    protected function validateField($validationRules, $value, string $fullDotPath)
     {
-        $field_name = '<strong>"' . Str::uppercaseWords(preg_replace('/\_|\./', ' ', $fullName)) . '"</strong>';
+        if($this->callbacks['fieldLabel']) {
+            $fieldLabel = call_user_func($this->callbacks['fieldLabel'], $fullDotPath, $this, $value);
+        } else {
+            $fieldLabel = '<strong>"' . Str::uppercaseWords(preg_replace('/\_|\./', ' ', $fullDotPath)) . '"</strong>';
+        }
 
         $args = [
             'validator' => $this,
             'value' => $value,
-            'full_name' => $fullName,
-            'field_name' => $field_name,
+            'full_name' => $fullDotPath,
+            'field_name' => $fieldLabel,
+            'field_label' => $fieldLabel,
         ];
 
-        if($handle instanceof ValidatorRule) {
-            $handle->setArgs($args);
-            $this->runValidatorRule($handle, $fullName, $field_name, $value);
+        if($validationRules instanceof ValidatorRule) {
+            $validationRules->setArgs($args);
+            $this->runValidatorRule($validationRules, $fullDotPath, $value);
             return;
         }
 
         $list = [];
 
-        if(is_string($handle)) {
-            $handle = explode('|', (string) $handle);
+        if(is_string($validationRules)) {
+            $validationRules = explode('|', (string) $validationRules);
         }
 
-        if(is_array($handle)) {
-            $list = $handle;
+        if(is_array($validationRules)) {
+            $list = $validationRules;
         }
 
-        foreach( $list as $validation) {
+        foreach( $list as $validation)
+        {
+            $class = null;
 
             if(is_string($validation)) {
                 [ $type, $option, $option2, $option3 ] = array_pad(explode(':', $validation, 4), 4, null);
@@ -473,7 +511,7 @@ class Validator
 
             if($class instanceof ValidatorRule) {
                 $class->setArgs($args);
-                $this->runValidatorRule($class, $fullName, $field_name, $value);
+                $this->runValidatorRule($class, $fullDotPath, $value);
                 continue;
             }
 
@@ -482,19 +520,18 @@ class Validator
     }
 
     /**
-     * @param ValidatorRule $class
-     * @param $fullName
-     * @param $field_name
-     * @param $value
+     * @param ValidatorRule $rule
+     * @param string $fullDotPath
+     * @param mixed $value
      */
-    protected function runValidatorRule(ValidatorRule $class, $fullName, $field_name, $value)
+    protected function runValidatorRule(ValidatorRule $rule, string $fullDotPath, $value)
     {
-        $pass = $class->validate();
+        $pass = $rule->validate();
 
         if( !$pass ) {
-            $this->setErrorMessage($fullName, $field_name, $class);
+            $this->setErrorMessage($rule, $fullDotPath);
         } else {
-            $this->passes[$fullName . ':' . $class::KEY] = $value;
+            $this->passes[$fullDotPath . ':' . $rule::KEY] = $value;
         }
     }
 }

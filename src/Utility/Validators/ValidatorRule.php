@@ -7,6 +7,7 @@ abstract class ValidatorRule
 {
     protected $error;
     protected $success;
+    protected $fieldLabel;
     protected $args;
     public CONST KEY = 'map_key';
 
@@ -18,6 +19,7 @@ abstract class ValidatorRule
     public function setArgs(array $args)
     {
         $this->args = $args;
+        $this->fieldLabel = $args['field_label'] ?? null;
 
         return $this;
     }
@@ -40,9 +42,24 @@ abstract class ValidatorRule
      */
     public abstract function validate() : bool;
 
+    /**
+     * Get Error Message
+     *
+     * @return mixed
+     */
     public function getError()
     {
         return $this->error;
+    }
+
+    /**
+     * Get Field Name
+     *
+     * @return mixed
+     */
+    public function getFieldLabel()
+    {
+        return $this->fieldLabel;
     }
 
     /**

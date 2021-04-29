@@ -145,6 +145,27 @@ class ValidatorTest extends TestCase
         $this->assertTrue( $validator->passed() );
     }
 
+    public function testDeepEmailFieldFailsWithCustomLabel()
+    {
+        $fields['person']['email'] = 'example?typerocket.com';
+
+        $validator = new Validator([
+            'person.email' => 'email'
+        ], $fields, null);
+
+        $validator->setCallback('fieldLabel', function($fullDotPath, $obj, $value) {
+            return $fullDotPath;
+        });
+
+        $validator->validate();
+
+        $errorFull = $validator->getError('person.email');
+        $errorField = $validator->getErrorField('person.email');
+
+        $this->assertTrue( $validator->failed() );
+        $this->assertTrue( $errorFull == 'person.email ' . $errorField);
+    }
+
     public function testDeepMultipleEmailsFieldPasses()
     {
         $fields['person'][1]['email'] = 'example@typerocket.com';
