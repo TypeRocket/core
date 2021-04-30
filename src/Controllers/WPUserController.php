@@ -50,6 +50,9 @@ class WPUserController extends Controller
 
             $model->update( $this->getFields() );
             $this->onAction('save', 'update', $model);
+
+            do_action('typerocket_controller_after_update', $this, $model, $authUser);
+
             $response->flashNext( 'User updated', 'success' );
             $response->setData('resourceId', $model->getID());
         } catch ( ModelException $e ) {

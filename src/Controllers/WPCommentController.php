@@ -50,6 +50,9 @@ class WPCommentController extends Controller
 
             $model->findById( $id )->update( $this->getFields() );
             $this->onAction('save', 'update', $model);
+
+            do_action('typerocket_controller_after_update', $this, $model, $user);
+
             $response->flashNext( 'Comment updated', 'success' );
             $response->setData('resourceId', $model->getID() );
         } catch( ModelException $e ) {

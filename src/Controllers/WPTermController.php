@@ -49,6 +49,9 @@ class WPTermController extends Controller
 
             $model->update( $this->getFields() );
             $this->onAction('save', 'update', $model);
+
+            do_action('typerocket_controller_after_update', $this, $model, $user);
+
             $response->flashNext($model->getRouteResource() . ' updated', 'success' );
             $response->setData('resourceId', $id );
         } catch ( ModelException $e ) {

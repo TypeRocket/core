@@ -41,6 +41,9 @@ class WPOptionController extends Controller
 
             $model->update( $this->getFields() );
             $this->onAction('save', 'update', $model);
+
+            do_action('typerocket_controller_after_update', $this, $model, $user);
+
             $response->flashNext( 'Updated', 'success' );
         } catch ( ModelException $e ) {
             $response->flashNext( $e->getMessage(), 'error' );
