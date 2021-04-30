@@ -17,14 +17,14 @@ class PageBuilder
     protected $fieldName = 'builder';
     protected $showStatus = true;
 
-    public function __construct($post_types = ['page'], $field_name = 'builder')
+    public function __construct($post_types = ['page'], $field_name = null)
     {
         if(!Config::env('TYPEROCKET_PAGE_BUILDER', true)) {
             return;
         }
 
         $this->postTypes = apply_filters('typerocket_ext_builder_post_types', $post_types);
-        $this->fieldName = $field_name;
+        $this->fieldName = $field_name ?? $this->fieldName;
         $this->options = [];
 
         add_filter('use_block_editor_for_post', [$this, 'gutenberg'], 10, 2);
