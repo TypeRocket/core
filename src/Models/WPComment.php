@@ -165,7 +165,7 @@ class WPComment extends Model
 
         $this->saveMeta( $fields );
 
-        do_action('typerocket_model_create_after', $this, $fields, $comment);
+        do_action('typerocket_model_after_create', $this, $fields, $comment);
 
         return $comment;
     }
@@ -204,7 +204,7 @@ class WPComment extends Model
 
             $this->saveMeta( $fields );
 
-            do_action('typerocket_model_update_after', $this, $fields, $comment);
+            do_action('typerocket_model_after_update', $this, $fields, $comment);
 
         } else {
             $this->errors = ['No item to update'];
@@ -241,7 +241,7 @@ class WPComment extends Model
             throw new ModelException('WPComment not deleted');
         }
 
-        do_action('typerocket_model_delete_after', $this, $ids, $delete);
+        do_action('typerocket_model_after_delete', $this, $ids, $delete);
 
         return $this;
     }
@@ -270,7 +270,7 @@ class WPComment extends Model
             throw new ModelException('WPComment not deleted');
         }
 
-        do_action('typerocket_model_delete_after', $this, $ids, $delete);
+        do_action('typerocket_model_after_delete', $this, $ids, $delete);
 
         return $this;
     }

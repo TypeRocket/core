@@ -283,7 +283,7 @@ class WPTerm extends Model
 
         $this->saveMeta( $fields );
 
-        do_action('typerocket_model_create_after', $this, $fields, $term);
+        do_action('typerocket_model_after_create', $this, $fields, $term);
 
         return $term;
     }
@@ -321,7 +321,7 @@ class WPTerm extends Model
 
             $this->saveMeta( $fields );
 
-            do_action('typerocket_model_update_after', $this, $fields, $term);
+            do_action('typerocket_model_after_update', $this, $fields, $term);
 
         } else {
             $this->errors = ['No item to update'];
@@ -378,7 +378,7 @@ class WPTerm extends Model
             throw new ModelException('WPTerm not deleted');
         }
 
-        do_action('typerocket_model_delete_after', $this, $ids, $delete);
+        do_action('typerocket_model_after_delete', $this, $ids, $delete);
 
         return $this;
     }

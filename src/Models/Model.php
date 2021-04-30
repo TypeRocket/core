@@ -1128,7 +1128,7 @@ class Model implements Formable, JsonSerializable
 
         $v = $this->query->create($fields);
 
-        do_action('typerocket_model_create_after', $this, $fields, $v);
+        do_action('typerocket_model_after_create', $this, $fields, $v);
 
         return $v;
     }
@@ -1148,7 +1148,7 @@ class Model implements Formable, JsonSerializable
 
         $v =  $this->query->where($this->idColumn, $this->getID())->update($fields);
 
-        do_action('typerocket_model_update_after', $this, $fields, $v);
+        do_action('typerocket_model_after_update', $this, $fields, $v);
 
         return $v;
     }
@@ -1170,7 +1170,7 @@ class Model implements Formable, JsonSerializable
 
         $v = $this->query->delete($ids);
 
-        do_action('typerocket_model_delete_after', $this, $ids, $v);
+        do_action('typerocket_model_after_delete', $this, $ids, $v);
 
         return $v;
     }

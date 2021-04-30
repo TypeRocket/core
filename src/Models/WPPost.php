@@ -452,7 +452,7 @@ class WPPost extends Model
 
         $this->saveMeta( $fields );
 
-        do_action('typerocket_model_create_after', $this, $fields, $new_post);
+        do_action('typerocket_model_after_create', $this, $fields, $new_post);
 
         return $new_post;
     }
@@ -494,7 +494,7 @@ class WPPost extends Model
 
             $this->saveMeta( $fields );
 
-            do_action('typerocket_model_update_after', $this, $fields, $result);
+            do_action('typerocket_model_after_update', $this, $fields, $result);
 
         } else {
             $this->errors = ['No item to update'];
@@ -529,7 +529,7 @@ class WPPost extends Model
             throw new ModelException('WPPost not deleted');
         }
 
-        do_action('typerocket_model_delete_after', $this, $ids, $delete);
+        do_action('typerocket_model_after_delete', $this, $ids, $delete);
 
         return $this;
     }
@@ -556,7 +556,7 @@ class WPPost extends Model
             throw new ModelException('WPPost not deleted');
         }
 
-        do_action('typerocket_model_delete_after', $this, $ids, $delete);
+        do_action('typerocket_model_after_delete', $this, $ids, $delete);
 
         return $this;
     }

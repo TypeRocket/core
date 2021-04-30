@@ -254,7 +254,7 @@ class WPUser extends Model implements AuthUser
 
         $this->saveMeta( $fields );
 
-        do_action('typerocket_model_create_after', $this, $fields, $user);
+        do_action('typerocket_model_after_create', $this, $fields, $user);
 
         return $user;
     }
@@ -297,7 +297,7 @@ class WPUser extends Model implements AuthUser
 
             $this->saveMeta( $fields );
 
-            do_action('typerocket_model_update_after', $this, $fields, $user);
+            do_action('typerocket_model_after_update', $this, $fields, $user);
 
         } else {
             $this->errors = ['No item to update'];
@@ -331,6 +331,8 @@ class WPUser extends Model implements AuthUser
             throw new ModelException('WPUser not deleted');
         }
 
+        do_action('typerocket_model_after_delete', $this, $to_user_id, $delete);
+
         return $this;
     }
 
@@ -362,7 +364,7 @@ class WPUser extends Model implements AuthUser
             throw new ModelException('WPUser not deleted');
         }
 
-        do_action('typerocket_model_delete_after', $this, $ids, $delete);
+        do_action('typerocket_model_after_delete', $this, $ids, $delete);
 
         return $this;
     }
