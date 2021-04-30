@@ -89,7 +89,7 @@ class Config
     public static function env(string $name, $default = null, $env = false)
     {
         if($env && !empty($_SERVER) ) {
-            $env = $_SERVER[$name];
+            $env = $_SERVER[$name] ?? null;
 
             if($env) {
                 return $env;
