@@ -30,6 +30,7 @@ class GalaxyConsoleLauncher
         $this->commands = new CommandCollection();
         $this->commands->configure(Config::getFromContainer());
         $wp_root = \TypeRocket\Core\Config::get('galaxy.wordpress');
+        $wp_root_load = \TypeRocket\Core\Config::get('galaxy.wordpress_load', true);
 
         // Set common headers, to prevent warnings from plugins.
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
@@ -37,7 +38,7 @@ class GalaxyConsoleLauncher
         $_SERVER['REQUEST_METHOD']  = 'GET';
         $_SERVER['REMOTE_ADDR']     = '127.0.0.1';
 
-        if( !empty($wp_root) ) {
+        if( !empty($wp_root) && $wp_root_load !== 'no') {
             $this->wpRoot = $wp_root = realpath($wp_root);
             $is_file = is_file( $wp_root . '/wp-load.php' );
             $has_config = is_file( $wp_root . '/wp-config.php' );
@@ -69,8 +70,12 @@ class GalaxyConsoleLauncher
             else {
                 echo $is_file ? '' : 'WP root path might not be not correct:' . realpath($wp_root) .PHP_EOL;
                 echo $has_config ? '' : 'wp-config.php not found'.PHP_EOL;
-                echo 'WP Commands not enabled.'.PHP_EOL;
+                echo "\033[0;31mWP Commands not enabled.\033[0m".PHP_EOL;
             }
+        }
+
+        if($wp_root_load === 'no') {
+            echo "\033[0;31mWP loading is disabled in your Galaxy CLI config.\033[0m".PHP_EOL;
         }
 
         $this->loadCommandsAndRun();
