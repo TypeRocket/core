@@ -74,7 +74,7 @@ class SqlRunner
                 continue;
             }
 
-            if ( !$result ) {
+            if ( $result === false ) {
                 $e = new SqlException('Query Error: SQL failed to run.');
                 $e->setSql($wpdb->last_query);
                 $e->setSqlError($wpdb->last_error);
