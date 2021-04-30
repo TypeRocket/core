@@ -232,28 +232,17 @@ class Migrate
             }
 
             if(is_array($query) && !empty($query['file'])) {
-                $class = null;
-                $fp = fopen($query['file'], 'r');
 
-                while(!feof($fp))
-                {
-                    if (preg_match('/class\s+(\w+)/', fgets($fp), $matches)) {
-                        $class = $matches[1];
-                        break;
-                    }
-                }
-
-                if($class) {
-                    include($query['file']);
-                    $migrationObject = new $class($wpdb);
+                $cb = function($type, $file, \wpdb $wpdb) {
+                    $migrationObject = include($file);
                     ob_start();
                     $migrationObject->run($type);
-                    $report = ob_get_clean();
-                } else {
-                    throw new MigrationException('Migration class not found.');
-                }
+                    return ob_get_clean();
+                };
 
-                call_user_func($this->callback, ['message' => 'PHP Migration of ' . $class, 'wpdb' => $report], $result);
+                $report = $cb($type, $query['file'], $wpdb);
+
+                call_user_func($this->callback, ['message' => 'PHP Migration of ' . $file, 'wpdb' => $report], $result);
 
                 $result['report'] = $file;
             } else {

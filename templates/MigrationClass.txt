@@ -1,7 +1,7 @@
 <?php
 use TypeRocket\Database\Migration;
 
-class {{class}} extends Migration
+return new class($wpdb) extends Migration
 {
     public function up()
     {
@@ -12,4 +12,4 @@ class {{class}} extends Migration
     {
 
     }
-}
+};

@@ -32,7 +32,6 @@ class MakeMigration extends Command
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
         $type = strtoupper($this->getArgument('type', 'sql'));
-        $className = Str::camelize( $name ) . 'TypeRocketMigration';
         $root = \TypeRocket\Core\Config::get('paths.migrations');
 
         // Make directories if needed
@@ -42,8 +41,8 @@ class MakeMigration extends Command
             $this->success('Location created...');
         }
 
-        $tags = ['{{name}}', '{{class}}'];
-        $replacements = [ $name, $className ];
+        $tags = ['{{name}}'];
+        $replacements = [ $name ];
 
         if($type === 'SQL') {
             $template = __DIR__ . '/../../../templates/Migration.txt';
@@ -61,10 +60,6 @@ class MakeMigration extends Command
 
         if( $new ) {
             $this->success($type .' Migration created: ' . $name . ' as ' . $fileName );
-
-            if($type === 'PHP') {
-                $this->line('TypeRocket migration class name: ' . $className);
-            }
         } else {
             $this->error('TypeRocket migration ' . $name . ' already exists.');
         }
