@@ -203,6 +203,8 @@ class Migrate
                     $query_strings[$file] = $query;
                 }
                 fclose($f);
+            } if(strpos($file, '.php', -0) && is_file($file_full)) {
+                $query_strings[$file] = ['file' => $file_full];
             }
         }
 
@@ -229,7 +231,34 @@ class Migrate
                 $result['message'] =  'Migration down finished at ' . $dtime;
             }
 
-            $result['report'] = (new SqlRunner())->runQueryString($query, $this->callback, $result);
+            if(is_array($query) && !empty($query['file'])) {
+                $class = null;
+                $fp = fopen($query['file'], 'r');
+
+                while(!feof($fp))
+                {
+                    if (preg_match('/class\s+(\w+)/', fgets($fp), $matches)) {
+                        $class = $matches[1];
+                        break;
+                    }
+                }
+
+                if($class) {
+                    include($query['file']);
+                    $migrationObject = new $class($wpdb);
+                    ob_start();
+                    $migrationObject->run($type);
+                    $report = ob_get_clean();
+                } else {
+                    throw new MigrationException('Migration class not found.');
+                }
+
+                call_user_func($this->callback, ['message' => 'PHP Migration of ' . $class, 'wpdb' => $report], $result);
+
+                $result['report'] = $file;
+            } else {
+                $result['report'] = (new SqlRunner())->runQueryString($query, $this->callback, $result);
+            }
         }
 
         $result['migrations_run'] = $migrations_run;
