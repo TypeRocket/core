@@ -108,7 +108,7 @@ class Command extends SymfonyCommand
         $this->output = $output;
         $this->exec();
 
-        return $this->success ?? Command::SUCCESS;
+        return $this->success ?? 0;
     }
 
     /**
