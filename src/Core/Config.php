@@ -82,11 +82,20 @@ class Config
      *
      * @param string $name the constant variable name
      * @param null|mixed $default The default value
+     * @param bool $env Try getting env data
      *
      * @return mixed
      */
-    public static function env($name, $default = null)
+    public static function env(string $name, $default = null, $env = false)
     {
+        if($env && !empty($_SERVER) ) {
+            $env = $_SERVER[$name];
+
+            if($env) {
+                return $env;
+            }
+        }
+
         return defined($name) ? constant($name) : $default;
     }
 

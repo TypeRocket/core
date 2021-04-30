@@ -190,11 +190,12 @@ namespace
      *
      * @param string $name the constant variable name
      * @param null|mixed $default The default value
+     * @param bool $env Try getting env data
      *
      * @return mixed
      */
-    function typerocket_env($name, $default = null) {
-        return \TypeRocket\Core\Config::env($name, $default);
+    function typerocket_env($name, $default = null, $env = false) {
+        return \TypeRocket\Core\Config::env($name, $default, $env);
     }
 
     /**
