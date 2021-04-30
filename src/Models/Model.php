@@ -1126,7 +1126,11 @@ class Model implements Formable, JsonSerializable
 
         do_action('typerocket_model_create', $this, $fields);
 
-        return $this->query->create($fields);
+        $v = $this->query->create($fields);
+
+        do_action('typerocket_model_create_after', $this, $fields, $v);
+
+        return $v;
     }
 
     /**
@@ -1142,7 +1146,33 @@ class Model implements Formable, JsonSerializable
 
         do_action('typerocket_model_update', $this, $fields);
 
-        return $this->query->where($this->idColumn, $this->getID())->update($fields);
+        $v =  $this->query->where($this->idColumn, $this->getID())->update($fields);
+
+        do_action('typerocket_model_update_after', $this, $fields, $v);
+
+        return $v;
+    }
+
+    /**
+     * Delete
+     *
+     * @param array|ArrayObject|int $ids
+     *
+     * @return array|false|int|null|object
+     */
+    public function delete( $ids = null )
+    {
+        if(is_null($ids) && $this->hasProperties()) {
+            $ids = $this->getID();
+        }
+
+        do_action('typerocket_model_delete', $this, $ids);
+
+        $v = $this->query->delete($ids);
+
+        do_action('typerocket_model_delete_after', $this, $ids, $v);
+
+        return $v;
     }
 
     /**
@@ -1350,24 +1380,6 @@ class Model implements Formable, JsonSerializable
         }
 
         return $result;
-    }
-
-    /**
-     * Delete
-     *
-     * @param array|ArrayObject|int $ids
-     *
-     * @return array|false|int|null|object
-     */
-    public function delete( $ids = null )
-    {
-        if(is_null($ids) && $this->hasProperties()) {
-            $ids = $this->getID();
-        }
-
-        do_action('typerocket_model_delete', $this, $ids);
-
-        return $this->query->delete($ids);
     }
 
     /**

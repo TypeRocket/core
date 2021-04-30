@@ -452,6 +452,8 @@ class WPPost extends Model
 
         $this->saveMeta( $fields );
 
+        do_action('typerocket_model_create_after', $this, $fields, $new_post);
+
         return $new_post;
     }
 
@@ -469,6 +471,7 @@ class WPPost extends Model
         if( $id != null && ! wp_is_post_revision( $id ) ) {
             $fields = $this->provisionFields( $fields );
             $builtin = $this->getFilteredBuiltinFields($fields);
+            $result = null;
 
             do_action('typerocket_model_update', $this, $fields);
 
@@ -477,10 +480,10 @@ class WPPost extends Model
                 remove_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
                 $builtin['ID'] = $id;
                 $builtin['post_type'] = $this->properties['post_type'];
-                $updated = wp_update_post( $builtin );
+                $result = wp_update_post( $builtin );
                 add_action('save_post', 'TypeRocket\Http\Responders\Hook::posts');
 
-                if ( $updated instanceof \WP_Error || $updated === 0 ) {
+                if ( $result instanceof \WP_Error || $result === 0 ) {
                     $error = 'WPPost not updated: post_name (slug), post_title and post_content are required';
                     throw new ModelException( $error );
                 } else {
@@ -490,6 +493,8 @@ class WPPost extends Model
             }
 
             $this->saveMeta( $fields );
+
+            do_action('typerocket_model_update_after', $this, $fields, $result);
 
         } else {
             $this->errors = ['No item to update'];
@@ -520,9 +525,11 @@ class WPPost extends Model
 
         $delete = wp_delete_post($ids);
 
-        if ( $delete instanceof \WP_Error ) {
-            throw new ModelException('WPPost not deleted: ' . $delete->get_error_message());
+        if ( !$delete ) {
+            throw new ModelException('WPPost not deleted');
         }
+
+        do_action('typerocket_model_delete_after', $this, $ids, $delete);
 
         return $this;
     }
@@ -545,9 +552,11 @@ class WPPost extends Model
 
         $delete = wp_delete_post($ids, true);
 
-        if ( $delete instanceof \WP_Error ) {
-            throw new ModelException('WPPost not deleted: ' . $delete->get_error_message());
+        if ( !$delete ) {
+            throw new ModelException('WPPost not deleted');
         }
+
+        do_action('typerocket_model_delete_after', $this, $ids, $delete);
 
         return $this;
     }

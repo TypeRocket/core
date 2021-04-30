@@ -254,6 +254,8 @@ class WPUser extends Model implements AuthUser
 
         $this->saveMeta( $fields );
 
+        do_action('typerocket_model_create_after', $this, $fields, $user);
+
         return $user;
     }
 
@@ -271,6 +273,7 @@ class WPUser extends Model implements AuthUser
         if ($id != null) {
             $fields = $this->provisionFields( $fields );
             $builtin = $this->getFilteredBuiltinFields( $fields );
+            $user = null;
 
             do_action('typerocket_model_update', $this, $fields);
 
@@ -293,6 +296,9 @@ class WPUser extends Model implements AuthUser
             }
 
             $this->saveMeta( $fields );
+
+            do_action('typerocket_model_update_after', $this, $fields, $user);
+
         } else {
             $this->errors = ['No item to update'];
         }
@@ -321,8 +327,8 @@ class WPUser extends Model implements AuthUser
 
         $delete = wp_delete_user($user_id, $to_user_id);
 
-        if ( $delete instanceof \WP_Error ) {
-            throw new ModelException('WPUser not deleted: ' . $delete->get_error_message());
+        if ( !$delete ) {
+            throw new ModelException('WPUser not deleted');
         }
 
         return $this;
@@ -352,9 +358,11 @@ class WPUser extends Model implements AuthUser
 
         $delete = wp_delete_user($ids);
 
-        if ( $delete instanceof \WP_Error ) {
-            throw new ModelException('WPUser not deleted: ' . $delete->get_error_message());
+        if ( !$delete ) {
+            throw new ModelException('WPUser not deleted');
         }
+
+        do_action('typerocket_model_delete_after', $this, $ids, $delete);
 
         return $this;
     }
