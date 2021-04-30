@@ -512,6 +512,10 @@ class WPPost extends Model
             $ids = $this->getID();
         }
 
+        if(is_array($ids)) {
+            throw new ModelException(static::class . ' not deleted: bulk deleting not supported due to WordPress performance issues.');
+        }
+
         do_action('typerocket_model_delete', $this, $ids);
 
         $delete = wp_delete_post($ids);
