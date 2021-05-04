@@ -512,7 +512,7 @@ class Page extends Registrable
             elseif ( $response instanceof View) {
                 $response->render();
             }
-            elseif( file_exists($response) ) {
+            elseif( is_string($response) && strlen( $response ) <= PHP_MAXPATHLEN && file_exists($response) ) {
                 /** @noinspection PhpIncludeInspection */
                 include( $response );
             }
