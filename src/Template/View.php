@@ -295,7 +295,7 @@ class View
      *
      * @return string|null
      */
-    public function cache($key, $time = 9999999999, $folder = 'app')
+    public function cache($key, $time = 9999999999, $folder = 'views')
     {
         return PersistentCache::new($folder)->getOtherwisePut($key, function() {
             return $this->toString();
