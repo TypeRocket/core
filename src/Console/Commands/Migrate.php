@@ -83,6 +83,7 @@ class Migrate extends Command
                 $this->line( $e->getSql() );
                 $this->error( $e->getSqlError() );
             }
+            exit(1);
         }
     }
 }
