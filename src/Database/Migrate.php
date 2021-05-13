@@ -25,6 +25,17 @@ class Migrate
     }
 
     /**
+     * @param mixed ...$args
+     *
+     * @return static
+     * @throws \Exception
+     */
+    public static function new(...$args)
+    {
+        return new static(...$args);
+    }
+
+    /**
      * Set the migrartion folder
      *
      * @param null|string $migrationsFolder
