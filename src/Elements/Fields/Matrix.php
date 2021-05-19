@@ -317,6 +317,8 @@ class Matrix extends Field implements ScriptField
         $reg = \TypeRocket\Core\Config::get("components.registry");
         $component_class = $reg["{$group}:{$type}"] ?? $reg[$type] ?? null;
 
+        $component_class = apply_filters('typerocket_component_class', $component_class, $type, $group, $reg);
+
         if(!$component_class) {
             return (new ErrorComponent)->title($type)->registeredAs($type);
         }
