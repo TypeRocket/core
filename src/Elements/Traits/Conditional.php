@@ -4,6 +4,7 @@ namespace TypeRocket\Elements\Traits;
 trait Conditional
 {
     public $conditions = [];
+    protected $conditionMode = 'display';
 
     /**
      * Set Condition
@@ -75,6 +76,20 @@ trait Conditional
     }
 
     /**
+     * Condition mode
+     *
+     * @param string $mode options: display or include
+     *
+     * @return $this
+     */
+    public function conditionMode(string $mode)
+    {
+        $this->conditionMode = $mode;
+
+        return $this;
+    }
+
+    /**
      * Set Conditional Attribute
      *
      * @param bool $array
@@ -87,14 +102,22 @@ trait Conditional
             return !$array ? '' : [];
         }
 
-        $value = esc_attr(json_encode($this->conditions));
-        $name = 'data-tr-conditions';
+        $conditions = esc_attr(json_encode($this->conditions));
+        $mode = esc_attr($this->conditionMode);
+        $conditionsName = 'data-tr-conditions';
+        $modeName = 'data-tr-condition-mode';
 
         if($array) {
-            return [$name => $value];
+            return [$conditionsName => $conditions, $mode => $mode];
         }
 
-        return "{$name}=\"{$value}\"";
+        $attr = "{$conditionsName}=\"{$conditions}\"";
+
+        if($this->conditionMode) {
+            $attr .= " {$modeName}=\"{$mode}\"";
+        }
+
+        return $attr;
     }
 
 }
