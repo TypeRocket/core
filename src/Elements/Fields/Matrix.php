@@ -252,6 +252,8 @@ class Matrix extends Field implements ScriptField
         $name = $this->getComponentGroup();
         $options = $this->popAllOptions();
         $options = $options ?: \TypeRocket\Core\Config::get("components.{$name}");
+        $options = apply_filters('typerocket_component_options', $options, $name, $this);
+
         $list = array_merge($options, $this->staticOptions);
 
         foreach ($list as $name) {
