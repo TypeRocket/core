@@ -15,6 +15,7 @@ class View
     protected $viewsEngine = null;
     protected $context = null;
     protected $folder = null;
+    protected $name = null;
 
     /**
      * View constructor.
@@ -38,6 +39,8 @@ class View
         if( !empty( $data ) ) {
             $this->data = $data;
         }
+
+        $this->name = $dots;
         $this->init();
 
         $this->setContext();
@@ -54,6 +57,16 @@ class View
     public static function new(...$args)
     {
         return new static(...$args);
+    }
+
+    /**
+     * Get View Name
+     *
+     * @return string|null
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
