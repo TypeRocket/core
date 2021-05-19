@@ -104,6 +104,10 @@ class TypeRocketUI
                     $t->setSlug($tax['slug']);
                 }
 
+                if(isset($type['slug_with_front']) && empty($type['slug_with_front'])) {
+                    $t->disableSlugWithFront();
+                }
+
                 if(isset($tax['post_types']) && is_array($tax['post_types'])) {
                     $apply = array_map(Sanitize::class . '::underscore', $tax['post_types']);
                     $t->addPostType($apply);
@@ -223,6 +227,10 @@ class TypeRocketUI
 
                 if(isset($type['slug']) && trim($type['slug'])) {
                     $pt->setSlug($type['slug']);
+                }
+
+                if(isset($type['slug_with_front']) && empty($type['slug_with_front'])) {
+                    $pt->disableSlugWithFront();
                 }
 
                 if(isset($type['taxonomies']) && is_array($type['taxonomies'])) {

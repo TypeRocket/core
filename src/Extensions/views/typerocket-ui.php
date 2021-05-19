@@ -20,6 +20,8 @@ $pt_tabs->tab(__('Basic', 'typerocket-ui'))->setFields(
         ->markLabelRequired(),
     $form->text('Slug', ['placeholder' => __('Default value will be plural', 'typerocket-ui')])
         ->setHelp(__('Customize the permastruct slug. Defaults to plural name.', 'typerocket-ui')),
+    $form->toggle('Slug With Front')->setDefault(true)
+        ->setHelp(__('Should the permastruct be prepended with WP_Rewrite::$front', 'typerocket-ui')),
     $form->select('Icon')->setOptions($icons, 'flat')->searchable(),
     $form->toggle('Gutenberg')->setText('Whether the post type should use Gutenberg.'),
     $form->toggle('REST API')->setText('Whether to include the post type in the REST API.')
@@ -113,6 +115,8 @@ $tax_tabs->tab('Basic')->setFields(
         ->markLabelRequired(),
     $form->text('Slug', ['placeholder' => __('Default value will be plural', 'typerocket-ui')])
         ->setHelp(__('Customize the permastruct slug. Defaults to plural name.', 'typerocket-ui')),
+    $form->toggle('Slug With Front')->setDefault(true)
+        ->setHelp(__('Should the permastruct be prepended with WP_Rewrite::$front', 'typerocket-ui')),
     $form->toggle('Hierarchical')->setText('Whether the post type is hierarchical (e.g. category).'),
     $form->toggle('REST API')->setText('Whether to include the post type in the REST API.'),
     $form->items('Post Types')->setHelp('The IDs of post types you want applied to this taxonomy.')

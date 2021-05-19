@@ -241,15 +241,48 @@ class Taxonomy extends Registrable
     }
 
     /**
-     * Set the url slug used for rewrite rules
+     * Set the rewrite slug for the post type
      *
      * @param string $slug
+     * @param null|bool $withFront
      *
      * @return Taxonomy $this
      */
-    public function setSlug( $slug )
+    public function setSlug( $slug, $withFront = null )
     {
-        $this->args['rewrite'] = ['slug' => Sanitize::dash( $slug )];
+        if(!is_array($this->args['rewrite'])) {
+            $this->args['rewrite'] = [];
+        }
+
+        $this->args['rewrite']['slug'] = Sanitize::dash( $slug );
+
+        if(isset($withFront)) {
+            $this->args['rewrite']['with_front'] = $withFront;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Disable Slug With Front
+     *
+     * @return $this
+     */
+    public function disableSlugWithFront()
+    {
+        $this->args['rewrite']['with_front'] = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable Hierarchical Rewrite
+     *
+     * @return $this
+     */
+    public function enableHierarchicalSlug()
+    {
+        $this->args['rewrite']['hierarchical'] = true;
 
         return $this;
     }

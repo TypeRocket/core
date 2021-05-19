@@ -618,6 +618,7 @@ class PostType extends Registrable
      * Set the rewrite slug for the post type
      *
      * @param string $slug
+     * @param null|bool $withFront
      *
      * @return PostType $this
      */
