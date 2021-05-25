@@ -87,7 +87,7 @@ class GalaxyConsoleLauncher
     public function loadWordPressFunctions()
     {
         /** @noinspection PhpIncludeInspection */
-        require( $this->wpRoot . '/wp-admin/includes/upgrade.php' );
+        require_once( $this->wpRoot . '/wp-admin/includes/upgrade.php' );
     }
 
     /**
