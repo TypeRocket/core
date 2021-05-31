@@ -86,7 +86,7 @@ class Radio extends Field
      */
     public function useImages($style = 'normal', $ul_classes = 'tr-round-image-corners')
     {
-        $ul_classes .= $style == 'square' ? ' tr-radio-images-square' : 'tr-radio-images-normal';
+        $ul_classes .= $style == 'square' ? ' tr-radio-images-square' : ' tr-radio-images-normal';
         $this->settings['mode'] = 'image';
         $this->settings['ul_classes'] = $ul_classes;
 
