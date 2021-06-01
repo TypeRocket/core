@@ -52,11 +52,12 @@ class Radio extends Field
         foreach ($this->options as $key => $value) {
             $content = $key;
             $key = esc_attr($key);
+            $label_attr_temp = $label_attr;
 
             if($mode == 'image') {
                 $src = $value['src'];
                 $value = $value['value']; // keep as last setter
-                $label_attr .= " title=\"{$key}\"";
+                $label_attr_temp .= " title=\"{$key}\"";
                 $content =  "<img src='{$src}' class='tr-radio-images-image' alt='{$key}' />";
             }
 
@@ -66,7 +67,7 @@ class Radio extends Field
                 $this->removeAttribute('checked');
             }
 
-            $field .= "<li><label {$label_attr}>";
+            $field .= "<li><label {$label_attr_temp}>";
             $field .= $generator->input( 'radio', $name, $value, $this->getAttributes($with ?? null) );
             $field .= "<span>{$content}</span></label></li>";
         }
