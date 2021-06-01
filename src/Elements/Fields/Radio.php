@@ -41,7 +41,7 @@ class Radio extends Field
 
         if($mode == 'image') {
             $with = ['tabindex' => '-1'];
-            $label_attr = "class='tr-radio-options-label' tabindex='0'";
+            $label_attr = 'class="tr-radio-options-label" tabindex="0"';
         }
 
         $classes = $mode == 'image' ? 'tr-radio-images tr-radio-options' : 'tr-data-full';
@@ -56,7 +56,7 @@ class Radio extends Field
             if($mode == 'image') {
                 $src = $value['src'];
                 $value = $value['value']; // keep as last setter
-
+                $label_attr .= " title=\"{$key}\"";
                 $content =  "<img src='{$src}' class='tr-radio-images-image' alt='{$key}' />";
             }
 
@@ -66,7 +66,7 @@ class Radio extends Field
                 $this->removeAttribute('checked');
             }
 
-            $field .= "<li><label $label_attr>";
+            $field .= "<li><label {$label_attr}>";
             $field .= $generator->input( 'radio', $name, $value, $this->getAttributes($with ?? null) );
             $field .= "<span>{$content}</span></label></li>";
         }
