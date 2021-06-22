@@ -33,12 +33,12 @@ class SqlRunner
      * @return array
      * @throws SqlException
      */
-    public function runQueryString($sql, $callback = null, $cb_data = null) {
+    public function runQueryString($sql, $callback = null, $cb_data = null, $file = null) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $prefix = $wpdb->prefix;
         $prefixed = str_replace($this->query_prefix_tag, $prefix, $sql);
-        return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ), $callback, $cb_data );
+        return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ), $callback, $cb_data, $file );
     }
 
     /**
@@ -49,7 +49,7 @@ class SqlRunner
      * @return array
      * @throws SqlException
      */
-    public function runQueryArray($queries, $callback = null, $cb_data = null)
+    public function runQueryArray($queries, $callback = null, $cb_data = null, $file = null)
     {
         /** @var \wpdb $wpdb */
         global $wpdb;
@@ -74,8 +74,10 @@ class SqlRunner
                 continue;
             }
 
+            $file = ($file ? ' For file ' . $file : '');
+
             if ( $result === false ) {
-                $e = new SqlException('Query Error: SQL failed to run.');
+                $e = new SqlException('Query Error: SQL failed to run.' . $file);
                 $e->setSql($wpdb->last_query);
                 $e->setSqlError($wpdb->last_error);
                 $wpdb->last_error = '';
@@ -83,7 +85,7 @@ class SqlRunner
             }
 
             $result = [
-                'message' => 'SQL successfully run.',
+                'message' => 'SQL successfully run.' . $file,
                 'result' => $result,
                 'wpdb' => $wpdb->last_query
             ];

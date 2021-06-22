@@ -176,45 +176,48 @@ class Migrate
 
         if($type == 'up') {
             $to_run = array_diff_key($migrations, $migrations_run);
-            $match_go = '/--\s+\>\>\>\s+Up\s+\>\>\>/';
+            $match_start = '/--\s+\>\>\>\s+Up\s+\>\>\>/';
             $match_stop = '/--\s+\>\>\>\s+Down\s+\>\>\>/';
         } else {
             $to_run = array_reverse($migrations_run);
-            $match_go = '/--\s+\>\>\>\s+Down\s+\>\>\>/';
-            $match_stop = '/--\s+\>\>\>\s+Up\s+\>\>\>/';
+            $match_start = '/--\s+\>\>\>\s+Down\s+\>\>\>/';
+            $match_stop = '/--\s+\>\>\>\s+End\s+\>\>\>/'; // not required
         }
 
         $query_strings = [];
         $count = 0;
+        $steps = (int) $steps;
+
         foreach ($to_run as $file => $index ) {
             $file_full = $this->migrationsFolder . '/' . $file;
+
+            if($steps === $count) {
+                break 1;
+            }
+
+            $count++;
+
             if( strpos($file, '.sql', -0) && is_file($file_full) ) {
                 $f = fopen($file_full, 'r');
-                $line = fgets($f);
+                $query = 'seeking...';
+                while($line = fgets($f)) {
 
-                if($steps > $count) {
-                    $count++;
-                    $query = '';
-                    $look = $stop = '';
-                    while($line = fgets($f)) {
-                        if ( isset($line) && !empty($matches_goes) ) {
-                            preg_match($match_stop, $line, $matches_stop);
-                            if( !empty($matches_stop) ) {
-                                break 1;
-                            }
-
-                            $query .= $line;
-                        }
-
-                        if(empty($matches_goes)) {
-                            preg_match($match_go, $line, $matches_goes);
-                        }
+                    if( preg_match($match_stop, $line) ) {
+                        break 1;
                     }
-                    $look = $stop = '';
-                    $query_strings[$file] = $query;
+
+                    $query .= $line;
+
+                    if ( preg_match($match_start, $line) ) {
+                        $query = '';
+                    }
                 }
+                $query_strings[$file] = $query;
+
                 fclose($f);
-            } if(strpos($file, '.php', -0) && is_file($file_full)) {
+            }
+
+            if(strpos($file, '.php', -0) && is_file($file_full)) {
                 $query_strings[$file] = ['file' => $file_full];
             }
         }
@@ -257,7 +260,7 @@ class Migrate
 
                 $result['report'] = $file;
             } else {
-                $result['report'] = (new SqlRunner())->runQueryString($query, $this->callback, $result);
+                $result['report'] = (new SqlRunner())->runQueryString($query, $this->callback, $result, $file);
             }
         }
 
