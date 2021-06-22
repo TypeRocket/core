@@ -93,8 +93,8 @@ class Matrix extends Field implements ScriptField
         wp_enqueue_script( 'jquery-ui-datepicker', [ 'jquery' ], false, true );
         wp_enqueue_script( 'wp-color-picker' );
 
-        if(class_exists('TypeRocketPro\Features\EditorScripts')) {
-            call_user_func('TypeRocketPro\Features\EditorScripts::enqueueEditorScripts');
+        if(class_exists('\TypeRocketPro\Core\AdvancedSystem')) {
+            call_user_func('\TypeRocketPro\Elements\Traits\EditorScripts::enqueueEditorScripts');
         }
     }
 
