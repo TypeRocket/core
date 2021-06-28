@@ -63,8 +63,14 @@ class Image extends Field implements ScriptField
 
         if ($value != "") {
             $image = wp_get_attachment_image( (int) $value, $this->getSetting('size', 'thumbnail') );
+            $edit = Html::a( '', admin_url("upload.php?item={$value}"), [
+                'class' => 'dashicons dashicons-edit tr-image-edit',
+                'target' => '_blank',
+                'title' => __('Edit', 'typerocket-domain'),
+                'tabindex' => '0',
+            ]);
         } else {
-            $image = '';
+            $image = $edit = '';
         }
 
         if (empty( $image )) {
@@ -91,7 +97,7 @@ class Image extends Field implements ScriptField
         $html .= '</div>';
         $html .= Html::div([
             'class' => $classes
-        ], $image );
+        ], $image . $edit);
 
         return $html;
     }

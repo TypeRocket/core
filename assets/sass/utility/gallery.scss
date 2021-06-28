@@ -40,7 +40,7 @@
     }
 }
 
-.tr-gallery-remove {
+.tr-gallery-remove, .tr-image-edit {
     color: #fff;
     position: absolute;
     left: 7px;
@@ -58,5 +58,16 @@
         color: #fff;
         background: $delete_hover;
         cursor: pointer;
+    }
+}
+
+.tr-image-edit {
+    .tr-gallery-item & {
+        left: 40px;
+    }
+
+    &:hover, &:focus {
+        background: $wp_link;
+        background: var(--tr-profile-color, $wp_link);
     }
 }

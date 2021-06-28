@@ -3,10 +3,11 @@ const { __ } = wp.i18n;
 ;jQuery(document).ready(function($) {
 
     let set_image_uploader = function(button, field, default_size) {
-        let btnTitle, temp_frame, title, typeInput;
+        let btnTitle, temp_frame, title, typeInput, editText;
         default_size = default_size || 'thumbnail';
         title = __('Select an Image', 'typerocket-domain');
         btnTitle = __('Use Image', 'typerocket-domain');
+        editText = __('Edit', 'typerocket-domain');
         typeInput = 'image';
         temp_frame = wp.media({
             title: title,
@@ -20,7 +21,7 @@ const { __ } = wp.i18n;
         });
         temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
-            let attachment, url, btn, height, width, size;
+            let attachment, url, btn, height, width, size, img, edit;
             btn = $(button);
             attachment = temp_frame.state().get('selection').first().toJSON();
             size = btn.data('size') ? btn.data('size') : default_size;
@@ -35,9 +36,11 @@ const { __ } = wp.i18n;
             url = window.trUtil.makeUrlHttpsMaybe(attachment.sizes[size].url);
             height = attachment.sizes[size].height;
             width = attachment.sizes[size].width;
-
+            edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" title="' + editText +'" target="_blank" href="'+ window.trHelpers.admin_uri + '/upload.php?item=' + attachment.id +'"></a>';
+            img = '<img height="' + height + '" width="' + width + '" src="' + url + '"/>';
             $(field).val(attachment.id).trigger('change');
-            $(button).parent().next().html('<img height="' + height + '" width="' + width + '" src="' + url + '"/>');
+
+            $(button).parent().next().html(img + edit);
         });
         wp.media.frames.image_frame = temp_frame;
         wp.media.frames.image_frame.open();
@@ -116,9 +119,10 @@ const { __ } = wp.i18n;
     };
 
     let set_gallery_uploader = function(button, list) {
-        var btnTitle, temp_frame, title;
+        var btnTitle, temp_frame, title, editText;
         title = __('Select Images', 'typerocket-domain');
         btnTitle = __('Use Images', 'typerocket-domain');
+        editText = __('Edit', 'typerocket-domain');
         temp_frame = wp.media({
             title: title,
             button: {
@@ -131,7 +135,7 @@ const { __ } = wp.i18n;
         });
         temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
-            var attachment, field, i, item, l, use_url, height, width, size, btn;
+            var attachment, field, i, item, l, use_url, height, width, size, btn, edit;
             attachment = temp_frame.state().get('selection').toJSON();
             l = attachment.length;
             i = 0;
@@ -151,14 +155,10 @@ const { __ } = wp.i18n;
                 use_url = attachment[i].sizes[size].url;
                 height = attachment[i].sizes[size].height;
                 width = attachment[i].sizes[size].width;
-
-                item = $('<li tabindex="0" class="tr-gallery-item tr-image-picker-placeholder"><a tabindex="0" class="dashicons dashicons-no-alt tr-gallery-remove" title="Remove Image"></a><img height="' + height + '" width="' + width + '" src="' + use_url + '"/></li>');
+                edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" target="_blank" title="' + editText +'" href="'+ window.trHelpers.admin_uri + '/upload.php?item=' + attachment[i].id +'"></a>';
+                item = $('<li tabindex="0" class="tr-gallery-item tr-image-picker-placeholder"><a tabindex="0" class="dashicons dashicons-no-alt tr-gallery-remove" title="Remove Image"></a>'+edit+'<img height="' + height + '" width="' + width + '" src="' + use_url + '"/></li>');
                 $(item).append(field.val(attachment[i].id).attr('name', field.attr('name') + '[]')).trigger('change');
                 $(list).append(item);
-                $(list).find('a').on('click', function(e) {
-                    e.preventDefault();
-                    $(this).parent().remove();
-                });
                 i++;
             }
         });
@@ -288,7 +288,6 @@ const { __ } = wp.i18n;
     });
 
     $(document).on('click', '.tr-gallery-item', function(e) {
-        e.preventDefault();
         $(this).focus();
     });
 

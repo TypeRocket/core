@@ -398,7 +398,7 @@ class System
         if ( is_ssl() || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
             $scheme =  'https';
         }
-        ?><script>window.trHelpers = {site_uri: "<?php echo rtrim(esc_url(get_site_url( null, '', $scheme )), '/');?>", nonce: "<?php echo Response::new()->createNonce(); ?>"}</script><?php
+        ?><script>window.trHelpers = {admin_uri: "<?php echo rtrim(admin_url('', $scheme ), '/');?>",site_uri: "<?php echo rtrim(esc_url(get_site_url( null, '', $scheme )), '/');?>", nonce: "<?php echo Response::new()->createNonce(); ?>"}</script><?php
         do_action('typerocket_top_assets', $url, $manifest);
     }
 
