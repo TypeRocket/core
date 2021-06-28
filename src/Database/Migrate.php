@@ -256,7 +256,9 @@ class Migrate
 
                 $report = $cb($type, $query['file'], $wpdb);
 
-                call_user_func($this->callback, ['message' => 'PHP Migration of ' . $file, 'wpdb' => $report], $result);
+                if(is_callable($this->callback)) {
+                    call_user_func($this->callback, ['message' => 'PHP Migration of ' . $file, 'wpdb' => $report], $result);
+                }
 
                 $result['report'] = $file;
             } else {
