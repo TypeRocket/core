@@ -63,7 +63,7 @@ class Image extends Field implements ScriptField
 
         if ($value != "") {
             $image = wp_get_attachment_image( (int) $value, $this->getSetting('size', 'thumbnail') );
-            $edit = Html::a( '', admin_url("upload.php?item={$value}"), [
+            $edit = Html::a( '', admin_url("post.php?post={$value}&action=edit"), [
                 'class' => 'dashicons dashicons-edit tr-image-edit',
                 'target' => '_blank',
                 'title' => __('Edit', 'typerocket-domain'),

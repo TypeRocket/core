@@ -36,7 +36,7 @@ const { __ } = wp.i18n;
             url = window.trUtil.makeUrlHttpsMaybe(attachment.sizes[size].url);
             height = attachment.sizes[size].height;
             width = attachment.sizes[size].width;
-            edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" title="' + editText +'" target="_blank" href="'+ window.trHelpers.admin_uri + '/upload.php?item=' + attachment.id +'"></a>';
+            edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" title="' + editText +'" target="_blank" href="'+ window.trHelpers.admin_uri + '/post.php?post=' + attachment.id +'&action=edit"></a>';
             img = '<img height="' + height + '" width="' + width + '" src="' + url + '"/>';
             $(field).val(attachment.id).trigger('change');
 
@@ -155,7 +155,7 @@ const { __ } = wp.i18n;
                 use_url = attachment[i].sizes[size].url;
                 height = attachment[i].sizes[size].height;
                 width = attachment[i].sizes[size].width;
-                edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" target="_blank" title="' + editText +'" href="'+ window.trHelpers.admin_uri + '/upload.php?item=' + attachment[i].id +'"></a>';
+                edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" target="_blank" title="' + editText +'" href="'+ window.trHelpers.admin_uri + '/post.php?post=' + attachment[i].id +'&action=edit"></a>';
                 item = $('<li tabindex="0" class="tr-gallery-item tr-image-picker-placeholder"><a tabindex="0" class="dashicons dashicons-no-alt tr-gallery-remove" title="Remove Image"></a>'+edit+'<img height="' + height + '" width="' + width + '" src="' + use_url + '"/></li>');
                 $(item).append(field.val(attachment[i].id).attr('name', field.attr('name') + '[]')).trigger('change');
                 $(list).append(item);
