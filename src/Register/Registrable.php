@@ -26,8 +26,10 @@ abstract class Registrable
         'category_name',
         'comments_per_page',
         'comments_popup',
+        'custom_css',
         'customize_messenger_channel',
         'customized',
+        'customize_changeset',
         'cpage',
         'day',
         'debug',
@@ -42,8 +44,10 @@ abstract class Registrable
         'more',
         'name',
         'nav_menu',
+        'nav_menu_item',
         'nonce',
         'nopaging',
+        'oembed_cache',
         'offset',
         'order',
         'orderby',
@@ -67,6 +71,7 @@ abstract class Registrable
         'posts_per_page',
         'preview',
         'robots',
+        'revision',
         's',
         'search',
         'second',
@@ -87,10 +92,12 @@ abstract class Registrable
         'term',
         'theme',
         'type',
+        'user_request',
         'w',
         'withcomments',
         'withoutcomments',
-        'year'
+        'wp_block',
+        'year',
     ];
 
     /**
