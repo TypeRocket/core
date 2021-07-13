@@ -50,6 +50,7 @@ class Image extends Field implements ScriptField
         }
 
         $value = Data::cast($value, 'int');
+        $image = $edit = '';
 
         $this->removeAttribute( 'name' );
 
@@ -69,12 +70,10 @@ class Image extends Field implements ScriptField
                 'title' => __('Edit', 'typerocket-domain'),
                 'tabindex' => '0',
             ]);
-        } else {
-            $image = $edit = '';
         }
 
         if (empty( $image )) {
-            $value = '';
+            $value = $edit = '';
         }
 
         $classes = Str::classNames('tr-image-picker-placeholder', [
