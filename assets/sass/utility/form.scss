@@ -186,6 +186,7 @@
         max-width: 100%;
         height: auto;
         padding: 1px;
+        box-sizing: border-box;
 
         &:hover, &:focus {
             box-shadow: 0 0 0 3px $gray;
