@@ -44,7 +44,7 @@ class WPPostController extends Controller
             do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
-                throw new ModelException(__('Policy does not give the current user access to update.', 'typrocket-domain'));
+                throw new ModelException(__('Policy does not give the current user access to update custom fields.', 'typrocket-domain'));
             }
 
             $model->update( $this->getFields() );
@@ -55,6 +55,7 @@ class WPPostController extends Controller
             $response->flashNext($model->getRouteResource() . ' updated', 'success' );
             $response->setData('resourceId', $id );
         } catch ( ModelException $e ) {
+            $response->allowFlash();
             $response->flashNext($e->getMessage(), 'error' );
             $response->setError( 'model', $e->getMessage() );
             $this->onAction('error', 'update', $e, $model);

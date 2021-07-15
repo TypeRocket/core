@@ -45,7 +45,7 @@ class WPCommentController extends Controller
             do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
-                throw new ModelException(__('Policy does not give the current user access to update.', 'typrocket-domain'));
+                throw new ModelException(__('Policy does not give the current user access to update custom fields.', 'typrocket-domain'));
             }
 
             $model->findById( $id )->update( $this->getFields() );
@@ -56,6 +56,7 @@ class WPCommentController extends Controller
             $response->flashNext( 'Comment updated', 'success' );
             $response->setData('resourceId', $model->getID() );
         } catch( ModelException $e ) {
+            $response->allowFlash();
             $response->flashNext( $e->getMessage(), 'error' );
             $response->setError( 'model', $e->getMessage() );
             $this->onAction('error', 'update', $e, $model);

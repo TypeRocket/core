@@ -36,7 +36,7 @@ class WPOptionController extends Controller
             do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
-                throw new ModelException(__('Policy does not give the current user access to upate.', 'typrocket-domain'));
+                throw new ModelException(__('Policy does not give the current user access to update values.', 'typrocket-domain'));
             }
 
             $model->update( $this->getFields() );
@@ -46,6 +46,7 @@ class WPOptionController extends Controller
 
             $response->flashNext( 'Updated', 'success' );
         } catch ( ModelException $e ) {
+            $response->allowFlash();
             $response->flashNext( $e->getMessage(), 'error' );
             $response->setError( 'model', $e->getMessage() );
             $this->onAction('error', 'update', $e, $model);

@@ -45,7 +45,7 @@ class WPUserController extends Controller
             do_action('typerocket_controller_update', $this, $model, $authUser);
 
             if(!$model->can('update', $authUser)) {
-                throw new ModelException(__('Policy does not give the current user access to update.', 'typrocket-domain'));
+                throw new ModelException(__('Policy does not give the current user access to update custom fields.', 'typrocket-domain'));
             }
 
             $model->update( $this->getFields() );
@@ -56,6 +56,7 @@ class WPUserController extends Controller
             $response->flashNext( 'User updated', 'success' );
             $response->setData('resourceId', $model->getID());
         } catch ( ModelException $e ) {
+            $response->allowFlash();
             $response->flashNext($e->getMessage(), 'error' );
             $response->setError( 'model', $e->getMessage() );
             $this->onAction('error', 'update', $e, $model);

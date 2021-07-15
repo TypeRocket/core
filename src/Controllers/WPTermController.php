@@ -44,7 +44,7 @@ class WPTermController extends Controller
             do_action('typerocket_controller_update', $this, $model, $user);
 
             if(!$model->can('update', $user)) {
-                throw new ModelException(__('Policy does not give the current user access to update.', 'typrocket-domain'));
+                throw new ModelException(__('Policy does not give the current user access to update custom fields.', 'typrocket-domain'));
             }
 
             $model->update( $this->getFields() );
