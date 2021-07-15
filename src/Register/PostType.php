@@ -323,6 +323,31 @@ class PostType extends Registrable
     }
 
     /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function savePostNameAs(callable $callback)
+    {
+        $this->saves['post_name'] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function saveFieldAs(string $field,callable $callback)
+    {
+        $this->saves[$field] = $callback;
+
+        return $this;
+    }
+
+    /**
      * Get Saver
      *
      * @param string|null $key
