@@ -265,7 +265,8 @@ class Registry
                 if(
                     $post->post_type != $obj->getId() ||
                     wp_is_post_revision($id) ||
-                    $post->post_status == 'auto-draft'
+                    $post->post_status == 'auto-draft' ||
+                    $post->post_status == 'trash'
                 ) { return; }
 
                 global $wpdb;
