@@ -1,11 +1,15 @@
 <?php
 namespace TypeRocket\Http;
 
+use TypeRocket\Interfaces\Formable;
+use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Validator;
 
-class Fields extends \ArrayObject
+class Fields extends \ArrayObject implements Formable
 {
+    use FieldValue;
+
     protected $fillable = [];
     protected $rules = [];
     protected $messages = [];
@@ -21,19 +25,19 @@ class Fields extends \ArrayObject
     /**
      * Load commands
      *
-     * @param array $fields
+     * @param array|null $fields
      *
      * @throws \TypeRocket\Exceptions\RedirectError
      * @throws \Exception
      */
-    public function __construct( $fields = [] ) {
+    public function __construct( $fields = null ) {
         parent::__construct();
 
         if( empty($fields) ) {
             $fields = (new Request)->getFields();
         }
 
-        $this->exchangeArray( $fields );
+        $this->exchangeArray( $fields ?? [] );
         $this->fillable = array_merge($this->fillable, $this->fillable());
         $this->rules = array_merge($this->rules, $this->rules());
         $this->messages = array_merge($this->messages, $this->messages());
@@ -93,6 +97,25 @@ class Fields extends \ArrayObject
         $value = is_null($key) ? $data : Data::walk($key, $data);
 
         return $value ?? $default;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFormFields()
+    {
+        $data = $this->get();
+        $result = [];
+
+        foreach ($data as $i => $item) {
+            if($item instanceof Formable) {
+                $result[$i] = $item->getFormFields();
+            } else {
+                $result[$i] = $item;
+            }
+        }
+
+        return $result;
     }
 
     /**
