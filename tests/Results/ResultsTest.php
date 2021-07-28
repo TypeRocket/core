@@ -14,6 +14,24 @@ use TypeRocket\Models\WPPost;
 class ResultsTest extends TestCase
 {
 
+    public function testResultsPagedWithArray()
+    {
+        $data = [
+            ['name' => 'Kevin'],
+            ['name' => 'Sue'],
+        ];
+
+        $count = count($data);
+        $number = 1;
+        $page = 1;
+        $offset = $page * $number - 1;
+        $list = array_slice($data, $offset, $number);
+
+        $results = new ResultsPaged($list, $page, $count, $number);
+        $json = $results->toJson();
+        $this->assertTrue($json === '{"items":[{"name":"Kevin"}],"number":1,"current":1,"pages":2,"count":2,"links":{"current":"http:\/\/example.com\/php-unit-tests?phpunit=yes&paged=1","next":"http:\/\/example.com\/php-unit-tests?phpunit=yes&paged=2","previous":null,"first":"http:\/\/example.com\/php-unit-tests?phpunit=yes&paged=1","last":"http:\/\/example.com\/php-unit-tests?phpunit=yes&paged=2"}}');
+    }
+
     public function testPrependToResults()
     {
         $results = new \TypeRocket\Database\Results();

@@ -195,6 +195,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
     {
         return [
             'items' => is_array($this->results) ? $this->results : $this->results->toArray(),
+            'number' => $this->number,
             'current' => $this->page,
             'pages' => $this->pages,
             'count' => $this->count,
