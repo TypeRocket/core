@@ -7,8 +7,7 @@ use TypeRocket\Http\Request;
 
 class ResultsPaged implements \Iterator, JsonSerializable
 {
-
-    /** @var Results */
+    /** @var Results|array */
     protected $results;
     protected $number;
     protected $page;
@@ -17,7 +16,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
 
     private $position = 0;
 
-    public function __construct(Results $results, $page, $count, $number)
+    public function __construct($results, $page, $count, $number)
     {
         $this->results = $results;
         $this->number = $number;
@@ -29,7 +28,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
     /**
      * Get Results
      *
-     * @return Results
+     * @return Results|array
      */
     public function getResults()
     {
@@ -153,7 +152,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      */
     public function linkNext($label = null, $attributes = [])
     {
-        $label = $label ?: __( 'Next Page &raquo;' );
+        $label = $label ?: __( 'Next Page &raquo;', 'typerocket-domain' );
 
         if($next = $this->getNextPage()) {
             $url = (new Request)->getModifiedUri(['paged' => $next]);
@@ -176,7 +175,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      */
     public function linkPrevious($label = null, $attributes = [])
     {
-        $label = $label ?: __( '&laquo; Previous Page' );
+        $label = $label ?: __( '&laquo; Previous Page', 'typerocket-domain'  );
 
         if($next = $this->getPreviousPage()) {
             $url = (new Request)->getModifiedUri(['paged' => $next]);
@@ -195,7 +194,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
     public function toArray()
     {
         return [
-            'items' => $this->results->toArray(),
+            'items' => is_array($this->results) ? $this->results : $this->results->toArray(),
             'current' => $this->page,
             'pages' => $this->pages,
             'count' => $this->count,
