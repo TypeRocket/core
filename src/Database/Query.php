@@ -278,6 +278,22 @@ class Query
     }
 
     /**
+     * Append Raw Order By
+     *
+     * This method is not sanitized before it is run. Do not
+     * use this method with user provided input.
+     *
+     * @param string $sql string
+     * @return $this
+     */
+    public function appendRawOrderBy($sql)
+    {
+        $this->query['raw']['order_by'][] = $sql;
+
+        return $this;
+    }
+
+    /**
      * Reorder
      *
      * @param string $column
@@ -1017,9 +1033,14 @@ class Query
     {
         $query = $this->query;
         $sql = '';
+        $order_basic_tapped = false;
+
+        if( !empty($query['order_by']) || !empty($query['raw']['order_by']) ) {
+            $sql .= " ORDER BY ";
+        }
 
         if( !empty($query['order_by']) ) {
-            $sql .= " ORDER BY ";
+            $order_basic_tapped = true;
 
             $order = array_map(function($ordering) {
                 $order_column = $this->tickSqlName($ordering['column']);
@@ -1028,6 +1049,11 @@ class Query
             }, $query['order_by']);
 
             $sql .= implode(' , ', $order);
+        }
+
+        if( !empty($query['raw']['order_by']) ) {
+            $sql .= $order_basic_tapped ? ' , ' : '';
+            $sql .= implode(' , ', $query['raw']['order_by']);
         }
 
         return $sql;
