@@ -2,12 +2,13 @@
 namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\BeforeAfterSetting;
+use TypeRocket\Elements\Traits\GlobalTextFieldAttributes;
 use TypeRocket\Elements\Traits\RequiredTrait;
 use TypeRocket\Html\Html;
 
 class Password extends Field
 {
-    use RequiredTrait, BeforeAfterSetting;
+    use RequiredTrait, BeforeAfterSetting, GlobalTextFieldAttributes;
 
     protected $labelTag = 'label';
     protected $populate = false;

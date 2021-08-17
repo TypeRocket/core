@@ -3,13 +3,14 @@ namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\BeforeAfterSetting;
 use TypeRocket\Elements\Traits\DefaultSetting;
+use TypeRocket\Elements\Traits\GlobalTextFieldAttributes;
 use TypeRocket\Elements\Traits\RequiredTrait;
 use TypeRocket\Html\Html;
 use TypeRocket\Elements\Traits\MaxlengthTrait;
 
 class Text extends Field
 {
-    use MaxlengthTrait, DefaultSetting, RequiredTrait, BeforeAfterSetting;
+    use MaxlengthTrait, DefaultSetting, RequiredTrait, BeforeAfterSetting, GlobalTextFieldAttributes;
 
     protected $labelTag = 'label';
 

@@ -2,13 +2,14 @@
 namespace TypeRocket\Elements\Fields;
 
 use TypeRocket\Elements\Traits\DefaultSetting;
+use TypeRocket\Elements\Traits\GlobalTextFieldAttributes;
 use TypeRocket\Elements\Traits\RequiredTrait;
 use TypeRocket\Html\Html;
 use TypeRocket\Elements\Traits\MaxlengthTrait;
 
 class Textarea extends Field
 {
-    use MaxlengthTrait, DefaultSetting, RequiredTrait;
+    use MaxlengthTrait, DefaultSetting, RequiredTrait, GlobalTextFieldAttributes;
 
     protected $labelTag = 'label';
 
