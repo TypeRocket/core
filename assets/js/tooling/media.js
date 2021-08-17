@@ -21,21 +21,30 @@ const { __ } = wp.i18n;
         });
         temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
-            let attachment, url, btn, height, width, size, img, edit;
+            let attachment, url, btn, height, width, size, img, edit, thumb_url;
             btn = $(button);
             attachment = temp_frame.state().get('selection').first().toJSON();
             size = btn.data('size') ? btn.data('size') : default_size;
-            if (attachment.sizes[size] === undefined) {
-                size = default_size;
+
+            if(attachment.sizes !== undefined) {
+                if (attachment.sizes[size] === undefined) {
+                    size = default_size;
+                }
+
+                if (attachment.sizes[size] === undefined) {
+                    size = 'full';
+                }
+
+                thumb_url = attachment.sizes[size].url;
+                height = attachment.sizes[size].height;
+                width = attachment.sizes[size].width;
+            } else {
+                thumb_url = attachment.url;
+                height = '';
+                width = '';
             }
 
-            if (attachment.sizes[size] === undefined) {
-                size = 'full';
-            }
-
-            url = window.trUtil.makeUrlHttpsMaybe(attachment.sizes[size].url);
-            height = attachment.sizes[size].height;
-            width = attachment.sizes[size].width;
+            url = window.trUtil.makeUrlHttpsMaybe(thumb_url);
             edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" title="' + editText +'" target="_blank" href="'+ window.trHelpers.admin_uri + '/post.php?post=' + attachment.id +'&action=edit"></a>';
             img = '<img height="' + height + '" width="' + width + '" src="' + url + '"/>';
             $(field).val(attachment.id).trigger('change');
@@ -64,21 +73,32 @@ const { __ } = wp.i18n;
         });
         temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
-            let attachment, url, btn, height, width, size;
+            let attachment, url, btn, height, width, size, thumb_url;
             btn = $(button);
             attachment = temp_frame.state().get('selection').first().toJSON();
             size = btn.data('size') ? btn.data('size') : default_size;
-            if (attachment.sizes[size] === undefined) {
-                size = default_size;
+
+            console.log(attachment);
+
+            if(attachment.sizes !== undefined) {
+                if (attachment.sizes[size] === undefined) {
+                    size = default_size;
+                }
+
+                if (attachment.sizes[size] === undefined) {
+                    size = 'full';
+                }
+
+                thumb_url = attachment.sizes[size].url;
+                height = attachment.sizes[size].height;
+                width = attachment.sizes[size].width;
+            } else {
+                thumb_url = attachment.url;
+                height = '';
+                width = '';
             }
 
-            if (attachment.sizes[size] === undefined) {
-                size = 'full';
-            }
-
-            url = window.trUtil.makeUrlHttpsMaybe(attachment.sizes[size].url);
-            height = attachment.sizes[size].height;
-            width = attachment.sizes[size].width;
+            url = window.trUtil.makeUrlHttpsMaybe(thumb_url);
 
             $(field).val(attachment.id).trigger('change');
             $(field).parent().attr('style', `--tr-image-field-bg-src: url(${url});`);
@@ -135,7 +155,7 @@ const { __ } = wp.i18n;
         });
         temp_frame.uploader.options.uploader.params.allowed_mime_types = 'image';
         temp_frame.on('select', function() {
-            var attachment, field, i, item, l, use_url, height, width, size, btn, edit;
+            var attachment, field, i, item, l, use_url, height, width, size, btn, edit, thumb_url;
             attachment = temp_frame.state().get('selection').toJSON();
             l = attachment.length;
             i = 0;
@@ -143,18 +163,30 @@ const { __ } = wp.i18n;
                 btn = $(button);
                 field = btn.parent().prev().clone();
                 use_url = '';
+                thumb_url = '';
                 size = btn.data('size') ? btn.data('size') : 'thumbnail';
-                if (attachment[i].sizes[size] === undefined) {
-                    size = 'thumbnail';
+
+                if(attachment[i].sizes !== undefined) {
+                    if (attachment[i].sizes[size] === undefined) {
+                        size = default_size;
+                    }
+
+                    if (attachment[i].sizes[size] === undefined) {
+                        size = 'full';
+                    }
+
+                    thumb_url = attachment[i].sizes[size].url;
+                    height = attachment[i].sizes[size].height;
+                    width = attachment[i].sizes[size].width;
+                } else {
+                    thumb_url = attachment[i].url;
+                    height = '';
+                    width = '';
                 }
 
-                if (attachment[i].sizes[size] === undefined) {
-                    size = 'full';
-                }
+                console.log(attachment)
 
-                use_url = attachment[i].sizes[size].url;
-                height = attachment[i].sizes[size].height;
-                width = attachment[i].sizes[size].width;
+                use_url = thumb_url;
                 edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" target="_blank" title="' + editText +'" href="'+ window.trHelpers.admin_uri + '/post.php?post=' + attachment[i].id +'&action=edit"></a>';
                 item = $('<li tabindex="0" class="tr-gallery-item tr-image-picker-placeholder"><a tabindex="0" class="dashicons dashicons-no-alt tr-gallery-remove" title="Remove Image"></a>'+edit+'<img height="' + height + '" width="' + width + '" src="' + use_url + '"/></li>');
                 $(item).append(field.val(attachment[i].id).attr('name', field.attr('name') + '[]')).trigger('change');
