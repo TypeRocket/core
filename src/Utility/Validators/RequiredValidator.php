@@ -2,6 +2,7 @@
 
 namespace TypeRocket\Utility\Validators;
 
+use TypeRocket\Utility\Str;
 use TypeRocket\Utility\Validator;
 
 class RequiredValidator extends ValidatorRule
@@ -24,6 +25,10 @@ class RequiredValidator extends ValidatorRule
         $option = $option ?? null;
 
         $weak = $option === 'weak' && is_null($value);
+
+        if($option === 'strong') {
+            $value = trim($value);
+        }
 
         if( !$weak && empty( $value ) ) {
             $this->error = __('is required.','typerocket-domain');

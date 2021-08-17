@@ -81,23 +81,56 @@ class ValidatorTest extends TestCase
     public function testSetMessage()
     {
         $fields['person'] = 'Kevin';
+        $fields['person2'] = 'Kevin';
 
         $validator = new Validator([
             'email' => 'required|max:4',
+            'email2' => 'required|max:4',
             'person' => 'max:4',
+            'person2' => 'max:4',
         ], $fields, null, false);
 
         $validator->setErrorMessages([
             'person:max' => 'Custom Message',
-            'email:required' => function($name, $type, $message) {
+            'person2:max' => ['full' => 'Person Custom Message', 'field' => 'Custom Message'],
+            'email:required' => function($name, $type, $message, $matches, $error_field) {
+                return [
+                    'full' => $message . ' Callable',
+                    'field' => $error_field . ' Callable',
+                ];
+            },
+            'email2:required' => function($name, $type, $message)
+            {
                 return $message . ' Callable';
             }
         ])->validate();
 
         $errors = $validator->getErrors();
+        $fields = $validator->getErrorFields();
 
-        $this->assertEquals($errors['person'], 'Custom Message');
-        $this->assertEquals($errors['email'], '<strong>"Email"</strong> is required. Callable');
+        $this->assertEquals('Custom Message', $errors['person']);
+        $this->assertEquals('Custom Message', $fields['person']);
+        $this->assertEquals('Person Custom Message', $errors['person2']);
+        $this->assertEquals('Custom Message', $fields['person2']);
+        $this->assertEquals('<strong>"Email2"</strong> is required. Callable', $errors['email2']);
+        $this->assertEquals('<strong>"Email2"</strong> is required. Callable', $errors['email2']);
+        $this->assertEquals('<strong>"Email"</strong> is required. Callable', $errors['email']);
+        $this->assertEquals('is required. Callable', $fields['email']);
+    }
+
+    public function testFirstErrorMessageShown()
+    {
+        $fields['person'] = ' ';
+
+        $validator = Validator::new([
+            'person' => '?required:strong|numeric',
+        ], $fields, null, false)->validate(true);
+
+        $errors = $validator->getErrors();
+        $fields = $validator->getErrorFields();
+
+        $this->assertEquals($errors['person'], '<strong>"Person"</strong> is required.');
+        $this->assertEquals($fields['person'], 'is required.');
     }
 
     public function testDeepMultipleSetMessageRegex()
