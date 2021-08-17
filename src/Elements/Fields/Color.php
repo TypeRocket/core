@@ -1,7 +1,6 @@
 <?php
 namespace TypeRocket\Elements\Fields;
 
-use TypeRocket\Core\Container;
 use TypeRocket\Core\System;
 use TypeRocket\Elements\Traits\DefaultSetting;
 use TypeRocket\Html\Html;
