@@ -333,6 +333,58 @@ class ValidatorTest extends TestCase
         $this->assertEquals(1, count($validator->getErrors()) );
     }
 
+    public function testSizeOptionalFailAndPass()
+    {
+        $fields['number'] = null;
+
+        $validator = new Validator([
+            'number' => '?size:2'
+        ], $fields, null, true);
+
+
+        $this->assertEquals(0, count($validator->getErrors()) );
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
+    public function testSizeExactOptionalFailAndPass()
+    {
+        $fields['number'] = '121';
+
+        $validator = new Validator([
+            'number' => '?size:2|numeric'
+        ], $fields, null, true);
+
+
+        $this->assertEquals(1, count($validator->getErrors()) );
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
+    public function testSizeExactOptionalBothFailAndPass()
+    {
+        $fields['number'] = null;
+
+        $validator = new Validator([
+            'number' => '?size:2|?numeric'
+        ], $fields, null, true);
+
+
+        $this->assertEquals(0, count($validator->getErrors()) );
+        $this->assertEquals(2, count($validator->getPasses()) );
+    }
+
+    public function testSizeExactFailAndPass()
+    {
+        $fields['number'] = '12';
+
+        $validator = new Validator([
+            'number' => 'size:2'
+        ], $fields, null, true);
+
+
+        $this->assertEquals(0, count($validator->getErrors()) );
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
     public function testUniqueFieldPasses()
     {
         $fields['option_name'] = 'mailserver_url';

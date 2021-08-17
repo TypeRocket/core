@@ -8,7 +8,11 @@ abstract class ValidatorRule
     protected $error;
     protected $success;
     protected $fieldLabel;
-    protected $args;
+
+    protected $args = [
+        'weak' => null
+    ];
+
     public CONST KEY = 'map_key';
 
     /**
@@ -32,6 +36,7 @@ abstract class ValidatorRule
      * @var $option
      * @var $option2
      * @var $option3
+     * @var $weak
      * @var $full_name
      * @var $field_name
      * @var $value
@@ -73,6 +78,14 @@ abstract class ValidatorRule
             'error' => $this->error,
             'success' => $this->success,
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOptional() : bool
+    {
+        return (bool) $this->args['weak'];
     }
 
     /**

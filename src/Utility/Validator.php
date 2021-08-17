@@ -484,10 +484,15 @@ class Validator
 
         foreach( $list as $validation)
         {
-            $class = null;
+            $class = $weak = null;
 
             if(is_string($validation)) {
                 [ $type, $option, $option2, $option3 ] = array_pad(explode(':', $validation, 4), 4, null);
+
+                if($type[0] === '?') {
+                    $weak = true;
+                    $type = substr($type, 1);
+                }
 
                 if(array_key_exists($type, $this->validatorMap)) {
                     $class = $this->validatorMap[$type];
@@ -500,6 +505,7 @@ class Validator
                         'option' => $option,
                         'option2' => $option2,
                         'option3' => $option3,
+                        'weak' => $weak,
                     ]);
 
                     $class = new $class;
@@ -526,7 +532,11 @@ class Validator
      */
     protected function runValidatorRule(ValidatorRule $rule, string $fullDotPath, $value)
     {
-        $pass = $rule->validate();
+        if($rule->isOptional() && is_null($value)) {
+            $pass = true;
+        } else {
+            $pass = $rule->validate();
+        }
 
         if( !$pass ) {
             $this->setErrorMessage($rule, $fullDotPath);
