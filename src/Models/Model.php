@@ -2123,7 +2123,8 @@ class Model implements Formable, JsonSerializable
      */
     protected function getRelationshipFromMethod($method)
     {
-      return $this->$method() ? $this->$method()->get() : null;
+        $rel = $this->$method() ?? null;
+        return is_object($rel) ? $rel->get() : null;
     }
 
     /**
