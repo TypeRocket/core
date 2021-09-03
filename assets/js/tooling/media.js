@@ -168,10 +168,6 @@ const { __ } = wp.i18n;
 
                 if(attachment[i].sizes !== undefined) {
                     if (attachment[i].sizes[size] === undefined) {
-                        size = default_size;
-                    }
-
-                    if (attachment[i].sizes[size] === undefined) {
                         size = 'full';
                     }
 
@@ -183,8 +179,6 @@ const { __ } = wp.i18n;
                     height = '';
                     width = '';
                 }
-
-                console.log(attachment)
 
                 use_url = thumb_url;
                 edit = '<a tabindex="0" class="dashicons dashicons-edit tr-image-edit" target="_blank" title="' + editText +'" href="'+ window.trHelpers.admin_uri + '/post.php?post=' + attachment[i].id +'&action=edit"></a>';
@@ -206,7 +200,7 @@ const { __ } = wp.i18n;
     };
 
     let clear_media = function(button, field) {
-        $(field).val('').trigger('change');;
+        $(field).val('').trigger('change');
         $(button).parent().next().html('');
     };
 
