@@ -379,6 +379,19 @@ class ValidatorTest extends TestCase
         $this->assertEquals(1, count($validator->getPasses()) );
     }
 
+    public function testSizeOptionalFailAndPassWithBlankString()
+    {
+        $fields['number'] = '';
+
+        $validator = new Validator([
+            'number' => '?size:2'
+        ], $fields, null, true);
+
+
+        $this->assertEquals(0, count($validator->getErrors()) );
+        $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
     public function testSizeExactOptionalFailAndPass()
     {
         $fields['number'] = '121';

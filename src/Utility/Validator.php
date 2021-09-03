@@ -535,7 +535,7 @@ class Validator
      */
     protected function runValidatorRule(ValidatorRule $rule, string $fullDotPath, $value)
     {
-        if($rule->isOptional() && is_null($value)) {
+        if($rule->isOptional() && !Str::notBlank($value)) {
             $pass = true;
         } else {
             $pass = $rule->validate();
