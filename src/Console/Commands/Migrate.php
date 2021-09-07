@@ -18,6 +18,7 @@ class Migrate extends Command
         $this->addArgument('type', self::REQUIRED, 'The type of migration to run (up|down|reload|flush).');
         $this->addArgument('steps', self::OPTIONAL, 'The limit of migrations to run as int.');
         $this->addOption('path', 'p', self::OPTIONAL, 'Manually define migrations folder path.');
+        $this->addOption('wp_option', 'wo', self::OPTIONAL, 'Manually define migrations option name.');
     }
 
     /**
@@ -66,7 +67,9 @@ class Migrate extends Command
 
         try {
             $path = $this->getOption('path');
-            $results = (new \TypeRocket\Database\Migrate())->runMigrationDirectory($type, $steps, $reload, $path, function($report, $result) {
+            $table = $this->getOption('wp_option');
+            $m = new \TypeRocket\Database\Migrate();
+            $results = ($m->setOption($table))->runMigrationDirectory($type, $steps, $reload, $path, function($report, $result) {
                 $this->success($report['message']);
                 $this->success($result['message']);
                 $this->warning("{$result['type']}:" );
