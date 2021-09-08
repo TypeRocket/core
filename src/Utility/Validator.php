@@ -485,9 +485,10 @@ class Validator
             $list = $validationRules;
         }
 
-        foreach( $list as $validation)
+        foreach($list as $validation)
         {
-            $class = $weak = null;
+            $class = $weak = $subfields = null;
+            $value_checked = $value;
 
             if(is_string($validation)) {
                 [ $type, $option, $option2, $option3 ] = array_pad(explode(':', $validation, 4), 4, null);
@@ -495,6 +496,13 @@ class Validator
                 if($type[0] === '?') {
                     $weak = true;
                     $type = substr($type, 1);
+                }
+
+                if(Str::starts('only_subfields=', $option)) {
+                    $only_subfields = explode('/', $option)[0];
+                    $subfields = explode(',', substr($only_subfields, 15));
+                    $value_checked = Arr::only($value, $subfields);
+                    $option = substr($option, strlen($only_subfields) + 1) ?: null;
                 }
 
                 if(array_key_exists($type, $this->validatorMap)) {
@@ -509,6 +517,8 @@ class Validator
                         'option2' => $option2,
                         'option3' => $option3,
                         'weak' => $weak,
+                        'value' => $value_checked,
+                        'subfields' => $subfields,
                     ]);
 
                     $class = new $class;
@@ -520,7 +530,7 @@ class Validator
 
             if($class instanceof ValidatorRule) {
                 $class->setArgs($args);
-                $this->runValidatorRule($class, $fullDotPath, $value);
+                $this->runValidatorRule($class, $fullDotPath, $value_checked);
                 continue;
             }
 
@@ -535,7 +545,7 @@ class Validator
      */
     protected function runValidatorRule(ValidatorRule $rule, string $fullDotPath, $value)
     {
-        if($rule->isOptional() && !Str::notBlank($value)) {
+        if($rule->isOptional() && Data::emptyOrBlankRecursive($value)) {
             $pass = true;
         } else {
             $pass = $rule->validate();

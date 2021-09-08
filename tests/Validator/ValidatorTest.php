@@ -12,6 +12,78 @@ use TypeRocket\Utility\Validators\EmailValidator;
 
 class ValidatorTest extends TestCase
 {
+    public function testValidatorRuleRequiredFieldsNotStrongComplexFail()
+    {
+        $fields['data'] = [
+            'name' => [
+                'first' => '',
+                'last' => ''
+            ],
+            'email' => 'k@exampl.com',
+        ];
+
+        $validator = new Validator([
+            'data' => 'required:only_subfields=name.first,name.last'
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(0, $passes);
+    }
+
+    public function testValidatorRuleRequiredFieldsNotStrongComplexPassWeak()
+    {
+        $fields['data'] = [
+            'name' => [
+                'first' => '',
+                'last' => ''
+            ],
+            'email' => 'k@exampl.com',
+        ];
+
+        $validator = new Validator([
+            'data' => '?required:only_subfields=name.first,name.last'
+        ], $fields, null);
+
+        $validator->validate();
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(1, $passes);
+    }
+
+    public function testValidatorRuleRequiredFieldsStrongFail()
+    {
+        $fields['data'] = [
+            'name' => ' ',
+            'email' => 'k@exampl.com',
+        ];
+
+        $validator = new Validator([
+            'data' => 'required:only_subfields=name/strong'
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(0, $passes);
+    }
+
+    public function testValidatorRuleRequiredFieldsNotStrong()
+    {
+        $fields['data'] = [
+            'name' => ' ',
+            'email' => 'k@exampl.com',
+            'null' => null,
+        ];
+
+        $validator = new Validator([
+            'data' => 'required:only_subfields=name'
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(1, $passes);
+    }
 
     public function testValidatorRule()
     {
@@ -492,6 +564,27 @@ class ValidatorTest extends TestCase
 
         $this->assertEquals(1, count($validator->getErrors()) );
         $this->assertEquals(1, count($validator->getPasses()) );
+    }
+
+    public function testSizeExactOptionalFailAndPassFields()
+    {
+        $fields['data'] = [
+            'age' => [
+                'first' => 123,
+                'last' => 456
+            ],
+            'email' => 'k@exampl.com',
+        ];
+
+        $validator = new Validator([
+            'data' => 'numeric:only_subfields=age.first,age.last'
+        ], $fields, null);
+
+        $validator->validate();
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(1, $passes);
     }
 
     public function testSizeExactOptionalBothFailAndPass()

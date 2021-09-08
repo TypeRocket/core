@@ -4,6 +4,68 @@ namespace TypeRocket\Utility;
 class Arr
 {
     /**
+     * @param array $array
+     * @param string|array $columns
+     *
+     * @return array
+     */
+    public static function only(array $array, $columns) : array
+    {
+        $values = [];
+        $columns = (array) $columns;
+
+        foreach($columns as $column) {
+            $values[$column] = Data::walk($column, $array) ?? null;
+        }
+
+        return static::meldExpand($values);
+    }
+
+    /**
+     * Pluck Value(s) and/or Index Them
+     *
+     * @param array $array
+     * @param string|array $columns
+     * @param string|null $index
+     *
+     * @return array
+     */
+    public static function pluck(array $array, $columns, ?string $index = null) : array
+    {
+        $list = [];
+        $columns = (array) $columns;
+
+        if(count($columns) > 1) {
+            $cb = function($item, $columns) {
+                return static::only($item, $columns);
+            };
+        } else {
+            $cb = function($item, $columns) {
+                return Data::walk($columns, $item);
+            };
+        }
+
+        foreach ($array as $item) {
+
+            $item_value = $cb($item, $columns);
+
+            if($index) {
+                $index_key = Data::walk($index, $item);
+
+                if(array_key_exists($item[$index_key], $list)) {
+                    throw new \Exception('Array key must be unique for Arr::pluck with index.');
+                }
+
+                $list[$index_key] = $item_value;
+            } else {
+                $list[] = $item_value;
+            }
+        }
+
+        return $list;
+    }
+
+    /**
      * Maps a function to all non-iterable elements of an array or an object.
      *
      * This is similar to `array_walk_recursive()` but acts upon objects too.
@@ -65,6 +127,29 @@ class Arr
         }
 
         return $result;
+    }
+
+    /**
+     * Dots Meld Expand
+     *
+     * Expand a dots melded array into a multi-dimensional array.
+     *
+     * @param array $array dots melded array to expand
+     *
+     * @return array
+     */
+    public static function meldExpand( array $array ) : array {
+        $expand = [];
+        foreach ($array as $dots => $value ) {
+            $traverse = explode('.', $dots);
+            $set = &$expand;
+            foreach ($traverse as $key) {
+                $set = &$set[$key];
+            }
+            $set = $value;
+        }
+
+        return $expand;
     }
 
     /**
