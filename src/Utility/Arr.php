@@ -4,6 +4,44 @@ namespace TypeRocket\Utility;
 class Arr
 {
     /**
+     * Maps a function to all non-iterable elements of an array or an object.
+     *
+     * This is similar to `array_walk_recursive()` but acts upon objects too.
+     *
+     * @param callable $callback The function to map onto $value.
+     * @param mixed    $value    The array, object, or scalar.
+     * @return mixed The value with the callback applied to all non-arrays and non-objects inside it.
+     */
+    public static function mapDeep(callable $callback, $value)
+    {
+        return map_deep($value, $callback);
+    }
+
+    /**
+     * Index Array by Unique Value
+     *
+     * @param string $index
+     * @param array $array
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public static function indexBy(string $index, array $array) : array
+    {
+        $indexed_list = [];
+
+        foreach ($array as $item) {
+            if(!is_array($item) || array_key_exists($item[$index], $indexed_list)) {
+                throw new \Exception('Array list required and array key must be unique for Arr::indexBy.');
+            }
+
+            $indexed_list[$item[$index]] = $item;
+        }
+
+        return $indexed_list;
+    }
+
+    /**
      * Dots Meld
      *
      * Flatten array dimensions to one level and meld keys into dot

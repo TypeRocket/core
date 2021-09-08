@@ -4,6 +4,50 @@ namespace TypeRocket\Utility;
 class Data
 {
     /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    public static function emptyRecursive($value) : bool
+    {
+        if (is_array($value)) {
+            $empty = true;
+            array_walk_recursive($value, function($item) use (&$empty) {
+                $empty = $empty && empty($item);
+            });
+        } else {
+            $empty = empty($value);
+        }
+        return $empty;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    public static function emptyOrBlankRecursive($value) : bool
+    {
+        if (is_array($value)) {
+            $empty = true;
+            array_walk_recursive($value, function($item) use (&$empty) {
+                if(is_string($item) || is_int($item)) {
+                    $empty = !Str::notBlank($item);
+                } else {
+                    $empty = $empty && empty($item);
+                }
+            });
+        } else {
+            if(is_string($value)|| is_int($value)) {
+                $empty = !Str::notBlank($value);
+            } else {
+                $empty = empty($value);
+            }
+        }
+        return $empty;
+    }
+
+    /**
      * Dots Walk
      *
      * Traverse array with dot notation.

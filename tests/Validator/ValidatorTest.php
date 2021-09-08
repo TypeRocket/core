@@ -26,6 +26,95 @@ class ValidatorTest extends TestCase
         $this->assertEquals(2, $passes);
     }
 
+    public function testValidatorRuleRequiredDeepEmptyArrayAllowZero()
+    {
+        $fields['data'] = [
+            'name' => null,
+            'email' => '',
+            'string' => '0',
+            'int' => 0,
+        ];
+
+        $validator = new Validator([
+            'data' => ['required:allow_zero']
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(1, $passes);
+    }
+
+    public function testValidatorRuleRequiredDeepEmptyArrayAllowZeroStrong()
+    {
+        $fields['data'] = [
+            'name' => null,
+            'email' => '   ',
+            'string' => '0 ',
+            'int' => 0,
+        ];
+
+        $validator = new Validator([
+            'data' => ['required:allow_zero/strong']
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(1, $passes);
+    }
+
+    public function testValidatorRuleRequiredDeepEmptyArrayNotZeroInt()
+    {
+        $fields['data'] = [
+            'name' => null,
+            'email' => '',
+            'int' => 0,
+        ];
+
+        $validator = new Validator([
+            'data' => ['required']
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(0, $passes);
+    }
+
+    public function testValidatorRuleRequiredDeepEmptyArrayNotZeroString()
+    {
+        $fields['data'] = [
+            'name' => null,
+            'email' => '',
+            'string' => '0',
+        ];
+
+        $validator = new Validator([
+            'data' => ['required']
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(0, $passes);
+    }
+
+    public function testValidatorRuleRequiredDeepEmptyArrayFail()
+    {
+        $fields['data'] = [
+            'name' => null,
+            'email' => '',
+            'number' => [
+                'key' => []
+            ],
+        ];
+
+        $validator = new Validator([
+            'data' => ['required']
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(0, $passes);
+    }
+
     public function testKeyRule()
     {
         $fields['id'] = 'id Here';
