@@ -677,7 +677,7 @@ class Model implements Formable, JsonSerializable
      *
      * @return $this
      */
-    public function addMetalessField(string $field)
+    public function appendMetalessField(string $field)
     {
         if(!in_array($field, $this->metaless)) {
             $this->metaless[] = $field;
