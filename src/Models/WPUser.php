@@ -6,12 +6,13 @@ use TypeRocket\Core\Container;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPUserMeta;
+use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 use WP_Error;
 
 class WPUser extends Model implements AuthUser
 {
-    use MetaData;
+    use MetaData, ArrayReplaceRecursiveValues;
 
     protected $idColumn = 'ID';
     protected $resource = 'users';
@@ -387,6 +388,7 @@ class WPUser extends Model implements AuthUser
                 }
 
                 $current_value = get_user_meta( $id, $key, true );
+                $value = $this->getNewArrayReplaceRecursiveValue($key, $current_value, $value);
 
                 if (isset( $value ) && $value !== $current_value) :
                     $value = wp_slash($value);

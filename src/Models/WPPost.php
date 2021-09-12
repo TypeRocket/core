@@ -4,6 +4,7 @@ namespace TypeRocket\Models;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
+use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 use TypeRocket\Template\Composer;
 use WP_Post;
@@ -40,7 +41,7 @@ use WP_Post;
  */
 class WPPost extends Model
 {
-    use MetaData;
+    use MetaData, ArrayReplaceRecursiveValues;
 
     protected $idColumn = 'ID';
     protected $resource = 'posts';
@@ -583,6 +584,11 @@ class WPPost extends Model
                 }
 
                 $current_value = get_post_meta( $id, $key, true );
+                $value = $this->getNewArrayReplaceRecursiveValue($key, $current_value, $value);
+
+                if(is_array($value) && is_array($current_value)) {
+                    $value = array_replace_recursive($current_value, $value);
+                }
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
                     $value = wp_slash($value);

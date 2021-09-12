@@ -1,6 +1,8 @@
 <?php
 namespace TypeRocket\Models;
 
+use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
+
 /**
  * Class WPOption
  *
@@ -11,6 +13,8 @@ namespace TypeRocket\Models;
  */
 class WPOption extends Model
 {
+    use ArrayReplaceRecursiveValues;
+
     protected $idColumn = 'option_id';
     protected $resource = 'options';
     protected $routeResource = 'option';
@@ -90,6 +94,7 @@ class WPOption extends Model
                 }
 
                 $current_value = get_option( $key );
+                $value = $this->getNewArrayReplaceRecursiveValue($key, $current_value, $value);
 
                 if (( isset( $value ) && $value !== "" ) && $current_value !== $value) :
                     update_option( $key, $value );

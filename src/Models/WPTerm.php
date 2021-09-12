@@ -4,11 +4,12 @@ namespace TypeRocket\Models;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPTermMeta;
+use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 
 class WPTerm extends Model
 {
-    use MetaData;
+    use MetaData, ArrayReplaceRecursiveValues;
 
     protected $idColumn = 'term_id';
     protected $resource = 'terms';
@@ -401,6 +402,7 @@ class WPTerm extends Model
                 }
 
                 $current_value = get_term_meta( $id, $key, true );
+                $value = $this->getNewArrayReplaceRecursiveValue($key, $current_value, $value);
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
                     $value = wp_slash($value);

@@ -4,11 +4,12 @@ namespace TypeRocket\Models;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPCommentMeta;
+use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 
 class WPComment extends Model
 {
-    use MetaData;
+    use MetaData, ArrayReplaceRecursiveValues;
 
     protected $idColumn = 'comment_ID';
     protected $resource = 'comments';
@@ -293,6 +294,7 @@ class WPComment extends Model
                 }
 
                 $current_value = get_comment_meta( $id, $key, true );
+                $value = $this->getNewArrayReplaceRecursiveValue($key, $current_value, $value);
 
                 if (( isset( $value ) && $value !== "" ) && $value !== $current_value) :
                     $value = wp_slash($value);
@@ -317,7 +319,6 @@ class WPComment extends Model
      */
     protected function caseFieldColumns( $fields )
     {
-
         if ( ! empty( $fields['comment_post_id'] )) {
             $fields['comment_post_ID'] = (int) $fields['comment_post_id'];
             unset( $fields['comment_post_id'] );
@@ -334,7 +335,6 @@ class WPComment extends Model
         }
 
         return $fields;
-
     }
 
     /**
