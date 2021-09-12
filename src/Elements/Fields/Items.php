@@ -31,6 +31,8 @@ class Items extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $name = $this->getNameAttributeString();
         $this->attrClass( 'items-list' );
         $items = $this->setCast('array')->getValue();

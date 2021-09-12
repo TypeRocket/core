@@ -30,6 +30,8 @@ class Color extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $name  = $this->getNameAttributeString();
         $value = $this->setCast('string')->getValue();
         $default = $this->getDefault();

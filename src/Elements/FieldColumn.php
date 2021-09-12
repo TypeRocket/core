@@ -4,12 +4,13 @@ namespace TypeRocket\Elements;
 use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Elements\Traits\Attributes;
 use TypeRocket\Elements\Traits\CloneFields;
+use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Html\Html;
 
 class FieldColumn
 {
-    use Attributes, CloneFields, Fieldable;
+    use Attributes, CloneFields, Fieldable, DisplayPermissions;
 
     protected $form;
     protected $dots;
@@ -44,6 +45,10 @@ class FieldColumn
      */
     public function __toString()
     {
+        if(!$this->canDisplay()) {
+            return '';
+        }
+
         $html = '';
 
         foreach( $this->fields as $field) {

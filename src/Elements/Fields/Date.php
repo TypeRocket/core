@@ -38,6 +38,8 @@ class Date extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $this->setupInputId();
         $this->setAttribute('data-tr-field', $this->getContextId());
         $name  = $this->getNameAttributeString();

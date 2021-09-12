@@ -37,6 +37,8 @@ class Repeater extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $this->setAttribute( 'name', $this->getNameAttributeString() );
         $form = $this->getForm()->clone()->setDebugStatus( false );
         $settings = $this->getSettings();

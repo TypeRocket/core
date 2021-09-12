@@ -5,11 +5,12 @@ use TypeRocket\Elements\BaseForm;
 use TypeRocket\Elements\Traits\Attributes;
 use TypeRocket\Elements\Traits\CloneFields;
 use TypeRocket\Elements\Traits\Conditional;
+use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Html\Html;
 
 class Fieldset
 {
-    use CloneFields, Attributes, Conditional;
+    use CloneFields, Attributes, Conditional, DisplayPermissions;
 
     protected $title;
     protected $description;
@@ -162,8 +163,17 @@ class Fieldset
     /**
      * @return string
      */
+    public function getString() : string
+    {
+        return (string) $this;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
+        if($this->canDisplay()) {return '';}
         $html = "<h3 class=\"tr-fieldset-group-title\">{$this->title}</h3>";
         $html .= "<p class=\"tr-fieldset-group-description\">{$this->description}</p>";
         $html .= '<fieldset class="tr-fieldset-group-content">';

@@ -5,13 +5,14 @@ use TypeRocket\Elements\Fields\Field;
 use TypeRocket\Elements\Traits\Attributes;
 use TypeRocket\Elements\Traits\CloneFields;
 use TypeRocket\Elements\Traits\Conditional;
+use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Html\Html;
 
 
 class FieldSection
 {
-    use Attributes, CloneFields, Fieldable, Conditional;
+    use Attributes, CloneFields, Fieldable, Conditional, DisplayPermissions;
 
     protected $fields = [];
     protected $form;
@@ -57,6 +58,10 @@ class FieldSection
      */
     public function __toString()
     {
+        if(!$this->canDisplay()) {
+            return '';
+        }
+
         $html = '';
 
         if($this->title) {

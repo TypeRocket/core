@@ -26,6 +26,8 @@ class Select extends Field
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+        
         $this->setupInputId();
         $default = $this->getSetting('default');
         $name_root = $this->getNameAttributeString();

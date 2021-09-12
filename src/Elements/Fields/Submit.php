@@ -19,6 +19,8 @@ class Submit extends Field
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $name = '_tr_submit_form';
         $value = esc_attr( $this->getAttribute('value') );
         $this->removeAttribute('value');

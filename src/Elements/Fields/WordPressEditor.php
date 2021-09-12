@@ -27,6 +27,8 @@ class WordPressEditor extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $this->setAttribute('name', $this->getNameAttributeString());
         $value    = Sanitize::editor( $this->setCast('string')->getValue() );
         $settings = $this->getSetting('options', []);

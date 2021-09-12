@@ -27,6 +27,8 @@ class Text extends Field
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $this->setupInputId();
         $this->setCast('string');
         $this->setAttribute('data-tr-field', $this->getContextId());

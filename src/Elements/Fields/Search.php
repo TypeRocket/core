@@ -28,6 +28,8 @@ class Search extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         if($this->getSetting('multiple'))
             return $this->getMultipleString();
         else

@@ -3,6 +3,7 @@ namespace TypeRocket\Elements;
 
 use TypeRocket\Elements\Components\Fieldset;
 use TypeRocket\Elements\Traits\Attributes;
+use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Elements\Traits\MacroTrait;
 use TypeRocket\Html\Html;
@@ -27,7 +28,7 @@ use TypeRocket\Utility\Url;
 
 class BaseForm
 {
-    use FormConnectorTrait, MacroTrait, Attributes, Fieldable, BaseFields;
+    use FormConnectorTrait, MacroTrait, Attributes, Fieldable, BaseFields, DisplayPermissions;
 
     protected $resource = null;
     protected $action = null;
@@ -787,7 +788,9 @@ class BaseForm
      *
      * @return string
      */
-    public function toString($attr = [], $request_params = [], $method = null, $submit = null) {
+    public function toString($attr = [], $request_params = [], $method = null, $submit = null)
+    {
+        if(!$this->canDisplay()) { return ''; }
         $html = '';
         $html .= $this->open($attr, $request_params, $method);
         $html .= $this->fieldsWrapperString();
@@ -801,6 +804,7 @@ class BaseForm
      */
     public function fieldsWrapperString()
     {
+        if(!$this->canDisplay()) { return ''; }
         $html = '';
         $html .= '<div class="tr-form-fields">';
         $html .= $this->getFieldsString();
@@ -814,6 +818,10 @@ class BaseForm
      */
     public function __toString()
     {
+        if(!$this->canDisplay()) {
+            return '';
+        }
+
         return $this->toString();
     }
 

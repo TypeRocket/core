@@ -26,6 +26,8 @@ class Textarea extends Field
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $this->setupInputId();
         $this->setAttribute('data-tr-field', $this->getContextId());
         $this->setAttribute('name', $this->getNameAttributeString());

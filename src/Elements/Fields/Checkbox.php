@@ -21,6 +21,8 @@ class Checkbox extends Field
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $name = $this->getNameAttributeString();
         $this->removeAttribute( 'name' );
         $default = $this->getDefault();

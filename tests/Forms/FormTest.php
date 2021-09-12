@@ -11,9 +11,21 @@ use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\WPUser;
 use TypeRocket\Utility\DataCollection;
+use TypeRocket\Utility\Str;
 
 class FormTest extends TestCase
 {
+    public function testFormSetDisplayCapability()
+    {
+        $form = new BaseForm('post', 'update', 1, WPPost::class);
+        $form->setDisplayCapability('nothing_named_this');
+        $none_form = $form->toString();
+        $form->setDisplayCapability(null);
+        $some_form = $form->toString();
+
+        $this->assertTrue( $none_form === '');
+        $this->assertTrue(Str::contains('<form ', $some_form));
+    }
 
     public function testSimpleUpdatePostForm()
     {

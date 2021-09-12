@@ -103,6 +103,8 @@ class Matrix extends Field implements ScriptField
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         // enqueue tinymce
         static::dummyEditor();
 

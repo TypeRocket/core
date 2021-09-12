@@ -4,6 +4,7 @@ namespace TypeRocket\Elements\Fields;
 use TypeRocket\Elements\BaseForm;
 use TypeRocket\Elements\Traits\Attributes;
 use TypeRocket\Elements\Traits\Conditional;
+use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Elements\Traits\MacroTrait;
 use TypeRocket\Html\Html;
 use TypeRocket\Html\Tag;
@@ -21,7 +22,7 @@ use TypeRocket\Elements\Traits\FormConnectorTrait;
 
 abstract class Field
 {
-    use FormConnectorTrait, Attributes, MacroTrait, Conditional, Settings;
+    use FormConnectorTrait, Attributes, MacroTrait, Conditional, Settings, DisplayPermissions;
 
     protected $name = null;
     protected $type = null;
@@ -224,6 +225,10 @@ abstract class Field
         // converting to string must happen first
         $fieldString     = $this->getString();
 
+        if(!$fieldString) {
+            return '';
+        }
+
         // now the rest
         $contextId     = $this->getContextId();
         $error         = $this->error = $this->getForm()->getError($this->getDots());
@@ -260,6 +265,10 @@ abstract class Field
      */
     public function __toString()
     {
+        if(!$this->canDisplay()) {
+            return '';
+        }
+
         $this->beforeEcho();
         $form = $this->getForm();
         if($form instanceof BaseForm) {
@@ -620,7 +629,6 @@ abstract class Field
      */
     public function getValue($cast_skip_null = false)
     {
-
         if ($this->populate == false) {
             return null;
         }

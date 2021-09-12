@@ -23,6 +23,8 @@ class Radio extends Field
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
+
         $name    = $this->getNameAttributeString();
         $default = $this->getSetting('default');
         $mode = $this->getSetting('mode');

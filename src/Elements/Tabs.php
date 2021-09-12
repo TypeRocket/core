@@ -2,11 +2,14 @@
 namespace TypeRocket\Elements;
 
 use TypeRocket\Elements\Components\Tab;
+use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Html\Element;
 use TypeRocket\Utility\Str;
 
 class Tabs
 {
+    use DisplayPermissions;
+
     protected $tabs = [];
     protected $sidebar = null;
     protected $onlyIcons = null;
@@ -214,6 +217,8 @@ class Tabs
      */
     public function render($layout = null)
     {
+        if(!$this->canDisplay()) { return $this; }
+
         switch ($layout ?? $this->layout) {
             case 'left' :
                 $this->leftBoxedStyleTabs();
@@ -291,6 +296,7 @@ class Tabs
      */
     protected function topStyleTabs($classes = null)
     {
+        if(!$this->canDisplay()) { return; }
         ?>
         <div class="tr-tabbed-top tr-divide cf <?php echo $classes; ?>">
             <div class="tr-tabbed-sections">
@@ -397,6 +403,7 @@ class Tabs
      */
     protected function leftBoxedStyleTabs($classes = null)
     {
+        if(!$this->canDisplay()) { return; }
         // Default help only if there is no old-style block of text and no new-style help tabs.
         $sidebar = $this->sidebar;
         $active = $this->getActiveTabIndex();

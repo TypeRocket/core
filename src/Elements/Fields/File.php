@@ -25,7 +25,8 @@ class File extends Field implements ScriptField
      */
     function getString()
     {
-        // $this->attr['class'] = 'file-picker';
+        if(!$this->canDisplay()) { return ''; }
+
         $name = $this->getNameAttributeString();
         $this->attrClass('file-picker');
         $value = $this->setCast('int')->getValue();

@@ -25,10 +25,10 @@ class Builder extends Matrix
      */
     public function getString()
     {
+        if(!$this->canDisplay()) { return ''; }
 
         // enqueue tinymce
         static::dummyEditor();
-
 
         $this->setAttribute('name', $this->getNameAttributeString() );
 
