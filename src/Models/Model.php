@@ -673,6 +673,34 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * @param string $field
+     *
+     * @return $this
+     */
+    public function addMetalessField(string $field)
+    {
+        if(!in_array($field, $this->metaless)) {
+            $this->metaless[] = $field;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return $this
+     */
+    public function removeMetalessField(string $field)
+    {
+        if(($key = array_search($field, $this->metaless)) !== false) {
+            unset($this->metaless[$key]);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get only the fields that are considered to
      * be meta fields.
      *

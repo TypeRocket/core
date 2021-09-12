@@ -7,12 +7,13 @@ trait ArrayReplaceRecursiveValues
 
     /**
      * @param string $key
+     * @param null|callable $callback
      *
      * @return $this
      */
-    public function addArrayReplaceRecursiveKey(string $key)
+    public function addArrayReplaceRecursiveKey(string $key, ?callable $callback = null)
     {
-        $this->arrayReplaceRecursiveKeys[$key] = $key;
+        $this->arrayReplaceRecursiveKeys[$key] = $callback;
 
         return $this;
     }
@@ -39,6 +40,10 @@ trait ArrayReplaceRecursiveValues
     {
         if(!array_key_exists($key, $this->arrayReplaceRecursiveKeys) || !is_array($new_value) || !is_array($current_value) ) {
             return $new_value;
+        }
+
+        if(is_callable($this->arrayReplaceRecursiveKeys[$key])) {
+            $new_value = call_user_func($this->arrayReplaceRecursiveKeys[$key], $new_value, $current_value, $key);
         }
 
         return array_replace_recursive($current_value, $new_value);

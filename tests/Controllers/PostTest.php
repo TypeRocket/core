@@ -28,16 +28,18 @@ class PostTest extends TestCase
 
         $model = new WPPost;
         $meta = $model->findById( $response->getData('resourceId') )->getFieldValue('meta_key');
+        $meta_two = $model->findById( $response->getData('resourceId') )->getFieldValue('meta_key_array');
 
         $this->assertTrue( $response->getData('resourceId') == 1 );
         $this->assertTrue( $meta == $request->getFields('meta_key') );
+        $this->assertTrue( $meta_two == $request->getFields('meta_key_array') );
         unset($_POST['tr']);
     }
 
     public function testUpdateWithMetaMethodArrayReplaceRecursive()
     {
         $key = 'meta_key_array';
-        $_POST['tr'][$key] = ['one' => '100', 'three' => '300', 'list' => ['2' => 'z']];
+        $_POST['tr'][$key] = ['one' => '100', 'three' => '300', 'injected' => 'HACK', 'list' => ['2' => 'z']];
         $_POST = wp_slash($_POST);
 
         $expected_meta = ['one' => '100', 'two' => '2', 'list' => ['a', 'b', 'z'], 'three' => '300'];
@@ -48,7 +50,11 @@ class PostTest extends TestCase
         $user = (new WPUser)->find(1);
 
         $cb = function($controller, WPPost $model, $user) use ($key) {
-            $model->addArrayReplaceRecursiveKey($key);
+            $model->addArrayReplaceRecursiveKey($key, function($new, $current, $key) {
+                unset($new['injected']);
+
+                return $new;
+            });
         };
 
         add_action('typerocket_controller_update', $cb, 10, 3);
@@ -59,8 +65,6 @@ class PostTest extends TestCase
 
         $model = new WPPost;
         $meta = $model->findById( $response->getData('resourceId') )->getFieldValue($key);
-
-        var_dump($meta, $expected_meta);
 
         $this->assertTrue( $response->getData('resourceId') == 1 );
         $this->assertTrue( $meta == $expected_meta );
