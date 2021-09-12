@@ -4,12 +4,11 @@ namespace TypeRocket\Models;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPTermMeta;
-use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 
 class WPTerm extends Model
 {
-    use MetaData, ArrayReplaceRecursiveValues;
+    use MetaData;
 
     protected $idColumn = 'term_id';
     protected $resource = 'terms';

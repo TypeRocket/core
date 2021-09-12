@@ -5,6 +5,7 @@ namespace Query;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Model;
+use TypeRocket\Models\WPUser;
 
 class ModelTest extends TestCase
 {
@@ -189,6 +190,10 @@ class ModelTest extends TestCase
                 'id' => 1,
                 'name' => 'kevin'
             ];
+            protected $propertiesUnaltered = [
+                'id' => 1,
+                'name' => 'kevin'
+            ];
         };
         $model->getQuery()->table('users')->run = false;
 
@@ -198,5 +203,48 @@ class ModelTest extends TestCase
         $actual = $model->getQuery()->lastCompiledSQL;
         $expected = "UPDATE `users` SET `name`='kevin dees' WHERE `id` = 1";
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testUpdateAddArrayReplaceRecursiveKey()
+    {
+        $model = new class extends Model {
+            protected $table = 'users';
+            protected $properties = [
+                'id' => 1,
+                'name' => ['kevin','dees'],
+                'job' => ['dev'],
+            ];
+
+            protected $propertiesUnaltered = [
+                'id' => 1,
+                'name' => ['kevin','dees'],
+                'job' => ['dev'],
+            ];
+        };
+
+        $model->getQuery()->table('users')->run = false;
+        $model->addArrayReplaceRecursiveKey('name', function($new, $current, $key) {
+            unset($new['z']);
+            return $new;
+        });
+
+        $model->addArrayReplaceRecursiveKey('job', function($new, $current, $key) {
+            unset($new['z']);
+            return $new;
+        });
+
+        $model->job = [];
+        $model->update(['name' => [0 =>'jim', 'a' => 'dev', 'z' => null]]);
+
+        $actual = $model->getQuery()->lastCompiledSQL;
+        $expected = 'UPDATE `users` SET `job`=\'a:1:{i:0;s:3:\\"dev\\";}\', `name`=\'a:3:{i:0;s:3:\\"jim\\";i:1;s:4:\\"dees\\";s:1:\\"a\\";s:3:\\"dev\\";}\' WHERE `id` = 1';
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testForUnalteredData()
+    {
+        $model = WPUser::new()->first();
+        $unaltered = $model->getPropertiesUnaltered();
+        $this->assertTrue(!empty($unaltered['ID']));
     }
 }

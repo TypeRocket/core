@@ -4,7 +4,6 @@ namespace TypeRocket\Models;
 use TypeRocket\Database\Query;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Models\Meta\WPPostMeta;
-use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 use TypeRocket\Template\Composer;
 use WP_Post;
@@ -41,7 +40,7 @@ use WP_Post;
  */
 class WPPost extends Model
 {
-    use MetaData, ArrayReplaceRecursiveValues;
+    use MetaData;
 
     protected $idColumn = 'ID';
     protected $resource = 'posts';

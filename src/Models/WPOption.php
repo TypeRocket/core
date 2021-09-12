@@ -1,8 +1,6 @@
 <?php
 namespace TypeRocket\Models;
 
-use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
-
 /**
  * Class WPOption
  *
@@ -13,8 +11,6 @@ use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
  */
 class WPOption extends Model
 {
-    use ArrayReplaceRecursiveValues;
-
     protected $idColumn = 'option_id';
     protected $resource = 'options';
     protected $routeResource = 'option';

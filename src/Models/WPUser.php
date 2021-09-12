@@ -6,13 +6,12 @@ use TypeRocket\Core\Container;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPUserMeta;
-use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 use WP_Error;
 
 class WPUser extends Model implements AuthUser
 {
-    use MetaData, ArrayReplaceRecursiveValues;
+    use MetaData;
 
     protected $idColumn = 'ID';
     protected $resource = 'users';

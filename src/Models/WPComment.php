@@ -4,12 +4,11 @@ namespace TypeRocket\Models;
 use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Fields;
 use TypeRocket\Models\Meta\WPCommentMeta;
-use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\MetaData;
 
 class WPComment extends Model
 {
-    use MetaData, ArrayReplaceRecursiveValues;
+    use MetaData;
 
     protected $idColumn = 'comment_ID';
     protected $resource = 'comments';
