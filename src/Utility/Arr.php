@@ -104,6 +104,49 @@ class Arr
     }
 
     /**
+     * Replace Recursive Prefer New
+     *
+     * Works like array_replace_recursive but keeps the order of the new array
+     * and allows for setting stop break points to the replacement search.
+     *
+     * @param array $current_array array to replace data within
+     * @param array $new_array array to keep all data from
+     * @param array $stops dot notation list of merge stop points where new_array when present will override deep values
+     *
+     * @return array
+     */
+    public static function replaceRecursivePreferNew($current_array, $new_array, array $stops = []) : array
+    {
+        if(!empty($stops)) {
+            foreach ($stops as $dots)
+            {
+                $current_ref = &$current_array;
+                $new_ref = &$new_array;
+
+                $seek = explode('.', $dots);
+                $miss = false;
+                foreach ($seek as $index)
+                {
+                    if(array_key_exists($index, $current_ref) && array_key_exists($index, $new_ref)) {
+                        $current_ref = &$current_ref[$index];
+                        $new_ref = &$new_ref[$index];
+                        continue;
+                    }
+
+                    $miss = true;
+                    break;
+                }
+
+                if(!$miss && isset($new_ref)) {
+                    $current_ref = $new_ref;
+                }
+            }
+        }
+
+        return array_replace_recursive($new_array, $current_array, $new_array);
+    }
+
+    /**
      * Dots Meld
      *
      * Flatten array dimensions to one level and meld keys into dot

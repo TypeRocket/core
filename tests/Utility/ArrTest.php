@@ -19,6 +19,81 @@ class ArrTest extends TestCase
         $this->assertTrue(array_key_exists('kim', $v));
     }
 
+    public function testArrayReplaceAdvanced()
+    {
+        $current = [
+            'one' => ['two'  => 10],
+            'index' => ['a' => 1, 'b' => 2, 'c' => 3],
+            'remove' => ['two'  => 20],
+            'remove_to_str' => ['two'  => 20],
+            'kept' => ['two'  => 20],
+            'deep' => ['remove'  => [1,2]],
+        ];
+
+        $new = [
+            'index' => ['b' => 2, 'c' => 3, 'a' => 1],
+            'one' => ['two'  => 20],
+            'remove' => [],
+            'remove_to_str' => 'string',
+            'deep' => ['remove' => [1]],
+        ];
+
+        $expected = [
+            'index' => ['b' => 2, 'c' => 3, 'a' => 1],
+            'one' => ['two'  => 20],
+            'remove' => [],
+            'remove_to_str' => 'string',
+            'deep' => ['remove' => [1]],
+            'kept' => ['two'  => 20],
+        ];
+
+        $returned = Arr::replaceRecursivePreferNew($current, $new, [
+            'remove',
+            'kept.two',
+            'deep.remove',
+        ]);
+
+        $this->assertTrue($expected === $returned);
+    }
+
+    public function testArrayReplaceSimple()
+    {
+        $current = [
+            'one' => ['two'  => 10],
+        ];
+
+        $new = [
+            'one' => ['two'  => 20],
+        ];
+
+        $expected = [
+            'one' => ['two'  => 20]
+        ];
+
+        $returned = Arr::replaceRecursivePreferNew($current, $new);
+
+        $this->assertTrue($expected === $returned);
+    }
+
+    public function testArrayReplaceSimpleList()
+    {
+        $current = [
+            'one' => ['two'  => [1,2,3]],
+        ];
+
+        $new = [
+            'one' => ['two' => [3,2]],
+        ];
+
+        $expected = [
+            'one' => ['two' => [3,2,3]]
+        ];
+
+        $returned = Arr::replaceRecursivePreferNew($current, $new);
+
+        $this->assertTrue($expected === $returned);
+    }
+
     public function testPluckSimple()
     {
         $data = [

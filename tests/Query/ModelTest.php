@@ -223,12 +223,12 @@ class ModelTest extends TestCase
         };
 
         $model->getQuery()->table('users')->run = false;
-        $model->addArrayReplaceRecursiveKey('name', function($new, $current, $key) {
+        $model->setArrayReplaceRecursiveKey('name', function($new, $current, $key) {
             unset($new['z']);
             return $new;
         });
 
-        $model->addArrayReplaceRecursiveKey('job', function($new, $current, $key) {
+        $model->setArrayReplaceRecursiveKey('job', function($new, $current, $key) {
             unset($new['z']);
             return $new;
         });
@@ -237,7 +237,33 @@ class ModelTest extends TestCase
         $model->update(['name' => [0 =>'jim', 'a' => 'dev', 'z' => null]]);
 
         $actual = $model->getQuery()->lastCompiledSQL;
-        $expected = 'UPDATE `users` SET `job`=\'a:1:{i:0;s:3:\\"dev\\";}\', `name`=\'a:3:{i:0;s:3:\\"jim\\";i:1;s:4:\\"dees\\";s:1:\\"a\\";s:3:\\"dev\\";}\' WHERE `id` = 1';
+        $expected = 'UPDATE `users` SET `job`=\'a:1:{i:0;s:3:\\"dev\\";}\', `name`=\'a:3:{i:0;s:3:\\"jim\\";s:1:\\"a\\";s:3:\\"dev\\";i:1;s:4:\\"dees\\";}\' WHERE `id` = 1';
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testUpdateAddArrayReplaceRecursiveKeyStops()
+    {
+        $model = new class extends Model {
+            protected $table = 'users';
+            protected $properties = [
+                'id' => 1,
+                'list' => ['list' => [1,2]],
+            ];
+
+            protected $propertiesUnaltered = [
+                'id' => 1,
+                'list' => ['list' => [1,2]],
+            ];
+        };
+
+        $model->getQuery()->table('users')->run = false;
+        $model->setArrayReplaceRecursiveStops('list', ['list']);
+
+        $model->list = ['list' => [1 => 3] ];
+        $model->update();
+
+        $actual = $model->getQuery()->lastCompiledSQL;
+        $expected = 'UPDATE `users` SET `list`=\'a:1:{s:4:\\"list\\";a:1:{i:1;i:3;}}\' WHERE `id` = 1';
         $this->assertEquals($expected, $actual);
     }
 

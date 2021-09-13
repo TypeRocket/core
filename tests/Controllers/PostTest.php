@@ -50,7 +50,7 @@ class PostTest extends TestCase
         $user = (new WPUser)->find(1);
 
         $cb = function($controller, WPPost $model, $user) use ($key) {
-            $model->addArrayReplaceRecursiveKey($key, function($new, $current, $key) {
+            $model->setArrayReplaceRecursiveKey($key, function($new, $current, $key) {
                 unset($new['injected']);
 
                 return $new;
