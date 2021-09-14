@@ -55,6 +55,7 @@ namespace TypeRocket\Html;
  * @method static Html h3(mixed|array $attributes = null, mixed $text = null)
  * @method static Html h2(mixed|array $attributes = null, mixed $text = null)
  * @method static Html h1(mixed|array $attributes = null, mixed $text = null)
+ * @method static Html p(mixed|array $attributes = null, mixed $text = null)
  * @method static Html style(mixed|array $attributes = null, mixed $text = null)
  * @method static Html script(mixed|array $attributes = null, mixed $text = null)
  * @method static Html noscript(mixed|array $attributes = null, mixed $text = null)
