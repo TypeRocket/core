@@ -5,6 +5,7 @@ use TypeRocket\Exceptions\RedirectError;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Http\Redirect;
+use TypeRocket\Utility\Validators\DateTimeLocalValidator;
 use TypeRocket\Utility\Validators\ValidatorRule;
 use TypeRocket\Utility\Validators\CallbackValidator;
 use TypeRocket\Utility\Validators\EmailValidator;
@@ -35,6 +36,7 @@ class Validator
         CallbackValidator::KEY => CallbackValidator::class,
         EmailValidator::KEY => EmailValidator::class,
         KeyValidator::KEY => KeyValidator::class,
+        DateTimeLocalValidator::KEY => DateTimeLocalValidator::class,
         MaxLengthValidator::KEY => MaxLengthValidator::class,
         MinLengthValidator::KEY => MinLengthValidator::class,
         NumericValidator::KEY => NumericValidator::class,
