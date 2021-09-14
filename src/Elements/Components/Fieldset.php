@@ -173,7 +173,7 @@ class Fieldset
      */
     public function __toString()
     {
-        if($this->canDisplay()) {return '';}
+        if(!$this->canDisplay()) {return '';}
         $html = "<h3 class=\"tr-fieldset-group-title\">{$this->title}</h3>";
         $html .= "<p class=\"tr-fieldset-group-description\">{$this->description}</p>";
         $html .= '<fieldset class="tr-fieldset-group-content">';
