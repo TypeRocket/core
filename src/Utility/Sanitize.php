@@ -124,6 +124,61 @@ class Sanitize
      *
      * @return string
      */
+    public static function htmlGuest($input, $allowed_tags = null, $namespace = null, $auto_p = false) {
+        $tags = apply_filters('typerocket_sanitize_html_guest_tags_' . ($namespace ?? 'default'), $allowed_tags ?? [
+                'em' => [],
+                'strong' => [],
+                'small' => [],
+                'sub' => [],
+                'sup' => [],
+                'b' => [],
+                'i' => [],
+                'ul' => [],
+                'ol' => [],
+                'hgroup' => [],
+                'h1' => [],
+                'h2' => [],
+                'h3' => [],
+                'h4' => [],
+                'h5' => [],
+                'h6' => [],
+                'table' => [],
+                'tbody' => [],
+                'tfoot' => [],
+                'thead' => [],
+                'dd' => [],
+                'dt' => [],
+                'dl' => [],
+                'tr' => [],
+                'th' => [],
+                'td' => [],
+                'li' => [],
+                'blockquote' => [],
+                'cite' => [],
+                'code' => [],
+                'hr' => [],
+                'p' => [],
+                'br' => [],
+            ]);
+        $output = trim(wp_kses(trim($input), $tags));
+
+        if($auto_p) {
+            $output = wpautop($output);
+        }
+
+        return $output;
+    }
+
+    /**
+     *
+     *
+     * @param string $input HTML input
+     * @param null|array $allowed_tags allowed tags for wp_kses
+     * @param null|string $namespace
+     * @param bool $auto_p
+     *
+     * @return string
+     */
     public static function html($input, $allowed_tags = null, $namespace = null, $auto_p = false) {
         $tags = apply_filters('typerocket_sanitize_html_tags_' . ($namespace ?? 'default'), $allowed_tags ?? [
             'em' => ['class' => true],

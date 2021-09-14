@@ -680,6 +680,16 @@ abstract class Field
     }
 
     /**
+     * @param $value
+     *
+     * @return Field
+     */
+    public function setSanitize($value)
+    {
+        return $this->setSetting('sanitize', $value);
+    }
+
+    /**
      * Make field required
      *
      * Adds a * to the field and that is all.
