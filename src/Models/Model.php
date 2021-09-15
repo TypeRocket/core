@@ -1656,7 +1656,7 @@ class Model implements Formable, JsonSerializable
      */
     public function getCast( $property )
     {
-        $value = !empty($this->properties[$property]) ? $this->properties[$property] : null;
+        $value = $this->properties[$property] ?? null;
 
         if ( ! empty( $this->cast[$property] ) ) {
             $handle = $this->cast[$property];
