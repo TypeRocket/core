@@ -512,6 +512,13 @@ class Validator
                     $only_subfields = explode('/', $option)[0];
                     $subfields = explode(',', substr($only_subfields, 15));
                     $value_checked = Arr::only($value, $subfields);
+
+                    $value_checked = array_filter($value_checked, function($v) {
+                        return isset($v);
+                    });
+
+                    $value_checked = is_array($value_checked) && count($value_checked) === 0 ? null : $value_checked;
+
                     $option = substr($option, strlen($only_subfields) + 1) ?: null;
                 }
 
