@@ -85,6 +85,19 @@ class ValidatorTest extends TestCase
         $this->assertEquals(1, $passes);
     }
 
+    public function testValidatorRuleRequiredWeakAll()
+    {
+        $fields['email'] = '';
+
+        $validator = new Validator([
+            'email' => '?required|email'
+        ], $fields, null, true);
+
+        $errors = $validator->getErrors();
+
+        $this->assertEquals($errors, []);
+    }
+
     public function testValidatorRule()
     {
         $fields['email'] = 'example@typerocket.com';

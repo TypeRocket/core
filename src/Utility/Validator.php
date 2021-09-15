@@ -478,8 +478,14 @@ class Validator
         }
 
         $list = [];
+        $weak_all = null;
 
         if(is_string($validationRules)) {
+            if($validationRules[0] === '?') {
+                $weak_all = true;
+                $validationRules = substr($validationRules, 1);
+            }
+
             $validationRules = explode('|', (string) $validationRules);
         }
 
@@ -499,6 +505,8 @@ class Validator
                     $weak = true;
                     $type = substr($type, 1);
                 }
+
+                $weak = $weak ?? $weak_all;
 
                 if(Str::starts('only_subfields=', $option)) {
                     $only_subfields = explode('/', $option)[0];
