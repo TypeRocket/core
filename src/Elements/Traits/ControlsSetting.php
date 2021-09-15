@@ -9,6 +9,8 @@ trait ControlsSetting
         'move' => false,
         'append' => false,
         'remove' => false,
+        'flip' => false,
+        'clear' => false,
     ];
 
     /**
@@ -78,6 +80,50 @@ trait ControlsSetting
     }
 
     /**
+     * Hide Flip Control
+     *
+     * @return $this
+     */
+    public function hideFlip()
+    {
+        $this->hide['flip'] = true;
+        return $this;
+    }
+
+    /**
+     * Show Flip Control
+     *
+     * @return $this
+     */
+    public function showFlip()
+    {
+        $this->hide['flip'] = false;
+        return $this;
+    }
+
+    /**
+     * Hide Clear Control
+     *
+     * @return $this
+     */
+    public function hideClear()
+    {
+        $this->hide['clear'] = true;
+        return $this;
+    }
+
+    /**
+     * Show Clear Control
+     *
+     * @return $this
+     */
+    public function showClear()
+    {
+        $this->hide['clear'] = false;
+        return $this;
+    }
+
+    /**
      * Hide Handle
      *
      * @return $this
@@ -99,49 +145,49 @@ trait ControlsSetting
         return $this;
     }
 
-	/**
-	 * Set Controls settings
-	 *
-	 * @param array $controls options include: flip, clear, add, contract
-	 *
-	 * @return mixed
-	 */
-	public function setControls( array $controls ) {
-		return $this->setSetting('controls', $controls);
-	}
+    /**
+     * Set Controls settings
+     *
+     * @param array $controls options include: flip, clear, add, contract
+     *
+     * @return mixed
+     */
+    public function setControls( array $controls ) {
+        return $this->setSetting('controls', $controls);
+    }
 
-	/**
-	 * Set Control Add
-	 *
-	 * @param string $value
-	 *
-	 * @return mixed
-	 */
-	public function setControlAdd( $value ) {
-		return $this->appendToArraySetting('controls', 'add', $value);
-	}
+    /**
+     * Set Control Add
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
+    public function setControlAdd( $value ) {
+        return $this->appendToArraySetting('controls', 'add', $value);
+    }
 
-	/**
-	 * Set Control Flip
-	 *
-	 * @param string $value
-	 *
-	 * @return mixed
-	 */
-	public function setControlFlip( $value ) {
-		return $this->appendToArraySetting('controls', 'flip', $value);
-	}
+    /**
+     * Set Control Flip
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
+    public function setControlFlip( $value ) {
+        return $this->appendToArraySetting('controls', 'flip', $value);
+    }
 
-	/**
-	 * Set Control Contract
-	 *
-	 * @param string $value
-	 *
-	 * @return mixed
-	 */
-	public function setControlContract( $value ) {
-		return $this->appendToArraySetting('controls', 'contract', $value);
-	}
+    /**
+     * Set Control Contract
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
+    public function setControlContract( $value ) {
+        return $this->appendToArraySetting('controls', 'contract', $value);
+    }
 
     /**
      * Set Control Contract
@@ -154,16 +200,16 @@ trait ControlsSetting
         return $this->appendToArraySetting('controls', 'expand', $value);
     }
 
-	/**
-	 * Set Control Clear
-	 *
-	 * @param string $value
-	 *
-	 * @return mixed
-	 */
-	public function setControlClear( $value ) {
-		return $this->appendToArraySetting('controls', 'clear', $value);
-	}
+    /**
+     * Set Control Clear
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
+    public function setControlClear( $value ) {
+        return $this->appendToArraySetting('controls', 'clear', $value);
+    }
 
     /**
      * Make repeater contracted by default
