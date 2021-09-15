@@ -85,6 +85,21 @@ class ValidatorTest extends TestCase
         $this->assertEquals(1, $passes);
     }
 
+    public function testValidatorRuleRequiredFieldsWeakSubfields()
+    {
+        $fields['data'] = [
+            'name' => null,
+        ];
+
+        $validator = new Validator([
+            'data' => 'required:only_subfields=name,none_key/weak'
+        ], $fields, null, true);
+
+        $passes = count($validator->getPasses());
+
+        $this->assertEquals(1, $passes);
+    }
+
     public function testValidatorRuleRequiredWeakAll()
     {
         $fields['email'] = '';

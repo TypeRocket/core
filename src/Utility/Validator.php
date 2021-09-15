@@ -517,7 +517,7 @@ class Validator
                         return isset($v);
                     });
 
-                    $value_checked = is_array($value_checked) && count($value_checked) === 0 ? null : $value_checked;
+                    $value_checked = Arr::isEmptyArray($value_checked) ? null : $value_checked;
 
                     $option = substr($option, strlen($only_subfields) + 1) ?: null;
                 }

@@ -4,6 +4,18 @@ namespace TypeRocket\Utility;
 class Arr
 {
     /**
+     * Is Empty Array
+     *
+     * @param array $array
+     *
+     * @return bool
+     */
+    public static function isEmptyArray($array) : bool
+    {
+        return is_array($array) && count($array) === 0;
+    }
+
+    /**
      * @param array $array
      * @param string|array $columns
      *
