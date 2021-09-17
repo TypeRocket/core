@@ -22,6 +22,27 @@ trait BaseFields
     }
 
     /**
+     * File Upload
+     *
+     * You will need to implement your own file upload system.
+     *
+     * @param string $name
+     * @param array $attr
+     * @param array $settings
+     * @param bool|true $label
+     *
+     * @return Fields\FileUpload
+     */
+    public function fileUpload($name, array $attr = [], array $settings = [], $label = true)
+    {
+        if(!$this->uploads) {
+            $this->allowFileUploads();
+        }
+
+        return new Fields\FileUpload($name, $attr, $settings, $label, $this);
+    }
+
+    /**
      * Time
      *
      * @param string $name

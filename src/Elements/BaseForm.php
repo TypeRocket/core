@@ -38,6 +38,7 @@ class BaseForm
     protected $method = null;
     protected $errors = null;
     protected $submitButton = 'Save';
+    protected $uploads = null;
 
     /**
      * Instance the From
@@ -578,6 +579,17 @@ class BaseForm
         $name = $name ?? 'my_name_' . md5(time());
         $fields = "<input type='text' name='__hny[{$name}]' /><input type='checkbox' name='__hny[send_message]' />";
         return Html::div(['style' => 'display: none', 'class' => 'tr-bot-tasty-treat'], $fields);
+    }
+
+    /**
+     * Add Multipart Form Data
+     *
+     * @return BaseForm
+     */
+    public function allowFileUploads()
+    {
+        $this->uploads = true;
+        return $this->setAttribute('enctype', 'multipart/form-data');
     }
 
     /**

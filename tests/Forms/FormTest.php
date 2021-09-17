@@ -319,4 +319,16 @@ class FormTest extends TestCase
         $form = \TypeRocket\Utility\Helper::form();
         $this->assertTrue($form instanceof BaseForm);
     }
+
+    public function testFormFileUploads()
+    {
+        $form = new BaseForm('post', 'update', 1, WPPost::class);
+        $form->setFields($form->fileUpload('Upload File')->doBefore(function() {
+            return '123456789';
+        }));
+        $output = $form->toString();
+        $this->assertTrue(Str::contains('<input type="file" name="tr[upload_file]" id="tr_field_7_tr_upload_file" data-tr-field="tr.upload_file" />', $output));
+        $this->assertTrue(Str::contains('enctype="multipart/form-data"', $output));
+        $this->assertTrue(Str::contains('123456789', $output));
+    }
 }
