@@ -5,6 +5,7 @@ namespace Query;
 
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Model;
+use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPUser;
 
 class ModelTest extends TestCase
@@ -265,6 +266,27 @@ class ModelTest extends TestCase
         $actual = $model->getQuery()->lastCompiledSQL;
         $expected = 'UPDATE `users` SET `list`=\'a:1:{s:4:\\"list\\";a:1:{i:1;i:3;}}\' WHERE `id` = 1';
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testForZeroValue()
+    {
+        $model = WPPost::new()->first();
+        update_post_meta($model->getID(), 'zero_value_field', '0');
+        update_post_meta($model->getID(), 'zero_value_field_int', 0);
+        update_post_meta($model->getID(), 'zero_value_field_null', null);
+        update_post_meta($model->getID(), 'zero_value_field_array', []);
+
+        $model->load('meta');
+
+        delete_post_meta($model->getID(), 'zero_value_field');
+        delete_post_meta($model->getID(), 'zero_value_field_int');
+        delete_post_meta($model->getID(), 'zero_value_field_null');
+        delete_post_meta($model->getID(), 'zero_value_field_array');
+
+        $this->assertTrue($model->meta->zero_value_field === '0');
+        $this->assertTrue($model->meta->zero_value_field_int === '0');
+        $this->assertTrue($model->meta->zero_value_field_array === []);
+        $this->assertTrue($model->meta->zero_value_field_null === null);
     }
 
     public function testForUnalteredData()
