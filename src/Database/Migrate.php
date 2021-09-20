@@ -66,13 +66,13 @@ class Migrate
      *
      * Set wp_options name to save run migration timestamps too
      *
-     * @param string $option
+     * @param null|string $option
      *
      * @return static
      */
-    public function setOption(string $option)
+    public function setOption(?string $option)
     {
-        $this->option = $option;
+        $this->option = $option ?? $this->option;
 
         return $this;
     }
