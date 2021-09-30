@@ -85,7 +85,7 @@ abstract class ValidatorRule
      */
     public function isOptional() : bool
     {
-        return (bool) $this->args['weak'];
+        return (bool) ($this->args['weak'] ?? null);
     }
 
     /**
