@@ -81,17 +81,19 @@ class Results extends \ArrayObject implements Formable, JsonSerializable, Result
      */
     public function first()
     {
-        return $this->offsetGet(0);
+        return $this->offsetExists(0) ? $this->offsetGet(0) : null;
     }
 
     /**
      * Last Item
      *
-     * @return mixed
+     * @return mixed|null
      */
     public function last()
     {
-        return $this->offsetGet($this->count() - 1);
+        $offset = $this->count() - 1;
+
+        return $this->offsetExists($offset) ? $this->offsetGet($offset) : null;
     }
 
     /**
@@ -103,7 +105,8 @@ class Results extends \ArrayObject implements Formable, JsonSerializable, Result
      */
     public function load($with)
     {
-        if($first = $this->offsetGet(0)) {
+        if($this->offsetExists(0)) {
+            $first = $this->offsetGet(0);
             if($first instanceof Model) {
                 return $first->clone()->load($with, $this);
             }
