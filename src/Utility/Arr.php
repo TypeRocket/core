@@ -64,7 +64,7 @@ class Arr
             if($index) {
                 $index_key = Data::walk($index, $item);
 
-                if(array_key_exists($item[$index_key], $list)) {
+                if(array_key_exists($index_key, $list)) {
                     throw new \Exception('Array key must be unique for Arr::pluck with index.');
                 }
 
