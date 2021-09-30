@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Query;
 
+use App\Models\Post;
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Meta\WPPostMeta;
 use TypeRocket\Models\WPUser;
@@ -86,4 +87,13 @@ class PostTest extends TestCase
         $this->assertTrue( $result === null );
     }
 
+    public function testTagsAndCategories()
+    {
+        $sql = (string) Post::new()->tags()->getQuery();
+        $expected = "SELECT DISTINCT `wp_terms`.*,`wp_term_taxonomy`.`taxonomy`,`wp_term_taxonomy`.`term_taxonomy_id`,`wp_term_taxonomy`.`description` FROM `wp_terms` INNER JOIN `wp_term_taxonomy` ON `wp_term_taxonomy`.`term_id` = `wp_terms`.`term_id` INNER JOIN `wp_term_relationships` ON `wp_term_relationships`.`term_taxonomy_id` = `wp_term_taxonomy`.`term_taxonomy_id` WHERE `wp_term_taxonomy`.`taxonomy` = 'post_tag' AND `wp_term_taxonomy`.`taxonomy` = 'post_tag' AND `wp_term_relationships`.`object_id` IS NULL";
+
+        $this->assertStringContainsString($sql, $expected);
+        $count = Post::new()->find(1)->categories()->get()->count();
+        $this->assertTrue($count === 1);
+    }
 }

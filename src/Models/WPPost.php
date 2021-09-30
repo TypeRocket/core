@@ -342,7 +342,7 @@ class WPPost extends Model
     {
         global $wpdb;
 
-        return $this->belongsToMany($modelClass, $wpdb->term_relationships, 'object_id', 'term_taxonomy_id', function($rel, &$reselect_main = true) use ($scope, $taxonomy_id, $reselect) {
+        return $this->belongsToMany([$modelClass, WPTermTaxonomy::class], $wpdb->term_relationships, 'object_id', 'term_taxonomy_id', function($rel, &$reselect_main = true) use ($scope, $taxonomy_id, $reselect) {
             global $wpdb;
             $rel->where($wpdb->term_taxonomy .'.taxonomy', $taxonomy_id);
             $reselect_main = $reselect;

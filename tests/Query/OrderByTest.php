@@ -10,11 +10,11 @@ class OrderByTest extends TestCase
 {
     public function testCreateWithSlashing()
     {
-        $query = new Query();
+        $query = new Query('some_table');
         $ids = [123,456,987,0];
         $options = '"' . implode('","', $ids) . '"';
         $sql = (string) $query->appendRawOrderBy("FIELD(id, {$options})");
 
-        $this->assertTrue($sql === 'SELECT * FROM `` ORDER BY FIELD(id, "123","456","987","0")');
+        $this->assertTrue($sql === 'SELECT * FROM `some_table` ORDER BY FIELD(id, "123","456","987","0")');
     }
 }

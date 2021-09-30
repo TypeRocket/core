@@ -1773,7 +1773,7 @@ class Model implements Formable, JsonSerializable
      *
      * This is for Many to Many relationships.
      *
-     * @param string $modelClass
+     * @param string|array $modelClass
      * @param string $junction_table
      * @param null|string $id_column
      * @param null|string $id_foreign
@@ -1784,6 +1784,7 @@ class Model implements Formable, JsonSerializable
      */
     public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null, $reselect = true )
     {
+        [$modelClass, $modelClassOn] = array_pad((array) $modelClass, 2, null);
         // Column ID
         if( ! $id_column && $this->resource ) {
             $id_column =  $this->resource . '_id';
@@ -1807,9 +1808,15 @@ class Model implements Formable, JsonSerializable
             'id_foreign' => $id
         ] );
 
+        if(isset($modelClassOn) && class_exists($modelClassOn)) {
+            $relationshipOn = new $modelClassOn;
+        } else {
+            $relationshipOn = $relationship;
+        }
+
         // Join
         $join_table = $junction_table;
-        $rel_join = $rel_table.'.'.$relationship->getIdColumn();
+        $rel_join = $relationshipOn->getTable().'.'.$relationshipOn->getIdColumn();
         $foreign_join = $join_table.'.'.$id_foreign;
         $where_column = $join_table.'.'.$id_column;
         $relationship->getQuery()->distinct()->join($join_table, $foreign_join, $rel_join);
