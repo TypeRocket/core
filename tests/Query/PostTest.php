@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Query;
 
+use App\Models\Category;
 use App\Models\Post;
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\Meta\WPPostMeta;
@@ -87,13 +88,23 @@ class PostTest extends TestCase
         $this->assertTrue( $result === null );
     }
 
-    public function testTagsAndCategories()
+    public function testPostTagsAndCategories()
     {
         $sql = (string) Post::new()->tags()->getQuery();
         $expected = "SELECT DISTINCT `wp_terms`.*,`wp_term_taxonomy`.`taxonomy`,`wp_term_taxonomy`.`term_taxonomy_id`,`wp_term_taxonomy`.`description` FROM `wp_terms` INNER JOIN `wp_term_taxonomy` ON `wp_term_taxonomy`.`term_id` = `wp_terms`.`term_id` INNER JOIN `wp_term_relationships` ON `wp_term_relationships`.`term_taxonomy_id` = `wp_term_taxonomy`.`term_taxonomy_id` WHERE `wp_term_taxonomy`.`taxonomy` = 'post_tag' AND `wp_term_taxonomy`.`taxonomy` = 'post_tag' AND `wp_term_relationships`.`object_id` IS NULL";
 
         $this->assertStringContainsString($sql, $expected);
         $count = Post::new()->find(1)->categories()->get()->count();
+        $this->assertTrue($count === 1);
+    }
+
+    public function testTagsAndCategoriesPosts()
+    {
+        $sql = (string) Category::new()->find(1)->posts()->getQuery();
+        $expected = "SELECT DISTINCT `wp_posts`.* FROM `wp_posts` INNER JOIN `wp_term_relationships` ON `wp_term_relationships`.`object_id` = `wp_posts`.`ID` WHERE `post_type` = 'post' AND `wp_term_relationships`.`term_taxonomy_id` = '1'";
+
+        $this->assertStringContainsString($sql, $expected);
+        $count = Category::new()->find(1)->posts()->get()->count();
         $this->assertTrue($count === 1);
     }
 }
