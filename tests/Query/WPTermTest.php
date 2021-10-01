@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Query;
 
+use App\Models\Category;
 use PHPUnit\Framework\TestCase;
 use TypeRocket\Database\Results;
+use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 use TypeRocket\Models\WPTermTaxonomy;
 
@@ -18,6 +20,25 @@ class WPTermTest extends TestCase
             $taxonomies = $term->termTaxonomies()->first();
             $this->assertTrue( $taxonomies instanceof WPTermTaxonomy);
         }
+    }
+
+    public function testBasicTermTaxonomiesPosts()
+    {
+        $id = wp_insert_post([
+            'post_title' => 'tr_term_test',
+            'post_content' => 'tr_term_test',
+            'post_type' => 'post',
+            'post_category' => array( 1 )
+        ]);
+
+        $term = new Category();
+        $posts = $term->find(1)->posts()->get();
+
+        foreach ($posts as $post) {
+            $this->assertTrue(in_array($post->getID(), [1, $id]));
+        }
+
+        wp_delete_post($id, true);
     }
 
     public function testPostTypeSelectWhereMeta()
