@@ -3,6 +3,7 @@ namespace TypeRocket\Console\Commands;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use TypeRocket\Console\Command;
+use TypeRocket\Exceptions\MigrationException;
 use TypeRocket\Exceptions\SqlException;
 
 class Migrate extends Command
@@ -69,7 +70,7 @@ class Migrate extends Command
             $path = $this->getOption('path');
             $table = $this->getOption('wp_option');
             $m = new \TypeRocket\Database\Migrate();
-            $results = ($m->setOption($table))->runMigrationDirectory($type, $steps, $reload, $path, function($report, $result) {
+            $results = $m->setOption($table)->runMigrationDirectory($type, $steps, $reload, $path, function($report, $result) {
                 $this->success($report['message']);
                 $this->success($result['message']);
                 $this->warning("{$result['type']}:" );
@@ -88,6 +89,11 @@ class Migrate extends Command
                 $this->line( $e->getSql() );
                 $this->error( $e->getSqlError() );
             }
+
+            if($e instanceof MigrationException && $e->errorType === 'info') {
+                exit(0);
+            }
+
             exit(1);
         }
     }

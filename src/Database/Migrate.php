@@ -229,7 +229,9 @@ class Migrate
                 $result['message'] = 'No migrations to rollback';
             }
 
-            throw new MigrationException($result['message']);
+            $migrationError = new MigrationException($result['message']);
+            $migrationError->errorType = 'info';
+            throw $migrationError;
         }
 
         foreach ($query_strings as $file => $query) {
