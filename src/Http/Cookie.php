@@ -90,7 +90,16 @@ class Cookie
      * @return $this
      */
     public function set( $name, $data, $time = MINUTE_IN_SECONDS, $path = '/' ) {
-        setcookie($name, $data, $time === null ? 0 : time() + $time, $path, null, is_ssl());
+        if(\PHP_VERSION_ID >= 70300) {
+            setcookie($name, $data, apply_filters('typerocket_cookie_options', [
+                'expires' => $time === null ? 0 : time() + $time,
+                'path' => $path,
+                'domain' => null,
+                'secure' => is_ssl()
+            ], $name, $data, $this));
+        } else {
+            setcookie($name, $data, $time === null ? 0 : time() + $time, $path, null, is_ssl());
+        }
 
         return $this;
     }
