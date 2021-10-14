@@ -91,7 +91,7 @@ class Migrate extends Command
             }
 
             if($e instanceof MigrationException && $e->errorType === 'info') {
-                exit(0);
+                return;
             }
 
             exit(1);
