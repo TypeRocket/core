@@ -89,7 +89,7 @@ class Resolver
 
         foreach ($parameters as $parameter) {
             $varName = $parameter->getName();
-            $dependency = $parameter->getClass();
+            $dependency = $parameter->getType();
 
             if (isset($args[$varName])) {
                 $v = $args[$varName];
@@ -103,10 +103,11 @@ class Resolver
                 $v = null;
             }
 
-            if ( !$dependency ) {
+            if ( !$dependency || !$dependency instanceof \ReflectionNamedType ) {
                 $dependencies[] = $v ?? $this->resolveNonClass($parameter);
             } else {
-                $obj = $v instanceof $dependency->name ? $v : $this->resolve($dependency->name);
+                $dp_name = $dependency->getName();
+                $obj = $v instanceof $dp_name ? $v : $this->resolve($dp_name);
 
                 if($v && method_exists($obj, 'onDependencyInjection')) {
                     $obj->onDependencyInjection($v);
