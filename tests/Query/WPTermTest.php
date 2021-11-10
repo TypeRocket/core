@@ -33,12 +33,12 @@ class WPTermTest extends TestCase
 
         $term = new Category();
         $posts = $term->find(1)->posts()->get();
+        wp_delete_post($id, true);
 
         foreach ($posts as $post) {
-            $this->assertTrue(in_array($post->getID(), [1, $id]));
+            $pid = $post->getID();
+            $this->assertTrue(in_array($pid, [1, $id]));
         }
-
-        wp_delete_post($id, true);
     }
 
     public function testPostTypeSelectWhereMeta()

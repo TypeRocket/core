@@ -18,6 +18,38 @@ class ModelTest extends TestCase
         $this->assertInstanceOf(Model::class, $post);
     }
 
+    public function testSaveAndGetWhereCreate()
+    {
+        $post = WPPost::new();
+        $post->post_title = 'saveAndGet';
+        $post = $post->saveAndGet();
+
+        $this->assertInstanceOf(WPPost::class, $post);
+        $this->assertTrue($post->getID() > 0 && is_numeric($post->getID()));
+
+        $deleted = $post->deleteForever();
+        $this->assertTrue($deleted instanceof WPPost);
+    }
+
+    public function testSaveAndGetWhereUpdate()
+    {
+        $post = WPPost::new()->findById(1);
+        $title = $post->post_title;
+        $id = $post->getID();
+        $post->post_title = 'saveAndGet';
+        $post = $post->saveAndGet();
+
+        $this->assertInstanceOf(WPPost::class, $post);
+        $this->assertTrue($post->getID() > 0 && is_numeric($post->getID()) && $id === $post->getID());
+        $this->assertTrue($post->post_title === 'saveAndGet');
+
+        $wpPost = $post->update([
+            'post_title' => $title
+        ]);
+
+        $this->assertTrue($wpPost->post_title === $title);
+    }
+
     public function testModelPropertyMutation()
     {
         $class = new class extends Model {

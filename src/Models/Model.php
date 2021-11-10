@@ -1584,6 +1584,40 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * Save Changes Then Get New Model
+     *
+     * @param array|Fields $fields
+     *
+     * @return mixed
+     */
+    public function saveAndGet($fields = [])
+    {
+        $idColumn = $this->getIdColumn();
+
+        if( isset( $this->properties[$idColumn] ) && $this->findById($this->getID()) ) {
+            if($updated = $this->update($fields)) {
+                if($updated instanceof Model) {
+                    return $updated;
+                }
+
+                return $this->findById($this->getID());
+            }
+
+            return null;
+        }
+
+        if($created = $this->create($fields)) {
+            if($created instanceof Model) {
+                return $created;
+            }
+
+            return $this->findById($created);
+        }
+
+        return null;
+    }
+
+    /**
      * Save changes directly
      *
      * @param array|Fields $fields
