@@ -1203,7 +1203,7 @@ class Model implements Formable, JsonSerializable
             }
         }
 
-        $v =  $this->query->where($this->idColumn, $this->getID())->update($fields);
+        $v = $this->query->where($this->idColumn, $this->getID())->update($fields);
 
         do_action('typerocket_model_after_update', $this, $fields, $v);
 
@@ -1620,14 +1620,21 @@ class Model implements Formable, JsonSerializable
     /**
      * Save changes directly
      *
+     * - Return Model when using built-in WP models.
+     * - Return bool when update on custom model.
+     * - Return int when create on custom model.
+     *
      * @param array|Fields $fields
      *
-     * @return mixed
+     * @return mixed|bool|int
      */
     public function save( $fields = [] )
     {
         if( isset( $this->properties[$this->idColumn] ) && $this->findById($this->properties[$this->idColumn]) ) {
-            return $this->update($fields);
+            $update = $this->update($fields);
+            if($update === 1 || $update === 0) {
+                return (bool) $update;
+            }
         }
         return $this->create($fields);
     }
