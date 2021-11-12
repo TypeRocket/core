@@ -103,7 +103,12 @@ class Resolver
                 $v = null;
             }
 
-            if ( !$dependency || !$dependency instanceof \ReflectionNamedType ) {
+            $isBuiltInType = false;
+            if($dependency instanceof \ReflectionNamedType) {
+                $isBuiltInType = $dependency->isBuiltin();
+            }
+
+            if ( !$dependency || !$dependency instanceof \ReflectionNamedType || $isBuiltInType ) {
                 $dependencies[] = $v ?? $this->resolveNonClass($parameter);
             } else {
                 $dp_name = $dependency->getName();
