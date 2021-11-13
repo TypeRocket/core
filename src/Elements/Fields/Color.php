@@ -45,7 +45,9 @@ class Color extends Field implements ScriptField
         $this->setAttribute('data-tr-field', $this->getContextId());
 
         $callback = function() use ($palette) {
-            wp_localize_script( 'typerocket-scripts', $palette, $this->getSetting( 'palette' ) );
+            if($colors = $this->getSetting( 'palette' )) {
+                wp_localize_script( 'typerocket-scripts', $palette, $colors );
+            }
         };
 
         if ( !is_admin() && System::getFromContainer()->frontendIsEnabled() ) {
