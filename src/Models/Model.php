@@ -11,6 +11,7 @@ use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
 use TypeRocket\Database\ResultsMeta;
 use TypeRocket\Elements\Fields\Field;
+use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Http\Auth;
 use TypeRocket\Http\Fields;
 use TypeRocket\Http\Request;
@@ -1584,6 +1585,16 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * Has ID Column Set
+     *
+     * @return bool
+     */
+    public function hasIdColumn() : bool
+    {
+        return isset( $this->properties[$this->getIdColumn()] );
+    }
+
+    /**
      * Save Changes Then Get New Model
      *
      * Save model and then return a fresh instance of the model.
@@ -1594,9 +1605,7 @@ class Model implements Formable, JsonSerializable
      */
     public function saveAndGet($fields = [])
     {
-        $idColumn = $this->getIdColumn();
-
-        if( isset( $this->properties[$idColumn] ) && $this->findById($this->getID()) ) {
+        if( $this->hasIdColumn() && $this->findById($this->getID()) ) {
             if($updated = $this->update($fields)) {
                 if($updated instanceof Model) {
                     return $updated;
