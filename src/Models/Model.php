@@ -1586,9 +1586,11 @@ class Model implements Formable, JsonSerializable
     /**
      * Save Changes Then Get New Model
      *
+     * Save model and then return a fresh instance of the model.
+     *
      * @param array|Fields $fields
      *
-     * @return mixed
+     * @return mixed|Model|null
      */
     public function saveAndGet($fields = [])
     {
@@ -1599,8 +1601,9 @@ class Model implements Formable, JsonSerializable
                 if($updated instanceof Model) {
                     return $updated;
                 }
+                $modelClass = get_class($this);
 
-                return $this->findById($this->getID());
+                return (new $modelClass)->findById($this->getID());
             }
 
             return null;
@@ -1611,7 +1614,9 @@ class Model implements Formable, JsonSerializable
                 return $created;
             }
 
-            return $this->findById($created);
+            $modelClass = get_class($this);
+
+            return (new $modelClass)->findById($created);
         }
 
         return null;
