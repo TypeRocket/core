@@ -750,6 +750,8 @@ class Query
         $count_clone = clone $this;
         $page = $page ?? $_GET['paged'] ?? $_GET['page'] ?? 1;
 
+        if(!is_numeric($page)) { $page = 1; }
+
         $this->take($number, $page < 2 ? 0 : $number * ( $page - 1), false);
         $this->returnOne = false;
 
