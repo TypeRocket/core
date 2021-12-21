@@ -474,20 +474,21 @@ class Query
     /**
      * Delete
      *
-     * @param array|\ArrayObject|int $ids
+     * @param array|int $ids
      *
      * @return array|false|int|null|object
      */
     public function delete( $ids = null )
     {
         $this->setQueryType('delete');
+        $idColumnWhere = $this->query['table'] . '.' . $this->idColumn;
 
-        if(is_int($ids)) {
-            $this->where( $this->idColumn , $ids);
-        }
-
-        if(is_array($ids)) {
-            $this->where( $this->idColumn , 'IN', $ids);
+        if(is_numeric($ids)) {
+            $this->where( $idColumnWhere , $ids);
+        } elseif (is_array($ids)) {
+            $this->where( $idColumnWhere , 'IN', $ids);
+        } elseif(defined('TYPEROCKET_QUERY_DELETE_ANY') && constant('TYPEROCKET_QUERY_DELETE_ANY') === true) {
+            $this->where( $idColumnWhere , $ids);
         }
 
         return $this->runQuery();

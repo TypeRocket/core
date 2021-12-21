@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Query;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Models\Model;
+use TypeRocket\Models\WPPost;
+use TypeRocket\Utility\QueryCaster;
 
 
 class WhereTest extends TestCase
@@ -235,6 +238,70 @@ class WhereTest extends TestCase
 
         $sql = "SELECT * FROM `wp_posts` WHERE `ID` IS NULL AND `ID` IS NULL AND `ID` = 0 AND `ID` IS NOT NULL AND `ID` != '\\0' AND `ID` != 0 AND `ID` IS NULL";
         $this->assertTrue( $compiled == $sql);
+    }
+
+    public function testWhereDeleteViaLoopHasIdColumn()
+    {
+        $data = [];
+        $range = range(1,5);
+        foreach ($range as $num) {
+            $data[] = [
+                'post_title' => "{$num} Test",
+                'post_name' => "{$num}-test",
+                'post_status' => 'draft'
+            ];
+        }
+
+        $posts = [];
+        foreach ($data as $post) {
+            $new_post = WPPost::new('test')->create($post);
+            $this->assertTrue( $new_post instanceof WPPost);
+            $this->assertTrue( $new_post->post_type === 'test');
+            $posts[$new_post->getID()] = $new_post;
+        }
+        ksort($posts);
+
+        $model_query = (new class extends Model {
+            protected $idColumn = 'ID';
+            protected $table = 'wp_posts';
+        });
+
+        $query_posts = $model_query->where('post_type', 'test')->get();
+
+        foreach ($query_posts as $query_post) {
+            $model = $query_post;
+            $model_query = $model->getQuery();
+            $model->delete();
+            $sql = $model_query->lastCompiledSQL ?? '';
+            $this->assertStringContainsString('DELETE FROM `wp_posts` WHERE `wp_posts`.`ID` =', $sql);
+        }
+    }
+
+    public function testWhereDeleteSingleHasIdColumn()
+    {
+        $data = [
+            'post_title' => "100 Test",
+            'post_name' => "100-test",
+            'post_status' => 'draft'
+        ];
+
+        $new_post = WPPost::new('test')->create($data);
+        $this->assertTrue( $new_post instanceof WPPost);
+        $this->assertTrue( $new_post->post_type === 'test');
+
+        $model_query = (new class extends Model {
+            protected $idColumn = 'ID';
+            protected $table = 'wp_posts';
+        });
+
+        $query_post = $model_query->find($new_post->getID());
+
+        $model = $query_post;
+        $model_query = $model->getQuery();
+        $model->delete();
+        $model_id = $model->getID();
+        $sql = $model_query->lastCompiledSQL ?? '';
+        $this->assertStringContainsString("DELETE FROM `wp_posts` WHERE `wp_posts`.`ID` = '{$model_id}' AND `wp_posts`.`ID` = '{$model_id}'", $sql);
     }
 
     public function testWhereResetAfter()
