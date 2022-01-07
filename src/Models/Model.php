@@ -1441,6 +1441,40 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * @param string $relationship
+     * @param null|callable $scope
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function has(string $relationship, $scope = null)
+    {
+        if(!method_exists($this, $relationship)) {
+            throw new \Exception("No such relationship of '{$relationship}' exists for " . get_class($this));
+        }
+
+        $rel = $this->{$relationship}();
+
+        if(!$rel instanceof Model) {
+            throw new \Exception("Trying to get relationship of '{$relationship}' but no Model class is returned for " . get_class($this));
+        }
+
+        $rel->getQuery()->modifyWhere(-1, [
+            'value' => $this->getQuery()->getIdColumWithTable(),
+            'operator' => '=',
+            'raw' => true
+        ]);
+
+        if(is_callable($scope)) {
+            $scope($rel);
+        }
+
+        $this->query->merge($rel->getQuery());
+
+        return $this;
+    }
+
+    /**
      * Count results
      *
      * @param string $column
@@ -1898,7 +1932,7 @@ class Model implements Formable, JsonSerializable
             $relationship->reselect($rel_table.'.*');
         }
 
-        return  $relationship->where($where_column, $id)->findAll();
+        return $relationship->where($where_column, $id)->findAll();
     }
 
     /**

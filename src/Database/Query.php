@@ -40,6 +40,47 @@ class Query
     }
 
     /**
+     * Merge
+     *
+     * Create a new query from other queries but keeps list (see code)
+     *
+     * @param Query $query
+     *
+     * @return $this
+     */
+    public function merge(Query $query)
+    {
+        $list = [];
+        $select = $this->query['select'] ?? null;
+        $table = $this->query['table'] ?? null;
+
+        $list[] = ['joins' => [[
+            'type' => 'INNER JOIN',
+            'table' => $query->query['table']
+        ]]];
+        $list[] = $query->query;
+        $list[] = ['where' => 'AND'];
+
+        $list[] = $this->query;
+        $new = array_merge_recursive(...$list);
+        $new['select'] = $select ?? ($table . '.*');
+
+        $keeps = [
+            'data', 'data_values', 'table', 'select',
+            'create', 'update', 'take', 'order_by', 'function',
+            'distinct', 'union', 'group_by'
+        ];
+        foreach ($keeps as $keep) {
+            $new[$keep] = $this->query[$keep] ?? null;
+        }
+
+        $new = array_filter($new);
+        $this->query = $new;
+
+        return $this;
+    }
+
+    /**
      * Get Date Time
      *
      * @return bool|string
@@ -57,6 +98,15 @@ class Query
     public function getIdColumn()
     {
         return $this->idColumn;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdColumWithTable()
+    {
+        $table = $this->query['table'] ? "`{$this->query['table']}`." : '';
+        return "{$table}`{$this->idColumn}`";
     }
 
     /**
@@ -191,6 +241,30 @@ class Query
         }
 
         $this->query['where'][] = $whereQuery;
+
+        return $this;
+    }
+
+    /**
+     * Modify Where
+     *
+     * @param int $index
+     * @param array $args
+     * @param bool $merge
+     *
+     * @return $this
+     */
+    public function modifyWhere($index, $args, $merge = true)
+    {
+        if(empty($this->query['where'])) {
+            return $this;
+        }
+
+        if($index === -1) {
+            $index = count($this->query['where']) - 1;
+        }
+
+        $this->query['where'][$index] = $merge ? array_merge($this->query['where'][$index], $args) : $args;
 
         return $this;
     }
@@ -1207,6 +1281,7 @@ class Query
                         'column' => $this->tickSqlName($where['column']),
                         'operator' => $where['operator'] ?? '=',
                         'value' => $where['value'] ?? null,
+                        'raw' => $where['raw'] ?? false,
                     ];
 
                     if($where['value'] === null) {
@@ -1226,12 +1301,15 @@ class Query
 
                         $where['value'] = '(' . implode(',', $where['value']) . ')';
                     } else {
-                        $where['value'] = $this->prepareValue($where['value']);
+                        $where['value'] = $where['raw'] ? $where['value'] : $this->prepareValue($where['value']);
+                        // $where['value'] = $this->prepareValue($where['value']);
                     }
 
                     if(array_key_exists('condition', $where) && $where['condition'] === null) {
                         unset($where['condition']);
                     }
+
+                    if(array_key_exists('raw', $where)) { unset($where['raw']); }
 
                     $sql .= ' ' . implode(' ', $where);
                 }
