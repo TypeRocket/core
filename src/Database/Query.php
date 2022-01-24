@@ -390,13 +390,13 @@ class Query
     /**
      * Group By
      *
-     * @param string $column
+     * @param string|array $column
      *
      * @return $this
      */
     public function groupBy($column)
     {
-        $this->query['group_by']['column'] = $column;
+        $this->query['group_by']['column'] = (array) $column;
 
         return $this;
     }
@@ -1075,8 +1075,13 @@ class Query
         $sql = '';
 
         if( array_key_exists('group_by', $query) ) {
-            $column = $this->tickSqlName($query['group_by']['column']);
-            $sql = ' GROUP BY '.$column.' ';
+
+            $columns = (array) $query['group_by']['column'];
+            $columns = array_map(function($column) {
+                return $this->tickSqlName($column);
+            }, $columns);
+
+            $sql = ' GROUP BY '.implode(', ', $columns).' ';
         }
 
         return $sql;
@@ -1402,8 +1407,6 @@ class Query
      */
     protected function tickSqlName($column)
     {
-        $c = $column;
-
         $c = preg_replace($this->columnPattern, '', $column);
 
         if(!Str::contains('`', $column)) {
