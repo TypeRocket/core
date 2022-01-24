@@ -37,7 +37,9 @@ class WPPostTest extends TestCase
             'post_category' => array( 1 )
         ]);
 
-        $result = $post->published()->has('categories')->get();
+        $result = $post->published()->has('categories', function($query) {
+            $query->where('wp_terms.term_id', 1);
+        })->get();
 
         wp_delete_post($id, true);
         $this->assertTrue( $result instanceof Results);
