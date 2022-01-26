@@ -826,6 +826,7 @@ class Query
         $page = $page ?? $_GET['paged'] ?? $_GET['page'] ?? 1;
 
         if(!is_numeric($page)) { $page = 1; }
+        $page = (int) $page;
 
         $this->take($number, $page < 2 ? 0 : $number * ( $page - 1), false);
         $this->returnOne = false;
