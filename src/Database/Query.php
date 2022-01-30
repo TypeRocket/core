@@ -390,7 +390,7 @@ class Query
     /**
      * Group By
      *
-     * @param string|array $column
+     * @param string|string[] $column
      *
      * @return $this
      */

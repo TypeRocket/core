@@ -101,7 +101,7 @@ class Model implements Formable, JsonSerializable
     /**
      * Cast Array to Model Results
      *
-     * @param array $records
+     * @param array $resultsArray
      *
      * @return Results
      */
@@ -131,7 +131,7 @@ class Model implements Formable, JsonSerializable
      *
      * @param wpdb $wpdb
      *
-     * @return null
+     * @return null|string
      */
     protected function initTable($wpdb)
     {
