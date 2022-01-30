@@ -1130,6 +1130,20 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * Group By
+     *
+     * @param string|string[] $column
+     *
+     * @return $this
+     */
+    public function groupBy($column)
+    {
+        $this->query->groupBy($column);
+
+        return $this;
+    }
+
+    /**
      * Get Results Class
      *
      * @return string
