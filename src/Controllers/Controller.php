@@ -142,7 +142,7 @@ class Controller
             $valid = (bool) apply_filters('typerocket_controller_on_validate_' . $type, $valid, $this, $args);
         }
 
-        if(method_exists($this, $action) && $action !== 'onValidate') {
+        if(method_exists($this, $action) && $action !== 'onValidate' && $valid) {
             return Resolver::new()->resolveCallable([$this, $action], $args);
         }
 
