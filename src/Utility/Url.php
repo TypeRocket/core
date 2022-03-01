@@ -111,11 +111,30 @@ class Url
     }
 
     /**
+     * @param string $menu_slug
+     * @param array|string $query
+     *
+     * @return $this
+     */
+    public function adminPage(string $menu_slug, $query = null)
+    {
+        $url = menu_page_url($menu_slug, false);
+
+        if($query) {
+            $url .= '&' . (is_array($query) ? http_build_query($query) : (string) $query);
+        }
+
+        $this->setRoot($url);
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function __toString()
     {
-        $base = $this->root . '/' . $this->path;
+        $base = $this->root . ($this->path ? '/' . $this->path : '');
         $query = $this->query ? '?' . $this->query : '';
 
         return $base . $query;
