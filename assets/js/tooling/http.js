@@ -20,6 +20,12 @@ const { __ } = wp.i18n;
         if (trailing) {
             url = this.tools.addTrailingSlash(url);
         }
+
+        if(data instanceof URLSearchParams) {
+            data.append('_tr_ajax_request', '1');
+            data = data.toString();
+        }
+
         this.tools.ajax({
             method: method,
             data: data,
