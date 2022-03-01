@@ -116,6 +116,10 @@ class Controller
     {
         $action = 'onAction'.ucfirst($type);
 
+        if($action !== 'onAction') {
+            do_action('typerocket_controller_on_action_' . $type, $this, $args);
+        }
+
         if(method_exists($this, $action) && $action !== 'onAction') {
             Resolver::new()->resolveCallable([$this, $action], $args);
         }
@@ -132,12 +136,17 @@ class Controller
     public function onValidate($type, ...$args)
     {
         $action = 'onValidate'.ucfirst($type);
+        $valid = true;
+
+        if($action !== 'onValidate') {
+            $valid = (bool) apply_filters('typerocket_controller_on_validate_' . $type, $valid, $this, $args);
+        }
 
         if(method_exists($this, $action) && $action !== 'onValidate') {
             return Resolver::new()->resolveCallable([$this, $action], $args);
         }
 
-        return true;
+        return $valid;
     }
 
 }
