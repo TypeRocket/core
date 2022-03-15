@@ -1,4 +1,4 @@
-import {search_response, links_append, search_get_map} from "./fn/search-common";
+import {search_response, links_append, search_get_map, get_the_json} from "./fn/search-common";
 
 const { __ } = wp.i18n;
 
@@ -15,7 +15,13 @@ const { __ } = wp.i18n;
         }
 
         that = this;
+        let config = get_the_json($(this).attr('data-search-config'));
         linkList = that.next();
+
+        this[0].addEventListener("search", function(event) {
+            linkList.html('');
+        });
+
         linkList.html('');
         linkList.append('<li class="tr-search-result-title">'+__('Searching...', 'typerocket-domain')+'</li>');
         search = this.val().trim();
@@ -45,7 +51,8 @@ const { __ } = wp.i18n;
             search_response(data, fnSelect, linkList, that, map, {
                 secure: secure,
                 inputName: inputName,
-                selectList: selectList
+                selectList: selectList,
+                config: config
             })
         } , "json");
         return this;
@@ -138,8 +145,14 @@ const { __ } = wp.i18n;
         window.trUtil.delay((function() {
             that.TypeRocketLinks(type, taxonomy, model, url, map, function($that, $this, obj) {
                 let url = $this.attr('data-url');
-                $that.focus().val(url);
-                $this.parent().html('');
+                $that.focus();
+                $that.val(url);
+
+                console.log(obj);
+
+                if(!obj?.config?.keepSearch) {
+                    $this.parent().html('');
+                }
             });
         }), 250);
 

@@ -55,8 +55,12 @@ export function links_append($that, $this, obj) {
     linkItem = jQuery('<li tabindex="0" class="tr-search-chosen-item"><input name="' + obj.inputName + '[]" value="' + id + '" type="hidden" /><span>' + title + '</span><button aria-label="Close" type="button" tabindex="0" title="' + rmvt + '" class="tr-control-icon tr-control-icon-remove tr-search-chosen-item-remove"><span class="tr-sr-only" aria-hidden="true">×</span></button></li>');
 
     obj.selectList.append(linkItem);
-    $that.focus().val('');
-    $this.parent().html('');
+    $that.focus();
+
+    if(!obj?.config?.keepSearch) {
+        $that.val('');
+        $this.parent().html('');
+    }
 }
 
 export function search_append($that, $this, obj) {
@@ -67,8 +71,12 @@ export function search_append($that, $this, obj) {
 
     $this.parent().prev().html('<span>'+title+'</span> <button aria-label="Close" type="button" tabindex="0" title="' + rmvt + '" class="tr-control-icon tr-control-icon-remove tr-search-chosen-item-remove"><span class="tr-sr-only" aria-hidden="true">×</span></button>');
     $that.next().val(id).trigger('change');
-    $that.focus().val('');
-    $this.parent().html('');
+    $that.focus();
+
+    if(!obj?.config?.keepSearch) {
+        $that.val('');
+        $this.parent().html('');
+    }
 }
 
 export function search_get_map(map) {
@@ -81,4 +89,16 @@ export function search_get_map(map) {
     }
 
     return map;
+}
+
+export function get_the_json(json) {
+    if(json) {
+        json = JSON.parse(json);
+    }
+
+    if(typeof json === undefined || !json) {
+        json = {}
+    }
+
+    return json;
 }

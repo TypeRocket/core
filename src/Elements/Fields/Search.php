@@ -6,7 +6,6 @@ use TypeRocket\Models\Model;
 
 class Search extends Field implements ScriptField
 {
-
     /**
      * Run on construction
      */
@@ -112,6 +111,7 @@ class Search extends Field implements ScriptField
         $taxonomy = $this->getSetting('taxonomy');
         $model = $this->getSetting('model');
         $url = $this->getSetting('url_endpoint');
+        $config = $this->getSetting('search-config');
 
         $search_attributes = [
             'placeholder' => __('Type to search...', 'typerocket-domain'),
@@ -129,6 +129,10 @@ class Search extends Field implements ScriptField
             $search_attributes['data-model'] = $model;
         } else {
             $search_attributes['data-posttype'] = $type;
+        }
+
+        if(is_array($config)) {
+            $search_attributes['data-search-config'] = json_encode($config);
         }
 
         return $search_attributes;
@@ -216,6 +220,16 @@ class Search extends Field implements ScriptField
         $this->setSetting('taxonomy', $taxonomy);
 
         return $this;
+    }
+
+    /**
+     * @param array $array
+     *
+     * @return $this
+     */
+    public function setSearchConfig(array $array)
+    {
+        return $this->setSetting('search-config', $array);
     }
 
     /**

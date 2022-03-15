@@ -1,4 +1,4 @@
-import {links_append, search_append, search_get_map, search_response} from "./fn/search-common";
+import {links_append, search_append, search_get_map, get_the_json, search_response} from "./fn/search-common";
 
 const { __ } = wp.i18n;
 
@@ -6,7 +6,7 @@ import { tr_esc_html } from './fn/tr-helpers.js';
 
 ;(function( $ ) {
 
-    $.fn.TypeRocketSearch = function(type, taxonomy, model, url, map) {
+$.fn.TypeRocketSearch = function(type, taxonomy, model, url, map) {
     var param, search, that, secure;
     if (type == null) { type = 'any'; }
     if (taxonomy == null) { taxonomy = '';}
@@ -19,6 +19,14 @@ import { tr_esc_html } from './fn/tr-helpers.js';
 
     that = this;
     let linkList = that.next().next().next();
+    let config = get_the_json(that.attr('data-search-config'));
+
+    // URL field is not an <input type="search" /> by default
+    // but just in case type is set to search keep this.
+    this[0].addEventListener("search", function(event) {
+        linkList.html('');
+    });
+
     linkList.html('');
     linkList.append('<li class="tr-search-result-title">'+__('Searching...', 'typerocket-domain')+'</li>');
     search = this.val().trim();
@@ -42,7 +50,8 @@ import { tr_esc_html } from './fn/tr-helpers.js';
         s: search
     }, (data) => {
         search_response(data, search_append, linkList, that, map, {
-            secure: secure
+            secure: secure,
+            config: config
         })
     }, 'json');
     return this;
