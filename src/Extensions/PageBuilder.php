@@ -14,7 +14,8 @@ class PageBuilder
     use OptionsTrait;
 
     protected $postTypes = ['page'];
-    protected $fieldName = 'builder';
+    protected $fieldName = null;
+    public const FIELD_NAME = 'builder';
     protected $showStatus = true;
 
     public function __construct($post_types = ['page'], $field_name = null)
@@ -24,7 +25,7 @@ class PageBuilder
         }
 
         $this->postTypes = apply_filters('typerocket_ext_builder_post_types', $post_types);
-        $this->fieldName = $field_name ?? $this->fieldName;
+        $this->fieldName = $field_name ?? $this->fieldName ?? static::FIELD_NAME;
         $this->options = [];
 
         add_filter('use_block_editor_for_post', [$this, 'gutenberg'], 10, 2);

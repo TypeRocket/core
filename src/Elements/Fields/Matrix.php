@@ -362,6 +362,9 @@ class Matrix extends Field implements ScriptField
             unset($item[0]);
             return $carry . Html::el( $el, $item);
         });
+
+        $name = $component->feature('nameable');
+        $name = apply_filters('typerocket_component_name', $name, 'matrix', $component, $group, $classes);
         ?>
         <li data-tr-component="<?php echo $component->uuid(); ?>" tabindex="0" class="matrix-field-group tr-repeater-clones tr-repeater-group matrix-type-<?php echo esc_attr($component->registeredAs()); ?> matrix-group-<?php echo esc_attr($group); ?> <?php echo $classes; ?>">
             <div class="tr-repeater-controls">
@@ -369,7 +372,7 @@ class Matrix extends Field implements ScriptField
             </div>
             <div class="tr-component-inputs tr-repeater-inputs">
                 <?php
-                echo "<h3>{$component->feature('nameable')}</h3>";
+                echo "<h3 class=\"tr-component-group-name\">{$name}</h3>";
                 $component->fields();
                 ?>
             </div>

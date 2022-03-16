@@ -148,7 +148,7 @@ class Component
     public function feature($name)
     {
         if($name == 'nameable') {
-            return $this->title();
+            return '<div>' . $this->title() . '</div>';
         }
 
         return null;

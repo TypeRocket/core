@@ -307,3 +307,24 @@
         }
     }
 }
+
+.tr-component-group-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > div:first-child {
+        flex: 1
+    }
+}
+
+.tr-save-component-as-block-wrap {
+    text-align: right;
+    cursor: pointer;
+}
+
+.tr-save-component-as-block {
+    cursor: pointer;
+    all: unset;
+    cursor: pointer;
+}

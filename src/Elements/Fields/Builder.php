@@ -182,11 +182,13 @@ class Builder extends Matrix
      */
     public static function componentTemplate($component, $group, $classes = '')
     {
+        $name = $component->feature('nameable');
+        $name = apply_filters('typerocket_component_name', $name, 'builder', $component, $group, $classes);
         ?>
         <div data-tr-component="<?php echo $component->uuid(); ?>" class="builder-field-group builder-type-<?php echo esc_attr($component->registeredAs()); ?> builder-group-<?php echo esc_attr($group); ?> <?php echo $classes; ?>">
             <div class="tr-component-inputs tr-builder-inputs">
                 <?php
-                echo "<h3>{$component->feature('nameable')}</h3>";
+                echo "<h3 class=\"tr-component-group-name\">{$name}</h3>";
                 $component->fields();
                 ?>
             </div>
