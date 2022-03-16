@@ -98,6 +98,9 @@
     width: 1px;
 }
 
+.tr-fl { float: left; }
+.tr-fr { float: right; }
+
 .cf:before,
 .cf:after {
     content: " "; /* 1 */
