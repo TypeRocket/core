@@ -8,6 +8,7 @@ use TypeRocket\Http\Redirect;
 use TypeRocket\Http\Request;
 use TypeRocket\Http\Response;
 use TypeRocket\Models\WPOption;
+use TypeRocket\Template\TemplateEngine;
 use TypeRocket\Template\View;
 use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\Sanitize;
@@ -490,6 +491,7 @@ class TypeRocketUI
             $supports[ esc_attr__($key, 'typerocket-ui') ] = $v;
         }
 
-        return View::new( __DIR__ .'/views/typerocket-ui.php', compact('form', 'icons', 'supports', 'values'));
+        return View::new( __DIR__ .'/views/typerocket-ui.php', compact('form', 'icons', 'supports', 'values'))
+            ->setEngine(TemplateEngine::class);
     }
 }
