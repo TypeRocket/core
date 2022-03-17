@@ -88,7 +88,7 @@ const { __ } = wp.i18n;
             jQuery.ajax(settings);
         },
         checkData: function(data, delay, fn, defaultMessage) {
-            let ri, type, message, that;
+            let ri, type, message, that, flashSettings;
             ri = 0;
             that = this;
             while (TypeRocket.httpCallbacks.length > ri) {
@@ -97,8 +97,14 @@ const { __ } = wp.i18n;
                 }
                 ri++;
             }
-            message = that.escapeHtml( data.message ? data.message : defaultMessage);
+            message = data.message ? data.message : defaultMessage;
+            flashSettings = data?.data?._tr?.flashSettings ?? {};
+            if(flashSettings?.escapeHtml !== false) {
+                message = that.escapeHtml(message);
+            }
+
             type = that.escapeHtml(data.messageType);
+            delay = flashSettings?.delay ?? delay;
 
             // TODO: Add flashing errors option
             // if(!jQuery.isEmptyObject(data.errors)) {
