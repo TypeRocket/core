@@ -101,6 +101,23 @@ class DateTime
     }
 
     /**
+     * @param string $dt
+     * @param string $tz
+     * @return \DateInterval
+     * @throws \Exception
+     */
+    public static function getDiffDateIntervalFromNow(string $dt, string $tz = 'UTC') : ?\DateInterval
+    {
+        $date = static::newDateTime($dt, $tz);
+
+        if(is_null($date)) {
+            return null;
+        }
+
+        return $date->diff(new \DateTime());
+    }
+
+    /**
      * @param \DateInterval $interval
      * @return string
      */
