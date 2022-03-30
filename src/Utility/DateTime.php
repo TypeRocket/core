@@ -3,6 +3,107 @@ namespace TypeRocket\Utility;
 
 class DateTime
 {
+    /**
+     * Get \DateTimeZone Object
+     *
+     * @param string $tz WordPress style timezone
+     *
+     * @return \DateTimeZone
+     */
+    public static function newDateTimezone(string $tz) : \DateTimeZone
+    {
+        if(preg_match('/^UTC[+-]/', $tz)) {
+            $tz = preg_replace('/UTC\+?/', '', $tz);
+        }
+
+        return new \DateTimeZone($tz);
+    }
+
+    /**
+     * Get \DateTime Object
+     *
+     * @param string $dt HTML5 datetime input field default format
+     * @param string $tz WordPress style timezone
+     *
+     * @return null|\DateTime
+     * @throws \Exception
+     */
+    public static function newDateTime(string $dt, string $tz = 'UTC') : ?\DateTime
+    {
+        $date = null;
+
+        if($dt)
+        {
+            $date = new \DateTime($dt, static::newDateTimezone($tz ?? 'UTC'));
+        }
+
+        return $date;
+    }
+
+    /**
+     * Get \DateTime Object and Switch Timezones to UTC
+     *
+     * @param string $dt HTML5 datetime input field default format
+     * @param string $from_tz from this WordPress style timezone to UTC
+     *
+     * @return null|\DateTime
+     * @throws \Exception
+     */
+    public static function switchDatesTimezoneToUTC(string $dt, string $from_tz) : ?\DateTime
+    {
+        return static::newDateTime($dt, $from_tz)
+            ->setTimezone(new \DateTimeZone('UTC'));
+    }
+
+    /**
+     * Switch \DateTime Object's Timezone from UTC
+     *
+     * @param string $dt HTML5 datetime input field default format
+     * @param string $to_tz to this WordPress style timezone from UTC
+     *
+     * @return null|\DateTime
+     * @throws \Exception
+     */
+    public static function switchDatesTimezoneFromUTC(string $dt, string $to_tz) : ?\DateTime
+    {
+        return static::newDateTime($dt, 'UTC')
+            ->setTimezone(new \DateTimeZone($to_tz));
+    }
+
+    /**
+     * Get \DateTime Object and Switch Timezones to Site Timezone
+     *
+     * @param string $dt HTML5 datetime input field default format
+     * @param string $from_tz from this WordPress style timezone to site timezone
+     *
+     * @return null|\DateTime
+     * @throws \Exception
+     */
+    public static function switchDatesTimezoneToSiteTimezone(string $dt, string $from_tz) : ?\DateTime
+    {
+        return static::newDateTime($dt, $from_tz)
+            ->setTimezone(static::newDateTimezone(get_option('timezone_string')));
+    }
+
+    /**
+     * Get \DateTime Object and Switch Timezones from Site Timezone
+     *
+     * @param string $dt HTML5 datetime input field default format
+     * @param string $to_tz to this WordPress style timezone from site timezone
+     *
+     * @return null|\DateTime
+     * @throws \Exception
+     */
+    public static function switchDatesTimezoneFromSiteTimezone(string $dt, string $to_tz) : ?\DateTime
+    {
+        return static::newDateTime($dt, get_option('timezone_string'))
+            ->setTimezone(static::newDateTimezone($to_tz));
+    }
+
+    /**
+     * @param \DateInterval $interval
+     * @return string
+     */
     public static function agoFormatFromDateDiff(\DateInterval $interval)
     {
         $doPlural = function($nb,$str){return $nb>1?$str.'s':$str;}; // adds plurals
