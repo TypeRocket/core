@@ -299,6 +299,7 @@ class System
         }
 
         add_action( 'save_post', 'TypeRocket\Http\Responders\Hook::posts' );
+        add_action( 'edit_attachment', 'TypeRocket\Http\Responders\Hook::attachments' );
         add_action( 'wp_insert_comment', 'TypeRocket\Http\Responders\Hook::comments' );
         add_action( 'edit_comment', 'TypeRocket\Http\Responders\Hook::comments' );
         add_action( 'edit_term', 'TypeRocket\Http\Responders\Hook::taxonomies', 10, 4 );

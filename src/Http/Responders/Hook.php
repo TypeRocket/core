@@ -50,6 +50,23 @@ class Hook
     }
 
     /**
+     * Respond to attachments hook
+     *
+     * @param string $id
+     * @throws \Exception
+     */
+    static public function attachments($id)
+    {
+        if(!static::verified('attachments', $id)) {
+            return;
+        }
+
+        $responder = new PostsResponder;
+        $responder->getHandler()->setHook();
+        $responder->respond([ '@first' => $id ]);
+    }
+
+    /**
      * Respond to comments hook
      *
      * @param string $id
