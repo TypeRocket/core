@@ -1653,7 +1653,8 @@ class Model implements Formable, JsonSerializable
      */
     public function saveAndGet($fields = [])
     {
-        if( $this->hasIdColumn() && $this->findById($this->getID()) ) {
+        $current = $this->findById($this->getID());
+        if( $this->hasIdColumn() && $current ) {
             if($updated = $this->update($fields)) {
                 if($updated instanceof Model) {
                     return $updated;
@@ -1663,7 +1664,7 @@ class Model implements Formable, JsonSerializable
                 return (new $modelClass)->findById($this->getID());
             }
 
-            return null;
+            return $current;
         }
 
         if($created = $this->create($fields)) {

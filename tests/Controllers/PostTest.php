@@ -83,9 +83,10 @@ class PostTest extends TestCase
         $controller = new WPPostController;
         $user = (new WPUser)->find(1);
         $controller->create($request, $response, $user);
-        $id = $response->getData('resourceId');
+        $id = $response->getData('resourceId') ?? 1 ;
         $model = new WPPost();
-        $meta = $model->findById( $id )->getFieldValue('meta_key');
+        $new = $model->findById( $id );
+        $meta = $new->getFieldValue('meta_key');
 
         wp_delete_post( $id, true);
 

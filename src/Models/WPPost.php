@@ -446,7 +446,8 @@ class WPPost extends Model
                 $error = 'WPPost not created: An error accrued during wp_insert_post.';
                 throw new ModelException( $error );
             } else {
-                $new_post = $this->findById($post);
+                $modelClass = get_class($this);
+                $new_post = (new $modelClass)->findById($post);
             }
         }
 
