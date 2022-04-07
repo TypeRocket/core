@@ -280,6 +280,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();

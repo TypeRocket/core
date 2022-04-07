@@ -2549,6 +2549,7 @@ class Model implements Formable, JsonSerializable
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();

@@ -267,6 +267,7 @@ class Results extends \ArrayObject implements Formable, JsonSerializable, Result
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();
