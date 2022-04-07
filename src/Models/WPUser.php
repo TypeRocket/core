@@ -281,8 +281,10 @@ class WPUser extends Model implements AuthUser
                 $builtin = $this->slashBuiltinFields($builtin);
                 remove_action( 'profile_update', 'TypeRocket\Http\Responders\Hook::users' );
                 $builtin['ID'] = $id;
+                $user_login = $builtin['user_login'] ?? null;
+                $user_login_current = $this->getFieldValue('user_login');
 
-                if( !empty($builtin['user_login']) ) {
+                if( !empty($user_login) && $user_login !== $user_login_current ) {
                     throw new ModelException('WPUser not updated: You can not change the user_login');
                 }
 

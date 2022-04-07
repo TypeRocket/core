@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Query;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Exceptions\ModelException;
 use TypeRocket\Exceptions\ModelNotFoundException;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPUser;
@@ -70,8 +71,6 @@ class UserTest extends TestCase
 
         $user->update($data);
 
-        wp_delete_user( self::$sharedUserId );
-
         $nicename = $user->getProperty('user_nicename');
         $url = $user->getProperty('user_url');
         $display = $user->getProperty('display_name');
@@ -80,6 +79,50 @@ class UserTest extends TestCase
         $this->assertTrue($nicename == wp_unslash($data['user_nicename']));
         $this->assertTrue($url == wp_unslash($data['user_url']));
         $this->assertTrue($display == $data['display_name']);
+    }
+
+    public function testUpdateWithSlashingSameUserLogin()
+    {
+        $user = new WPUser();
+        $user->findById( self::$sharedUserId );
+
+        $data = [
+            'user_login' => 'newnicename',
+        ];
+
+        try {
+            $user->update($data);
+            $updated = true;
+        } catch (ModelException $e) {
+            $updated = false;
+        }
+
+        $user_login = $user->getProperty('user_login');
+
+        $this->assertTrue($updated);
+        $this->assertTrue($user_login === $data['user_login']);
+    }
+
+    public function testUpdateWithSlashingNewUserLogin()
+    {
+        $user = new WPUser();
+        $user->findById( self::$sharedUserId );
+
+        $data = [
+            'user_login' => 'updated_user_login',
+        ];
+
+        try {
+            $user->update($data);
+            $updated = true;
+        } catch (ModelException $e) {
+            $updated = false;
+        }
+
+        $user_login = $user->getProperty('user_login');
+
+        $this->assertFalse($updated);
+        $this->assertTrue($user_login !== $data['user_login']);
     }
 
     public function testUsersPosts()
@@ -110,5 +153,10 @@ class UserTest extends TestCase
         $result = $user->findById( 0 );
 
         $this->assertTrue( $result === null);
+    }
+
+    public function testUserDataCleanup()
+    {
+        $this->assertTrue(wp_delete_user( self::$sharedUserId ));
     }
 }
