@@ -448,10 +448,18 @@ class WPPost extends Model
             } else {
                 $modelClass = get_class($this);
                 $new_post = (new $modelClass)->findById($post);
+
+                // TODO v6: Remove this line.
+                // Kept for breaking changes in v5 for now
+                $this->findById($post);
             }
         }
 
-        $this->saveMeta( $fields );
+        if($new_post) {
+            $new_post->saveMeta( $fields );
+        } else {
+            $this->saveMeta( $fields );
+        }
 
         do_action('typerocket_model_after_create', $this, $fields, $new_post);
 

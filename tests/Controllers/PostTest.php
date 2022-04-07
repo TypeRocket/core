@@ -73,6 +73,7 @@ class PostTest extends TestCase
 
     public function testCreateWithMetaMethod()
     {
+        unset($_POST['tr']);
         $_POST['tr']['post_title'] = 'Hello World! Created by controller!';
         $_POST['tr']['post_content'] = 'Content created by controller!';
         $_POST['tr']['meta_key'] = 'Meta created by controller!';
@@ -83,7 +84,7 @@ class PostTest extends TestCase
         $controller = new WPPostController;
         $user = (new WPUser)->find(1);
         $controller->create($request, $response, $user);
-        $id = $response->getData('resourceId') ?? 1 ;
+        $id = $response->getData('resourceId') ?? null;
         $model = new WPPost();
         $new = $model->findById( $id );
         $meta = $new->getFieldValue('meta_key');
@@ -91,7 +92,7 @@ class PostTest extends TestCase
         wp_delete_post( $id, true);
 
         $this->assertTrue( !empty($id) );
-        $this->assertTrue( $meta == $request->getFields('meta_key') );
+        $this->assertTrue( $meta === $request->getFields('meta_key') );
         unset($_POST['tr']);
     }
 

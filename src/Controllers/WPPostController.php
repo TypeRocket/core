@@ -98,7 +98,7 @@ class WPPostController extends Controller
 
             $response->flashNext($model->getRouteResource() . ' created', 'success' );
             $response->setStatus(201);
-            $response->setData('resourceId', $model->getID());
+            $response->setData('resourceId', $new->getID());
         } catch ( ModelException $e ) {
             $response->flashNext($e->getMessage(), 'error' );
             $response->setError( 'model', $e->getMessage() );
