@@ -243,6 +243,11 @@ abstract class Field
 
         $help = $this->getSetting( 'help' );
 
+        if(is_callable($help)) {
+            $value = $this->getValue();
+            $help = $help($value, $this);
+        }
+
         $id     = $id ? "id=\"{$id}\"" : '';
         $idHelp = $idInput ? "id=\"{$idInput}--help\"" : '';
         $help   = $help ? "<div {$idHelp} class=\"tr-form-field-help\"><p>{$help}</p></div>" : '';
@@ -402,8 +407,7 @@ abstract class Field
     public function setHelp( $value )
     {
         if(is_callable($value)) {
-            $input_value = $this->getValue();
-            $this->settings['help'] = $value($input_value, $this);
+            $this->settings['help'] = $value;
         } elseif($value) {
             $this->settings['help'] = $value;
         } else {
