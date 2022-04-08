@@ -395,13 +395,16 @@ abstract class Field
     /**
      * Set Help Text
      *
-     * @param string $value help text
+     * @param string|callable $value help text
      *
      * @return $this
      */
     public function setHelp( $value )
     {
-        if($value) {
+        if(is_callable($value)) {
+            $input_value = $this->getValue();
+            $this->settings['help'] = $value($input_value, $this);
+        } elseif($value) {
             $this->settings['help'] = $value;
         } else {
             unset($this->settings['help']);
@@ -450,7 +453,7 @@ abstract class Field
     /**
      * Get Type
      *
-     * @return null
+     * @return null|string
      */
     public function getType()
     {
