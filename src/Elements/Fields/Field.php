@@ -216,14 +216,29 @@ abstract class Field
     }
 
     /**
-     * Get Form Field string
-     *
+     * @deprecated
      * @return string
      */
     public function getFromString()
     {
+        return $this->getFormString();
+    }
+
+    /**
+     * Get Form Field string
+     *
+     * @return string
+     */
+    public function getFormString() : string
+    {
         // converting to string must happen first
         $fieldString     = $this->getString();
+        $before_form_string = $this->getSetting('before_form_string');
+        $field_cb_value = $this->getValue();
+
+        if(is_callable($before_form_string)) {
+            $before_form_string($field_cb_value, $this);
+        }
 
         if(!$fieldString) {
             return '';
@@ -244,8 +259,7 @@ abstract class Field
         $help = $this->getSetting( 'help' );
 
         if(is_callable($help)) {
-            $value = $this->getValue();
-            $help = $help($value, $this);
+            $help = $help($field_cb_value, $this);
         }
 
         $id     = $id ? "id=\"{$id}\"" : '';
@@ -277,12 +291,35 @@ abstract class Field
         $this->beforeEcho();
         $form = $this->getForm();
         if($form instanceof BaseForm) {
-            $string = $this->getFromString();
+            $string = $this->getFormString();
         } else {
             $string = $this->getString();
         }
 
         return $string;
+    }
+
+    /**
+     * Set Before Form String
+     *
+     * @param callable $callable
+     * @return Field
+     */
+    public function setBeforeFormString(callable $callable)
+    {
+        return $this->setSetting('before_form_string', $callable);
+    }
+
+    /**
+     * Append to Section Classes
+     *
+     * @param string $classes
+     *
+     * @return $this
+     */
+    public function appendToSectionClasses(string $classes)
+    {
+        return $this->appendToStringSetting('classes', $classes);
     }
 
     /**

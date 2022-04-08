@@ -91,6 +91,22 @@ trait Settings
     }
 
     /**
+     * Append to String Setting
+     *
+     * @param string $setting
+     * @param string $value
+     * @param string $spacer
+     *
+     * @return $this
+     */
+    public function appendToStringSetting($setting, string $value, $spacer = ' ')
+    {
+        $this->settings[$setting] = ($this->settings[$setting] ?? '' ) . $spacer . $value;
+
+        return $this;
+    }
+
+    /**
      * Get From setting by key
      *
      * @param string $key
