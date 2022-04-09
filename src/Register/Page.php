@@ -551,7 +551,7 @@ class Page extends Registrable
      * Add Admin Bar Menu Item
      *
      * @param string $id
-     * @param null $title
+     * @param null|string $title
      * @param string $parent_id
      *
      * @return Page $this
@@ -751,8 +751,8 @@ class Page extends Registrable
      * @param string $singular
      * @param string|array|null $plural
      * @param array $settings
-     * @param null $resource
-     * @param null $handler
+     * @param null|string $resource
+     * @param null|string $handler
      *
      * @return static
      * @throws \Exception

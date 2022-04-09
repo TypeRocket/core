@@ -10,8 +10,8 @@ class SqlRunner
 
     /**
      * @param $file_sql
-     * @param null $callback
-     * @param null $cb_data
+     * @param null|callable $callback
+     * @param null|string|array $cb_data
      *
      * @throws SqlException
      */
@@ -27,8 +27,8 @@ class SqlRunner
 
     /**
      * @param $sql
-     * @param null $callback
-     * @param null $cb_data
+     * @param null|callable $callback
+     * @param null|string|array $cb_data
      *
      * @return array
      * @throws SqlException
@@ -42,9 +42,9 @@ class SqlRunner
     }
 
     /**
-     * @param $queries
-     * @param null $callback
-     * @param null $cb_data
+     * @param array $queries
+     * @param null|callable $callback
+     * @param null|array|string $cb_data
      *
      * @return array
      * @throws SqlException

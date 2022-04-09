@@ -147,7 +147,7 @@ class Model implements Formable, JsonSerializable
      * User Can
      *
      * @param $action
-     * @param null $user
+     * @param null|WPUser|Auth $user
      * @return mixed
      * @throws \Exception
      */
@@ -1372,7 +1372,7 @@ class Model implements Formable, JsonSerializable
      *
      * @param string $column
      * @param string $arg1
-     * @param null $arg2
+     * @param null|string|array $arg2
      * @param string $condition
      * @param null|int $num
      *
@@ -1776,7 +1776,7 @@ class Model implements Formable, JsonSerializable
      * @param string $modelClass
      * @param null|string $id_foreign
      *
-     * @param null $scope
+     * @param null|callable $scope
      * @return mixed|null
      */
     public function hasOne($modelClass, $id_foreign = null, $scope = null)
@@ -2186,7 +2186,7 @@ class Model implements Formable, JsonSerializable
      * Set attribute as property
      *
      * @param string $key
-     * @param null $value
+     * @param null|mixed $value
      */
     public function __set($key, $value = null)
     {

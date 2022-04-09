@@ -91,7 +91,7 @@ class WPPost extends Model
     /**
      * WPPost constructor.
      *
-     * @param null $postType
+     * @param null|string $postType
      *
      * @throws \Exception
      */

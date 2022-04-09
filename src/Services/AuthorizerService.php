@@ -15,7 +15,7 @@ class AuthorizerService extends Service
     /**
      * AuthorizerService constructor.
      *
-     * @param null $policies
+     * @param null|array $policies
      */
     public function __construct($policies = null)
     {

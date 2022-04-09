@@ -135,7 +135,7 @@ class File
 
     /**
      * @param string $directory
-     * @param null $premissions
+     * @param null|int $premissions
      *
      * @return bool
      */

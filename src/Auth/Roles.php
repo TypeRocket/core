@@ -55,7 +55,7 @@ class Roles
     /**
      * @param string $role
      * @param array $capabilities
-     * @param null $label
+     * @param null|string $label
      *
      * @return $this
      */

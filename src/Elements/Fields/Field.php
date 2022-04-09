@@ -325,7 +325,7 @@ abstract class Field
     /**
      * Clone Field
      *
-     * @param null $form
+     * @param null|BaseForm|Formable $form
      *
      * @return Field
      */
@@ -708,7 +708,7 @@ abstract class Field
      * Sanitize field value
      *
      * @param string|null $value
-     * @param null $default
+     * @param null|string $default
      *
      * @return mixed
      */

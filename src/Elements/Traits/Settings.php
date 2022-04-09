@@ -110,7 +110,7 @@ trait Settings
      * Get From setting by key
      *
      * @param string $key
-     * @param null $default default value to return if none
+     * @param null|mixed $default default value to return if none
      *
      * @return null
      */

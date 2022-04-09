@@ -150,7 +150,7 @@ class Input extends Field
      *
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/url
      *
-     * @param null $pattern
+     * @param null|string $pattern
      * @return Input
      */
     public function setTypeUrl($pattern = null)
@@ -179,7 +179,7 @@ class Input extends Field
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/tel
      *
      * @param string|null $pattern regex example [0-9]{3}-[0-9]{3}-[0-9]{4}
-     * @param null $help
+     * @param null|string $help
      * @return Input|Field
      */
     public function setTypeTel($pattern = null, $help = null)

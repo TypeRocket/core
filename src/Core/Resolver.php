@@ -55,7 +55,7 @@ class Resolver
      * Resolve Callable
      *
      * @param $handler
-     * @param null $args
+     * @param null|array $args
      * @return mixed
      * @throws \ReflectionException
      */
@@ -77,7 +77,7 @@ class Resolver
      * Get Dependencies
      *
      * @param array $parameters
-     * @param null $args
+     * @param null|array $args
      *
      * @return array
      * @throws \ReflectionException

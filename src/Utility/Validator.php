@@ -53,7 +53,7 @@ class Validator
      *
      * @param array $rules the rules and validation handlers
      * @param array|\ArrayObject|null $fields the fields to be validated
-     * @param null $modelClass must be a class of Model
+     * @param null|string $modelClass must be a class of Model
      * @param bool $run run validation on new
      */
     public function __construct(array $rules, $fields = null, $modelClass = null, $run = false)
@@ -149,7 +149,7 @@ class Validator
     }
 
     /**
-     * @param null $callback
+     * @param null|callable $callback
      * @param bool $flash flash errors to page
      * @param string $key
      *

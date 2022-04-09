@@ -207,7 +207,7 @@ class Cookie
     }
 
     /**
-     * @param null $default
+     * @param null|array $default
      *
      * @return array
      */
@@ -218,7 +218,7 @@ class Cookie
     }
 
     /**
-     * @param null $default
+     * @param null|array $default
      * @param bool $delete
      *
      * @return array

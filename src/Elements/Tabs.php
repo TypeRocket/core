@@ -18,8 +18,8 @@ class Tabs
     protected $title = null;
 
     /**
-     * @param $tab
-     * @param null $icon
+     * @param Tab|string $tab
+     * @param null|string $icon
      * @param null|callable|array $arg
      *
      * @return Tab
@@ -292,7 +292,7 @@ class Tabs
     /**
      * Tabs at the top
      *
-     * @param null $classes
+     * @param null|string $classes
      */
     protected function topStyleTabs($classes = null)
     {
@@ -399,7 +399,7 @@ class Tabs
     /**
      * Tabs boxes in like with help tabs
      *
-     * @param null $classes
+     * @param null|string $classes
      */
     protected function leftBoxedStyleTabs($classes = null)
     {

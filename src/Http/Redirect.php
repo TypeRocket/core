@@ -132,7 +132,7 @@ class Redirect
     /**
      * @param string $resource
      * @param string $action
-     * @param null $item_id
+     * @param null|string|int $item_id
      * @param string $root_path
      *
      * @return Redirect $this

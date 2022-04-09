@@ -22,7 +22,7 @@ class Query
     /**
      * Query constructor.
      *
-     * @param null $table
+     * @param null|string $table
      * @param bool|null|string $selectTable
      * @param null|string $idColumn
      */
@@ -127,7 +127,7 @@ class Query
      * Set table
      *
      * @param string $name
-     * @param null $as
+     * @param null|string $as
      *
      * @return Query $this
      */
@@ -167,7 +167,7 @@ class Query
      *
      * @param array|\ArrayObject $ids
      *
-     * @param null $table
+     * @param null|string $table
      * @param null|int $num
      *
      * @return Query $this
@@ -203,7 +203,7 @@ class Query
      *
      * @param string|array $column
      * @param string|null $arg1
-     * @param null|string $arg2
+     * @param null|string|array $arg2
      * @param string $condition
      * @param null|int $num
      * @return $this
@@ -274,8 +274,8 @@ class Query
      *
      * @param string $column
      * @param string $arg1
-     * @param null|string $arg2
-     * @param null $num
+     * @param null|string|array $arg2
+     * @param null|string|int $num
      * @return Query
      */
     public function orWhere($column, $arg1, $arg2 = null, $num = null)
@@ -528,7 +528,7 @@ class Query
      *
      * @param string $column
      * @param string $arg1
-     * @param null $arg2
+     * @param null|array|string $arg2
      * @param string $condition
      * @param null|int $num
      *

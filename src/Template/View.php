@@ -200,7 +200,7 @@ class View
     /**
      * Load Other Context
      *
-     * @param null $context
+     * @param null|string $context
      */
     protected function load($context = null)
     {

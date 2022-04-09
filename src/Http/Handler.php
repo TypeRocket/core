@@ -27,7 +27,7 @@ class Handler
      * Get the router arg
      *
      * @param string $key
-     * @param null $default
+     * @param null|mixed $default
      *
      * @return mixed
      */

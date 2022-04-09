@@ -57,7 +57,7 @@ trait OptionsTrait
      * Get option by key
      *
      * @param string $key
-     * @param null $default
+     * @param null|mixed $default
      *
      * @return null
      */
@@ -128,7 +128,7 @@ trait OptionsTrait
      * @param \TypeRocket\Models\Model|string $model
      * @param string $key_name name of the field column to use as key
      * @param null|string $value_name name of the field column to use as value
-     * @param null $empty first option with empty value
+     * @param null|string $empty first option with empty value
      *
      * @return $this
      */

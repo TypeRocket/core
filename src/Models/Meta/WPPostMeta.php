@@ -25,7 +25,7 @@ class WPPostMeta extends Model
     /**
      * Post
      *
-     * @param null $modelClass
+     * @param null|string $modelClass
      * @return WPPostMeta|null
      */
     public function post( $modelClass = null )

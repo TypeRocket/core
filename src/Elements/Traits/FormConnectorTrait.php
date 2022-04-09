@@ -148,7 +148,7 @@ trait FormConnectorTrait
     /**
      * Get or Set Group
      *
-     * @param null $group
+     * @param null|string $group
      *
      * @return $this|null|string
      */

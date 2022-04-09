@@ -74,7 +74,7 @@ class PostTypeModelComposer extends Composer
     }
 
     /**
-     * @param null $name
+     * @param null|string $name
      * @param bool $url
      *
      * @return string|Html|null

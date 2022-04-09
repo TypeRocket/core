@@ -11,7 +11,7 @@ class RestController extends Controller
     /**
      * @param $resource
      * @param Request $request
-     * @param null $id
+     * @param null|string|int $id
      * @throws \Exception
      */
     public function rest($resource, Request $request, $id = null)

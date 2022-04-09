@@ -83,7 +83,7 @@ class Sanitize
      * @param string $input
      * @param bool $force_filter
      * @param bool $auto_p
-     * @param null $allowed_tags
+     * @param null|array $allowed_tags
      *
      * @return string
      */

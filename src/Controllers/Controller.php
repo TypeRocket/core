@@ -95,7 +95,7 @@ class Controller
     /**
      * Get Fields
      *
-     * @param null $field
+     * @param null|string $field
      *
      * @return array|null
      */

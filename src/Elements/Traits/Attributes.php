@@ -91,7 +91,7 @@ trait Attributes
 
     /**
      * @param string $key
-     * @param null $default
+     * @param null|mixed $default
      *
      * @return null
      */
