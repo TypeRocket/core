@@ -87,7 +87,7 @@ class DateTime
     public static function switchDatesTimezoneToSiteTimezone(string $dt, string $from_tz) : ?\DateTime
     {
         return static::newDateTime($dt, $from_tz)
-            ->setTimezone(static::newDateTimezone(get_option('timezone_string')));
+            ->setTimezone(static::newDateTimezone(wp_timezone_string()));
     }
 
     /**
@@ -101,7 +101,7 @@ class DateTime
      */
     public static function switchDatesTimezoneFromSiteTimezone(string $dt, string $to_tz) : ?\DateTime
     {
-        return static::newDateTime($dt, get_option('timezone_string'))
+        return static::newDateTime($dt, wp_timezone_string())
             ->setTimezone(static::newDateTimezone($to_tz));
     }
 
