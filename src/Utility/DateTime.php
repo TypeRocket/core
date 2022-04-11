@@ -3,6 +3,15 @@ namespace TypeRocket\Utility;
 
 class DateTime
 {
+    public static function transformWordPressTimeZoneStringToTimeZone($tz) : \DateTimeZone
+    {
+        if(preg_match('/^UTC[+-]/', $tz)) {
+            $tz = preg_replace('/UTC\+?/', '', $tz);
+        }
+
+        return new \DateTimeZone($tz);
+    }
+
     /**
      * Get \DateTimeZone Object
      *
@@ -12,11 +21,7 @@ class DateTime
      */
     public static function newDateTimezone(string $tz) : \DateTimeZone
     {
-        if(preg_match('/^UTC[+-]/', $tz)) {
-            $tz = preg_replace('/UTC\+?/', '', $tz);
-        }
-
-        return new \DateTimeZone($tz);
+        return static::transformWordPressTimeZoneStringToTimeZone($tz);
     }
 
     /**
@@ -67,7 +72,7 @@ class DateTime
     public static function switchDatesTimezoneFromUTC(string $dt, string $to_tz) : ?\DateTime
     {
         return static::newDateTime($dt, 'UTC')
-            ->setTimezone(new \DateTimeZone($to_tz));
+            ->setTimezone(static::newDateTimezone($to_tz));
     }
 
     /**
