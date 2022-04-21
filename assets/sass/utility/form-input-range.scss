@@ -121,7 +121,7 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   &::-webkit-slider-thumb {
     @include thumb;
     -webkit-appearance: none;
-    margin-top: math.div((-$track-border-width * 2 + $track-height), 2 - math.div($thumb-height, 2));
+    margin-top: math.div($track-height, 2) - math.div($thumb-height, 2) + 1;
   }
 
   &::-moz-range-track {
