@@ -7,6 +7,8 @@ use TypeRocket\Utility\Str;
 class SqlRunner
 {
     protected $query_prefix_tag = '{!!prefix!!}';
+    protected $query_charset_tag = '{!!charset!!}';
+    protected $query_collate_tag = '{!!collate!!}';
 
     /**
      * @param $file_sql
@@ -37,8 +39,13 @@ class SqlRunner
         /** @var \wpdb $wpdb */
         global $wpdb;
         $prefix = $wpdb->prefix;
-        $prefixed = str_replace($this->query_prefix_tag, $prefix, $sql);
-        return $this->runQueryArray( explode(';'.PHP_EOL, $prefixed ), $callback, $cb_data, $file );
+        $charset = $wpdb->charset;
+        $collate = $wpdb->collate;
+
+        $compiled = str_replace($this->query_prefix_tag, $prefix, $sql);
+        $compiled = str_replace($this->query_charset_tag, $charset, $compiled);
+        $compiled = str_replace($this->query_collate_tag, $collate, $compiled);
+        return $this->runQueryArray( explode(';'.PHP_EOL, $compiled ), $callback, $cb_data, $file );
     }
 
     /**
