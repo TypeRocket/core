@@ -28,14 +28,13 @@ class SqlRunner
     }
 
     /**
-     * @param $sql
-     * @param null|callable $callback
-     * @param null|string|array $cb_data
+     * Compile Query String
      *
-     * @return array
-     * @throws SqlException
+     * @param $sql
+     *
+     * @return string
      */
-    public function runQueryString($sql, $callback = null, $cb_data = null, $file = null) {
+    public function compileQueryString($sql) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $prefix = $wpdb->prefix;
@@ -44,7 +43,19 @@ class SqlRunner
 
         $compiled = str_replace($this->query_prefix_tag, $prefix, $sql);
         $compiled = str_replace($this->query_charset_tag, $charset, $compiled);
-        $compiled = str_replace($this->query_collate_tag, $collate, $compiled);
+        return str_replace($this->query_collate_tag, $collate, $compiled);
+    }
+
+    /**
+     * @param $sql
+     * @param null|callable $callback
+     * @param null|string|array $cb_data
+     *
+     * @return array
+     * @throws SqlException
+     */
+    public function runQueryString($sql, $callback = null, $cb_data = null, $file = null) {
+        $compiled = $this->compileQueryString($sql);
         return $this->runQueryArray( explode(';'.PHP_EOL, $compiled ), $callback, $cb_data, $file );
     }
 
