@@ -226,8 +226,8 @@ class Request
     public function getPathWithoutRoot($root = null)
     {
         $root = $root ?? get_site_url();
-        $site =  trim( parse_url($root, PHP_URL_PATH), '/');
-        return ltrim( Str::trimStart(ltrim($this->path, '/'), $site), '/');
+        $site =  trim( (string) parse_url($root, PHP_URL_PATH), '/');
+        return ltrim( Str::trimStart(ltrim((string) $this->path, '/'), $site), '/');
     }
 
     /**

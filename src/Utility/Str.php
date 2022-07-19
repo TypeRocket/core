@@ -70,7 +70,7 @@ class Str
      */
     public static function contains($needle, $subject)
     {
-        return ( mb_strpos( $subject, $needle ) !== false );
+        return ( mb_strpos( (string) $subject, (string) $needle ) !== false );
     }
 
     /**
@@ -83,7 +83,7 @@ class Str
      */
     public static function starts($needle, $subject)
     {
-        return mb_substr($subject, 0, mb_strlen($needle) ) === $needle;
+        return mb_substr( (string) $subject, 0, mb_strlen($needle) ) === $needle;
     }
 
     /**
