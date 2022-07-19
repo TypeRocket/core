@@ -1,0 +1,15 @@
+<?php
+namespace {{namespace}};
+
+use TypeRocket\Utility\Jobs\Interfaces\AllowOneInSchedule;
+use TypeRocket\Utility\Jobs\Interfaces\WithoutOverlapping;
+use TypeRocket\Utility\Jobs\Job;
+
+class {{class}} extends Job
+{
+    public function handle()
+    {
+        // Do stuff when job is called
+        $payload = $this->payload;
+    }
+}
