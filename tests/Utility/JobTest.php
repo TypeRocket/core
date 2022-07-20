@@ -22,7 +22,7 @@ class JobTest extends TestCase
         $this->assertTrue($job->payload === $payload);
     }
 
-    public function testJobPayload()
+    public function testJobPayloadJsonEncoded()
     {
         $payload = [
             ['name' => 'jim'],
@@ -30,8 +30,10 @@ class JobTest extends TestCase
             ['name' => 'kat'],
         ];
 
-        $job = new JobTestClass($payload);
+        $job = new JobTestClass([]);
+        $job->payload = json_encode($payload);
+        $decoded = $job->payload;
 
-        $this->assertTrue($job->payload === $payload);
+        $this->assertTrue($decoded === $payload);
     }
 }

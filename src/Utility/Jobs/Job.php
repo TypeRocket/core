@@ -128,6 +128,7 @@ abstract class Job implements JobCanQueue
     {
         if($key === 'payload') {
             $this->properties['payload'] = Data::isJson($value) ? $value : json_encode($value);
+            return;
         }
 
         if(in_array($key, ['id', 'action', 'context'])) {
