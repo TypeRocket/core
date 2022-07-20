@@ -110,7 +110,7 @@ abstract class Job implements JobCanQueue
             return Data::isJson($json) ? json_decode($json, true) : $json;
         }
 
-        if(in_array($key, ['id', 'action', 'context'])) {
+        if(in_array($key, ['id', 'action', 'context', 'delay'])) {
             return $this->properties[$key];
         }
 
@@ -131,7 +131,7 @@ abstract class Job implements JobCanQueue
             return;
         }
 
-        if(in_array($key, ['id', 'action', 'context'])) {
+        if(in_array($key, ['id', 'action', 'context', 'delay'])) {
             return;
         }
 
