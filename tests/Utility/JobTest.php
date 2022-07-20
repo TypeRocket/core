@@ -3,9 +3,12 @@
 namespace Utility;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Utility\Jobs\Interfaces\AllowOneInSchedule;
+use TypeRocket\Utility\Jobs\Interfaces\WithoutOverlapping;
 use TypeRocket\Utility\Jobs\Job;
+use TypeRocket\Utility\Jobs\Queue;
 
-class JobTestClass extends Job { public function handle() {} }
+class JobTestClass extends Job implements AllowOneInSchedule, WithoutOverlapping { public function handle() {} }
 
 class JobTest extends TestCase
 {
@@ -53,5 +56,16 @@ class JobTest extends TestCase
         $this->assertTrue($job->context === null);
         $this->assertTrue($job->delay === null);
         $this->assertTrue($job->someTestProp === null);
+    }
+
+    public function testQueueError()
+    {
+        try {
+            Queue::addJob(new JobTestClass());
+        } catch (\Throwable $e) {
+
+        }
+
+        $this->assertStringContainsString('Job typerocket_job.Utility\JobTestClass is not registered.', $e->getMessage());
     }
 }

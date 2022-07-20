@@ -34,7 +34,7 @@ class Queue
             $job = Resolver::build($jobClass, ['payload' => $data]);
 
             if(!$job instanceof JobCanQueue) {
-                throw new \Exception("Job must be instance of " . JobCanQueue::class . '.');
+                throw new \Exception( sprintf( __('Job must be instance of %s.', 'typerocket-core'), JobCanQueue::class) );
             }
 
             $job->setActionSchedulerProperties($action, $actionId, $context);
@@ -57,9 +57,9 @@ class Queue
                 if( !empty($ids) && $job->willPostpone() ) {
                     $newActionId = static::addJob($job, $time);
                     $job->postponed($newActionId);
-                    $message = "#{$actionId} job postponed as a new action #{$newActionId}. Job {$jobClass} only one can be in-progress at a time.";
+                    $message = sprintf( __('#%d job postponed as a new action #%d. Job %s only one can be in-progress at a time.', 'typerocket-core'), $actionId, $newActionId, $jobClass);
                     \ActionScheduler_Logger::instance()->log($actionId, $message);
-                    \ActionScheduler_Logger::instance()->log($newActionId, "Created from postponed action #{$actionId}");
+                    \ActionScheduler_Logger::instance()->log($newActionId, sprintf( __("Created from postponed action #%d", 'typerocket-core'), $actionId) );
                     return;
                 }
             }
@@ -149,13 +149,13 @@ class Queue
         $jobLists = Config::getFromContainer()->locate('queue.jobs') ?? [];
 
         if(!in_array($class, $jobLists)) {
-            throw new \Error("Job $actionName is not registered.");
+            throw new \Error( sprintf( __("Job %s is not registered.", 'typerocket-core'), $actionName) );
         }
 
         if($job instanceof AllowOneInSchedule) {
             if ($firstFoundActionId = static::findScheduledJob($actionName) ) {
                 $job->alreadyScheduled($firstFoundActionId);
-                $message = "Attempted to add job $actionName but can only be queued once at any given time.";
+                $message = sprintf( __("Attempted to add job %s but can only be queued once at any given time.", 'typerocket-core'), $actionName);
                 \ActionScheduler_Logger::instance()->log($firstFoundActionId, $message);
                 throw new \Error($message);
             }
