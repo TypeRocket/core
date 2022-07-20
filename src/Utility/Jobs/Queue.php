@@ -12,6 +12,19 @@ use \ActionScheduler_Store;
 
 class Queue
 {
+    /**
+     * Run jobs using action scheduler
+     *
+     * @param string $hookName
+     * @param string $jobClass
+     * @param array|string $data
+     * @param int|string $actionId
+     * @param \ActionScheduler_Action $action
+     * @param $context
+     * @return void
+     * @throws \ReflectionException
+     * @throws \Throwable
+     */
     protected static function runJobFromActionScheduler($hookName, $jobClass, $data, $actionId, \ActionScheduler_Action $action, $context)
     {
         $data = tr_is_json($data) ? json_decode($data, true) : $data;
@@ -73,6 +86,12 @@ class Queue
         }
     }
 
+    /**
+     * @param string $hook
+     * @param array|null|string $args
+     * @param string $group
+     * @return false|int|null
+     */
     public static function findScheduledJob($hook, $args = null, $group = '')
     {
         if ( ! ActionScheduler::is_initialized( __FUNCTION__ ) ) {
@@ -93,6 +112,12 @@ class Queue
         return ActionScheduler::store()->query_action( $query_args );
     }
 
+    /**
+     * @param string $jobClass
+     * @return void
+     * @throws \ReflectionException
+     * @throws \Throwable
+     */
     public static function registerJob(string $jobClass)
     {
         /**
@@ -110,6 +135,11 @@ class Queue
         }, 0, 3);
     }
 
+    /**
+     * @param JobCanQueue $job
+     * @param null|int $time
+     * @return int
+     */
     public static function addJob(JobCanQueue $job, $time = null)
     {
         $class = get_class($job);

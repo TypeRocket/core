@@ -37,6 +37,12 @@ abstract class Job implements JobCanQueue
         $this->properties['payload'] = $payload;
     }
 
+    /**
+     * @param \ActionScheduler_Action $action
+     * @param $actionId
+     * @param $context
+     * @return void
+     */
     public function setActionSchedulerProperties(\ActionScheduler_Action $action, $actionId, $context)
     {
         $this->properties = array_merge($this->properties, [
@@ -46,31 +52,56 @@ abstract class Job implements JobCanQueue
         ]);
     }
 
+    /**
+     * @return bool
+     */
     public function willPostpone() : bool
     {
         return true;
     }
 
+    /**
+     * @param $newActionId
+     * @return void
+     */
     public function postponed($newActionId)
     {
         // Do nothing by default
     }
 
+    /**
+     * @param $firstFoundActionId
+     * @return void
+     */
     public function alreadyScheduled($firstFoundActionId)
     {
         // Do nothing by default
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function failed(array $data)
     {
         // Do nothing by default
     }
 
+    /**
+     * @param string $message
+     * @return int
+     */
     public function logToAction(string $message) : int
     {
         return (int) \ActionScheduler_Logger::instance()->log($this->id, $message);
     }
 
+    /**
+     * Look to properties for job and action data
+     *
+     * @param string $key
+     * @return int|mixed|string|null
+     */
     public function __get($key)
     {
         if($key === 'payload') {
@@ -85,6 +116,13 @@ abstract class Job implements JobCanQueue
         return $this->{$key};
     }
 
+    /**
+     * Disable the ability to set action related data
+     *
+     * @param string $key
+     * @param $value
+     * @return void
+     */
     public function __set($key, $value)
     {
         if($key === 'payload') {
