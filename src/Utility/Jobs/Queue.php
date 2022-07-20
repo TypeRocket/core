@@ -146,7 +146,7 @@ class Queue
         $time = $time ?? (time() + $job::DELAY);
         $actionName = 'typerocket_job.' . $class;
 
-        $jobLists = Config::getFromContainer()->locate('jobs.map') ?? [];
+        $jobLists = Config::getFromContainer()->locate('queue.jobs') ?? [];
 
         if(!in_array($class, $jobLists)) {
             throw new \Error("Job $actionName is not registered.");
