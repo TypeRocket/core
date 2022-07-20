@@ -11,6 +11,15 @@
          stopOnFailure="false"
          verbose="true"
 >
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+            <exclude>
+                <directory suffix=".php">./src/Extensions/views</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
     <testsuites>
 
         <testsuite name="All">

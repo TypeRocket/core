@@ -46,10 +46,12 @@ class JobTest extends TestCase
         ];
 
         $job = new JobTestClass($payload);
+        $job->someTestProp = null;
 
         $this->assertTrue($job->id === null);
         $this->assertTrue($job->action === null);
         $this->assertTrue($job->context === null);
         $this->assertTrue($job->delay === null);
+        $this->assertTrue($job->someTestProp === null);
     }
 }
