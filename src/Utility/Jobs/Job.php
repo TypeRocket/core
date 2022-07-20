@@ -2,6 +2,7 @@
 
 namespace TypeRocket\Utility\Jobs;
 
+use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Jobs\Interfaces\JobCanQueue;
 
 /**
@@ -106,7 +107,7 @@ abstract class Job implements JobCanQueue
     {
         if($key === 'payload') {
             $json = $this->properties['payload'] ?? null;
-            return tr_is_json($json) ? json_decode($json, true) : $json;
+            return Data::isJson($json) ? json_decode($json, true) : $json;
         }
 
         if(in_array($key, ['id', 'action', 'context'])) {
@@ -126,7 +127,7 @@ abstract class Job implements JobCanQueue
     public function __set($key, $value)
     {
         if($key === 'payload') {
-            $this->properties['payload'] = tr_is_json($value) ? $value : json_encode($value);
+            $this->properties['payload'] = Data::isJson($value) ? $value : json_encode($value);
         }
 
         if(in_array($key, ['id', 'action', 'context'])) {
