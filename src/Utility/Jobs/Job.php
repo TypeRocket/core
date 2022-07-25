@@ -2,6 +2,7 @@
 
 namespace TypeRocket\Utility\Jobs;
 
+use spec\Prophecy\Argument\Token\StringContainsTokenSpec;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Jobs\Interfaces\JobCanQueue;
 
@@ -95,6 +96,15 @@ abstract class Job implements JobCanQueue
     public function logToAction(string $message) : int
     {
         return (int) \ActionScheduler_Logger::instance()->log($this->id, $message);
+    }
+
+    /**
+     * @param array $payload
+     * @return int
+     */
+    public static function dispatch(array $payload = [], $time = null)
+    {
+        return Queue::addJob(new static($payload), $time);
     }
 
     /**
