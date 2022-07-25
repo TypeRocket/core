@@ -2,7 +2,6 @@
 
 namespace TypeRocket\Utility\Jobs;
 
-use spec\Prophecy\Argument\Token\StringContainsTokenSpec;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Jobs\Interfaces\JobCanQueue;
 
