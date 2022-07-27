@@ -20,6 +20,7 @@ use TypeRocket\Models\Traits\ArrayReplaceRecursiveValues;
 use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Models\Traits\Searchable;
 use TypeRocket\Services\AuthorizerService;
+use TypeRocket\Template\Composer;
 use TypeRocket\Utility\Arr;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Inflect;
@@ -30,40 +31,189 @@ class Model implements Formable, JsonSerializable
 {
     use Searchable, FieldValue, ArrayReplaceRecursiveValues;
 
+    /**
+     * The properties that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [];
-    protected $restMetaFields = [];
-    protected $closed = false;
+
+    /**
+     * The properties that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $guard = ['id'];
-    protected $format = [];
-    protected $cast = [];
-    protected $static = [];
-    protected $builtin = [];
+
+    /**
+     * The properties that should not be saved as meta.
+     *
+     * @var array<int, string>
+     */
     protected $metaless = [];
+
+    /**
+     * The properties that should not be show by the
+     * TypeRocket REST API endpoint.
+     *
+     * @var array<int, string>
+     */
     protected $private = [];
-    protected $resource = null;
-    protected $routeResource = null;
-    protected $table = null;
+
+    /**
+     * Property key in dot notation and the function to
+     * call upon that value before persisting.
+     *
+     * @var array<string, null|callable>
+     */
+    protected $format = [];
+
+    /**
+     * The properties that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $cast = [];
+
+    /**
+     * The properties that should be static.
+     *
+     * @var array<string, mixed>
+     */
+    protected $static = [];
+
+    /**
+     * The properties that relate to WordPress core tables.
+     *
+     * @var array<int, string>
+     */
+    protected $builtin = [];
+
+    /**
+     * The properties that relate to database columns or meta.
+     *
+     * @var array<string, mixed>
+     */
+    protected $properties = [];
+
+    /**
+     * The meta fields for the WordPress REST API.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    protected $restMetaFields = [];
+
+    /**
+     * @var bool
+     */
+    protected $closed = false;
+
+    /**
+     * @var string|null
+     */
+    protected $resource;
+
+    /**
+     * @var string|null
+     */
+    protected $routeResource;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * @var Composer
+     */
     protected $composer;
-    protected $errors = null;
+
+    /**
+     * The errors supplied internal model methods.
+     *
+     * @var array<int, string>
+     */
+    protected $errors;
+
     /** @var mixed|Query  */
     protected $query;
-    protected $properties = [];
-    protected $propertiesUnaltered = null;
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $propertiesUnaltered;
+
+    /**
+     * Default properties values
+     *
+     * @var array
+     */
     protected $explicitProperties = [];
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
     protected $idColumn = 'id';
+
+    /**
+     * @var string
+     */
     protected $resultsClass = Results::class;
-    protected $currentRelationshipModel = null;
-    protected $relatedBy = null;
+
+    /**
+     * @var null|Model
+     */
+    protected $currentRelationshipModel;
+
+    /**
+     * @var array
+     */
+    #[ArrayShape(['type' => 'string', 'query' => 'array'])]
+    protected $relatedBy;
+    /**
+     * @var array
+     */
     protected $relationships = [];
-    protected $junction = null;
-    protected $with = null;
+
+    /**
+     * @var array
+     */
+    #[ArrayShape(['table' => 'string', 'columns' => 'array', 'id_foreign' => 'int|string'])]
+    protected $junction;
+
+    /**
+     * The relations to eager load on every query.
+     *
+     * @var array
+     */
+    protected $with;
+
+    /**
+     * Will data be added to the WordPress core cache if there
+     * is an implementation for caching the model data.
+     *
+     * @var bool
+     */
     protected $cache = true;
+
+    /**
+     * The properties that relate to database columns or meta.
+     *
+     * @var array<string, string>
+     */
+    #[ArrayShape(['key' => 'string|null', 'value' => 'string|null'])]
     protected $fieldOptions = [
         'key' => null,
         'value' => null,
     ];
 
-    /** @var array use this for your own custom caching at the model level */
+    /**
+     * @var array use this for your own custom caching at the model level
+     */
     protected $dataCache = [];
 
     /**
@@ -2453,7 +2603,7 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
-     * @return mixed|\TypeRocket\Template\Composer
+     * @return \TypeRocket\Template\Composer
      */
     public function composer()
     {
