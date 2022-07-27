@@ -18,6 +18,7 @@
         "php": "^7.4",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-openssl": "*",
         "symfony/console": "^5.1",
         "woocommerce/action-scheduler": "^3.4"
     },
