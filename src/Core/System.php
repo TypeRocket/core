@@ -509,42 +509,34 @@ class System
                     'path-app'                => [
                         'label' => __( 'App Path' ),
                         'value' => $paths['app'],
-                        'debug' => '',
                     ],
                     'path-config'                => [
                         'label' => __( 'Config Path' ),
                         'value' => Config::getFromContainer()->getRoot(),
-                        'debug' => '',
                     ],
                     'path-assets'                => [
                         'label' => __( 'Assets Path' ),
                         'value' => $paths['assets'],
-                        'debug' => '',
                     ],
                     'url-assets'                => [
                         'label' => __( 'Assets URL' ),
                         'value' => $urls['assets'],
-                        'debug' => '',
                     ],
-                    'extensions' => [
+                    'extensions-active' => [
                         'label' => __( 'Active Extensions' ),
                         'value' => implode(", ", $app['extensions']),
-                        'debug' => '',
                     ],
-                    'version'                => [
+                    'version-core'                => [
                         'label' => __( 'Core Version' ),
                         'value' => InstalledVersions::getVersion('typerocket/core'),
-                        'debug' => '',
                     ],
                     'version-pro'                => [
                         'label' => __( 'Pro Version' ),
                         'value' => InstalledVersions::getVersion('typerocket/professional'),
-                        'debug' => '',
                     ],
-                    'version-app' => [
-                        'label' => __( 'Plugin Version' ),
-                        'value' => $plugin_version ?: 'NA',
-                        'debug' => '',
+                    'app-type' => [
+                        'label' => __( 'App Type' ),
+                        'value' => $plugin_version ? "Plugin Version {$plugin_version}": 'Custom/Composer',
                     ],
                 ]
             ]
