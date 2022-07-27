@@ -14,6 +14,7 @@ class PageBuilder
     use OptionsTrait;
 
     protected $postTypes = ['page'];
+    protected $postScreens = [];
     protected $fieldName = null;
     public const FIELD_NAME = 'builder';
     protected $showStatus = true;
@@ -25,6 +26,7 @@ class PageBuilder
         }
 
         $this->postTypes = apply_filters('typerocket_ext_builder_post_types', $post_types);
+        $this->postScreens = apply_filters('typerocket_ext_builder_post_screens', $this->postScreens);
         $this->fieldName = $field_name ?? $this->fieldName ?? static::FIELD_NAME;
         $this->options = [];
 
@@ -35,9 +37,7 @@ class PageBuilder
         do_action('typerocket_builder_plugin_init', $this);
 
         add_action( 'enqueue_block_editor_assets', function() {
-            global $post;
-
-            if(isset($post) && !in_array($post->post_type, $this->postTypes)) {
+            if(!$this->showPageBuilderForPost()) {
                 return;
             }
 
@@ -88,11 +88,13 @@ class PageBuilder
             $builder = false;
         }
 
-        if( !$builder && in_array($post->post_type, $this->postTypes) && $value ) {
+        $canShowBuilder = $this->showPageBuilderForPost();
+
+        if( !$builder && $canShowBuilder && $value ) {
             return true;
         }
 
-        if(in_array($post->post_type, $this->postTypes)) {
+        if($canShowBuilder) {
 
             MetaBox::add('Editor')->setPriority('high')->setContext('side')->addScreen($post->post_type)->setCallback(function () use ($post, $use_builder, $value) {
                 $builder_active = $editor_active = '';
@@ -128,6 +130,46 @@ class PageBuilder
         return $value;
     }
 
+    /**
+     * Check if build can show on post edit page base on:
+     *
+     * - Post type
+     * - Post template
+     * - Is front or posts page
+     *
+     * @param null $post_check
+     * @return bool
+     */
+    public function showPageBuilderForPost($post_check = null) : bool
+    {
+        global $post;
+
+        $p = $post_check ?? $post;
+
+        if(!isset($p)) {
+            return false;
+        }
+
+        $show = false;
+
+        if($p->ID === (int) get_option('page_on_front')) {
+            $screen = 'front_page';
+        } elseif($p->ID === (int) get_option('page_for_posts')) {
+            $screen = 'posts_page';
+        } else {
+            $screen = get_post_meta( $p->ID, '_wp_page_template', true );
+        }
+
+        if(
+            in_array($p->post_type, $this->postTypes) ||
+            in_array($screen, $this->postScreens)
+        ) {
+            $show = true;
+        }
+
+        return $show;
+    }
+
     public function remove_gutenberg()
     {
         wp_dequeue_style( 'wp-block-library' );
@@ -135,7 +177,7 @@ class PageBuilder
 
     public function edit_form_after_title($post)
     {
-        if (is_array($this->postTypes) && in_array($post->post_type, $this->postTypes)) :
+        if ($this->showPageBuilderForPost($post)) :
 
             /** @var Form $form */
             $form = \TypeRocket\Utility\Helper::form();
@@ -178,7 +220,7 @@ class PageBuilder
             return;
         }
 
-        if (is_array($this->postTypes) && in_array($post->post_type, $this->postTypes)) :
+        if ($this->showPageBuilderForPost($post)) :
             echo '</div>';
         endif;
     }
