@@ -11,10 +11,6 @@ class SecureAuthCookiesService extends Service
 
     public function __construct()
     {
-        if(!(\PHP_VERSION_ID >= 70300)) {
-            throw new \Error(__(static::class . ' TypeRocket service requires PHP 7.3 > ' . \PHP_VERSION_ID, 'typerocket-core'));
-        }
-
         /**
          * Options: None, Lax or Strict
          *
