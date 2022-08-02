@@ -16,6 +16,7 @@ use TypeRocket\Http\RouteCollection;
 use TypeRocket\Http\Router;
 use TypeRocket\Http\SSL;
 use TypeRocket\Register\Registry;
+use TypeRocket\Services\Service;
 use TypeRocket\Utility\Helper;
 use TypeRocket\Utility\RuntimeCache;
 use TypeRocket\Utility\Str;
@@ -29,6 +30,9 @@ class System
     protected $stash = [];
     protected $loaded = false;
     protected $frontend_mode = false;
+
+    protected array $loadedExtensions = [];
+    protected array $loadedServices = [];
 
     /**
      * Boot Core
@@ -66,6 +70,7 @@ class System
             do_action('typerocket_before_load', $this);
             $this->loadRuntimeCacheValues();
             $this->maybeLoadAdvancedSystem();
+            $this->loadServices();
             $this->loadExtensions();
             $this->initHooks();
             $this->loadResponders();
@@ -298,6 +303,28 @@ class System
         foreach ($ext as $extClass) {
             if(class_exists($extClass)) {
                 (new Resolver())->resolve($extClass);
+                $this->loadedExtensions[] = $extClass;
+            }
+        }
+    }
+
+    /**
+     * Load Services
+     */
+    public function loadServices()
+    {
+        // Application Services
+        $conf = Config::get('app');
+        $services = apply_filters('typerocket_services', $conf['services'] );
+
+        /**
+         * @var string[] $services
+         */
+        foreach ($services as $service) {
+            $instance = (new Resolver)->resolve($service);
+            if($instance instanceof Service) {
+                Container::register($service, [$instance, 'register'], $instance->isSingleton(), $instance::ALIAS);
+                $this->loadedServices[] = get_class($instance);
             }
         }
     }
@@ -523,8 +550,12 @@ class System
                         'value' => $urls['assets'],
                     ],
                     'extensions-active' => [
-                        'label' => __( 'Active Extensions' ),
-                        'value' => implode(", ", $app['extensions']),
+                        'label' => __( 'Loaded Extensions' ),
+                        'value' => implode(", ", $this->loadedExtensions),
+                    ],
+                    'services-active' => [
+                        'label' => __( 'Loaded Services' ),
+                        'value' => implode(", ", $this->loadedServices),
                     ],
                     'version-core'                => [
                         'label' => __( 'Core Version' ),

@@ -34,7 +34,6 @@ namespace TypeRocket\Core
          */
         public function default()
         {
-            $this->loadServices();
             (new System)->boot();
         }
 
@@ -63,8 +62,6 @@ namespace TypeRocket\Core
         public function bootSystemAfterMustUseLoaded()
         {
             static::addFilter('muplugins_loaded', function() {
-                $this->loadServices();
-
                 if( is_file(TYPEROCKET_ALT_PATH . '/rooter.php') ) {
                     require(TYPEROCKET_ALT_PATH . '/rooter.php');
                 }
@@ -109,25 +106,6 @@ namespace TypeRocket\Core
             }, AuthUser::ALIAS);
 
             return $this;
-        }
-
-        /**
-         * @throws \ReflectionException
-         */
-        public function loadServices()
-        {
-            // Application Services
-            $services = Config::get('app.services');
-
-            /**
-             * @var string[] $services
-             */
-            foreach ($services as $service) {
-                $instance = (new Resolver)->resolve($service);
-                if($instance instanceof Service) {
-                    Container::register($service, [$instance, 'register'], $instance->isSingleton(), $instance::ALIAS);
-                }
-            }
         }
 
         /**
