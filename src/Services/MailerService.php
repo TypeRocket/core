@@ -42,6 +42,14 @@ namespace TypeRocket\Services
             return $this->driver = $driver;
         }
 
+        /**
+         * @param string|string[] $to Array or comma-separated list of email addresses to send message.
+         * @param string $subject Email subject.
+         * @param string $message Message contents.
+         * @param string|string[] $headers Additional headers.
+         * @param string|string[] $attachments Paths to files to attach.
+         * @return bool
+         */
         public function send($to, $subject, $message, $headers = '', $attachments = []) : bool
         {
             return $this->driver()->send(...func_get_args());
@@ -61,15 +69,14 @@ namespace
 {
     use TypeRocket\Services\MailerService;
 
-    if(!function_exists('wp_mail') && \TypeRocket\Core\Config::get('mail.default')) {
-        function wp_mail( $to, $subject, $message, $headers = '', $attachments = [] )
-        {
-            /**
-             * @var MailerService $mailer
-             */
-            $mailer = MailerService::getFromContainer();
+    function typerocket_mail_service_override_wp_mail($return, $args): bool
+    {
+        $mailer = MailerService::getFromContainer();
 
-            return $mailer->send(...func_get_args());
-        }
+        return $mailer->send($args['to'], $args['subject'], $args['message'], $args['headers'], $args['attachments']);
+    }
+
+    if(\TypeRocket\Core\Config::get('mail.default')) {
+        add_filter('pre_wp_mail', 'typerocket_mail_service_override_wp_mail', 0, 2);
     }
 }
