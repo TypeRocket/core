@@ -18,20 +18,6 @@ class SecureAuthCookiesService extends Service
          */
         $same_site = Config::getFromContainer()->locate('cookies.auth.same_site', 'Lax');
 
-        /**
-         * By default, WordPress adds `X-Frame-Options: SAMEORIGIN`. However, these headers are often set
-         * by the web server instead. Set this option as `false` to disable WordPress' x-frame-options.
-         *
-         * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-         */
-        $x_frame_options = Config::getFromContainer()->locate('cookies.auth.x_frame_options', true);
-
-        if(!$x_frame_options) {
-            remove_action('admin_init', 'send_frame_options_header');
-            remove_action('init', 'send_frame_options_header');
-            remove_action('login_init', 'send_frame_options_header');
-        }
-
         add_filter('send_auth_cookies', '__return_false');
 
         add_action('set_auth_cookie', function ($auth_cookie, $expire) use ($same_site) {
