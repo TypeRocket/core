@@ -528,6 +528,14 @@ class System
         $app = Config::getFromContainer()->locate('app');
         $urls = Config::getFromContainer()->locate('urls');
         $plugin_version = defined('TYPEROCKET_PLUGIN_VERSION') ? TYPEROCKET_PLUGIN_VERSION : null;
+        $core_version = 'Something went wrong!';
+
+        try {
+            $core_version = InstalledVersions::getVersion('typerocket/core');
+            $pro_version = InstalledVersions::getVersion('typerocket/professional');
+        } catch (\Throwable $e) {
+            $pro_version = 'Not installed';
+        }
 
         return array_merge([
             'typerocket' => [
@@ -559,11 +567,11 @@ class System
                     ],
                     'version-core'                => [
                         'label' => __( 'Core Version' ),
-                        'value' => InstalledVersions::getVersion('typerocket/core'),
+                        'value' => $core_version,
                     ],
                     'version-pro'                => [
                         'label' => __( 'Pro Version' ),
-                        'value' => InstalledVersions::getVersion('typerocket/professional'),
+                        'value' => $pro_version,
                     ],
                     'app-type' => [
                         'label' => __( 'App Type' ),
