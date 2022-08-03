@@ -525,56 +525,59 @@ class System
     public function health($info) : array
     {
         $paths = Config::getFromContainer()->locate('paths');
-        $app = Config::getFromContainer()->locate('app');
         $urls = Config::getFromContainer()->locate('urls');
         $plugin_version = defined('TYPEROCKET_PLUGIN_VERSION') ? TYPEROCKET_PLUGIN_VERSION : null;
-        $core_version = 'Something went wrong!';
 
         try {
             $core_version = InstalledVersions::getVersion('typerocket/core');
+        } catch (\Throwable $e) {
+            $core_version = __('Another plugin is blocking this information.', 'typerocket-core');
+        }
+
+        try {
             $pro_version = InstalledVersions::getVersion('typerocket/professional');
         } catch (\Throwable $e) {
-            $pro_version = 'Not installed';
+            $pro_version = __('NA', 'typerocket-core');
         }
 
         return array_merge([
             'typerocket' => [
-                'label'  => __( 'TypeRocket' ),
+                'label'  => __( 'TypeRocket', 'typerocket-core' ),
                 'fields' => [
                     'path-app'                => [
-                        'label' => __( 'App Path' ),
+                        'label' => __( 'App Path', 'typerocket-core' ),
                         'value' => $paths['app'],
                     ],
                     'path-config'                => [
-                        'label' => __( 'Config Path' ),
+                        'label' => __( 'Config Path', 'typerocket-core' ),
                         'value' => Config::getFromContainer()->getRoot(),
                     ],
                     'path-assets'                => [
-                        'label' => __( 'Assets Path' ),
+                        'label' => __( 'Assets Path', 'typerocket-core' ),
                         'value' => $paths['assets'],
                     ],
                     'url-assets'                => [
-                        'label' => __( 'Assets URL' ),
+                        'label' => __( 'Assets URL', 'typerocket-core' ),
                         'value' => $urls['assets'],
                     ],
                     'extensions-active' => [
-                        'label' => __( 'Loaded Extensions' ),
+                        'label' => __( 'Loaded Extensions', 'typerocket-core' ),
                         'value' => implode(", ", $this->loadedExtensions),
                     ],
                     'services-active' => [
-                        'label' => __( 'Loaded Services' ),
+                        'label' => __( 'Loaded Services', 'typerocket-core' ),
                         'value' => implode(", ", $this->loadedServices),
                     ],
                     'version-core'                => [
-                        'label' => __( 'Core Version' ),
+                        'label' => __( 'Core Version', 'typerocket-core' ),
                         'value' => $core_version,
                     ],
                     'version-pro'                => [
-                        'label' => __( 'Pro Version' ),
+                        'label' => __( 'Pro Version', 'typerocket-core' ),
                         'value' => $pro_version,
                     ],
                     'app-type' => [
-                        'label' => __( 'App Type' ),
+                        'label' => __( 'App Type', 'typerocket-core' ),
                         'value' => $plugin_version ? "Plugin Version {$plugin_version}": 'Custom/Composer',
                     ],
                 ]
