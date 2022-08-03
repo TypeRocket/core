@@ -225,8 +225,6 @@ class Model implements Formable, JsonSerializable
         /** @var wpdb $wpdb */
         global $wpdb;
 
-        $type = null;
-
         try {
             $type = (new ReflectionClass( $this ))->getShortName();
         } catch (ReflectionException $e) {
@@ -250,7 +248,7 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
-     * @param wpdb $wpdb
+     * @param \wpdb $wpdb
      * @return Query
      */
     public function setupQueryConnectionForModel(\wpdb $wpdb)
