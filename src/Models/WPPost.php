@@ -340,11 +340,11 @@ class WPPost extends Model
      */
     public function belongsToTaxonomy($modelClass, $taxonomy_id, $scope = null, $reselect = false)
     {
-        global $wpdb;
+        $connection = $this->query->getConnection();
 
-        return $this->belongsToMany([$modelClass, WPTermTaxonomy::class], $wpdb->term_relationships, 'object_id', 'term_taxonomy_id', function($rel, &$reselect_main = true) use ($scope, $taxonomy_id, $reselect) {
-            global $wpdb;
-            $rel->where($wpdb->term_taxonomy .'.taxonomy', $taxonomy_id);
+        return $this->belongsToMany([$modelClass, WPTermTaxonomy::class], $connection->term_relationships, 'object_id', 'term_taxonomy_id', function($rel, &$reselect_main = true) use ($scope, $taxonomy_id, $reselect) {
+            $connection = $rel->query->getConnection();
+            $rel->where($connection->term_taxonomy .'.taxonomy', $taxonomy_id);
             $reselect_main = $reselect;
             if(is_callable($scope)) {
                 $scope($rel, $reselect_main);

@@ -129,8 +129,9 @@ class BaseForm
      */
     protected function autoConfigModel($model = null, $action = null)
     {
+        global $post, $comment, $user_id, $taxonomy, $tag_ID, $screen;
+
         if (!$this->resource && !$model) {
-            global $post, $comment, $user_id, $taxonomy, $tag_ID, $screen;
 
             if ( isset( $post->ID ) && empty($taxonomy) && empty($screen) ) {
                 $item_id  = $post->ID;

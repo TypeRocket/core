@@ -47,14 +47,26 @@ if( ! file_exists($wp_load) ) {
 
     function __test_false() { return false; }
     define('TYPEROCKET_AUTO_LOADER', '__test_false');
+    $typerocket_init_root = realpath(__DIR__ . '/../../../../init.php');
+    $typerocket_init_tests = realpath(__DIR__ . '/../typerocket/init.php');
 
-    if(file_exists( __DIR__ . '/../typerocket/init.php')) {
-        require __DIR__ . '/../typerocket/init.php';
+    if( file_exists($typerocket_init_tests) ) {
+        require $typerocket_init_tests;
+    } elseif(file_exists( $typerocket_init_root)) {
+        require $typerocket_init_root;
     }
 
-    require BASE_WP . '/wp-load.php';
-    require BASE_WP . '/wp-admin/includes/user.php';
-    require BASE_WP . '/wp-admin/includes/upgrade.php';
+    if(! defined( 'ABSPATH' )) {
+        require BASE_WP . '/wp-load.php';
+    }
+
+    if(!function_exists('wp_signon')) {
+        require BASE_WP . '/wp-admin/includes/user.php';
+    }
+
+    if(!defined('WP_INSTALLING')) {
+        require BASE_WP . '/wp-admin/includes/upgrade.php';
+    }
 
     // Create Mock Tables
     dbDelta('CREATE TABLE `posts_terms` (

@@ -49,6 +49,6 @@ class WPTermTest extends TestCase
         $sql = 'SELECT DISTINCT `wp_terms`.*,`wp_term_taxonomy`.`taxonomy`,`wp_term_taxonomy`.`term_taxonomy_id`,`wp_term_taxonomy`.`description` FROM `wp_terms` INNER JOIN `wp_term_taxonomy` ON `wp_term_taxonomy`.`term_id` = `wp_terms`.`term_id` INNER JOIN `wp_termmeta` AS `tr_mt0` ON `wp_terms`.`term_id` = `tr_mt0`.`term_id` WHERE `wp_term_taxonomy`.`taxonomy` = \'category\' AND (  `tr_mt0`.`meta_key` = \'meta_key\' AND `tr_mt0`.`meta_value` like \'Hello%\' ) ';
         $terms = $term->get();
         $this->assertTrue( $terms instanceof Results);
-        $this->assertTrue( $sql === $compiled);
+        $this->assertStringContainsString( $sql, $compiled);
     }
 }

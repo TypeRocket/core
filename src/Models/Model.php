@@ -137,7 +137,7 @@ class Model implements Formable, JsonSerializable
      */
     protected $errors;
 
-    /** @var mixed|Query  */
+    /** @var Query */
     protected $query;
 
     /**
@@ -237,8 +237,9 @@ class Model implements Formable, JsonSerializable
             $this->resource = strtolower( Inflect::pluralize($type) );
         }
 
-        $this->table = $this->initTable( $wpdb );
-        $this->query = $this->initQuery( new Query );
+        $query = $this->setupQueryConnectionForModel($wpdb);
+        $this->table = $this->initTable( $query->getConnection() );
+        $this->query = $this->initQuery( $query );
         $this->query->resultsClass = $this->resultsClass;
         $this->query->table($this->getTable());
         $this->query->setIdColumn($this->idColumn);
@@ -246,6 +247,15 @@ class Model implements Formable, JsonSerializable
         do_action('typerocket_model', $this );
 
         $this->init();
+    }
+
+    /**
+     * @param wpdb $wpdb
+     * @return Query
+     */
+    public function setupQueryConnectionForModel(\wpdb $wpdb)
+    {
+        return (new Query)->setConnection($wpdb);
     }
 
     /**
@@ -2182,10 +2192,9 @@ class Model implements Formable, JsonSerializable
      */
     public function getTable()
     {
-        /** @var wpdb $wpdb */
-        global $wpdb;
+        $connection = $this->query->getConnection();
 
-        return  $this->table ? $this->table : $wpdb->prefix . $this->resource;
+        return  $this->table ?: $connection->prefix . $this->resource;
     }
 
     /**
@@ -2249,7 +2258,7 @@ class Model implements Formable, JsonSerializable
     /**
      * Get Junction
      *
-     * @return null|string
+     * @return null|array
      */
     public function getJunction()
     {

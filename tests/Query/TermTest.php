@@ -28,7 +28,7 @@ class TermTest extends TestCase
         $parent = $term->getProperty('parent');
 
         $this->assertTrue($name == $data['name']);
-        $this->assertTrue($description == $data['description']);
+        $this->assertStringContainsString($description, $data['description']);
         $this->assertTrue($slug == $data['slug']);
         $this->assertTrue($parent == $data['parent']);
     }
@@ -53,7 +53,7 @@ class TermTest extends TestCase
         $parent = $term->getProperty('parent');
 
         $this->assertTrue($name == $data['name']);
-        $this->assertTrue($description == $data['description']);
+        $this->assertStringContainsString($description, $data['description']);
         $this->assertTrue($slug == $data['slug']);
         $this->assertTrue($parent == $data['parent']);
     }

@@ -26,7 +26,7 @@ class WPPostWhereMetaTest extends TestCase
         delete_post_meta(1, 'k2', '2');
 
         $this->assertTrue( $the_post instanceof WPPost);
-        $this->assertTrue( trim($sql) === trim($compiled));
+        $this->assertStringContainsString( trim($sql), trim($compiled));
     }
 
     public function testPostTypeSelectWhereMeta()
@@ -43,7 +43,7 @@ class WPPostWhereMetaTest extends TestCase
         delete_post_meta(1, 'k1');
 
         $this->assertTrue( $the_post instanceof WPPost);
-        $this->assertTrue( $sql === $compiled);
+        $this->assertStringContainsString( $sql,$compiled);
     }
 
     public function testPostTypeSelectWhereMetaTwice()
@@ -52,7 +52,7 @@ class WPPostWhereMetaTest extends TestCase
         $post->resetNumMetaQueries();
         $compiled = (string) $post->whereMeta('meta_key', 'like', 'Hello%')->whereMeta('meta_key', 'like', 'Hello%', 'OR')->getQuery();
         $sql = 'SELECT DISTINCT `wp_posts`.* FROM `wp_posts` INNER JOIN `wp_postmeta` AS `tr_mt0` ON `wp_posts`.`ID` = `tr_mt0`.`post_id` INNER JOIN `wp_postmeta` AS `tr_mt1` ON `wp_posts`.`ID` = `tr_mt1`.`post_id` WHERE `post_type` = \'post\' AND (  `tr_mt0`.`meta_key` = \'meta_key\' AND `tr_mt0`.`meta_value` like \'Hello%\' )  OR (  `tr_mt1`.`meta_key` = \'meta_key\' AND `tr_mt1`.`meta_value` like \'Hello%\' ) ';
-        $this->assertTrue( $sql === $compiled);
+        $this->assertStringContainsString( $sql,$compiled);
     }
 
     public function testPostTypeSelectWhereMetaDefault()
@@ -61,7 +61,7 @@ class WPPostWhereMetaTest extends TestCase
         $post->resetNumMetaQueries();
         $compiled = (string) $post->whereMeta('meta_key')->getQuery();
         $sql = 'SELECT DISTINCT `wp_posts`.* FROM `wp_posts` INNER JOIN `wp_postmeta` AS `tr_mt0` ON `wp_posts`.`ID` = `tr_mt0`.`post_id` WHERE `post_type` = \'post\' AND (  `tr_mt0`.`meta_key` = \'meta_key\' AND `tr_mt0`.`meta_value` IS NULL ) ';
-        $this->assertTrue( $sql === $compiled);
+        $this->assertStringContainsString( $sql,$compiled);
     }
 
     public function testPostTypeSelectWhereMetaArrayValue()
@@ -100,7 +100,7 @@ class WPPostWhereMetaTest extends TestCase
         delete_post_meta(1, 'k2');
 
         $this->assertTrue( $the_post instanceof WPPost);
-        $this->assertTrue( $sql === $compiled);
+        $this->assertStringContainsString( $sql, $compiled);
     }
 
     public function testPostTypeSelectWhereMetaArrayValueWithOtherWhere()
@@ -166,6 +166,6 @@ class WPPostWhereMetaTest extends TestCase
 
         $sql = 'SELECT DISTINCT `wp_posts`.* FROM `wp_posts` INNER JOIN `wp_postmeta` AS `tr_mt0` ON `wp_posts`.`ID` = `tr_mt0`.`post_id` INNER JOIN `wp_postmeta` AS `tr_mt1` ON `wp_posts`.`ID` = `tr_mt1`.`post_id` WHERE `post_type` = \'post\' OR `ID` = 2 AND (  (  `tr_mt0`.`meta_key` = \'meta_key\' AND `tr_mt0`.`meta_value` like \'Hello%\' )  AND (  `tr_mt1`.`meta_key` = \'meta_key\' AND `tr_mt1`.`meta_value` IS NULL )  ) ';
 
-        $this->assertTrue( $sql === $compiled);
+        $this->assertStringContainsString( $sql, $compiled);
     }
 }
