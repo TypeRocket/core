@@ -4,6 +4,7 @@ namespace TypeRocket\Core
 
     use TypeRocket\Database\Connection;
     use TypeRocket\Database\Connectors\DatabaseConnector;
+    use TypeRocket\Database\Connectors\WordPressCoreDatabaseConnector;
     use TypeRocket\Models\AuthUser;
     use TypeRocket\Models\WPUser;
     use TypeRocket\Utility\RuntimeCache;
@@ -93,7 +94,18 @@ namespace TypeRocket\Core
             }, RuntimeCache::ALIAS);
 
             Container::singleton(Connection::class, function() {
-                return (new Connection)->addFromConfig(Config::getFromContainer()->locate('database.default'));
+
+                $default = Config::getFromContainer()->locate('database.default');
+                $config = null;
+
+                if(is_null($default)) {
+                    $default = 'wp';
+                    $config = [
+                        'driver' => WordPressCoreDatabaseConnector::class
+                    ];
+                }
+
+                return (new Connection)->addFromConfig($default, $config);
             }, Connection::ALIAS);
 
             Container::singleton(AuthUser::class, function() {
