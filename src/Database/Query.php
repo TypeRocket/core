@@ -18,7 +18,7 @@ class Query
     protected $selectTable = null;
     protected $joinAs = null;
     protected $tableAs = null;
-    protected string $connection = 'wp';
+    protected ?string $connection = null;
     protected ?\wpdb $wpdb = null;
 
     /**
@@ -30,7 +30,7 @@ class Query
      */
     public function __construct($table = null, $selectTable = null, $idColumn = null)
     {
-        $wpdb = Connection::getFromContainer()->get($this->connection);
+        $wpdb = $this->establishConnection();
 
         if(is_string($table)) {
             $this->query['table'] = $table;
@@ -45,6 +45,21 @@ class Query
         if(!$this->wpdb) {
             $this->setWpdb($wpdb);
         }
+    }
+
+    /**
+     * @return \wpdb
+     */
+    protected function establishConnection()
+    {
+        $connection = Connection::getFromContainer();
+        $name = $this->connection;
+
+        if(!is_string($name) || !$connection->exists($name)) {
+            return $connection->default();
+        }
+
+        return $connection->get($name);
     }
 
     /**

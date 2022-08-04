@@ -46,7 +46,7 @@ class MyModelConfigConnection extends Model
 {
     protected $idColumn = 'my_id';
     protected $resource = 'my_model';
-    protected string $connection = 'my-db-test';
+    protected $connection = 'my-db-test';
 }
 
 class ConnectionTest extends TestCase

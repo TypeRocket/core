@@ -218,9 +218,9 @@ class Model implements Formable, JsonSerializable
     protected $dataCache = [];
 
     /**
-     * @var string name of connection from database drivers config list
+     * @var string|null name of connection from database drivers config list
      */
-    protected string $connection = 'wp';
+    protected $connection = null;
 
     /**
      * Construct Model based on resource
@@ -228,7 +228,7 @@ class Model implements Formable, JsonSerializable
      */
     public function __construct()
     {
-        $wpdb = Connection::getFromContainer()->get($this->connection);
+        $wpdb = $this->establishConnection();
 
         try {
             $type = (new ReflectionClass( $this ))->getShortName();
@@ -250,6 +250,29 @@ class Model implements Formable, JsonSerializable
         do_action('typerocket_model', $this );
 
         $this->init();
+    }
+
+    /**
+     * @return \wpdb
+     */
+    protected function establishConnection()
+    {
+        $connection = Connection::getFromContainer();
+        $name = $this->connection;
+
+        if(!is_string($name) || !$connection->exists($name)) {
+            return $connection->default();
+        }
+
+        return $connection->get($name);
+    }
+
+    /**
+     * @return string
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     /**

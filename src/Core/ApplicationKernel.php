@@ -94,18 +94,7 @@ namespace TypeRocket\Core
             }, RuntimeCache::ALIAS);
 
             Container::singleton(Connection::class, function() {
-
-                $default = Config::getFromContainer()->locate('database.default');
-                $config = null;
-
-                if(is_null($default)) {
-                    $default = 'wp';
-                    $config = [
-                        'driver' => WordPressCoreDatabaseConnector::class
-                    ];
-                }
-
-                return (new Connection)->addFromConfig($default, $config);
+                return Connection::initDefault();
             }, Connection::ALIAS);
 
             Container::singleton(AuthUser::class, function() {
