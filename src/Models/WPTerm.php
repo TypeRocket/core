@@ -90,7 +90,7 @@ class WPTerm extends Model
     protected function initQuery(Query $query)
     {
         if($tax = $this->getTaxonomy()) {
-            $connection = $query->getConnection();
+            $connection = $query->getWpdb();
             $tt = $connection->term_taxonomy;
             $query->setSelectTable(null);
             $query->select($this->table.'.*', $tt.'.taxonomy', $tt.'.term_taxonomy_id', $tt.'.description');
@@ -179,7 +179,7 @@ class WPTerm extends Model
      */
     public function belongsToPost($modelClass, $scope = null, $reselect = true)
     {
-        $connection = $this->query->getConnection();
+        $connection = $this->query->getWpdb();
         return $this->belongsToMany($modelClass, $connection->term_relationships, 'term_taxonomy_id', 'object_id', $scope, $reselect);
     }
 

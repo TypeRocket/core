@@ -18,7 +18,8 @@ class Query
     protected $selectTable = null;
     protected $joinAs = null;
     protected $tableAs = null;
-    protected ?\wpdb $connection = null;
+    protected string $connection = 'wp';
+    protected ?\wpdb $wpdb = null;
 
     /**
      * Query constructor.
@@ -29,8 +30,8 @@ class Query
      */
     public function __construct($table = null, $selectTable = null, $idColumn = null)
     {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
+        $wpdb = Connection::getFromContainer()->get($this->connection);
+
         if(is_string($table)) {
             $this->query['table'] = $table;
         }
@@ -41,8 +42,8 @@ class Query
             $this->idColumn = $idColumn;
         }
 
-        if(!$this->connection) {
-            $this->setConnection($wpdb);
+        if(!$this->wpdb) {
+            $this->setWpdb($wpdb);
         }
     }
 
@@ -147,12 +148,12 @@ class Query
     }
 
     /**
-     * @param \wpdb|null $connection
+     * @param \wpdb|null $wpdb
      * @return $this
      */
-    public function setConnection(?\wpdb $connection = null)
+    public function setWpdb(?\wpdb $wpdb = null)
     {
-        $this->connection = $connection;
+        $this->wpdb = $wpdb;
 
         return $this;
     }
@@ -160,9 +161,9 @@ class Query
     /**
      * @return \wpdb
      */
-    public function getConnection() : \wpdb
+    public function getWpdb() : \wpdb
     {
-        return $this->connection;
+        return $this->wpdb;
     }
 
     /**
@@ -909,7 +910,7 @@ class Query
      */
     protected function runQuery( $query = [] )
     {
-        $wpdb = $this->connection;
+        $wpdb = $this->wpdb;
 
         if( empty($query) ) {
             $query = $this->query;
@@ -1116,7 +1117,7 @@ class Query
      */
     protected function compileTake()
     {
-        $wpdb = $this->connection;
+        $wpdb = $this->wpdb;
         $query = $this->query;
         $sql = '';
 
@@ -1259,7 +1260,7 @@ class Query
      */
     protected function prepareValue( $value )
     {
-        $wpdb = $this->connection;
+        $wpdb = $this->wpdb;
         $prepared = null;
 
         if( is_array($value) ) {

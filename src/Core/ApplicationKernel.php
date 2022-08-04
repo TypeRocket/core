@@ -1,9 +1,11 @@
 <?php
 namespace TypeRocket\Core
 {
+
+    use TypeRocket\Database\Connection;
+    use TypeRocket\Database\Connectors\DatabaseConnector;
     use TypeRocket\Models\AuthUser;
     use TypeRocket\Models\WPUser;
-    use TypeRocket\Services\Service;
     use TypeRocket\Utility\RuntimeCache;
 
     class ApplicationKernel
@@ -89,6 +91,10 @@ namespace TypeRocket\Core
             Container::singleton(RuntimeCache::class, function() {
                 return new RuntimeCache();
             }, RuntimeCache::ALIAS);
+
+            Container::singleton(Connection::class, function() {
+                return (new Connection)->addFromConfig(Config::getFromContainer()->locate('database.default'));
+            }, Connection::ALIAS);
 
             Container::singleton(AuthUser::class, function() {
                 $user_class = \TypeRocket\Utility\Helper::appNamespace('Models\User');

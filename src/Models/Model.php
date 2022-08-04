@@ -6,6 +6,7 @@ use JsonSerializable;
 use ReflectionClass;
 use ReflectionException;
 use TypeRocket\Core\Container;
+use TypeRocket\Database\Connection;
 use TypeRocket\Database\EagerLoader;
 use TypeRocket\Database\Query;
 use TypeRocket\Database\Results;
@@ -217,13 +218,17 @@ class Model implements Formable, JsonSerializable
     protected $dataCache = [];
 
     /**
+     * @var string name of connection from database drivers config list
+     */
+    protected string $connection = 'wp';
+
+    /**
      * Construct Model based on resource
      * @throws \Exception
      */
     public function __construct()
     {
-        /** @var wpdb $wpdb */
-        global $wpdb;
+        $wpdb = Connection::getFromContainer()->get($this->connection);
 
         try {
             $type = (new ReflectionClass( $this ))->getShortName();
@@ -236,7 +241,7 @@ class Model implements Formable, JsonSerializable
         }
 
         $query = $this->setupQueryConnectionForModel($wpdb);
-        $this->table = $this->initTable( $query->getConnection() );
+        $this->table = $this->initTable( $query->getWpdb() );
         $this->query = $this->initQuery( $query );
         $this->query->resultsClass = $this->resultsClass;
         $this->query->table($this->getTable());
@@ -253,7 +258,7 @@ class Model implements Formable, JsonSerializable
      */
     public function setupQueryConnectionForModel(\wpdb $wpdb)
     {
-        return (new Query)->setConnection($wpdb);
+        return (new Query)->setWpdb($wpdb);
     }
 
     /**
@@ -2190,7 +2195,7 @@ class Model implements Formable, JsonSerializable
      */
     public function getTable()
     {
-        $connection = $this->query->getConnection();
+        $connection = $this->query->getWpdb();
 
         return  $this->table ?: $connection->prefix . $this->resource;
     }
