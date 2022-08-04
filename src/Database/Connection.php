@@ -144,6 +144,6 @@ class Connection
      */
     public static function getFromContainer()
     {
-        return Container::resolve(static::ALIAS, true);
+        return Container::resolve(static::ALIAS);
     }
 }
