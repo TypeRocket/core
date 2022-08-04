@@ -84,12 +84,12 @@ class Connection
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return bool
      */
-    public function exists(string $name) : bool
+    public function exists(?string $name) : bool
     {
-        return array_key_exists($name, $this->connections);
+        return !is_null($name) && array_key_exists($name, $this->connections);
     }
 
     /**
