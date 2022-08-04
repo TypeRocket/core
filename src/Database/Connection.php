@@ -41,14 +41,14 @@ class Connection
     }
 
     /**
-     * @param string $name
+     * @param null|string $name
      * @return $this
      */
-    public function addFromConfig(string $name, ?array $config = null)
+    public function addFromConfig(?string $name, ?array $config = null)
     {
-        if(is_null($config)) {
+        if(is_null($config) || is_null($name)) {
             $drivers = Config::getFromContainer()->locate('database.drivers');
-            $config = $drivers[$name];
+            $config = $drivers[$name] ?? Config::getFromContainer()->locate('database.default');
         }
 
         /** @var DatabaseConnector $connector */
@@ -71,10 +71,10 @@ class Connection
     }
 
     /**
-     * @param string $name
+     * @param ?string $name
      * @return \wpdb
      */
-    public function get(string $name, ?string $fallback = null)
+    public function get(?string $name, ?string $fallback = null)
     {
         if(!array_key_exists($name, $this->connections) && is_null($fallback)) {
             $this->addFromConfig($name);
@@ -111,7 +111,7 @@ class Connection
      */
     public function default()
     {
-        $default = Config::getFromContainer()->locate('database.default');
+        $default = Config::getFromContainer()->locate('database.default', 'wp');
         return $this->get($default);
     }
 
