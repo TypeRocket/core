@@ -1967,15 +1967,14 @@ class Model implements Formable, JsonSerializable
      */
     public function hasOne($modelClass, $id_foreign = null, $scope = null)
     {
-        $id = $this->getID();
+        /** @var Model $relationship */
+        $relationship = new $modelClass;
+        $relationship->setRelatedModel( $this );
 
         if( ! $id_foreign && $this->resource ) {
             $id_foreign = $this->resource . '_id';
         }
 
-        /** @var Model $relationship */
-        $relationship = new $modelClass;
-        $relationship->setRelatedModel( $this );
         $relationship->relatedBy = [
             'type' => 'hasOne',
             'query' => [
@@ -1986,7 +1985,12 @@ class Model implements Formable, JsonSerializable
             ]
         ];
 
-        return $relationship->findAll()->where( $id_foreign, $id)->take(1);
+        if(is_callable($scope)) {
+            $scope($relationship);
+        }
+
+        $id = $this->getID();
+        return $relationship->where( $id_foreign, $id)->take(1);
     }
 
     /**
@@ -2003,6 +2007,11 @@ class Model implements Formable, JsonSerializable
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+
+        if( ! $id_local && $relationship->resource ) {
+            $id_local = $relationship->resource . '_id';
+        }
+
         $relationship->relatedBy = [
             'type' => 'belongsTo',
             'query' => [
@@ -2013,8 +2022,8 @@ class Model implements Formable, JsonSerializable
             ]
         ];
 
-        if( ! $id_local && $relationship->resource ) {
-            $id_local = $relationship->resource . '_id';
+        if(is_callable($scope)) {
+            $scope($relationship);
         }
 
         $id = $this->getProperty( $id_local );
