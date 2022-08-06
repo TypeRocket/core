@@ -260,7 +260,7 @@ class Model implements Formable, JsonSerializable
         $connection = Connection::getFromContainer();
         $name = $this->connection;
 
-        if(!is_string($name) || !$connection->exists($name)) {
+        if(!is_string($name) && !$connection->exists($name)) {
             return $connection->default();
         }
 
