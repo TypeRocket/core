@@ -49,6 +49,10 @@ class Connection
         if(is_null($config) || is_null($name)) {
             $drivers = Config::getFromContainer()->locate('database.drivers');
             $config = $drivers[$name] ?? Config::getFromContainer()->locate('database.default');
+
+            if($name && !$drivers && !$config) {
+                throw new \Error(__("TypeRocket database connection configuration not found for \"{$name}\"", 'typerocket-core'));
+            }
         }
 
         /** @var DatabaseConnector $connector */

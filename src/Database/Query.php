@@ -53,9 +53,8 @@ class Query
     protected function establishConnection()
     {
         $connection = Connection::getFromContainer();
-        $name = $this->connection;
 
-        if(!is_string($name) || !$connection->exists($name)) {
+        if(!$name = $this->connection) {
             return $connection->default();
         }
 

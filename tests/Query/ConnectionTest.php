@@ -134,6 +134,7 @@ class ConnectionTest extends TestCase
         $model->create();
         $result = $model->take(1)->findById(1);
         $sql = (string) $model->getQuery();
+        $result->delete();
         $this->assertTrue($result instanceof MyModelRealAltTableConnection);
         $this->assertTrue($result->id === '1');
         $this->assertStringContainsString($sql, 'SELECT * FROM `some_table` WHERE `some_table`.`id` = 1 LIMIT 1 OFFSET 0');
