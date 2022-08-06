@@ -8,19 +8,31 @@ use TypeRocket\Database\Connection;
 use TypeRocket\Database\Query;
 use TypeRocket\Models\Model;
 
-$my_test_connection = new \wpdb(DB_USER, DB_PASSWORD, DB_NAME, DB_HOST);
+$my_test_connection = new \wpdb(TYPEROCKET_ALT_DATABASE_USER, TYPEROCKET_ALT_DATABASE_PASSWORD, TYPEROCKET_ALT_DATABASE_DATABASE, TYPEROCKET_ALT_DATABASE_HOST);
 $my_test_connection->users = 'my_connection_users';
 $my_test_connection->prefix = 'my_connection_';
 
 Connection::getFromContainer()->addFromConfig('my-db-test', [
     'driver' => '\TypeRocket\Database\Connectors\CoreDatabaseConnector',
-    'username' => DB_USER,
-    'password' => DB_PASSWORD,
-    'database' => DB_NAME,
-    'host' => DB_HOST,
+    'username' => TYPEROCKET_ALT_DATABASE_USER,
+    'password' => TYPEROCKET_ALT_DATABASE_PASSWORD,
+    'database' => TYPEROCKET_ALT_DATABASE_DATABASE,
+    'host' => TYPEROCKET_ALT_DATABASE_HOST,
     'callback' => function(\wpdb $wpdb) {
         $wpdb->users = 'my_connection_users_alt';
         $wpdb->prefix = 'my_connection_alt_';
+    }
+]);
+
+Connection::getFromContainer()->addFromConfig('my-db-test-real', [
+    'driver' => '\TypeRocket\Database\Connectors\CoreDatabaseConnector',
+    'username' => TYPEROCKET_ALT_DATABASE_USER,
+    'password' => TYPEROCKET_ALT_DATABASE_PASSWORD,
+    'database' => TYPEROCKET_ALT_DATABASE_DATABASE,
+    'host' => TYPEROCKET_ALT_DATABASE_HOST,
+    'callback' => function(\wpdb $wpdb) {
+        $wpdb->users = 'my_connection_users_alt';
+        $wpdb->prefix = 'some_';
     }
 ]);
 
@@ -40,6 +52,20 @@ class MyModelConnection extends Model
         return (new Query)->setWpdb($my_test_connection);
     }
 
+}
+
+class MyModelRealAltTableConnection extends Model
+{
+    protected $idColumn = 'id';
+    protected $resource = 'some_table';
+    protected $connection = 'alt';
+}
+
+class MyModelRealTableConnection extends Model
+{
+    protected $idColumn = 'id';
+    protected $resource = 'table';
+    protected $connection = 'my-db-test-real';
 }
 
 class MyModelConfigConnection extends Model
@@ -85,6 +111,32 @@ class ConnectionTest extends TestCase
         $model->getQuery()->run = false;
         $sql = (string) $model->findById(1);
         $this->assertStringContainsString($sql, 'SELECT * FROM `my_connection_alt_my_model` WHERE `my_connection_alt_my_model`.`my_id` = 1 LIMIT 1 OFFSET 0');
+    }
+
+    public function testModelQueryCustomRealConfigConnection()
+    {
+        $model = new MyModelRealTableConnection;
+        $model->id = 1;
+        $model->text_field = 'test';
+        $model->create();
+        $result = $model->take(1)->findById(1);
+        $sql = (string) $model->getQuery();
+        $this->assertTrue($result instanceof MyModelRealTableConnection);
+        $this->assertTrue($result->id === '1');
+        $this->assertStringContainsString($sql, 'SELECT * FROM `some_table` WHERE `some_table`.`id` = 1 LIMIT 1 OFFSET 0');
+    }
+
+    public function testModelQueryCustomRealAltConfigConnection()
+    {
+        $model = new MyModelRealAltTableConnection;
+        $model->id = 1;
+        $model->text_field = 'test';
+        $model->create();
+        $result = $model->take(1)->findById(1);
+        $sql = (string) $model->getQuery();
+        $this->assertTrue($result instanceof MyModelRealAltTableConnection);
+        $this->assertTrue($result->id === '1');
+        $this->assertStringContainsString($sql, 'SELECT * FROM `some_table` WHERE `some_table`.`id` = 1 LIMIT 1 OFFSET 0');
     }
 
 }

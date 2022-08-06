@@ -24,6 +24,8 @@ before_install:
  - printf "\n" | pecl install -f redis
  - travis_retry composer self-update
  - mysql -e 'SET NAMES utf8; create database IF NOT EXISTS wordpress;'
+ - mysql -e 'SET NAMES utf8; create database IF NOT EXISTS tr_v51_alt;'
+ - mysql -e 'USE tr_v51_alt; CREATE TABLE IF NOT EXISTS some_table ( id int, text_field varchar(255) );'
  - chmod ugo+x bin/travis.sh
  - ./bin/travis.sh $(phpenv version-name) $(pwd)
 
