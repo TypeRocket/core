@@ -45,11 +45,17 @@ class Resolver
     {
         $dependencies = [];
         foreach ($parameters as $parameter) {
-            $dependency = $parameter->getClass();
-            if ( ! $dependency ) {
+            $dependency = $parameter->getType();
+            
+            $isBuiltInType = false;
+            if($dependency instanceof \ReflectionNamedType) {
+                $isBuiltInType = $dependency->isBuiltin();
+            }
+            
+            if ( ! $dependency || !$dependency instanceof \ReflectionNamedType || $isBuiltInType ) {
                 $dependencies[] = $this->resolveNonClass($parameter);
             } else {
-                $dependencies[] = $this->resolve($dependency->name);
+                $dependencies[] = $this->resolve($dependency->getName());
             }
         }
         return $dependencies;
@@ -70,6 +76,6 @@ class Resolver
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
         }
-        throw new \Exception('Cannot resolve using reflection');
+        throw new \Exception('Resolver failed because there is no default value for the parameter: $' . $parameter->getName());
     }
 }
