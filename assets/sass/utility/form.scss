@@ -247,6 +247,13 @@
             &:first-of-type { padding-top: 0 }
             &:last-of-type { padding-bottom: 0 }
         }
+
+        > .tr-control-row, > .tr-control-grouped-section {
+            padding: 5px 0;
+            box-shadow: none;
+            &:first-of-type { padding-top: 0 }
+            &:last-of-type { padding-bottom: 0 }
+        }
     }
 }
 
