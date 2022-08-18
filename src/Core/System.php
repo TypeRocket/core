@@ -88,7 +88,7 @@ class System
         | be unregistered if desired.
         |
         */
-        add_action('typerocket_loaded', static::class."::loadRoutes");
+        add_action('typerocket_loaded', static::class."::loadRoutes", 11);
 
         /*
         |--------------------------------------------------------------------------
