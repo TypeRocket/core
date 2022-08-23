@@ -473,6 +473,30 @@ class Request
     }
 
     /**
+     * Get Auth Password
+     *
+     * Basic Auth server details for the password.
+     *
+     * @return null|string
+     */
+    public function getPassword() : ?string
+    {
+        return $_SERVER['PHP_AUTH_PW'] ?? null;
+    }
+
+    /**
+     * Get Auth Username
+     *
+     * Basic Auth server details for the username.
+     *
+     * @return string|null
+     */
+    public function getUsername() : ?string
+    {
+        return $_SERVER['PHP_AUTH_USER'] ?? null;
+    }
+
+    /**
      * Check Honey Pot
      *
      * @param array|null $fields

@@ -309,6 +309,21 @@ class Response implements JsonSerializable
     }
 
     /**
+     * Require Basic Authentication
+     *
+     * @param string $message
+     * @param string $realm
+     *
+     * @return $this
+     */
+    public function basicAuthentication(string $message = 'Unauthorized', string $realm = 'TypeRocket Protected Area')
+    {
+        $realm = htmlentities($realm);
+        $this->setHeader('WWW-Authenticate', "Basic realm=\"{$realm}\"");
+        return $this->unauthorized($message);
+    }
+
+    /**
      * Set Download Headers
      *
      * @param string $file full file path
