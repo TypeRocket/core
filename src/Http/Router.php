@@ -140,7 +140,7 @@ class Router
             $redirect = apply_filters('typerocket_route_redirect', $redirect, $this, $wpTrailingslash);
 
             if($redirect) {
-                wp_redirect($redirect);
+                wp_redirect($redirect, 301);
                 die();
             }
         }
