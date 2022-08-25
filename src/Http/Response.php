@@ -323,6 +323,17 @@ class Response implements JsonSerializable
         return $this->unauthorized($message);
     }
 
+    public function needsBasicAuthentication(string $message = 'Unauthorized', string $realm = 'TypeRocket Protected Area')
+    {
+        if(empty($_SERVER['PHP_AUTH_USER'])) {
+            $this->basicAuthentication($message, $realm);
+
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Set Download Headers
      *
