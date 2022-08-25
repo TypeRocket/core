@@ -323,7 +323,18 @@ class Response implements JsonSerializable
         return $this->unauthorized($message);
     }
 
-    public function needsBasicAuthentication(string $message = 'Unauthorized', string $realm = 'TypeRocket Protected Area')
+    /**
+     * Does Response Need Basic Authentication
+     *
+     * If the response received PHP_AUTH_USER do not
+     * send WWW-Authenticate header.
+     *
+     * @param string $message
+     * @param string $realm
+     *
+     * @return bool
+     */
+    public function needsBasicAuthentication(string $message = 'Unauthorized', string $realm = 'TypeRocket Protected Area') : bool
     {
         if(empty($_SERVER['PHP_AUTH_USER'])) {
             $this->basicAuthentication($message, $realm);
