@@ -113,13 +113,13 @@ class EagerLoader
         if($result instanceof Results) {
             foreach($result as $model) {
                 /** @var Model $model */
-                $ids[] = $model->{$query['local_id']};
+                $ids[] = $model->{$query['id_local']};
             }
         } elseif($result instanceof Model) {
-            $ids[] = $result->{$query['local_id']};
+            $ids[] = $result->{$query['id_local']};
         }
 
-        $on = $relation->getIdColumn();
+        $on = $query['id_foreign'];
         $relation->where($on, 'IN', $ids)->with($this->with);
 
         if(is_callable($query['scope'])) {
@@ -133,14 +133,14 @@ class EagerLoader
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
-                $local_id = $value->{$query['local_id']};
+                $local_id = $value->{$query['id_local']};
                 $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $lookup = $result->{$query['local_id']};
-            $result->setRelationship($name, $set[$lookup] ?? null);
+            /** @var Model $result */
+            $local_id = $result->{$query['id_local']};
+            $result->setRelationship($name, $set[$local_id] ?? null);
         }
-
         return $result;
     }
 
@@ -162,10 +162,10 @@ class EagerLoader
         if($result instanceof Results) {
             foreach($result as $model) {
                 /** @var Model $model */
-                $ids[] = $model->getId();
+                $ids[] = $model->getPropertyValueDirect($query['id_local']);
             }
         } elseif($result instanceof Model) {
-            $ids[] = $result->getId();
+            $ids[] = $result->getPropertyValueDirect($query['id_local']);
         }
 
         $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with);
@@ -181,11 +181,12 @@ class EagerLoader
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
-                $local_id = $value->getId();
+                $local_id = $model->getPropertyValueDirect($query['id_local']);
                 $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->getId()] ?? null);
+            /** @var Model $result */
+            $result->setRelationship($name, $set[$result->getPropertyValueDirect($query['id_local'])] ?? null);
         }
 
         return $result;
@@ -209,10 +210,10 @@ class EagerLoader
         if($result instanceof Results) {
             foreach($result as $model) {
                 /** @var Model $model */
-                $ids[] = $model->getId();
+                $ids[] = $model->getPropertyValueDirect($query['id_local']);
             }
         } elseif($result instanceof Model) {
-            $ids[] = $result->getId();
+            $ids[] = $result->getPropertyValueDirect($query['id_local']);
         }
 
         $relation->where($query['id_foreign'], 'IN', $ids)->with($this->with);
@@ -226,13 +227,14 @@ class EagerLoader
         $set = $this->compileItems($items, $query['id_foreign'], true, $relation->getResultsClass() );
 
         if($result instanceof Results) {
-            foreach($result as $key => $value) {
+            foreach($result as $value) {
                 /** @var Model $value */
-                $local_id = $value->getId();
+                $local_id = $value->getPropertyValueDirect($query['id_local']);
                 $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->getId()] ?? null);
+            /** @var Model $result */
+            $result->setRelationship($name, $set[$result->getPropertyValueDirect($query['id_local'])] ?? null);
         }
 
         return $result;
@@ -256,17 +258,17 @@ class EagerLoader
         $set = [];
 
         $relationId = $query['where_column'];
-        if (($pos = strpos($relationId, ".")) !== false) { 
-            $relationId = substr($relationId, $pos + 1); 
+        if (($pos = strpos($relationId, ".")) !== false) {
+            $relationId = substr($relationId, $pos + 1);
         }
 
         if($result instanceof Results) {
             foreach($result as $model) {
                 /** @var Model $model */
-                $ids[] = $model->$relationId ?? $model->getId();
+                $ids[] = $model->$relationId ?? $model->getPropertyValueDirect($query['id_local']);
             }
         } elseif($result instanceof Model) {
-            $ids[] = $result->$relationId ?? $result->getId();
+            $ids[] = $result->$relationId ?? $result->getPropertyValueDirect($query['id_local']);
         }
 
         $relation
@@ -283,13 +285,14 @@ class EagerLoader
         $set = $this->compileItems($items, 'the_relationship_id', true, $relation->getResultsClass());
 
         if($result instanceof Results) {
-            foreach($result as $key => $value) {
+            foreach($result as $value) {
                 /** @var Model $value */
-                $local_id = $value->getId();
+                $local_id = $value->getPropertyValueDirect($query['id_local']);
                 $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
-            $result->setRelationship($name, $set[$result->getId()] ?? null);
+            /** @var Model $result */
+            $result->setRelationship($name, $set[$result->getPropertyValueDirect($query['id_local'])] ?? null);
         }
 
         return $result;

@@ -780,7 +780,7 @@ class Model implements Formable, JsonSerializable
     public function setProperty( $key, $value = null )
     {
         if($this->hasSetMutator($key)) {
-             $value = $this->mutatePropertySet($key, $value);
+            $value = $this->mutatePropertySet($key, $value);
         }
 
         if($current_value = $this->propertiesUnaltered[$key] ?? null) {
@@ -810,11 +810,11 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
-    * Get an attribute from the model.
-    *
-    * @param  string  $key
-    * @return mixed
-    */
+     * Get an attribute from the model.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
     public function getProperty($key)
     {
         if (array_key_exists($key, $this->properties) || $this->hasGetMutator($key)) {
@@ -1962,15 +1962,23 @@ class Model implements Formable, JsonSerializable
      *
      * @param string $modelClass
      * @param null|string $id_foreign
-     *
+     * @param null|string|callable $id_local
      * @param null|callable $scope
-     * @return mixed|null
+     *
+     * @return null|Model
      */
-    public function hasOne($modelClass, $id_foreign = null, $scope = null)
+    public function hasOne($modelClass, $id_foreign = null, $id_local = null, $scope = null)
     {
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+
+        if(is_callable($id_local) && is_null($scope)) {
+            $scope = $id_local;
+            $id_local = $this->getIdColumn();
+        } elseif(is_null($id_local) && is_null($scope)) {
+            $id_local = $this->getIdColumn();
+        }
 
         if( ! $id_foreign && $this->resource ) {
             $id_foreign = $this->resource . '_id';
@@ -1982,6 +1990,7 @@ class Model implements Formable, JsonSerializable
                 'caller' => $this,
                 'class' => $modelClass,
                 'id_foreign' => $id_foreign,
+                'id_local' => $id_local,
                 'scope' => $scope
             ]
         ];
@@ -1990,7 +1999,7 @@ class Model implements Formable, JsonSerializable
             $scope($relationship);
         }
 
-        $id = $this->getID();
+        $id = $this->getPropertyValueDirect($id_local);
         return $relationship->where( $id_foreign, $id)->take(1);
     }
 
@@ -1999,15 +2008,23 @@ class Model implements Formable, JsonSerializable
      *
      * @param string $modelClass
      * @param null|string $id_local
+     * @param null|string|callable $id_foreign
      * @param null|callable $scope
      *
-     * @return $this|null
+     * @return null|Model
      */
-    public function belongsTo($modelClass, $id_local = null, $scope = null)
+    public function belongsTo($modelClass, $id_local = null, $id_foreign = null, $scope = null)
     {
         /** @var Model $relationship */
         $relationship = new $modelClass;
         $relationship->setRelatedModel( $this );
+
+        if(is_callable($id_foreign) && is_null($scope)) {
+            $scope = $id_foreign;
+            $id_foreign = $relationship->getIdColumn();
+        } elseif(is_null($id_foreign) && is_null($scope)) {
+            $id_foreign = $relationship->getIdColumn();
+        }
 
         if( ! $id_local && $relationship->resource ) {
             $id_local = $relationship->resource . '_id';
@@ -2018,7 +2035,8 @@ class Model implements Formable, JsonSerializable
             'query' => [
                 'caller' => $this,
                 'class' => $modelClass,
-                'local_id' => $id_local,
+                'id_local' => $id_local,
+                'id_foreign' => $id_foreign,
                 'scope' => $scope
             ]
         ];
@@ -2028,7 +2046,7 @@ class Model implements Formable, JsonSerializable
         }
 
         $id = $this->getProperty( $id_local );
-        return $relationship->where( $relationship->getIdColumn(), $id)->take(1);
+        return $relationship->where( $id_foreign ?? $relationship->getIdColumn(), $id)->take(1);
     }
 
     /**
@@ -2036,13 +2054,21 @@ class Model implements Formable, JsonSerializable
      *
      * @param string $modelClass
      * @param null|string $id_foreign
+     * @param null|string|callable $id_local
      * @param null|callable $scope
      *
      * @return null|Model
      */
-    public function hasMany($modelClass, $id_foreign = null, $scope = null)
+    public function hasMany($modelClass, $id_foreign = null, $id_local = null, $scope = null)
     {
-        $id = $this->getID();
+        if(is_callable($id_local) && is_null($scope)) {
+            $scope = $id_local;
+            $id_local = $this->getIdColumn();
+        } elseif(is_null($id_local) && is_null($scope)) {
+            $id_local = $this->getIdColumn();
+        }
+
+        $id = $id_local ? $this->getPropertyValueDirect($id_local) : $this->getID();
 
         /** @var Model $relationship */
         $relationship = new $modelClass;
@@ -2053,6 +2079,7 @@ class Model implements Formable, JsonSerializable
                 'caller' => $this,
                 'class' => $modelClass,
                 'id_foreign' => $id_foreign,
+                'id_local' => $id_local,
                 'scope' => $scope
             ]
         ];
@@ -2071,7 +2098,7 @@ class Model implements Formable, JsonSerializable
     /**
      * Belongs To Many
      *
-     * This is for Many to Many relationships.
+     * This is for Many-to-Many relationships.
      *
      * @param string|array $modelClass
      * @param string $junction_table
@@ -2082,12 +2109,13 @@ class Model implements Formable, JsonSerializable
      *
      * @return null|Model
      */
-    public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null, $reselect = true )
+    public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null, $reselect = true, $id_local = null )
     {
         [$modelClass, $modelClassOn] = array_pad((array) $modelClass, 2, null);
+
         // Column ID
         if( ! $id_column && $this->resource ) {
-            $id_column =  $this->resource . '_id';
+            $id_column = $this->resource . '_id';
         }
 
         $id = $this->$id_column ?? $this->getID();
@@ -2100,12 +2128,15 @@ class Model implements Formable, JsonSerializable
             $id_foreign =  $relationship->resource . '_id';
         }
         $rel_table = $relationship->getTable();
+        $id_local ??= $this->getIdColumn();
 
         // Set Junction: `attach` and `detach` will use inverse columns
         $relationship->setJunction( [
             'table' => $junction_table,
             'columns' => [$id_foreign, $id_column],
-            'id_foreign' => $id
+            'id_foreign' => $id,
+            'id_column' => $id_column,
+            'id_local' => $id_local,
         ] );
 
         if(isset($modelClassOn) && class_exists($modelClassOn)) {
@@ -2130,6 +2161,7 @@ class Model implements Formable, JsonSerializable
                 'junction_table' => $junction_table,
                 'id_column' => $id_column,
                 'id_foreign' => $id_foreign,
+                'id_local' => $id_local,
                 'where_column' => $where_column,
                 'scope' => $scope
             ]
@@ -2499,7 +2531,7 @@ class Model implements Formable, JsonSerializable
      */
     public function hasGetMutator($key)
     {
-      return method_exists($this, 'get'.Str::camelize($key).'Property');
+        return method_exists($this, 'get'.Str::camelize($key).'Property');
     }
 
     /**
@@ -2523,7 +2555,7 @@ class Model implements Formable, JsonSerializable
      */
     protected function mutatePropertyGet($key, $value)
     {
-      return $this->{'get'.Str::camelize($key).'Property'}($value);
+        return $this->{'get'.Str::camelize($key).'Property'}($value);
     }
 
     /**
