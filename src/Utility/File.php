@@ -152,8 +152,10 @@ class File
         if(!$this->existing) {
             $destination = $destination ?? $this->file;
             $this->tryToMakeDir($destination);
-            fclose(fopen($destination, 'w'));
-            $this->existing = true;
+            if($fp = fopen($destination, 'w')) {
+                fclose($fp);
+                $this->existing = true;
+            }
         }
     }
 
