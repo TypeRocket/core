@@ -22,7 +22,7 @@ class Arr
      *
      * @return array
      */
-    public static function arrayFilterNull(array $list) : array
+    public static function filterNull(array $list) : array
     {
         return array_filter($list, function($v, $k) {
             return !is_null($v);
