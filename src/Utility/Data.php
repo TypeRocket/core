@@ -99,7 +99,7 @@ class Data
                 throw new \Exception("Nested array or object required for Data::createMapIndexBy(): {$type} is not valid.");
             }
 
-            $key = is_object($array) ? ($array->$index ?? null) : ($array[$index] ?? null);
+            $key = is_object($item) ? ($item->$index ?? null) : ($item[$index] ?? null);
 
             if(array_key_exists($key, $indexed_list)) {
                 throw new \Exception("Array key must be unique for Data::createMapIndexBy(): {$key} already taken.");
