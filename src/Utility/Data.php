@@ -94,7 +94,7 @@ class Data
         $indexed_list = [];
 
         foreach ($array as $item) {
-            if(!is_array($item) || !is_object($item)) {
+            if(!is_array($item) && !is_object($item)) {
                 $type = gettype($item);
                 throw new \Exception("Nested array or object required for Data::createMapIndexBy(): {$type} is not valid.");
             }
