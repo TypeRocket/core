@@ -84,12 +84,12 @@ class Data
      * Index Data by Unique Value
      *
      * @param string $index
-     * @param array<int, object|array> $array an array to traverse with object or arrays
+     * @param iterable|array<int, object|array> $array an array to traverse with object or arrays
      *
      * @return array<int, object|array>
      * @throws \Exception
      */
-    public static function createMapIndexBy(string $index, array $array) : array
+    public static function createMapIndexBy(string $index, $array) : array
     {
         $indexed_list = [];
 
