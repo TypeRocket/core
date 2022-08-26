@@ -85,11 +85,12 @@ class Data
      *
      * @param string $index
      * @param iterable|array<int, object|array> $array an array to traverse with object or arrays
+     * @param bool $unique
      *
      * @return array<int, object|array>
      * @throws \Exception
      */
-    public static function createMapIndexBy(string $index, $array) : array
+    public static function createMapIndexBy(string $index, $array, $unique = true) : array
     {
         $indexed_list = [];
 
@@ -101,7 +102,7 @@ class Data
 
             $key = is_object($item) ? ($item->$index ?? null) : ($item[$index] ?? null);
 
-            if(array_key_exists($key, $indexed_list)) {
+            if($unique && array_key_exists($key, $indexed_list)) {
                 throw new \Exception("Array key must be unique for Data::createMapIndexBy(): {$key} already taken.");
             }
 

@@ -16,6 +16,20 @@ class Arr
     }
 
     /**
+     * Filter Null Values Only
+     *
+     * @param array $list
+     *
+     * @return array
+     */
+    public static function arrayFilterNull(array $list) : array
+    {
+        return array_filter($list, function($v, $k) {
+            return !is_null($v);
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /**
      * @param array $array
      * @param string|array $columns
      *
@@ -96,16 +110,17 @@ class Arr
      *
      * @param string $index
      * @param array $array
+     * @param bool $unique
      *
      * @return array
      * @throws \Exception
      */
-    public static function indexBy(string $index, array $array) : array
+    public static function indexBy(string $index, array $array, $unique = true) : array
     {
         $indexed_list = [];
 
         foreach ($array as $item) {
-            if(!is_array($item) || array_key_exists($item[$index], $indexed_list)) {
+            if(!is_array($item) || ($unique && array_key_exists($item[$index], $indexed_list))) {
                 throw new \Exception('Array list required and array key must be unique for Arr::indexBy.');
             }
 
