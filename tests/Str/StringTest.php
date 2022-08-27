@@ -13,14 +13,31 @@ class StringTest extends TestCase
         $this->assertTrue( Str::starts('typerocket', 'typerocket, is the name of the game.') );
     }
 
+    public function testStartsBlank()
+    {
+        $this->assertTrue( Str::starts('', 'typerocket, is the name of the game.') );
+    }
+
     public function testEnds()
     {
         $this->assertTrue( Str::ends('typerocket?', 'is the name of the game typerocket?') );
+        $this->assertTrue( Str::ends('game ' . PHP_EOL, 'is the name of the game ' . PHP_EOL) );
+    }
+
+    public function testEndsBlank()
+    {
+        $this->assertTrue( Str::ends('', 'is the name of the game typerocket?') );
     }
 
     public function testContains()
     {
         $this->assertTrue( Str::contains('typerocket is!', 'What is the name of the game? typerocket is!') );
+        $this->assertTrue( Str::contains('name of the game', 'What is the name of the game? typerocket is!') );
+    }
+
+    public function testContainsBlank()
+    {
+        $this->assertTrue( Str::contains('', 'What is the name of the game? typerocket is!') );
     }
 
     public function testExplodeRight()

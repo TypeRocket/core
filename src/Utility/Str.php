@@ -5,11 +5,11 @@ class Str
 {
     /**
      * @param string $str
-     * @param string $delimiters
      *
-     * @return false|string|string[]
+     * @return false|string
      */
-    public static function uppercaseWords($str, $delimiters = " \t\r\n\f\v" ) {
+    public static function uppercaseWords($str)
+    {
         return mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
     }
 
@@ -21,7 +21,8 @@ class Str
      * @param string $failed
      * @return string
      */
-    public static function classNames($defaults, $classes = null, $failed = '') {
+    public static function classNames($defaults, $classes = null, $failed = '')
+    {
         if(!$result = Arr::reduceAllowedStr(is_array($defaults) ? $defaults : $classes)) {
             $result = !is_array($classes) ? $classes : $failed;
         }
@@ -38,7 +39,8 @@ class Str
      *
      * @return bool
      */
-    public static function notBlank($value) {
+    public static function notBlank($value)
+    {
         return !(!isset($value) || $value === '');
     }
 
@@ -46,44 +48,39 @@ class Str
      * String Ends
      *
      * @param string $needle
-     * @param string $subject
+     * @param string $haystack
      *
      * @return bool
      */
-    public static function ends( $needle, $subject )
+    public static function ends($needle, $haystack) : bool
     {
-        $length = mb_strlen($needle);
-        if ($length == 0) {
-            return true;
-        }
-
-        return ( mb_substr($subject, -$length ) === $needle );
+        return str_ends_with($haystack, $needle);
     }
 
     /**
      * String Contains
      *
      * @param string $needle
-     * @param string $subject
+     * @param string $haystack
      *
      * @return bool
      */
-    public static function contains($needle, $subject)
+    public static function contains($needle, $haystack) : bool
     {
-        return ( mb_strpos( (string) $subject, (string) $needle ) !== false );
+        return str_contains($haystack, $needle); // ( mb_strpos( (string) $subject, (string) $needle ) !== false );
     }
 
     /**
      * String Starts
      *
      * @param string $needle
-     * @param string $subject
+     * @param string $haystack
      *
      * @return bool
      */
-    public static function starts($needle, $subject)
+    public static function starts($needle, $haystack): bool
     {
-        return mb_substr( (string) $subject, 0, mb_strlen($needle) ) === $needle;
+        return str_starts_with($haystack, $needle);
     }
 
     /**
