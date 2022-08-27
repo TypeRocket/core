@@ -12,6 +12,8 @@ use \ActionScheduler_Store;
 
 class Queue
 {
+    protected static array $registered = [];
+
     /**
      * Run jobs using action scheduler
      *
@@ -120,15 +122,20 @@ class Queue
      */
     public static function registerJob(string $jobClass)
     {
+        static::$registered[$jobClass] = $jobClass;
+        $hook = 'typerocket_job.' . $jobClass;
+
+        // Hook required but action run really run with action_scheduler_after_execute
+        add_action($hook, '__return_true');
+
         /**
          * This need to happen before any other after execute
          * hooks fire because this is the execution.
          */
-        add_action('action_scheduler_after_execute', function($action_id, $action, $context) use ($jobClass) {
+        add_action('action_scheduler_after_execute', function($action_id, $action, $context) use ($jobClass, $hook) {
             $hookName = $action->get_hook();
-            $actionName = $jobClass;
 
-            if('typerocket_job.' . $actionName === $hookName) {
+            if($hook === $hookName) {
                 $args = $action->get_args();
                 Queue::runJobFromActionScheduler($hookName, $jobClass, $args[0], $action_id, $action, $context);
             }
@@ -146,9 +153,7 @@ class Queue
         $time = $time ?? (time() + $job::DELAY);
         $actionName = 'typerocket_job.' . $class;
 
-        $jobLists = Config::getFromContainer()->locate('queue.jobs') ?? [];
-
-        if(!in_array($class, $jobLists)) {
+        if(!in_array($class, static::$registered)) {
             throw new \Error( sprintf( __("Job %s is not registered.", 'typerocket-core'), $actionName) );
         }
 

@@ -20,7 +20,7 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "symfony/console": "^5.1",
-        "woocommerce/action-scheduler": "3.4.2"
+        "woocommerce/action-scheduler": "^3.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
