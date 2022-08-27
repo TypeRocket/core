@@ -23,6 +23,13 @@ class StringTest extends TestCase
         $this->assertTrue( Str::contains('typerocket is!', 'What is the name of the game? typerocket is!') );
     }
 
+    public function testExplodeRight()
+    {
+        $e = Str::explodeFromRight('.', 'one.two.three', 2);
+        $this->assertTrue($e[0] === 'one.two');
+        $this->assertTrue($e[1] === 'three');
+    }
+
     public function testRemoveStartsWith()
     {
         $this->assertTrue( Str::trimStart('root-folder/new-path', 'root-folder') == '/new-path' );

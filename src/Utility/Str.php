@@ -242,6 +242,20 @@ class Str
     }
 
     /**
+     * Explode Starting From Right
+     *
+     * @param string $separator
+     * @param string $string
+     * @param int $limit
+     *
+     * @return array
+     */
+    public static function explodeFromRight(string $separator, string $string, int $limit = PHP_INT_MAX)
+    {
+        return array_reverse(array_map('strrev', explode($separator, strrev($string), $limit)));
+    }
+
+    /**
      * Make Words
      *
      * @param string $subject
