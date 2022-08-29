@@ -20,6 +20,7 @@ class Matrix extends Field implements ScriptField
     protected $urls;
     protected $sort = true;
     protected static $editorAdded = false;
+    public const TEMPLATE_TYPE = 'matrix';
 
     /**
      * Define debug function
@@ -364,7 +365,7 @@ class Matrix extends Field implements ScriptField
         });
 
         $name = $component->feature('nameable');
-        $name = apply_filters('typerocket_component_name', $name, 'matrix', $component, $group, $classes);
+        $name = apply_filters('typerocket_component_name', $name, static::TEMPLATE_TYPE, $component, $group, $classes);
         ?>
         <li data-tr-component="<?php echo $component->uuid(); ?>" tabindex="0" class="matrix-field-group tr-repeater-clones tr-repeater-group matrix-type-<?php echo esc_attr($component->registeredAs()); ?> matrix-group-<?php echo esc_attr($group); ?> <?php echo $classes; ?>">
             <div class="tr-repeater-controls">
