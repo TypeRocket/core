@@ -56,4 +56,10 @@ class StringTest extends TestCase
 
         $this->assertTrue( ltrim( $trimmed, '/') == 'nested' );
     }
+
+    public function testSnake()
+    {
+        $this->assertTrue( Str::snake('oneTwo') === 'one_two' );
+        $this->assertTrue( Str::snake('game on') === 'game_on' );
+    }
 }
