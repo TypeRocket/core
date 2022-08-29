@@ -468,7 +468,7 @@ class TypeRocketUI
         });
 
         $icons = Dashicons::new()->iconNames();
-        $form = Helper::form()->useErrors()->useOld()->setDebugStatus(false)->setGroup(static::OPTION);
+        $form = Helper::form(WPOption::class)->useErrors()->useOld()->setDebugStatus(false)->setGroup(static::OPTION);
 
         $values = json_decode(get_option(static::OPTION), true);
         $list = [
