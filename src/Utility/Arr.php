@@ -12,7 +12,7 @@ class Arr
      */
     public static function isEmptyArray($array) : bool
     {
-        return is_array($array) && count($array) === 0;
+        return $array === [];
     }
 
     /**
@@ -297,6 +297,64 @@ class Arr
         }
 
         return $loc;
+    }
+
+    /**
+     * Is Array Sequential
+     *
+     * @param array $array The array being evaluated.
+     * @return bool
+     */
+    public static function isSequential(array $array) : bool
+    {
+        if ([] === $array) return false;
+        return array_keys($array) === range(0, count($array) - 1);
+    }
+
+    /**
+     * Is Array Associative
+     *
+     * @param array $array The array being evaluated.
+     * @return bool
+     */
+    public static function isAssociative(array $array) : bool
+    {
+        if ([] === $array) return false;
+        return !static::isSequential($array);
+    }
+
+    /**
+     * Is Array Accessible
+     *
+     * @param mixed $var The variable being evaluated.
+     */
+    public static function isAccessible($var) : bool
+    {
+        return is_array($var) || $var instanceof \ArrayAccess;
+    }
+
+    /**
+     * Array Partition
+     *
+     * Partition and spread array semi-evenly across a number of groups.
+     *
+     * @param array $array The array being evaluated.
+     * @param int $groups The number of groups.
+     */
+    public static function partition(array $array, int $groups) : array
+    {
+        $count = count( $array );
+        $parts = floor( $count / $groups );
+        $rem = $count % $groups;
+        $partition = [];
+        $mark = 0;
+        for ($index = 0; $index < $groups; $index++)
+        {
+            $incr = ($index < $rem) ? $parts + 1 : $parts;
+            $partition[$index] = array_slice( $array, $mark, $incr );
+            $mark += $incr;
+        }
+        return $partition;
     }
 
     /**

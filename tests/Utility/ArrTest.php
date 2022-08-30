@@ -150,4 +150,13 @@ class ArrTest extends TestCase
             $this->assertTrue($e->getMessage() === 'Array list required and array key must be unique for Arr::indexBy.');
         }
     }
+
+    public function testArraySuperEmpty()
+    {
+        $this->assertTrue(Arr::isEmptyArray([]));
+        $this->assertTrue(!Arr::isEmptyArray(['']));
+        $this->assertTrue(!Arr::isEmptyArray([[]]));
+        $this->assertTrue(!Arr::isEmptyArray('[[]]'));
+        $this->assertTrue(!Arr::isEmptyArray(0));
+    }
 }
