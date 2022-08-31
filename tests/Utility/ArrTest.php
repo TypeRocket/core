@@ -151,6 +151,28 @@ class ArrTest extends TestCase
         }
     }
 
+    public function testArraySequential()
+    {
+        $this->assertTrue(Arr::isSequential(['0' => '', '1' => null]));
+        $this->assertTrue(Arr::isSequential([1,3,4,10,'k']));
+        $this->assertTrue(!Arr::isSequential([1 => 1,3,4,10,'k']));
+        $this->assertTrue(!Arr::isSequential([]));
+    }
+
+    public function testArrayAccessible()
+    {
+        $this->assertTrue(Arr::isAccessible(['0' => '', '1' => null]));
+        $this->assertTrue(Arr::isAccessible(new \ArrayObject));
+    }
+
+    public function testArrayAssociative()
+    {
+        $this->assertTrue(Arr::isAssociative(['0' => '', '' => null]));
+        $this->assertTrue(Arr::isAssociative(['one' => '', 'two' => null]));
+        $this->assertTrue(!Arr::isAssociative(['0' => '', '1' => null]));
+        $this->assertTrue(!Arr::isAssociative([1,2,3]));
+    }
+
     public function testArraySuperEmpty()
     {
         $this->assertTrue(Arr::isEmptyArray([]));
