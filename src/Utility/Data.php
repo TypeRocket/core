@@ -4,6 +4,17 @@ namespace TypeRocket\Utility;
 class Data
 {
     /**
+     * Nil
+     *
+     * @param array|object $data
+     * @return Nil
+     */
+    public static function nil($data)
+    {
+        return new Nil($data);
+    }
+
+    /**
      * @param mixed $value
      *
      * @return bool
