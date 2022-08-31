@@ -223,6 +223,55 @@ class Arr
     }
 
     /**
+     * Array Get
+     *
+     * Strictly get a value from an array using dot notation without wilds (*).
+     *
+     * @param array|\ArrayAccess $array Array to search.
+     * @param string|array $needle Value to check in dot notation, or an array of string values.
+     * @param mixed $default Fallback if value is null.
+     */
+    public static function get($array, $needle, $default = null)
+    {
+        $search = is_array($needle) ? $needle : explode('.', $needle);
+
+        foreach ($search as $index) {
+            if(is_array($array) && array_key_exists($index, $array)) {
+                $array = $array[$index];
+            }
+            else {
+                return $default;
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * Array Has
+     *
+     * Strictly check if dot notation without wilds (*) index exists.
+     *
+     * @param array|\ArrayAccess $array Array to search.
+     * @param string|array $needle Value to check in dot notation, or an array of string values.
+     */
+    public static function has($array, $needle)
+    {
+        $search = is_array($needle) ? $needle : explode('.', $needle);
+
+        foreach ($search as $index) {
+            if(is_array($array) && array_key_exists($index, $array)) {
+                $array = $array[$index];
+            }
+            else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Dots Set
      *
      * Set an array value using dot notation.
@@ -331,6 +380,19 @@ class Arr
     public static function isAccessible($var) : bool
     {
         return is_array($var) || $var instanceof \ArrayAccess;
+    }
+
+    /**
+     * Array Divide
+     *
+     * Return key and values as separate arrays.
+     *
+     * @param array $array
+     * @return array
+     */
+    public static function divide(array $array) : array
+    {
+        return [array_keys($array), array_values($array)];
     }
 
     /**

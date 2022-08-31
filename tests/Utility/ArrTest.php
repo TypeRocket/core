@@ -159,4 +159,22 @@ class ArrTest extends TestCase
         $this->assertTrue(!Arr::isEmptyArray('[[]]'));
         $this->assertTrue(!Arr::isEmptyArray(0));
     }
+
+    public function testArrayGet()
+    {
+        $data = ['one' => ['two' => null]];
+        $this->assertTrue(Arr::get($data, 'one.two') === null);
+        $this->assertTrue(Arr::get($data, 'one.two', true) === null);
+        $this->assertTrue(Arr::get($data, 'one.two.three', true));
+        $this->assertTrue(Arr::get($data, 'one') === ['two' => null]);
+    }
+
+    public function testArrayHas()
+    {
+        $data = ['one' => ['two' => null]];
+        $this->assertTrue(Arr::has($data, 'one.two'));
+        $this->assertTrue(Arr::has($data, 'one'));
+        $this->assertTrue(!Arr::has($data, 'one.two.three'));
+        $this->assertTrue(!Arr::has($data, ''));
+    }
 }
