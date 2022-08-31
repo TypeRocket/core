@@ -235,7 +235,13 @@ class File
             return null;
         }
 
-        return $line = fgets(fopen($this->file, 'r'));
+        if($fp = fopen($this->file, 'r')) {
+            $line = fgets($fp);
+            fclose($fp);
+            return $line;
+        }
+
+        return '';
     }
 
     /**
@@ -366,18 +372,31 @@ class File
     public function download( $url )
     {
         if( ! $this->existing ) {
-            return file_put_contents( $this->file , fopen( $url , 'r') );
+
+            if($fp = fopen( $url , 'r')) {
+                $content = file_put_contents( $this->file , $fp);
+                fclose($fp);
+
+                return $content;
+            }
         }
 
         return false;
     }
 
     /**
-     * @return mixed
+     * @return string|false
      */
     public function mimeType()
     {
-        return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $this->file);
+        if($fi = finfo_open(FILEINFO_MIME_TYPE)) {
+            $info = finfo_file($fi, $this->file);
+            finfo_close($fi);
+
+            return $info;
+        }
+
+        return false;
     }
 
     /**
