@@ -204,10 +204,15 @@ class View
      */
     protected function load($context = null)
     {
-        $view_title = $this->getTitle();
         $this->setContext($context);
+        $view_title = apply_filters('typerocket_view_document_title', $this->getTitle(), $this);
 
-        if($view_title) {
+        if($view_title)
+        {
+            add_filter('pre_get_document_title', function( $title ) use ($view_title) {
+                return $title === '' ? '' : $view_title;
+            }, 101);
+
             add_filter('document_title_parts', function( $title ) use ($view_title) {
                 if( is_string($view_title) ) {
                     $title = [];
