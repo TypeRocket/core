@@ -22,6 +22,20 @@ class DataValueAndNilTest extends TestCase
         $this->assertTrue(!isset(Value::nils($obj->one->two)->three->four));
     }
 
+    public function testDataNil()
+    {
+        $obj = new \stdClass();
+        $obj->one = new \stdClass();
+        $obj->one->two = new \stdClass();
+        $null = Data::nil($obj)->one->two->three->get() ?? null;
+
+        $this->assertTrue(is_null($null));
+        $this->assertTrue(Value::nils($obj->one)->two->three->four instanceof Nil);
+        $this->assertTrue(isset(Value::nils($obj->one)->two));
+        $this->assertTrue(!isset(Value::nils($obj->one->two)->three));
+        $this->assertTrue(!isset(Value::nils($obj->one->two)->three->four));
+    }
+
     public function testNilArray()
     {
         $arr = [];
@@ -88,5 +102,55 @@ class DataValueAndNilTest extends TestCase
 
         $this->assertTrue($v === 5);
         $this->assertTrue($v2 === 7);
+    }
+
+    public function testDataMap()
+    {
+        $v = Data::map(function($c) {
+            return $c * 4;
+        }, 2);
+
+        $this->assertTrue($v === 8);
+    }
+
+    public function testDataMapArray()
+    {
+        $v = Data::map(function($c) {
+            return $c * 4;
+        }, [2,2]);
+
+        $this->assertTrue($v === [8,8]);
+    }
+
+    public function testDataMapArrayNested()
+    {
+        $v = Data::map(function($c) {
+            return count($c);
+        }, [[1],[1]]);
+
+        $this->assertTrue($v === [1,1]);
+    }
+
+    public function testDataMapDeepArrayNested()
+    {
+        $v = Data::mapDeep(function($c) {
+            return $c * 4;
+        }, [[2],[2]]);
+
+        $this->assertTrue($v === [[8],[8]]);
+    }
+
+    public function testDataMapObject()
+    {
+        $o = new \stdClass();
+        $o->one = 2;
+        $o->two = 2;
+
+        $v = Data::map(function($c) {
+            return $c * 4;
+        }, $o);
+
+        $this->assertTrue($v->one === 8);
+        $this->assertTrue($v->two === 8);
     }
 }

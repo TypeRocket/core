@@ -1,17 +1,66 @@
 <?php
 namespace TypeRocket\Utility;
 
+use TypeRocket\Core\Resolver;
+
 class Data
 {
     /**
      * Nil
      *
-     * @param array|object $data
+     * @param array|object $value
      * @return Nil
      */
-    public static function nil($data)
+    public static function nil($value)
     {
-        return new Nil($data);
+        if($value instanceof Nil) {
+            return new Nil($value->get());
+        }
+
+        return new Nil($value);
+    }
+
+    /**
+     * Map Deep
+     *
+     * Maps a function to all non-iterable elements of an array or an object. This
+     * is similar to `array_walk_recursive()` but acts upon objects too.
+     *
+     * @param callable $callback The function to map onto $value.
+     * @param mixed    $value    The array, object, or scalar.
+     *
+     * @return mixed The value with the callback applied to all non-arrays and non-objects inside it.
+     */
+    public static function mapDeep(callable $callback, $value)
+    {
+        return map_deep($value, $callback);
+    }
+
+    /**
+     * Map
+     *
+     * Maps a function to a value. When an array or object is
+     * given it iterates over the indexes or properties.
+     *
+     * @param callable $callback The function to map onto $value.
+     * @param mixed    $value    The array, object, or scalar.
+     *
+     * @return mixed The value with the callback applied.
+     */
+    public static function map(callable $callback, $value)
+    {
+        if ( is_array( $value ) ) {
+            $value = array_map( $callback, $value );
+        } elseif ( is_object( $value ) ) {
+            $object_vars = get_object_vars( $value );
+            foreach ( $object_vars as $property_name => $property_value ) {
+                $value->$property_name = call_user_func( $callback, $property_value );
+            }
+        } else {
+            $value = call_user_func( $callback, $value );
+        }
+
+        return $value;
     }
 
     /**

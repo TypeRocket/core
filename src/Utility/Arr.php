@@ -102,7 +102,7 @@ class Arr
      */
     public static function mapDeep(callable $callback, $value)
     {
-        return map_deep($value, $callback);
+        return Data::mapDeep($callback, $value);
     }
 
     /**
