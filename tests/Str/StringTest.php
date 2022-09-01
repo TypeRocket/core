@@ -74,7 +74,6 @@ class StringTest extends TestCase
         $this->assertTrue( Str::blank(null) === true );
         $this->assertTrue( Str::notBlank(null) === false );
 
-        $this->assertTrue( Str::blank([]) === false );
         $this->assertTrue( Str::notBlank([]) === true );
     }
 }
