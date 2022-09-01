@@ -257,15 +257,23 @@ class Arr
      */
     public static function has($array, $needle)
     {
-        $search = is_array($needle) ? $needle : explode('.', $needle);
+        $needles = (array) $needle;
+        $main = $array;
 
-        foreach ($search as $index) {
-            if(is_array($array) && array_key_exists($index, $array)) {
-                $array = $array[$index];
+        foreach ($needles as $n) {
+
+            $search = is_array($n) ? $n : explode('.', $n);
+
+            foreach ($search as $index) {
+                if(is_array($array) && array_key_exists($index, $array)) {
+                    $array = $array[$index];
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
-            }
+
+            $array = $main;
         }
 
         return true;

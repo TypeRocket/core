@@ -62,4 +62,19 @@ class StringTest extends TestCase
         $this->assertTrue( Str::snake('oneTwo') === 'one_two' );
         $this->assertTrue( Str::snake('game on') === 'game_on' );
     }
+
+    public function testBlank()
+    {
+        $this->assertTrue( Str::blank('some value') === false );
+        $this->assertTrue( Str::notBlank('some value') === true );
+
+        $this->assertTrue( Str::blank('') === true );
+        $this->assertTrue( Str::notBlank('') === false );
+
+        $this->assertTrue( Str::blank(null) === true );
+        $this->assertTrue( Str::notBlank(null) === false );
+
+        $this->assertTrue( Str::blank([]) === false );
+        $this->assertTrue( Str::notBlank([]) === true );
+    }
 }

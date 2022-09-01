@@ -191,6 +191,14 @@ class ArrTest extends TestCase
         $this->assertTrue(Arr::get($data, 'one') === ['two' => null]);
     }
 
+    public function testArrayHasMany()
+    {
+        $data = ['one' => ['two' => null]];
+        $this->assertTrue(Arr::has($data, ['one.two', 'one']));
+        $this->assertTrue(!Arr::has($data, ['one.two', 'one', 'three']));
+        $this->assertTrue(!Arr::has($data, ['one.two', 'one', '']));
+    }
+
     public function testArrayHas()
     {
         $data = ['one' => ['two' => null]];
@@ -198,5 +206,31 @@ class ArrTest extends TestCase
         $this->assertTrue(Arr::has($data, 'one'));
         $this->assertTrue(!Arr::has($data, 'one.two.three'));
         $this->assertTrue(!Arr::has($data, ''));
+    }
+
+    public function testArraySet()
+    {
+        $array = [
+            'one' => [
+                'two' => [1,2,3]
+            ]
+        ];
+
+        $new = Arr::set('one.two', $array, null);
+
+        $this->assertTrue($new['one']['two'] === null);
+    }
+
+    public function testArraySetMissingIndex()
+    {
+        $array = [
+            'one' => [
+                'two' => [1,2,3]
+            ]
+        ];
+
+        $new = Arr::set('one.three', $array, null);
+
+        $this->assertTrue($new['one']['three'] === null);
     }
 }

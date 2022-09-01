@@ -33,7 +33,23 @@ class Str
     }
 
     /**
-     * Not blank string
+     * Blank
+     *
+     * Blank value or empty string
+     *
+     * @param string|null $value
+     *
+     * @return bool
+     */
+    public static function blank($value)
+    {
+        return !isset($value) || $value === '';
+    }
+
+    /**
+     * Not Blank
+     *
+     * Not blank value or empty string
      *
      * @param string|null $value
      *
