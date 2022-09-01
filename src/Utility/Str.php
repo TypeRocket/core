@@ -41,7 +41,7 @@ class Str
      *
      * @return bool
      */
-    public static function blank(?string $value)
+    public static function blank(?string $value) : bool
     {
         return !isset($value) || $value === '';
     }
