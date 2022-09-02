@@ -132,4 +132,12 @@ class StringTest extends TestCase
         $this->assertTrue( Str::encoding(null) === 'UTF-8');
         $this->assertTrue( Str::encoding( ' ') === 'UTF-8');
     }
+
+    public function testSrtReverse()
+    {
+        $this->assertTrue( Str::reverse('abc') === 'cba');
+        $this->assertTrue( Str::reverse("x\u{ff41}z") === "z\u{ff41}x");
+        $this->assertTrue( Str::reverse("\u{ff41}z0") === "0z\u{ff41}");
+        $this->assertTrue( Str::reverse("🚀 \u{ff41}z0") === "0z\u{ff41} 🚀");
+    }
 }

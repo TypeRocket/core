@@ -397,4 +397,16 @@ class Str
         return ! static::quiet($encoding) ? $encoding : static::UTF8;
     }
 
+    /**
+     * Reverse
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function reverse(string $string) : string
+    {
+        return implode(array_reverse(mb_str_split($string)));
+    }
+
 }
