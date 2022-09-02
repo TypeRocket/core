@@ -179,7 +179,8 @@ class Data
                 $v = is_object($search) ? ($search->$step ?? null) : ($search[$step] ?? null);
 
                 if ( !isset($v) && ! is_string($search) ) {
-                    return $default;
+                    $search = $default;
+                    break;
                 }
                 $search = $v ?? $default;
             }
