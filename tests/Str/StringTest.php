@@ -77,6 +77,16 @@ class StringTest extends TestCase
         $this->assertTrue( Str::notBlank([]) === true );
     }
 
+    public function testQuiet()
+    {
+        $q = Str::quiet('some value');
+        $this->assertTrue($q === false);
+        $this->assertTrue( Str::quiet(null) === true );
+        $this->assertTrue(Str::quiet('') === true);
+        $this->assertTrue(Str::quiet(' ') === true);
+        $this->assertTrue(Str::quiet("\t \t\n\r\0\x0B") === true);
+    }
+
     public function testLength()
     {
         $this->assertTrue( Str::length('four') === 4 );
@@ -97,10 +107,26 @@ class StringTest extends TestCase
     public function testLimit()
     {
         $this->assertTrue( Str::limit("\u{ff41}", 1) === "\u{ff41}" );
-        $this->assertTrue( Str::limit('🚀', 1) === '🚀' );
+        $this->assertTrue( Str::limit("\u{1F680}", 1) === '🚀' );
         $this->assertTrue( Str::limit('🚀 ', 2) === '🚀 ' );
         $this->assertTrue( Str::limit(' ', 2) === ' ' );
         $this->assertTrue( Str::limit('123', 2, '...') === '12...' );
         $this->assertTrue( Str::limit('1 3', 2, '  ') === '1  ');
+    }
+
+    public function testLower()
+    {
+        $this->assertTrue(Str::lower("\u{0178}") === "\u{00FF}");
+        $this->assertTrue(Str::lower("\u{00FF}") === "\u{00FF}");
+        $this->assertTrue( Str::lower('A') === 'a');
+        $this->assertTrue( Str::lower('a') === 'a');
+        $this->assertTrue( Str::lower('A ') === 'a ');
+    }
+
+    public function testInternalEncoding()
+    {
+        $this->assertTrue( Str::encoding() === 'UTF-8');
+        $this->assertTrue( Str::encoding(null) === 'UTF-8');
+        $this->assertTrue( Str::encoding( ' ') === 'UTF-8');
     }
 }

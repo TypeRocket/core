@@ -37,6 +37,20 @@ class Str
     }
 
     /**
+     * Quiet
+     *
+     * Is null or is blank after trim.
+     *
+     * @param string|null $string
+     *
+     * @return bool
+     */
+    public static function quiet(?string $string)
+    {
+        return !isset($string) || (trim($string) === '');
+    }
+
+    /**
      * Blank
      *
      * Blank value or empty string
@@ -45,9 +59,9 @@ class Str
      *
      * @return bool
      */
-    public static function blank(?string $value) : bool
+    public static function blank(?string $string) : bool
     {
-        return !isset($value) || $value === '';
+        return !isset($string) || $string === '';
     }
 
     /**
@@ -355,6 +369,32 @@ class Str
     public static function min($string, int $min, ?string $encoding = null) : bool
     {
         return static::length($string, $encoding) >= $min;
+    }
+
+    /**
+     * Convert the given string to lower-case.
+     *
+     * @param string $string
+     * @param string|null $encoding
+     *
+     * @return string
+     */
+    public static function lower($string, ?string $encoding = null)
+    {
+        return mb_strtolower($string, $encoding ?? static::UTF8);
+    }
+
+    /**
+     * Get Encoding
+     *
+     * @param string|null $encoding
+     *
+     * @return string
+     */
+    public static function encoding(?string $encoding = null) : string
+    {
+        $encoding = $encoding ?? mb_internal_encoding();
+        return ! static::quiet($encoding) ? $encoding : static::UTF8;
     }
 
 }
