@@ -340,7 +340,7 @@ class Str
     }
 
     /**
-     * Max
+     * Maxed
      *
      * Is string max length
      *
@@ -350,9 +350,9 @@ class Str
      *
      * @return bool
      */
-    public static function max($string, int $max, ?string $encoding = null) : bool
+    public static function maxed($string, int $max, ?string $encoding = null) : bool
     {
-        return static::length($string, $encoding) <= $max;
+        return !(static::length($string, $encoding) <= $max);
     }
 
     /**
