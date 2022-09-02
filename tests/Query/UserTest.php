@@ -20,6 +20,13 @@ class UserTest extends TestCase
         $this->assertTrue( !!filter_var($user[0]['user_email'], FILTER_VALIDATE_EMAIL) );
     }
 
+    public function testUserIsAdministrator()
+    {
+        $user = WPUser::new()->whereCapabilityLike('administrator')->select('user_email')->disableCache()->get();
+
+        $this->assertTrue( !!filter_var($user->toArray()[0]['user_email'], FILTER_VALIDATE_EMAIL) );
+    }
+
     public function testUserEnabledCache()
     {
         // This uses the Obj cache and will break WP as all the fields

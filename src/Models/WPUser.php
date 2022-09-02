@@ -100,6 +100,16 @@ class WPUser extends Model implements AuthUser
     }
 
     /**
+     * @param $capability
+     *
+     * @return Model|WPUser
+     */
+    public function whereCapabilityLike($capability)
+    {
+        return $this->whereMeta( 'wp_capabilities', 'like', '%:"'.$capability.'";%' );
+    }
+
+    /**
      * Find WP_User Instance
      *
      * @param \WP_User|int|null $user
