@@ -282,4 +282,75 @@ class Str
         return $uppercase ? static::uppercaseWords($words) : $words;
     }
 
+    /**
+     * Limit Length
+     *
+     * @param string $string
+     * @param int $limit
+     * @param string $end
+     *
+     * @return string
+     */
+    public static function limit(string $string, int $limit, string $end = '') : string
+    {
+        $length = static::length($string, 'UTF-8');
+
+        if ($length <= $limit) {
+            return $string;
+        }
+
+        $width = mb_strwidth($string, 'UTF-8') - $length;
+
+        return rtrim(mb_strimwidth($string, 0, $limit + $width, '', 'UTF-8')).$end;
+    }
+
+    /**
+     * Length
+     *
+     * @param string $string
+     * @param string $encoding
+     *
+     * @return int
+     */
+    public static function length($string, $encoding = null) : int
+    {
+        if ($encoding) {
+            return mb_strlen($string, $encoding);
+        }
+
+        return mb_strlen($string);
+    }
+
+    /**
+     * Max
+     *
+     * Is string max length
+     *
+     * @param string $string
+     * @param int $max
+     * @param string $encoding
+     *
+     * @return bool
+     */
+    public static function max($string, $max, $encoding = null) : bool
+    {
+        return static::length($string, $encoding) <= $max;
+    }
+
+    /**
+     * Min
+     *
+     * Is string min length
+     *
+     * @param string $string
+     * @param int $min
+     * @param string $encoding
+     *
+     * @return bool
+     */
+    public static function min($string, $min, $encoding = null) : bool
+    {
+        return static::length($string, $encoding) >= $min;
+    }
+
 }

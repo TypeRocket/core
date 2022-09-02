@@ -76,4 +76,25 @@ class StringTest extends TestCase
 
         $this->assertTrue( Str::notBlank([]) === true );
     }
+
+    public function testLength()
+    {
+        $this->assertTrue( Str::length('four') === 4 );
+        $this->assertTrue( Str::length("\u{ff41}") === 1 );
+        $this->assertTrue( Str::length('🚀') === 1 );
+        $this->assertTrue( Str::length('🚀 2') === 3 );
+        $this->assertTrue( Str::max('🚀 2', 3));
+        $this->assertTrue( ! Str::max('🚀 2', 2));
+        $this->assertTrue( Str::min('🚀 2', 3) );
+        $this->assertTrue( ! Str::min('🚀 2', 4) );
+    }
+
+    public function testLimit()
+    {
+        $this->assertTrue( Str::limit("\u{ff41}", 1) === "\u{ff41}" );
+        $this->assertTrue( Str::limit('🚀', 1) === '🚀' );
+        $this->assertTrue( Str::limit('🚀 ', 2) === '🚀 ' );
+        $this->assertTrue( Str::limit(' ', 2) === ' ' );
+        $this->assertTrue( Str::limit('123', 2, '...') === '12...' );
+    }
 }
