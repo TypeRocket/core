@@ -3,6 +3,10 @@ namespace TypeRocket\Utility;
 
 class Str
 {
+    public const UTF8 = 'UTF-8';
+    public const ASCII = 'ASCII';
+    public const LATIN1 = 'ISO-8859-1';
+
     /**
      * @param string $str
      *
@@ -10,7 +14,7 @@ class Str
      */
     public static function uppercaseWords($str)
     {
-        return mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
+        return mb_convert_case($str, MB_CASE_TITLE, static::UTF8);
     }
 
     /**
@@ -293,15 +297,15 @@ class Str
      */
     public static function limit(string $string, int $limit, string $end = '') : string
     {
-        $length = static::length($string, 'UTF-8');
+        $length = static::length($string, static::UTF8);
 
         if ($length <= $limit) {
             return $string;
         }
 
-        $width = mb_strwidth($string, 'UTF-8') - $length;
+        $width = mb_strwidth($string, static::UTF8) - $length;
 
-        return rtrim(mb_strimwidth($string, 0, $limit + $width, '', 'UTF-8')).$end;
+        return rtrim(mb_strimwidth($string, 0, $limit + $width, '', static::UTF8)).$end;
     }
 
     /**

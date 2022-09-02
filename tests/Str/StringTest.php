@@ -80,6 +80,7 @@ class StringTest extends TestCase
     public function testLength()
     {
         $this->assertTrue( Str::length('four') === 4 );
+        $this->assertTrue( Str::length('four', Str::LATIN1) === 4 );
         $this->assertTrue( Str::length("\u{ff41}") === 1 );
         $this->assertTrue( Str::length('🚀') === 1 );
         $this->assertTrue( Str::length('🚀 2') === 3 );
@@ -100,5 +101,6 @@ class StringTest extends TestCase
         $this->assertTrue( Str::limit('🚀 ', 2) === '🚀 ' );
         $this->assertTrue( Str::limit(' ', 2) === ' ' );
         $this->assertTrue( Str::limit('123', 2, '...') === '12...' );
+        $this->assertTrue( Str::limit('1 3', 2, '  ') === '1  ');
     }
 }
