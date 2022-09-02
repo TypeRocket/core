@@ -308,11 +308,11 @@ class Str
      * Length
      *
      * @param string $string
-     * @param string $encoding
+     * @param string|null $encoding
      *
      * @return int
      */
-    public static function length($string, $encoding = null) : int
+    public static function length($string, ?string $encoding = null) : int
     {
         if ($encoding) {
             return mb_strlen($string, $encoding);
@@ -328,11 +328,11 @@ class Str
      *
      * @param string $string
      * @param int $max
-     * @param string $encoding
+     * @param string|null $encoding
      *
      * @return bool
      */
-    public static function max($string, $max, $encoding = null) : bool
+    public static function max($string, int $max, ?string $encoding = null) : bool
     {
         return static::length($string, $encoding) <= $max;
     }
@@ -344,11 +344,11 @@ class Str
      *
      * @param string $string
      * @param int $min
-     * @param string $encoding
+     * @param string|null $encoding
      *
      * @return bool
      */
-    public static function min($string, $min, $encoding = null) : bool
+    public static function min($string, int $min, ?string $encoding = null) : bool
     {
         return static::length($string, $encoding) >= $min;
     }
