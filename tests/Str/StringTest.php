@@ -99,6 +99,8 @@ class StringTest extends TestCase
         $this->assertTrue( Str::length('🚀 2', 'ASCII') === 6);
         $this->assertTrue( ! Str::maxed('🚀 2', 3));
         $this->assertTrue( Str::maxed('🚀 2', 2));
+        $this->assertTrue( ! Str::maxed('ab', 3));
+        $this->assertTrue( Str::maxed('abcd', 3));
         $this->assertTrue( Str::min('🚀 2', 3) );
         $this->assertTrue( ! Str::min('🚀 2', 4) );
         $this->assertTrue( Str::min('🚀 2', 6, 'ASCII') );
