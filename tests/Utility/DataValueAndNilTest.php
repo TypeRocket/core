@@ -153,4 +153,23 @@ class DataValueAndNilTest extends TestCase
         $this->assertTrue($v->one === 8);
         $this->assertTrue($v->two === 8);
     }
+
+    public function testDataGet()
+    {
+        $o2 = new \stdClass();
+        $o2->name = 'kevin';
+        $o2->number = 123;
+
+        $o = new \stdClass();
+        $o->one = 1;
+        $o->two = $o2;
+
+        $v = Data::get($o, 'one');
+        $v2 = Data::get($o, 'two.name');
+        $v3 = Data::get($o, ['two.name', 'one']);
+
+        $this->assertTrue($v === 1);
+        $this->assertTrue($v2 === 'kevin');
+        $this->assertTrue($v3 === ['two.name' => 'kevin',  'one' => 1]);
+    }
 }

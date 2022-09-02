@@ -66,7 +66,7 @@ class RuntimeCache
             return $value;
         }
 
-        return $this->add($key, Value::get($default), $namespace);
+        return $this->add($key, Data::value($default), $namespace);
     }
 
     /**

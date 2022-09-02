@@ -38,7 +38,7 @@ class PersistentCache
     public function get($key, $default = null)
     {
         try {
-            return $this->getData($this->getFile($key)) ?? Value::get($default);
+            return $this->getData($this->getFile($key)) ?? Data::value($default);
         } catch (\Exception $e) {
             return null;
         }
@@ -77,7 +77,7 @@ class PersistentCache
 
         if(!$data) {
             try {
-                $data = Value::get($default);
+                $data = Data::value($default);
                 $this->put($key, $data, $time);
             } catch (\ReflectionException $e) {
                 return null;

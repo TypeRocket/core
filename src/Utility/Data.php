@@ -6,6 +6,20 @@ use TypeRocket\Core\Resolver;
 class Data
 {
     /**
+     * Return the default value of the given value.
+     *
+     * @param mixed $value
+     * @param null|array $args
+     *
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    public static function value($value, ?array $args = null)
+    {
+        return $value instanceof \Closure ? (new Resolver)->resolveCallable($value, $args) : $value;
+    }
+
+    /**
      * Nil
      *
      * @param array|object $value
@@ -110,7 +124,7 @@ class Data
     /**
      * Dots Walk
      *
-     * Traverse array with dot notation.
+     * Traverse array with dot notation with wilds (*).
      *
      * @param string|array $dots dot notation key.next.final
      * @param array|object $array an array to traverse
@@ -138,6 +152,46 @@ class Data
         }
 
         return $array;
+    }
+
+    /**
+     * Get
+     *
+     * Get value using dot notation without wilds (*).
+     *
+     * @param object|array $data an array to traverse
+     * @param string|array $dots dot notation key.next.final or array of dots
+     * @param mixed|null $default
+     *
+     * @return mixed
+     */
+    public static function get($data, $dots, $default = null)
+    {
+        $dots = (array) $dots;
+        $index = count($dots) > 1;
+        $return = null;
+
+        foreach ($dots as $dot) {
+            $traverse = explode('.', $dot);
+            $search = $data;
+
+            foreach ($traverse as $step) {
+                $v = is_object($search) ? ($search->$step ?? null) : ($search[$step] ?? null);
+
+                if ( !isset($v) && ! is_string($search) ) {
+                    return $default;
+                }
+                $search = $v ?? $default;
+            }
+
+            if($index) {
+                $return[$dot] = $search;
+            } else {
+                $return = $search;
+            }
+        }
+
+        return $return;
     }
 
     /**

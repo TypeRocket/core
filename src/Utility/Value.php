@@ -1,8 +1,9 @@
 <?php
 namespace TypeRocket\Utility;
 
-use TypeRocket\Core\Resolver;
-
+/**
+ * @deprecated
+ */
 class Value
 {
     /**
@@ -16,7 +17,7 @@ class Value
      */
     public static function get($value, $args = null)
     {
-        return $value instanceof \Closure ? (new Resolver)->resolveCallable($value, $args) : $value;
+        return Data::value($value, $args);
     }
 
     /**
@@ -27,32 +28,18 @@ class Value
      */
     public static function nils($value)
     {
-        if($value instanceof Nil) {
-            return new Nil($value->get());
-        }
-
-        return new Nil($value);
+        return Data::nil($value);
     }
 
     /**
      * @param object|array $data an array to traverse
-     * @param string $dots dot notation key.next.final
+     * @param string|array $dots dot notation key.next.final
      * @param mixed|null $default
      *
      * @return mixed
      */
     public static function data($data, $dots, $default = null)
     {
-        $traverse = explode('.', $dots);
-        foreach ($traverse as $step) {
-            $v = is_object($data) ? ($data->$step ?? null) : ($data[$step] ?? null);
-
-            if ( !isset($v) && ! is_string($data) ) {
-                return $default;
-            }
-            $data = $v ?? $default;
-        }
-
-        return $data;
+        return Data::get(...func_get_args());
     }
 }
