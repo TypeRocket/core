@@ -268,6 +268,9 @@ class Arr
                 if(is_array($array) && array_key_exists($index, $array)) {
                     $array = $array[$index];
                 }
+                elseif($array instanceof \ArrayAccess && $array->offsetExists($index)) {
+                    $array = $array[$index];
+                }
                 else {
                     return false;
                 }
@@ -438,5 +441,62 @@ class Arr
     public static function keysExist(array $keys, array $array)
     {
         return !array_diff_key(array_flip($keys), $array);
+    }
+
+    /**
+     * Exists
+     *
+     * @param  \ArrayAccess|array  $array
+     * @param  string|int  $key
+     * @return bool
+     */
+    public static function exists($array, $key) : bool
+    {
+        if (is_float($key)) {
+            $key = (string) $key;
+        }
+
+        if($array instanceof \ArrayAccess) {
+            return $array->offsetExists($key);
+        }
+
+        return array_key_exists($key, $array);
+    }
+
+    /**
+     * First Item
+     *
+     * @param array|\ArrayObject $array
+     * @return mixed|null
+     */
+    public static function first($array, $callback = null, $default = null)
+    {
+        if(is_callable($callback))
+        {
+            foreach ($array as $key => $value) {
+                if($callback($value, $key) === true) {
+                    return $value;
+                }
+            }
+        }
+        else
+        {
+            foreach ($array as $item) {
+                return $item;
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * Last Item
+     *
+     * @param array|\ArrayObject $array
+     * @return mixed|null
+     */
+    public static function last($array, $callback = null, $default = null)
+    {
+        return static::first(array_reverse((array) $array, true), $callback, $default);
     }
 }
