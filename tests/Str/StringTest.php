@@ -84,6 +84,7 @@ class StringTest extends TestCase
         $this->assertTrue( Str::quiet(null) === true );
         $this->assertTrue(Str::quiet('') === true);
         $this->assertTrue(Str::quiet(' ') === true);
+        $this->assertTrue(Str::quiet('0') === false);
         $this->assertTrue(Str::quiet("\t \t\n\r\0\x0B") === true);
     }
 
