@@ -1439,6 +1439,10 @@ class Query
      */
     protected function tickSqlName($column)
     {
+        if($column instanceof SqlRaw) {
+            return $column;
+        }
+
         $c = preg_replace($this->columnPattern, '', $column);
 
         if(!Str::contains('`', $column)) {

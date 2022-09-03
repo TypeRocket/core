@@ -1692,6 +1692,54 @@ class Model implements Formable, JsonSerializable
     }
 
     /**
+     * Sum
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function sum( $column )
+    {
+        return $this->query->sum($column);
+    }
+
+    /**
+     * Min
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function min( $column )
+    {
+        return $this->query->min($column);
+    }
+
+    /**
+     * Max
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function max( $column )
+    {
+        return $this->query->max($column);
+    }
+
+    /**
+     * Average
+     *
+     * @param string $column
+     *
+     * @return array|bool|false|int|null|object
+     */
+    public function avg( $column )
+    {
+        return $this->query->avg($column);
+    }
+
+    /**
      * Select only specific columns
      *
      * @param string $args
