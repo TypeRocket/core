@@ -1,30 +1,31 @@
 <?php
 declare(strict_types=1);
 
-namespace Sanitize;
+namespace Utility;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Utility\Sanitize;
 
 class SanitizeTest extends TestCase
 {
     public function testSanitizeDash()
     {
         $string = ' --"2_ _e\'\'X  AM!pl\'e-"-1_@';
-        $sanitized = \TypeRocket\Utility\Sanitize::dash($string);
+        $sanitized = Sanitize::dash($string);
         $this->assertTrue( $sanitized == '-2-ex-ample-1-' );
     }
 
     public function testSanitizeUnderscore()
     {
         $string = ' --"2_ _e\'\'X  AM!pl\'e-"-1_@';
-        $sanitized = \TypeRocket\Utility\Sanitize::underscore($string);
+        $sanitized = Sanitize::underscore($string);
         $this->assertTrue( $sanitized == '_2_ex_ample_1_' );
     }
 
     public function testSanitizeUnderscoreKeepDots()
     {
         $string = ' --"..2_ ._e\'\'X  AM!pl\'e-"-1_@';
-        $sanitized = \TypeRocket\Utility\Sanitize::underscore($string, true);
+        $sanitized = Sanitize::underscore($string, true);
         $this->assertTrue( $sanitized == '_.2_._ex_ample_1_' );
     }
 
@@ -32,7 +33,7 @@ class SanitizeTest extends TestCase
     {
         $content = '<p>Hi there <a target="_blank" href="#">link</a></p>';
 
-        $sanitized = \TypeRocket\Utility\Sanitize::editor($content, true, false, [
+        $sanitized = Sanitize::editor($content, true, false, [
             'p' => [],
             'a' => [
                 'href' => true,
