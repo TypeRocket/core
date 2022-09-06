@@ -8,7 +8,15 @@ if(file_exists(__DIR__.'/../../../vendor/autoload.php')) {
 }
 
 date_default_timezone_set('UTC');
+define( 'DISABLE_WP_CRON', true );
 
+define( 'WP_MEMORY_LIMIT', -1 );
+define( 'WP_MAX_MEMORY_LIMIT', -1 );
+$PHP_SELF            = '/index.php';
+$GLOBALS['PHP_SELF'] = '/index.php';
+$GLOBALS['_wp_die_disabled'] = false;
+
+$_SERVER['PHP_SELF'] = '/index.php';
 $_SERVER['SERVER_PROTOCOL'] = $_SERVER['SERVER_PROTOCOL'] ?? null;
 $_SERVER['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 $_SERVER['REQUEST_URI'] = '/php-unit-tests?phpunit=yes';
