@@ -70,6 +70,27 @@ class OrderTest extends Model
     {
         return $this->belongsTo(PeopleTest::class, 'per_number', 'p_number');
     }
+
+    public function item()
+    {
+        return $this->belongsTo(ItemTest::class, 'id', 'order_id');
+    }
+}
+
+/**
+ * @property int $id
+ * @property string $sku
+ * @property int $product_number
+ */
+class ItemTest extends Model
+{
+    protected $table = 'items';
+    protected $fillable = ['name', 'order_id'];
+
+    public function order()
+    {
+        return $this->hasOne(OrderTest::class, 'id', 'order_id');
+    }
 }
 
 /**
@@ -213,8 +234,23 @@ class BelongsToTest extends TestCase
 
         /** @var PeopleTest $person */
         $person = PeopleTest::new()->saveAndGet(['p_number' => 987, 'name' => 'kevin']);
-        OrderTest::new()->saveAndGet(['per_number' => $person->p_number, 'name' => 'AA']);
-        OrderTest::new()->saveAndGet(['per_number' => $person->p_number, 'name' => 'ZZ']);
+        $order1 = OrderTest::new()->saveAndGet(['per_number' => $person->p_number, 'name' => 'AA']);
+
+        $this->assertTrue($order1->has('item')->get() === null);
+
+        $order2 = OrderTest::new()->saveAndGet(['per_number' => $person->p_number, 'name' => 'ZZ']);
+
+        ItemTest::new()->save(['order_id' => $order1->getID(), 'name' => 'item1']);
+        ItemTest::new()->save(['order_id' => $order2->getID(), 'name' => 'item2']);
+
+        $hasItems = OrderTest::new()->has('item')->get();
+        $this->assertTrue($hasItems instanceof Results);
+        $this->assertTrue($hasItems->count() === 2);
+
+        $order1->load(['item']);
+        $order2->load(['item']);
+        $this->assertTrue($order1->item instanceof ItemTest);
+        $this->assertTrue($order2->item instanceof ItemTest);
 
         $person->roles()->attach([$role->r_number, $role2]);
 

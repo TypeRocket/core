@@ -82,12 +82,12 @@ if( ! file_exists($wp_load) ) {
         /** @var \wpdb */
         global $wpdb;
 
-        $wpdb->query("DELETE FROM {$clear_table}");
-        $wpdb->query("ALTER TABLE {$clear_table} AUTO_INCREMENT = 1");
-
         if($sql) {
             dbDelta($sql);
         }
+
+        $wpdb->query("DELETE FROM {$clear_table}");
+        $wpdb->query("ALTER TABLE {$clear_table} AUTO_INCREMENT = 1");
     }
 
     // terms
@@ -144,6 +144,13 @@ if( ! file_exists($wp_load) ) {
     typerocketTestsDatabaseSetup('orders', 'CREATE TABLE  if not exists `orders` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `per_number` int(11)  DEFAULT NULL,
+    `name` varchar(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDatabaseSetup('items', 'CREATE TABLE  if not exists `items` (
+    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `order_id` int(11)  DEFAULT NULL,
     `name` varchar(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
