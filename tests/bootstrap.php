@@ -77,10 +77,47 @@ if( ! file_exists($wp_load) ) {
     }
 
     // Create Mock Tables
+    function typerocketTestsDeleteRecords($table)
+    {
+        /** @var \wpdb */
+        global $wpdb;
+
+        $wpdb->query("DELETE FROM {$table}");
+        $wpdb->query("ALTER TABLE {$table} AUTO_INCREMENT = 1");
+    }
+
     dbDelta('CREATE TABLE `posts_terms` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `terms_id` int(11) DEFAULT NULL,
   `posts_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDeleteRecords('posts_terms');
+
+    dbDelta('CREATE TABLE `products_variants` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `variant_sku` varchar(11) DEFAULT NULL,
+  `product_number` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDeleteRecords('products_variants');
+
+    dbDelta('CREATE TABLE `products` (
+  `product_number` int(11) UNIQUE,
+  `title` varchar(11) DEFAULT NULL,
+  PRIMARY KEY (`product_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDeleteRecords('products');
+
+    dbDelta('CREATE TABLE `variants` (
+  `sku` varchar(11) UNIQUE,
+  `barcode` varchar(11) DEFAULT NULL,
+  PRIMARY KEY (`sku`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDeleteRecords('variants');
+
 }
