@@ -1643,12 +1643,13 @@ class Model implements Formable, JsonSerializable
 
     /**
      * @param string $relationship
+     * @param bool $exists
      * @param null|callable $scope
-     *
+     * @param string $condition AND, OR
      * @return $this
      * @throws \Exception
      */
-    public function has(string $relationship, $scope = null)
+    public function whereRelationship(string $relationship, bool $exists, $scope = null, $condition = 'AND')
     {
         if(!method_exists($this, $relationship)) {
             throw new \Exception("No such relationship of '{$relationship}' exists for " . get_class($this));
@@ -1661,13 +1662,19 @@ class Model implements Formable, JsonSerializable
         }
 
         $junction = $rel->getJunction();
+        $related = $rel->getRelatedBy();
         $id_column = null;
+        $where_on_index = -1;
 
         if($junction) {
             $id_column = $junction['id_local'] ?? $this->getIdColumn();
         }
 
-        $rel->getQuery()->modifyWhere(-1, [
+        if($related) {
+            $where_on_index = $related['where_on']['key'];
+        }
+
+        $rel->getQuery()->modifyWhere($where_on_index, [
             'value' => $this->getQuery()->getIdColumWithTable($id_column),
             'operator' => '=',
             'raw' => true
@@ -1677,10 +1684,42 @@ class Model implements Formable, JsonSerializable
             $scope($rel);
         }
 
-        $exists = $rel->getQuery()->compileFullQuery();
-        $this->query->appendRawWhere('and', "EXISTS ($exists)");
+        $exists = $exists ? 'EXISTS ' : 'NOT EXISTS ';
+        $exists .= '(' . $rel->getQuery()->compileFullQuery() . ')';
+
+        $this->query->appendRawWhere($condition, $exists);
 
         return $this;
+    }
+
+    /**
+     * Has No / Doesn't Have
+     *
+     * @param string $relationship
+     * @param null|callable $scope
+     * @param string $condition
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function hasNo(string $relationship, $scope = null, $condition = 'AND')
+    {
+        return $this->whereRelationship($relationship, false, $scope, $condition);
+    }
+
+    /**
+     * Has
+     *
+     * @param string $relationship
+     * @param null|callable $scope
+     * @param string $condition
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function has(string $relationship, $scope = null, $condition = 'AND')
+    {
+        return $this->whereRelationship($relationship, true, $scope, $condition);
     }
 
     /**
@@ -2057,6 +2096,7 @@ class Model implements Formable, JsonSerializable
 
         $id = $this->getPropertyValueDirect($id_local);
         $result = $relationship->where( $id_foreign, $id)->take(1);
+        $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;
     }
@@ -2105,6 +2145,7 @@ class Model implements Formable, JsonSerializable
 
         $id = $this->getProperty( $id_local );
         $result = $relationship->where( $id_foreign ?? $relationship->getIdColumn(), $id)->take(1);
+        $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;
     }
@@ -2153,6 +2194,7 @@ class Model implements Formable, JsonSerializable
         }
 
         $result = $relationship->findAll()->where( $id_foreign, $id );
+        $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;
     }
@@ -2244,6 +2286,7 @@ class Model implements Formable, JsonSerializable
         }
 
         $result = $relationship->where($where_column, $id)->findAll();
+        $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;
     }

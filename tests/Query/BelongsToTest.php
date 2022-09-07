@@ -71,6 +71,16 @@ class PeopleTest extends Model
     {
         return $this->belongsToMany(RolesTest::class, 'peoples_roles', 'people_number', 'role_number', null, true, 'p_number', 'r_number');
     }
+
+    public function rolesNameIsAdmin()
+    {
+        return $this->roles()->where('roles.name', 'admin');
+    }
+
+    public function rolesNameIsSubscriber()
+    {
+        return $this->roles()->where('roles.name', 'subscriber');
+    }
 }
 
 /**
@@ -87,6 +97,11 @@ class RolesTest extends Model
     public function peoples()
     {
         return $this->belongsToMany(PeopleTest::class, 'peoples_roles', 'role_number', 'people_number', null, true, 'r_number', 'p_number');
+    }
+
+    public function peoplesNameIsKevin()
+    {
+        return $this->peoples()->where('peoples.name', 'kevin');
     }
 }
 
@@ -166,8 +181,9 @@ class BelongsToTest extends TestCase
 
     public function testPeoplesRolesTest()
     {
+        global $wpdb;
 
-        PeopleTest::new()->saveAndGet(['p_number' => 100, 'name' => 'kim']);
+        $person2 = PeopleTest::new()->saveAndGet(['p_number' => 100, 'name' => 'kim']);
         RolesTest::new()->saveAndGet(['r_number' => 200, 'name' => 'subscriber']);
 
         /** @var RolesTest $role */
@@ -206,5 +222,32 @@ class BelongsToTest extends TestCase
         $this->assertTrue($peoplesLoaded->name === 'kevin');
         $this->assertTrue(!$peoplesLoaded->r_number);
         $this->assertTrue(!$peoplesLoaded->the_relationship_id);
+
+        /** @var PeopleTest[]|Results $variants **/
+        $persons = PeopleTest::new()->has('roles')->get();
+        $this->assertTrue($persons->count() === 1);
+        $this->assertTrue($persons->first()->name === 'kevin');
+
+        $person2->roles()->attach([$role2]);
+
+        /** @var PeopleTest[]|Results $variants **/
+        $persons = PeopleTest::new()->has('roles')->get();
+        $this->assertTrue($persons->count() === 2);
+
+        /** @var PeopleTest[]|Results $peoples */
+        $peoples = RolesTest::new()->find(2)->peoplesNameIsKevin()->has('rolesNameIsAdmin')->get();
+        $this->assertTrue($peoples->count() === 1);
+
+        /** @var PeopleTest[]|Results $peoples */
+        $peoples = RolesTest::new()->find(2)->peoplesNameIsKevin()->has('rolesNameIsSubscriber')->get();
+        $this->assertTrue($peoples === null);
+
+        /** @var RolesTest[]|Results $roles */
+        $roles = RolesTest::new()->has('peoples')->get();
+        $this->assertTrue($roles->count() === 2);
+
+        /** @var RolesTest[]|Results $roles */
+        $roles = RolesTest::new()->hasNo('peoples')->get();
+        $this->assertTrue($roles->count() === 1);
     }
 }

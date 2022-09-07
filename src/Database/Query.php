@@ -288,6 +288,22 @@ class Query
     }
 
     /**
+     * Last Where
+     *
+     * @return array|null
+     */
+    public function lastWhere() : ?array
+    {
+        $key = array_key_last($this->query['where']);
+
+        if($key === null) {
+            return null;
+        }
+
+        return ['key' => $key, 'value' => $this->query['where'][$key]];
+    }
+
+    /**
      * Modify Where
      *
      * @param int $index
