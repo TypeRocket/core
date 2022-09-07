@@ -7,11 +7,13 @@ use PHPUnit\Framework\TestCase;
 use TypeRocket\Models\WPPost;
 use TypeRocket\Models\WPTerm;
 
-class CategoryMockClass extends WPTerm {
+class CategoryMockClassTest extends WPTerm
+{
     public const TAXONOMY = 'category';
 }
 
-class PostMockClass extends WPPost {
+class PostMockClassTest extends WPPost
+{
     public const POST_TYPE = 'post';
 
     public function terms() {
@@ -37,7 +39,7 @@ class ManyToManyTest extends TestCase
     public function testManyToManyCategory()
     {
         $post = new WPPost();
-        $terms = $post->findById(1)->belongsToMany( CategoryMockClass::class, 'posts_terms' );
+        $terms = $post->findById(1)->belongsToMany( CategoryMockClassTest::class, 'posts_terms' );
         $sql = $terms->getSuspectSQL();
         $expected = "SELECT DISTINCT `wp_terms`.* FROM `wp_terms` INNER JOIN `wp_term_taxonomy` ON `wp_term_taxonomy`.`term_id` = `wp_terms`.`term_id` INNER JOIN `posts_terms` ON `posts_terms`.`terms_id` = `wp_terms`.`term_id` WHERE `wp_term_taxonomy`.`taxonomy` = 'category' AND `posts_terms`.`posts_id` = '1'";
         $this->assertTrue( $terms->getRelatedModel() instanceof WPPost );
@@ -58,8 +60,8 @@ class ManyToManyTest extends TestCase
 
     public function testJunctionGetEager()
     {
-        $post = new PostMockClass();
-        /** @var PostMockClass $posts */
+        $post = new PostMockClassTest();
+        /** @var PostMockClassTest $posts */
         $posts = $post->with('terms')->findById(1);
         $terms = $posts->getRelationship('terms');
         $this->assertTrue(!empty($terms));

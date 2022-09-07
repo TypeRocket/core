@@ -77,47 +77,68 @@ if( ! file_exists($wp_load) ) {
     }
 
     // Create Mock Tables
-    function typerocketTestsDeleteRecords($table)
+    function typerocketTestsDatabaseSetup($clear_table, $sql = null)
     {
         /** @var \wpdb */
         global $wpdb;
 
-        $wpdb->query("DELETE FROM {$table}");
-        $wpdb->query("ALTER TABLE {$table} AUTO_INCREMENT = 1");
+        if($sql) {
+            dbDelta($sql);
+        }
+
+        $wpdb->query("DELETE FROM {$clear_table}");
+        $wpdb->query("ALTER TABLE {$clear_table} AUTO_INCREMENT = 1");
     }
 
-    dbDelta('CREATE TABLE `posts_terms` (
+    // terms
+    typerocketTestsDatabaseSetup('posts_terms', 'CREATE TABLE `posts_terms` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `terms_id` int(11) DEFAULT NULL,
   `posts_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDeleteRecords('posts_terms');
 
-    dbDelta('CREATE TABLE `products_variants` (
+    // Products
+    typerocketTestsDatabaseSetup('products_variants', 'CREATE TABLE `products_variants` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `variant_sku` varchar(11) DEFAULT NULL,
   `product_number` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDeleteRecords('products_variants');
-
-    dbDelta('CREATE TABLE `products` (
+    typerocketTestsDatabaseSetup('products', 'CREATE TABLE `products` (
   `product_number` int(11) UNIQUE,
   `title` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`product_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDeleteRecords('products');
-
-    dbDelta('CREATE TABLE `variants` (
+    typerocketTestsDatabaseSetup('variants', 'CREATE TABLE `variants` (
   `sku` varchar(11) UNIQUE,
   `barcode` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDeleteRecords('variants');
+    // People
+    typerocketTestsDatabaseSetup('peoples_roles', 'CREATE TABLE `peoples_roles` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `people_number` int(11) DEFAULT NULL,
+  `role_number` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDatabaseSetup('roles', 'CREATE TABLE `roles` (
+    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `r_number` int(11) UNIQUE,
+    `name` varchar(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+
+    typerocketTestsDatabaseSetup('peoples', 'CREATE TABLE `peoples` (
+    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `p_number` int(11) UNIQUE,
+    `name` varchar(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
 }
