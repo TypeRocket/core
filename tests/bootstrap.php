@@ -91,7 +91,7 @@ if( ! file_exists($wp_load) ) {
     }
 
     // terms
-    typerocketTestsDatabaseSetup('posts_terms', 'CREATE TABLE `posts_terms` (
+    typerocketTestsDatabaseSetup('posts_terms', 'CREATE TABLE  if not exists `posts_terms` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `terms_id` int(11) DEFAULT NULL,
   `posts_id` int(11) DEFAULT NULL,
@@ -107,36 +107,36 @@ if( ! file_exists($wp_load) ) {
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDatabaseSetup('products', 'CREATE TABLE `products` (
+    typerocketTestsDatabaseSetup('products', 'CREATE TABLE if not exists `products` (
   `product_number` int(11) UNIQUE,
   `title` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`product_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDatabaseSetup('variants', 'CREATE TABLE `variants` (
+    typerocketTestsDatabaseSetup('variants', 'CREATE TABLE if not exists `variants` (
   `sku` varchar(11) UNIQUE,
   `barcode` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
     // People
-    typerocketTestsDatabaseSetup('peoples_roles', 'CREATE TABLE `peoples_roles` (
+    typerocketTestsDatabaseSetup('peoples_roles', 'CREATE TABLE if not exists `peoples_roles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `people_number` int(11) DEFAULT NULL,
   `role_number` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDatabaseSetup('roles', 'CREATE TABLE `roles` (
+    typerocketTestsDatabaseSetup('roles', 'CREATE TABLE  if not exists `roles` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `r_number` int(11) UNIQUE,
+    `r_number` int(11)  DEFAULT NULL,
     `name` varchar(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
-    typerocketTestsDatabaseSetup('peoples', 'CREATE TABLE `peoples` (
+    typerocketTestsDatabaseSetup('peoples', 'CREATE TABLE  if not exists `peoples` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `p_number` int(11) UNIQUE,
+    `p_number` int(11)  DEFAULT NULL,
     `name` varchar(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');

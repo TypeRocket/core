@@ -1660,8 +1660,15 @@ class Model implements Formable, JsonSerializable
             throw new \Exception("Trying to get relationship of '{$relationship}' but no Model class is returned for " . get_class($this));
         }
 
+        $junction = $rel->getJunction();
+        $id_column = null;
+
+        if($junction) {
+            $id_column = $junction['id_local'] ?? $this->getIdColumn();
+        }
+
         $rel->getQuery()->modifyWhere(-1, [
-            'value' => $this->getQuery()->getIdColumWithTable(),
+            'value' => $this->getQuery()->getIdColumWithTable($id_column),
             'operator' => '=',
             'raw' => true
         ]);
@@ -1670,7 +1677,8 @@ class Model implements Formable, JsonSerializable
             $scope($rel);
         }
 
-        $this->query->merge($rel->getQuery());
+        $exists = $rel->getQuery()->compileFullQuery();
+        $this->query->appendRawWhere('and', "EXISTS ($exists)");
 
         return $this;
     }
@@ -2048,7 +2056,9 @@ class Model implements Formable, JsonSerializable
         }
 
         $id = $this->getPropertyValueDirect($id_local);
-        return $relationship->where( $id_foreign, $id)->take(1);
+        $result = $relationship->where( $id_foreign, $id)->take(1);
+
+        return $result;
     }
 
     /**
@@ -2094,7 +2104,9 @@ class Model implements Formable, JsonSerializable
         }
 
         $id = $this->getProperty( $id_local );
-        return $relationship->where( $id_foreign ?? $relationship->getIdColumn(), $id)->take(1);
+        $result = $relationship->where( $id_foreign ?? $relationship->getIdColumn(), $id)->take(1);
+
+        return $result;
     }
 
     /**
@@ -2140,7 +2152,9 @@ class Model implements Formable, JsonSerializable
             $scope($relationship);
         }
 
-        return $relationship->findAll()->where( $id_foreign, $id );
+        $result = $relationship->findAll()->where( $id_foreign, $id );
+
+        return $result;
     }
 
     /**
@@ -2229,7 +2243,9 @@ class Model implements Formable, JsonSerializable
             $relationship->reselect($rel_table.'.*');
         }
 
-        return $relationship->where($where_column, $id)->findAll();
+        $result = $relationship->where($where_column, $id)->findAll();
+
+        return $result;
     }
 
     /**

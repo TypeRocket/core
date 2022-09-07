@@ -125,10 +125,11 @@ class Query
     /**
      * @return string
      */
-    public function getIdColumWithTable()
+    public function getIdColumWithTable($idColumn = null)
     {
+        $idColumn ??= $this->idColumn;
         $table = $this->query['table'] ? "`{$this->query['table']}`." : '';
-        return "{$table}`{$this->idColumn}`";
+        return "{$table}`{$idColumn}`";
     }
 
     /**
@@ -302,7 +303,7 @@ class Query
         }
 
         if($index === -1) {
-            $index = count($this->query['where']) - 1;
+            $index = array_key_last($this->query['where']);
         }
 
         $this->query['where'][$index] = $merge ? array_merge($this->query['where'][$index], $args) : $args;

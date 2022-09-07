@@ -104,7 +104,8 @@ class PostTest extends TestCase
         $expected = "SELECT DISTINCT `wp_posts`.* FROM `wp_posts` INNER JOIN `wp_term_relationships` ON `wp_term_relationships`.`object_id` = `wp_posts`.`ID` WHERE `post_type` = 'post' AND `wp_term_relationships`.`term_taxonomy_id` = '1'";
 
         $this->assertStringContainsString($sql, $expected);
-        $count = Category::new()->find(1)->posts()->get()->count();
+        $posts = Category::new()->find(1)->posts()->get();
+        $count = $posts->count();
         $this->assertTrue($count === 1);
     }
 }
