@@ -2163,7 +2163,7 @@ class Model implements Formable, JsonSerializable
 
         // Column ID
         if( ! $id_column && $this->resource ) {
-            $id_column = $this->resource . '_id';
+            $id_column =  $this->resource . '_id';
         }
 
         $id = $this->$id_column ?? $this->getID();
@@ -2179,13 +2179,13 @@ class Model implements Formable, JsonSerializable
         $id_local ??= $this->getIdColumn();
 
         // Set Junction: `attach` and `detach` will use inverse columns
-        $relationship->setJunction( [
+        $relationship->setJunction([
             'table' => $junction_table,
             'columns' => [$id_foreign, $id_column],
             'id_foreign' => $id,
             'id_column' => $id_column,
             'id_local' => $id_local,
-        ] );
+        ]);
 
         if(isset($modelClassOn) && class_exists($modelClassOn)) {
             $relationshipOn = new $modelClassOn;
@@ -2198,6 +2198,7 @@ class Model implements Formable, JsonSerializable
         $rel_join = $relationshipOn->getTable().'.'.$relationshipOn->getIdColumn();
         $foreign_join = $join_table.'.'.$id_foreign;
         $where_column = $join_table.'.'.$id_column;
+        $id_local_column = $this->getTable().'.'.$id_local;
         $relationship->getQuery()->distinct()->join($join_table, $foreign_join, $rel_join);
 
         $relationship->setRelatedModel( $this );
@@ -2210,6 +2211,7 @@ class Model implements Formable, JsonSerializable
                 'id_column' => $id_column,
                 'id_foreign' => $id_foreign,
                 'id_local' => $id_local,
+                'id_local_column' => $id_local ? $id_local_column : null,
                 'where_column' => $where_column,
                 'scope' => $scope
             ]

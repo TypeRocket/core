@@ -257,7 +257,7 @@ class EagerLoader
         $query = $relation->getRelatedBy()['query'];
         $set = [];
 
-        $relationId = $query['where_column'];
+        $relationId = $query['id_local_column'];
         if (($pos = strpos($relationId, ".")) !== false) {
             $relationId = substr($relationId, $pos + 1);
         }
@@ -282,7 +282,7 @@ class EagerLoader
 
         $items = $relation->get();
 
-        $set = $this->compileItems($items, 'the_relationship_id', true, $relation->getResultsClass());
+        $set = $this->compileItems($items, 'the_relationship_id', true, $relation->getResultsClass(), true);
 
         if($result instanceof Results) {
             foreach($result as $value) {
