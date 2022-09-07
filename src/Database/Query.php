@@ -942,6 +942,15 @@ class Query
             $result = false;
             if( $wpdb->query( $sql ) ) {
                 $result = $wpdb->insert_id;
+
+                if($result === 0 && $wpdb->rows_affected === 1)
+                {
+                    $column_id = $this->getIdColumn();
+
+                    if($column_id_value = $this->query['data'][$column_id] ?? null) {
+                        return $column_id_value;
+                    }
+                }
             }
         } elseif( array_key_exists('update', $query) ) {
             $result = $wpdb->query( $sql );
