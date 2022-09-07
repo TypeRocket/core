@@ -314,13 +314,12 @@ class Registry
      */
     public static function taxonomyFormContent( Taxonomy $obj ) {
 
-        $callback = function( $term, $obj )
+        $callback = function( $term, $obj, $form )
         {
             /** @var Taxonomy $obj */
             if ( $term == $obj->getId() || $term->taxonomy == $obj->getId() ) {
                 $func = 'add_form_content_' . $obj->getId() . '_taxonomy';
 
-                $form = $obj->getMainForm();
                 if (is_callable( $form )) {
                     call_user_func( $form, $term );
                 } elseif (function_exists( $func )) {
@@ -331,18 +330,36 @@ class Registry
             }
         };
 
-        if ($obj->getMainForm()) {
-            add_action( $obj->getId() . '_edit_form', function($term) use ($obj, $callback) {
+        if ($form = $obj->getAddForm()) {
+            add_action( $obj->getId() . '_add_form_fields', function($term) use ($obj, $callback, $form) {
+                echo BaseForm::nonceInput('hook');
+                echo '<div class="tr-taxonomy-add-container typerocket-wp-style-subtle">';
+                call_user_func_array($callback, [$term, $obj, $form]);
+                echo '</div>';
+            }, 10, 2 );
+        }
+
+        if ($form = $obj->getEditForm()) {
+            add_action( $obj->getId() . '_edit_form', function($term) use ($obj, $callback, $form) {
                 echo BaseForm::nonceInput('hook');
                 echo '<div class="tr-taxonomy-edit-container typerocket-wp-style-table">';
-                call_user_func_array($callback, [$term, $obj]);
+                call_user_func_array($callback, [$term, $obj, $form]);
+                echo '</div>';
+            }, 10, 2 );
+        }
+
+        if ($form = $obj->getMainForm()) {
+            add_action( $obj->getId() . '_edit_form', function($term) use ($obj, $callback, $form) {
+                echo BaseForm::nonceInput('hook');
+                echo '<div class="tr-taxonomy-edit-container typerocket-wp-style-table">';
+                call_user_func_array($callback, [$term, $obj, $form]);
                 echo '</div>';
             }, 10, 2 );
 
-            add_action( $obj->getId() . '_add_form_fields', function($term) use ($obj, $callback) {
+            add_action( $obj->getId() . '_add_form_fields', function($term) use ($obj, $callback, $form) {
                 echo BaseForm::nonceInput('hook');
                 echo '<div class="tr-taxonomy-add-container typerocket-wp-style-subtle">';
-                call_user_func_array($callback, [$term, $obj]);
+                call_user_func_array($callback, [$term, $obj, $form]);
                 echo '</div>';
             }, 10, 2 );
         }

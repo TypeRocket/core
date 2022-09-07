@@ -312,6 +312,26 @@ class Taxonomy extends Registrable
     }
 
     /**
+     * Get the form hook value by key
+     *
+     * @return mixed
+     */
+    public function getAddForm()
+    {
+        return $this->form['add'] ?? null;
+    }
+
+    /**
+     * Get the form hook value by key
+     *
+     * @return mixed
+     */
+    public function getEditForm()
+    {
+        return $this->form['edit'] ?? null;
+    }
+
+    /**
      * Set the form main hook
      *
      * From hook to be added just above the title field
@@ -326,6 +346,46 @@ class Taxonomy extends Registrable
             $this->form['main'] = $value;
         } else {
             $this->form['main'] = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the form add page hook
+     *
+     * From hook to be added just above the title field
+     *
+     * @param bool|true|callable $value
+     *
+     * @return Taxonomy $this
+     */
+    public function setAddForm($value = true)
+    {
+        if (is_callable( $value )) {
+            $this->form['add'] = $value;
+        } else {
+            $this->form['add'] = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the form edit page hook
+     *
+     * From hook to be added just above the title field
+     *
+     * @param bool|true|callable $value
+     *
+     * @return Taxonomy $this
+     */
+    public function setEditForm($value = true)
+    {
+        if (is_callable( $value )) {
+            $this->form['edit'] = $value;
+        } else {
+            $this->form['edit'] = true;
         }
 
         return $this;
