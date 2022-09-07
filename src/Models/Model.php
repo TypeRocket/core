@@ -1666,11 +1666,8 @@ class Model implements Formable, JsonSerializable
         $id_column = null;
         $where_on_index = -1;
 
-        if($junction) {
-            $id_column = $junction['id_local'] ?? $this->getIdColumn();
-        }
-
         if($related) {
+            $id_column = $related['query']['id_local'] ?? $this->getIdColumn();
             $where_on_index = $related['where_on']['key'];
         }
 

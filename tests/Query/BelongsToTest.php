@@ -58,6 +58,22 @@ class ProductVariantTest extends Model
 
 /**
  * @property int $id
+ * @property string $sku
+ * @property int $product_number
+ */
+class OrderTest extends Model
+{
+    protected $table = 'orders';
+    protected $fillable = ['name', 'per_number'];
+
+    public function person()
+    {
+        return $this->belongsTo(PeopleTest::class, 'per_number', 'p_number');
+    }
+}
+
+/**
+ * @property int $id
  * @property string $p_number
  * @property string $name
  * @property RolesTest[]|Results $roles
@@ -80,6 +96,11 @@ class PeopleTest extends Model
     public function rolesNameIsSubscriber()
     {
         return $this->roles()->where('roles.name', 'subscriber');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(OrderTest::class, 'per_number', 'p_number');
     }
 }
 
@@ -192,15 +213,18 @@ class BelongsToTest extends TestCase
 
         /** @var PeopleTest $person */
         $person = PeopleTest::new()->saveAndGet(['p_number' => 987, 'name' => 'kevin']);
-
+        OrderTest::new()->saveAndGet(['per_number' => $person->p_number, 'name' => 'AA']);
+        OrderTest::new()->saveAndGet(['per_number' => $person->p_number, 'name' => 'ZZ']);
 
         $person->roles()->attach([$role->r_number, $role2]);
 
         /** @var RolesTest[]|Results $roles */
         $roles = $person->roles()->get();
+        $orders = $person->orders()->get();
 
         $this->assertTrue($roles[0] instanceof RolesTest);
         $this->assertTrue($roles->count() === 2);
+        $this->assertTrue($orders->count() === 2);
         $this->assertTrue($roles[0]->name === 'admin');
         $this->assertTrue($roles[0]->r_number === '123');
 
@@ -249,5 +273,13 @@ class BelongsToTest extends TestCase
         /** @var RolesTest[]|Results $roles */
         $roles = RolesTest::new()->hasNo('peoples')->get();
         $this->assertTrue($roles->count() === 1);
+
+        $persons = PeopleTest::new()->has('orders')->get();
+        $this->assertTrue($persons->count() === 1);
+        $this->assertTrue($persons->first()->name === 'kevin');
+
+        $persons = PeopleTest::new()->hasNo('orders')->get();
+        $this->assertTrue($persons->count() === 1);
+        $this->assertTrue($persons[0]->name === 'kim');
     }
 }
