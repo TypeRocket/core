@@ -312,7 +312,7 @@ class Query
      *
      * @return $this
      */
-    public function modifyWhere($index, $args, $merge = true)
+    public function modifyWhere($index, $args, $merge = true, $callback = null)
     {
         if(empty($this->query['where'])) {
             return $this;
@@ -322,7 +322,13 @@ class Query
             $index = array_key_last($this->query['where']);
         }
 
-        $this->query['where'][$index] = $merge ? array_merge($this->query['where'][$index], $args) : $args;
+        $where = $merge ? array_merge($this->query['where'][$index], $args) : $args;
+
+        if(is_callable($callback)) {
+            $callback($where, $this, $index);
+        }
+
+        $this->query['where'][$index] = $where;
 
         return $this;
     }

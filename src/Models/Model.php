@@ -2093,6 +2093,10 @@ class Model implements Formable, JsonSerializable
             $scope($relationship);
         }
 
+        $rel_table = $relationship->getTable();
+        $id_foreign = $id_foreign ?? $relationship->getIdColumn();
+        $id_foreign_where = str_contains($id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
+
         $id = $this->getPropertyValueDirect($id_local);
         $result = $relationship->where( $id_foreign, $id)->take(1);
         $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
@@ -2123,6 +2127,8 @@ class Model implements Formable, JsonSerializable
             $id_foreign = $relationship->getIdColumn();
         } elseif(is_null($id_foreign) && is_null($scope)) {
             $id_foreign = $relationship->getIdColumn();
+        } else {
+            $id_foreign = $id_foreign ?? $relationship->getIdColumn();
         }
 
         if( ! $id_local && $relationship->resource ) {
@@ -2145,7 +2151,11 @@ class Model implements Formable, JsonSerializable
         }
 
         $id = $this->getProperty( $id_local );
-        $result = $relationship->where( $id_foreign ?? $relationship->getIdColumn(), $id)->take(1);
+
+        $rel_table = $relationship->getTable();
+        $id_foreign_where = str_contains($id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
+
+        $result = $relationship->where($id_foreign_where, $id)->take(1);
         $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;
@@ -2196,7 +2206,10 @@ class Model implements Formable, JsonSerializable
             $scope($relationship);
         }
 
-        $result = $relationship->findAll()->where( $id_foreign, $id );
+        $rel_table = $relationship->getTable();
+        $id_foreign_where = str_contains($id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
+
+        $result = $relationship->findAll()->where( $id_foreign_where, $id );
         $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;

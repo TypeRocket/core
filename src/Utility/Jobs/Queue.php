@@ -145,10 +145,17 @@ class Queue
     /**
      * @param JobCanQueue $job
      * @param null|int $time
+     *
      * @return int
      */
     public static function addJob(JobCanQueue $job, $time = null)
     {
+        if(Config::getFromContainer()->locate('queue.mode') === 'sync') {
+            $job->handle();
+
+            return -1;
+        }
+
         $class = get_class($job);
         $time = $time ?? (time() + $job::DELAY);
         $actionName = 'typerocket_job.' . $class;
