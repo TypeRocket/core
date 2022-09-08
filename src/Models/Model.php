@@ -173,7 +173,7 @@ class Model implements Formable, JsonSerializable
     /**
      * @var array
      */
-    #[ArrayShape(['type' => 'string', 'query' => 'array'])]
+    #[ArrayShape(['type' => 'string', 'query' => 'array', 'where_on' => 'array'])]
     protected $relatedBy;
 
     /**
