@@ -1661,7 +1661,6 @@ class Model implements Formable, JsonSerializable
             throw new \Exception("Trying to get relationship of '{$relationship}' but no Model class is returned for " . get_class($this));
         }
 
-        $junction = $rel->getJunction();
         $related = $rel->getRelatedBy();
         $id_column = null;
         $where_on_index = -1;
