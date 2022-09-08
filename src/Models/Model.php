@@ -2097,7 +2097,7 @@ class Model implements Formable, JsonSerializable
         $id_foreign_where = str_contains($id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
 
         $id = $this->getPropertyValueDirect($id_local);
-        $result = $relationship->where( $id_foreign, $id)->take(1);
+        $result = $relationship->where($id_foreign_where, $id)->take(1);
         $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
 
         return $result;
