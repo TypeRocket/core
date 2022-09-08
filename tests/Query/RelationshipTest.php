@@ -318,4 +318,30 @@ class BelongsToTest extends TestCase
         $this->assertTrue($persons->count() === 1);
         $this->assertTrue($persons[0]->name === 'kim');
     }
+
+    public function testRelationshipExistsScopedNested()
+    {
+        global $wpdb;
+
+        $persons = PeopleTest::new()->has('orders', function(Model $query) {
+            $query->has('item', function(Model $query) {
+                $table = $query->getTable();
+                $query->where("{$table}.name", 'item1');
+            });
+        })->get();
+
+        $this->assertTrue($persons->count() === 1);
+        $this->assertTrue($persons[0]->name === 'kevin');
+    }
+
+    public function testRelationshipExistsOrSomethingElse()
+    {
+        global $wpdb;
+
+        $persons = PeopleTest::new()->where('peoples.name', 'kevin')->hasNo('orders', null, 'OR')->get();
+
+        $this->assertTrue($persons->count() === 2);
+        $this->assertTrue($persons[0]->name === 'kim');
+        $this->assertTrue($persons[1]->name === 'kevin');
+    }
 }
