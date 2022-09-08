@@ -2052,12 +2052,14 @@ class Model implements Formable, JsonSerializable
     /**
      * Has One
      *
-     * @param string $modelClass
+     * @template M
+     *
+     * @param class-string<M> $modelClass
      * @param null|string $id_foreign
      * @param null|string|callable $id_local
      * @param null|callable $scope
      *
-     * @return null|Model
+     * @return null|Model|M
      */
     public function hasOne($modelClass, $id_foreign = null, $id_local = null, $scope = null)
     {
@@ -2101,12 +2103,14 @@ class Model implements Formable, JsonSerializable
     /**
      * Belongs To
      *
-     * @param string $modelClass
+     * @template M
+     *
+     * @param class-string<M> $modelClass
      * @param null|string $id_local
      * @param null|string|callable $id_foreign
      * @param null|callable $scope
      *
-     * @return null|Model
+     * @return null|Model|M
      */
     public function belongsTo($modelClass, $id_local = null, $id_foreign = null, $scope = null)
     {
@@ -2150,12 +2154,14 @@ class Model implements Formable, JsonSerializable
     /**
      * Has Many
      *
-     * @param string $modelClass
+     * @template M
+     *
+     * @param class-string<M> $modelClass
      * @param null|string $id_foreign
      * @param null|string|callable $id_local
      * @param null|callable $scope
      *
-     * @return null|Model
+     * @return null|Model|M
      */
     public function hasMany($modelClass, $id_foreign = null, $id_local = null, $scope = null)
     {
@@ -2201,14 +2207,16 @@ class Model implements Formable, JsonSerializable
      *
      * This is for Many-to-Many relationships.
      *
-     * @param string|array $modelClass
+     * @template M
+     *
+     * @param class-string<M> $modelClass
      * @param string $junction_table
      * @param null|string $id_column
      * @param null|string $id_foreign
      * @param null|callable $scope
      * @param bool $reselect
      *
-     * @return null|Model
+     * @return null|Model|M
      */
     public function belongsToMany( $modelClass, $junction_table, $id_column = null, $id_foreign = null, $scope = null, $reselect = true, $id_local = null, $id_foreign_local = null )
     {
@@ -2293,7 +2301,7 @@ class Model implements Formable, JsonSerializable
      *
      * @param array $args
      *
-     * @return array $query
+     * @return array{0: mixed, 1: Query}
      */
     public function attach( array $args )
     {
@@ -2329,7 +2337,7 @@ class Model implements Formable, JsonSerializable
      *
      * @param array $args
      *
-     * @return array
+     * @return array{0: mixed, 1: Query}
      */
     public function detach( array $args = [] )
     {
@@ -2357,7 +2365,7 @@ class Model implements Formable, JsonSerializable
      *
      * @param array $args
      *
-     * @return array $results
+     * @return array{detach: array{0: mixed, 1: Query}, attach: array{0: mixed, 1: Query}}
      */
     public function sync( array $args = [] )
     {
@@ -2371,13 +2379,13 @@ class Model implements Formable, JsonSerializable
     /**
      * Get Table
      *
-     * @return null
+     * @return string
      */
     public function getTable()
     {
         $connection = $this->query->getWpdb();
 
-        return  $this->table ?: $connection->prefix . $this->resource;
+        return $this->table ?: $connection->prefix . $this->resource;
     }
 
     /**
