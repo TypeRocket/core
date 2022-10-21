@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Models\WPTerm;
 use TypeRocket\Utility\QueryCaster;
 
 class QueryCasterTest extends TestCase
@@ -40,6 +41,51 @@ class QueryCasterTest extends TestCase
 
         $this->assertTrue( $results->first() instanceof Category);
         $this->assertTrue( $results->count() > 0 );
+    }
+
+    public function testTermMetaSelectNullCaster()
+    {
+        $terms = get_terms([
+            'taxonomy' => Category::TAXONOMY
+        ]);
+
+        $results = QueryCaster::terms(Category::class, [
+            'meta_query' => [
+                [
+                    'key'       => 'select_fund',
+                    'value'     => '359',
+                ]
+            ]
+        ]);
+
+        $this->assertTrue( $results->count() === 0 );
+    }
+
+    public function testTermMetaSelectCaster()
+    {
+        /** @var \WP_Term[] $terms */
+        $terms = get_terms([
+            'taxonomy' => Category::TAXONOMY
+        ]);
+
+        foreach ($terms as $term) {
+            update_term_meta($term->term_id, 'select_fund', '359');
+        }
+
+        $results = QueryCaster::terms(Category::class, [
+            'meta_query' => [
+                [
+                    'key'       => 'select_fund',
+                    'value'     => '359',
+                ]
+            ]
+        ]);
+
+        foreach ($terms as $term) {
+            delete_term_meta($term->term_id, 'select_fund');
+        }
+
+        $this->assertTrue( $results->count() === count($terms) );
     }
 
     public function testUserCaster()

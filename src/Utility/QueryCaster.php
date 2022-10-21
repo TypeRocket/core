@@ -29,7 +29,7 @@ class QueryCaster
         /** @var Results $results */
         $results = new $results_class;
 
-        return $results->exchangeAndCast($wp_query->posts, get_class($model));
+        return $results->exchangeAndCast($wp_query->posts ?? [], get_class($model));
     }
 
     /**
@@ -53,7 +53,7 @@ class QueryCaster
         /** @var Results $results */
         $results = new $results_class;
 
-        return $results->exchangeAndCast($wp_query->terms, get_class($model));
+        return $results->exchangeAndCast($wp_query->terms ?? [], get_class($model));
     }
 
     /**
@@ -76,7 +76,7 @@ class QueryCaster
         /** @var Results $results */
         $results = new $results_class;
 
-        return $results->exchangeAndCast($wp_query->get_results(), get_class($model));
+        return $results->exchangeAndCast($wp_query->get_results() ?? [], get_class($model));
     }
 
     /**
@@ -99,6 +99,6 @@ class QueryCaster
         /** @var Results $results */
         $results = new $results_class;
 
-        return $results->exchangeAndCast($wp_query->comments, get_class($model));
+        return $results->exchangeAndCast($wp_query->comments ?? [], get_class($model));
     }
 }
