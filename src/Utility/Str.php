@@ -14,6 +14,10 @@ class Str
      */
     public static function ends( $needle, $subject )
     {
+        if(!$needle) {
+            return true;
+        }
+        
         $length = mb_strlen($needle);
         if ($length == 0) {
             return true;
@@ -30,8 +34,16 @@ class Str
      *
      * @return bool
      */
-    public static function contains($needle, $subject)
+    public static function contains($needle, $subject = '')
     {
+        if(!$needle) {
+            return true;
+        }
+
+        if(!$subject) {
+            return false;
+        }
+        
         return ( mb_strpos( $subject, $needle ) !== false );
     }
 
@@ -45,6 +57,10 @@ class Str
      */
     public static function starts($needle, $subject)
     {
+        if(!$needle) {
+            return true;
+        }
+        
         return mb_substr($subject, 0, mb_strlen($needle) ) === $needle;
     }
 
