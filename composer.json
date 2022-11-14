@@ -15,11 +15,11 @@
         "docs": "https://typerocket.com/docs/v5/"
     },
     "require" : {
-        "php": "^7.4",
+        "php": "^8.0.2",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
-        "symfony/console": "^5.1",
+        "symfony/console": "^6.0",
         "woocommerce/action-scheduler": "^3.5"
     },
     "require-dev": {

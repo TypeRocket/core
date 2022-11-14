@@ -94,7 +94,7 @@ export function tr_replace_repeater_hash($group_template, replacement_id) {
         let hash = 'tr-clone-hash-' + tr_hash();
         let tile = $group_template.find('[data-tr-component-tile='+lookup+']').first();
         $(this).attr('data-tr-component', hash);
-        console.log(hash);
+        // console.log(hash);
         if(tile) {
             tile.attr('data-tr-component-tile', hash);
         }
