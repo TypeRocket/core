@@ -12,7 +12,7 @@
         }
     ],
     "support": {
-        "docs": "https://typerocket.com/docs/v5/"
+        "docs": "https://typerocket.com/docs/v6/"
     },
     "require" : {
         "php": "^8.0.2",
