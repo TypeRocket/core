@@ -24,7 +24,7 @@ class RequiredValidator extends ValidatorRule
          * @var Validator $validator
          */
         extract($this->args);
-        $option = $option ?? null;
+        $option = (string) $option;
 
         $opts = explode('/', $option);
 

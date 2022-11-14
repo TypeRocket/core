@@ -56,7 +56,7 @@ class BaseForm
             $action = 'update';
         }
 
-        switch (strtolower($action)) {
+        switch (strtolower((string) $action)) {
             case 'put' :
                 $action = 'update';
                 break;
@@ -97,7 +97,7 @@ class BaseForm
                 $this->setModel(new DataCollection($resource));
             }
         }
-        elseif(class_exists($resource)) {
+        elseif(class_exists((string) $resource)) {
             $this->resource = null;
             $this->action = $action ?? 'create';
             $this->setModel($resource);

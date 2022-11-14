@@ -394,7 +394,7 @@ class ArrTest extends TestCase
     {
         $array = [
             'one' => 3,
-            1.4 => 3,
+            '1.4' => 3,
             '1.1' => 3,
             1 => 3,
         ];
@@ -402,7 +402,7 @@ class ArrTest extends TestCase
         $this->assertTrue(Arr::exists($array, 'one'));
         $this->assertTrue(Arr::exists($array, 1));
         $this->assertTrue(Arr::exists($array, 1.1));
-        $this->assertTrue( ! Arr::exists($array, 1.4));
+        $this->assertTrue(Arr::exists($array, 1.4));
         $this->assertTrue( ! Arr::exists($array, 0));
     }
 
@@ -410,14 +410,14 @@ class ArrTest extends TestCase
     {
         $array = new \ArrayObject();
         $array['one'] = 3;
-        $array[1.4] = 3;
+        $array['1.4'] = 3;
         $array['1.1'] = 3;
         $array[1] = 3;
 
         $this->assertTrue(Arr::exists($array, 'one'));
         $this->assertTrue(Arr::exists($array, 1));
         $this->assertTrue(Arr::exists($array, 1.1));
-        $this->assertTrue( ! Arr::exists($array, 1.4));
+        $this->assertTrue(Arr::exists($array, 1.4));
         $this->assertTrue( ! Arr::exists($array, 0));
     }
 

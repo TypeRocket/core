@@ -297,7 +297,7 @@ class View
      */
     public function getFolderPath()
     {
-        if(is_dir($this->folder)) {
+        if(is_dir((string) $this->folder)) {
             $folder = rtrim($this->folder, DIRECTORY_SEPARATOR);
         } else {
             $folder = rtrim(Config::get('paths.' . $this->getContext()), DIRECTORY_SEPARATOR);

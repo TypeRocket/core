@@ -13,6 +13,7 @@ trait ArrayAccessible
      * @param mixed $value
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value) : void
     {
         $location = $this->_location ?? '_items';
@@ -28,6 +29,7 @@ trait ArrayAccessible
      * @param int|string $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset) : bool
     {
         $location = $this->_location ?? '_items';
@@ -39,6 +41,7 @@ trait ArrayAccessible
      * @param int|string $offset
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset) : void
     {
         $location = $this->_location ?? '_items';
@@ -50,6 +53,7 @@ trait ArrayAccessible
      * @param int|string $offset
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $location = $this->_location ?? '_items';

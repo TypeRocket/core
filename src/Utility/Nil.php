@@ -59,6 +59,7 @@ class Nil implements ArrayAccess
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($key)
     {
         return $this->arrayCheck($key);
@@ -69,6 +70,7 @@ class Nil implements ArrayAccess
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return new Nil($this->value[$key] ?? new Nil);
@@ -80,6 +82,7 @@ class Nil implements ArrayAccess
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         if ($this->arrayCheck()) {
@@ -92,6 +95,7 @@ class Nil implements ArrayAccess
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
         if ($this->arrayCheck()) {
@@ -104,6 +108,7 @@ class Nil implements ArrayAccess
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     protected function arrayCheck($key = null) {
         if(is_array($this->value) || $this->value instanceof ArrayAccess) {
 

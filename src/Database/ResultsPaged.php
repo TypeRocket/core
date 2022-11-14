@@ -70,6 +70,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function getCount()
     {
         return $this->count;
@@ -227,6 +228,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      * @return mixed Can return any type.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->results[$this->position];
@@ -238,6 +240,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      * @return void Any returned value is ignored.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
@@ -249,6 +252,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      * @return mixed scalar on success, or null on failure.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -261,6 +265,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      * Returns true on success or false on failure.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->results[$this->position]);
@@ -272,6 +277,7 @@ class ResultsPaged implements \Iterator, JsonSerializable
      * @return void Any returned value is ignored.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;

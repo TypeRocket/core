@@ -33,9 +33,10 @@ class ResultsMeta extends Results
 
             if($this->cache_key && $this->cache_column) {
                 $cache_id = $meta->{$this->cache_column};
-                $cache = wp_cache_get($cache_id, $this->cache_key);
-                $cache[$meta->meta_key][0] = $meta->meta_value;
-                wp_cache_set($cache_id, $cache, $this->cache_key );
+                if($cache = wp_cache_get($cache_id, $this->cache_key)) {
+                    $cache[$meta->meta_key][0] = $meta->meta_value;
+                    wp_cache_set($cache_id, $cache, $this->cache_key);
+                }
             }
 
             $this->storedValues[$meta->meta_key] = maybe_unserialize($meta->meta_value);

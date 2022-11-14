@@ -342,7 +342,7 @@ class Data
             return false;
         }
 
-        $s = trim($args[0]);
+        $s = trim((string) $args[0]);
 
         if($s === '' || $s === '""') {
             return false;

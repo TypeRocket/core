@@ -9,6 +9,7 @@ trait ArrayIterable
      */
     protected array $_items = [];
 
+    #[\ReturnTypeWillChange]
     function rewind()
     {
         $location = $this->_location ?? '_items';
@@ -16,6 +17,7 @@ trait ArrayIterable
         reset($this->{$location});
     }
 
+    #[\ReturnTypeWillChange]
     function current()
     {
         $location = $this->_location ?? '_items';
@@ -23,6 +25,7 @@ trait ArrayIterable
         return current($this->{$location});
     }
 
+    #[\ReturnTypeWillChange]
     function key()
     {
         $location = $this->_location ?? '_items';
@@ -30,6 +33,7 @@ trait ArrayIterable
         return key($this->{$location});
     }
 
+    #[\ReturnTypeWillChange]
     function next()
     {
         $location = $this->_location ?? '_items';
@@ -37,6 +41,7 @@ trait ArrayIterable
         next($this->{$location});
     }
 
+    #[\ReturnTypeWillChange]
     function valid()
     {
         $location = $this->_location ?? '_items';
