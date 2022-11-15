@@ -29,11 +29,11 @@ namespace TypeRocket\Services
         }
 
         /**
-         * @param \TypeRocketPro\Utility\Mailers\MailDriver|null $driver
+         * @param \TypeRocket\Pro\Utility\Mailers\MailDriver|null $driver
          *
-         * @return \TypeRocketPro\Utility\Mailers\MailDriver|null
+         * @return \TypeRocket\Pro\Utility\Mailers\MailDriver|null
          */
-        public function driver(\TypeRocketPro\Utility\Mailers\MailDriver $driver = null)
+        public function driver(\TypeRocket\Pro\Utility\Mailers\MailDriver $driver = null)
         {
             if(func_num_args() == 0) {
                 return $this->driver;

@@ -63,7 +63,7 @@ class PostTypeModelComposer extends Composer
     public function featuredImage($size = 'thumbnail', $classes = '', $from_cache = false)
     {
         if($from_cache && $this->data->meta->_thumbnail_id) {
-            $img = \TypeRocketPro\Utility\ImageCache::attachmentSrc($this->data->meta->_thumbnail_id, $size);
+            $img = \TypeRocket\Pro\Utility\ImageCache::attachmentSrc($this->data->meta->_thumbnail_id, $size);
 
             if($img) {
                 return $img;

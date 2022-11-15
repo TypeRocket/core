@@ -101,7 +101,7 @@ class Str
      */
     public static function contains($needle, $haystack) : bool
     {
-        return str_contains($haystack, $needle); // ( mb_strpos( (string) $subject, (string) $needle ) !== false );
+        return str_contains((string) $haystack, (string) $needle);
     }
 
     /**

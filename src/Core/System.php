@@ -24,7 +24,7 @@ use TypeRocket\Utility\Str;
 class System
 {
     public const ALIAS = 'system';
-    public const ADVANCED = 'TypeRocketPro\Core\AdvancedSystem';
+    public const ADVANCED = 'TypeRocket\Pro\Core\AdvancedSystem';
     public const STATE = '_typerocket_site_state_changed';
 
     protected $stash = [];
