@@ -61,9 +61,11 @@ class Media
         }
 
         $allowed = get_allowed_mime_types();
-        $extension = wp_check_filetype($extension, $allowed)['ext'];
+        $file_type_details = wp_check_filetype('typerocket-media.'.$extension, $allowed);
+        $extension = $file_type_details['ext'] ?? $extension;
+        $mime = $file_type_details['type'] ?? null;
 
-        if(! in_array($extension, $allowed)) {
+        if(! in_array($mime, $allowed)) {
             return null;
         }
 
