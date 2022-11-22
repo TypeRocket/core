@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Query;
 
 use PHPUnit\Framework\TestCase;
+use TypeRocket\Database\Query;
 
 class SelectTest extends TestCase
 {
@@ -127,6 +128,15 @@ class SelectTest extends TestCase
 
         $this->assertTrue( is_null($last) );
         $this->assertInstanceOf( \TypeRocket\Database\Results::class , $first->getResults() );
+    }
+
+    public function testWpTableLookupSelect()
+    {
+        update_post_meta(1, 'testWpTableLookupSelect', '12345689101112');
+        $meta = Query::new('@postmeta')->where('meta_value', '12345689101112');
+        $result = $meta->first();
+        delete_post_meta(1, 'testWpTableLookupSelect');
+        $this->assertTrue( $result['meta_value'] === '12345689101112');
     }
 
 }

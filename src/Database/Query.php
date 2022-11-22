@@ -32,18 +32,18 @@ class Query
     {
         $wpdb = $this->establishConnection();
 
+        if(!$this->wpdb) {
+            $this->setWpdb($wpdb);
+        }
+
         if(is_string($table)) {
-            $this->query['table'] = $table;
+            $this->table($table);
         }
 
         $this->setSelectTable($selectTable);
 
         if($idColumn) {
             $this->idColumn = $idColumn;
-        }
-
-        if(!$this->wpdb) {
-            $this->setWpdb($wpdb);
         }
     }
 
@@ -156,6 +156,15 @@ class Query
      */
     public function table($name, $as = null)
     {
+        if(is_string($name) && $name[0] === '@') {
+            $table_name = substr($name, 1);
+            $name = $this->wpdb->{$table_name} ?? null;
+
+            if($name === null) {
+                $name = $this->wpdb->prefix . $table_name;
+            }
+        }
+
         $this->query['table'] = $name;
         $this->tableAs = $as;
 
