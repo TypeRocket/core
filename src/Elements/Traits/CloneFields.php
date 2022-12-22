@@ -29,7 +29,7 @@ trait CloneFields
         if($this->fields && $form instanceof BaseForm) {
             /** @var Field|CloneFields $field */
             foreach ($this->fields as $i => $field) {
-                if(method_exists($field, 'cloneToForm')) {
+                if(!is_null($field) && method_exists($field, 'cloneToForm')) {
                     $this->fields[$i] = $field->cloneToForm(clone $form);
                 }
             }
