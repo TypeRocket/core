@@ -68,7 +68,7 @@ trait CloneFields
         if($this->fields) {
             /** @var Field|CloneFields $field */
             foreach ($this->fields as $field) {
-                if (method_exists($field, 'configureToForm')) {
+                if (!is_null($field) && method_exists($field, 'configureToForm')) {
                     $field->configureToForm($form);
                 }
             }
