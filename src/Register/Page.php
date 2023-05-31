@@ -619,7 +619,7 @@ class Page extends Registrable
      */
     public function respond()
     {
-        parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $request_params);
+        parse_str((string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $request_params);
 
         if( !empty($request_params['page']) &&  $request_params['page'] == $this->getSlug() ) {
 
