@@ -176,7 +176,7 @@ class MetaBox extends Registrable
     {
         global $post, $comment;
 
-        $postType = null;
+        $postType = $pageTemplate = null;
 
         if($capability = $this->getCapability()) {
             if(!current_user_can($capability)) {
@@ -184,27 +184,55 @@ class MetaBox extends Registrable
             }
         }
 
-        if(!empty($post)) {
-            $postType = get_post_type( $post->ID );
+        if(!empty($post) && is_object($post)) {
+            $postType = $post->post_type ?? false;
+            $postParents = get_post_ancestors( $post );
             $pageTemplate = get_post_meta( $post->ID, '_wp_page_template', true );
-        }
 
-        if (!empty($post) && post_type_supports( $postType, $this->id )) {
-            $this->addPostType( $postType );
+            if (post_type_supports( $postType, $this->id )) {
+                $this->addPostType( $postType );
+            }
         }
 
         foreach ($this->screens as $screen) {
-            $isPageTemplate = $isFrontPage = $isPostsPage = false;
+            $isPageTemplate = $isFrontPage = $isPostsPage = $isPostParentMatch = $isPostId = false;
+
             if(isset($post)) {
-              $isPageTemplate = $pageTemplate == $screen
-                && $post->ID != get_option( 'page_on_front' )
-                && $post->ID != get_option( 'page_for_posts' );
-              $isFrontPage = $post->ID == get_option( 'page_on_front' ) && $screen == 'front_page';
-              $isPostsPage = $post->ID == get_option( 'page_for_posts' ) && $screen == 'posts_page';
+                $isPageTemplate = $pageTemplate == $screen
+                    && $post->ID != get_option( 'page_on_front' )
+                    && $post->ID != get_option( 'page_for_posts' );
+
+                $isFrontPage = $post->ID == get_option( 'page_on_front' ) && $screen == 'front_page';
+                $isPostsPage = $post->ID == get_option( 'page_for_posts' ) && $screen == 'posts_page';
+                $isPostId    = "post_id:{$post->ID}" == $screen;
+
+                if(!empty($postParents)) {
+                    $isChildOfParentPostType = $isChildOfParentPostId = false;
+                    foreach ($postParents as $postParent) {
+                        $postParent = get_post($postParent);
+                        $isChildOfParentPostType = "parent_post_type:{$postParent->post_type}" == $screen;
+                        $isChildOfParentPostId = "parent_post_id:{$postParent->ID}" == $screen;
+
+                        if($isChildOfParentPostType || $isChildOfParentPostId) {
+                            break;
+                        }
+                    }
+
+                    $firstPostParent = get_post($postParents[0]);
+                    $isFirstChildOfParentPostType = "first_parent_post_type:{$firstPostParent->post_type}" == $screen;
+                    $isFirstChildOfParentPostId = "first_parent_post_id:{$firstPostParent->ID}" == $screen;
+
+                    if($isChildOfParentPostType || $isChildOfParentPostId || $isFirstChildOfParentPostType || $isFirstChildOfParentPostId) {
+                        $isPostParentMatch = true;
+                    }
+                }
+
             }
 
             if ( $postType == $screen ||
                 $isPageTemplate ||
+                $isPostParentMatch ||
+                $isPostId ||
                 $isFrontPage ||
                 $isPostsPage ||
                 ( $screen == 'comment' && isset( $comment ) ) ||
@@ -228,7 +256,7 @@ class MetaBox extends Registrable
                     echo '</div>';
                 };
 
-                $used_screen = $isPageTemplate || $isFrontPage || $isPostsPage ? $postType : $screen;
+                $used_screen = $isPageTemplate || $isFrontPage || $isPostsPage || $isPostId || $isPostParentMatch ? $postType : $screen;
                 $used_context = $used_screen == 'dashboard' || $used_screen == 'comment' ? 'normal' : $this->context;
 
                 add_meta_box(
