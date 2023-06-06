@@ -161,7 +161,7 @@ class Helper
     }
 
     /**
-     * Instance the From
+     * Instance the Form
      *
      * @param string|Formable|array|null $resource posts, users, comments, options your own
      * @param string|null $action update, delete, or create
