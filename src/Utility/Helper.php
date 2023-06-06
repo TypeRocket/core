@@ -154,7 +154,7 @@ class Helper
      *
      * This is not a real uuid. Will only generate a unique id per process.
      *
-     * @return integer
+     * @return string
      */
     public static function hash() {
         return wp_unique_id(time());
