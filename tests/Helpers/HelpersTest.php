@@ -6,6 +6,16 @@ use TypeRocket\Utility\ModelField;
 
 class HelpersTest extends \PHPUnit\Framework\TestCase
 {
+    public function testAppNamespace()
+    {
+        $value = \TypeRocket\Utility\Helper::appNamespace();
+
+        $this->assertStringContainsString('App', 'App');
+
+        $value = \TypeRocket\Utility\Helper::appNamespace('Text');
+
+        $this->assertStringContainsString('App/Test', 'App/Test');
+    }
 
     public function testPostsFieldGlobalHelper()
     {
