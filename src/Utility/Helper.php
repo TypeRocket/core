@@ -144,6 +144,7 @@ class Helper
      * @return string
      */
     public static function appNamespace($append = null) {
+        $append ??= '';
         $space = $append ? "\\" . TYPEROCKET_APP_NAMESPACE . "\\" : TYPEROCKET_APP_NAMESPACE;
         return $space . ltrim($append, '\\');
     }
