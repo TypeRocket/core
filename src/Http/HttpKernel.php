@@ -120,4 +120,19 @@ abstract class HttpKernel
         return apply_filters('typerocket_middleware', $middleware, $globalGroup);
     }
 
+    /**
+     * Get or Modify Middleware Group
+     *
+     * @param string $group
+     * @param callable|null $callback return the array of middleware
+     * @return array|null
+     */
+    public function middleware(string $group, ?callable $callback = null) : array|null
+    {
+        if($callback !== null && array_key_exists($group, $this->middleware)) {
+            return $this->middleware[$group] = $callback($this->middleware[$group]) ?? $this->middleware[$group];
+        }
+
+        return $this->middleware[$group] ?? null;
+    }
 }
