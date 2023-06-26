@@ -12,6 +12,11 @@ class JobQueueRunner extends Service
 
     public function __construct()
     {
+
+        if(wp_installing()) {
+           return;
+        }
+
         $queueConfig = Config::getFromContainer()->locate('queue') ?? [];
 
         require_once ( Config::getFromContainer()->locate('paths.vendor') . "/woocommerce/action-scheduler/action-scheduler.php" );
