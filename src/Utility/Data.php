@@ -235,18 +235,20 @@ class Data
      */
     public static function cast($value, $type)
     {
+        $type = strtolower($type);
+
         // Integer
-        if ($type == 'int' || $type == 'integer') {
+        if ($type === 'int' || $type === 'integer') {
             return is_object($value) || is_array($value) ? null : (int) $value;
         }
 
         // Float
-        if ($type == 'float' || $type == 'double' || $type == 'real') {
+        if ($type === 'float' || $type === 'double' || $type === 'real') {
             return is_object($value) || is_array($value) ? null : (float) $value;
         }
 
         // JSON
-        if ($type == 'json') {
+        if ($type === 'json') {
 
             if(is_serialized($value)) {
                 $value = unserialize($value);
@@ -258,10 +260,10 @@ class Data
         }
 
         // Serialize
-        if ($type == 'serialize' || $type == 'serial') {
+        if ($type === 'serialize' || $type === 'serial') {
 
             if(static::isJson($value)) {
-                $value = json_decode((string) $value, true);
+                $value = json_decode((string) $value, true, 512, JSON_BIGINT_AS_STRING);
             } if(is_serialized($value)) {
                 return $value;
             }
@@ -270,7 +272,7 @@ class Data
         }
 
         // String
-        if ($type == 'str' || $type == 'string') {
+        if ($type === 'str' || $type === 'string') {
             if(is_object($value) || is_array($value)) {
                 $value = json_encode($value);
             } else {
@@ -281,16 +283,16 @@ class Data
         }
 
         // Bool
-        if ($type == 'bool' || $type == 'boolean') {
+        if ($type === 'bool' || $type === 'boolean') {
             return (bool) $value;
         }
 
         // Array
-        if ($type == 'array') {
+        if ($type === 'array') {
             if(is_numeric($value)) {
                 return $value;
             } elseif (is_string($value) && static::isJson($value)) {
-                $value = json_decode($value, true);
+                $value = json_decode($value, true, 512, JSON_BIGINT_AS_STRING);
             } elseif (is_string($value) && is_serialized($value)) {
                 $value = unserialize($value);
             } elseif(!is_string($value)) {
@@ -303,11 +305,11 @@ class Data
         }
 
         // Object
-        if ($type == 'object' || $type == 'obj') {
+        if ($type === 'object' || $type === 'obj') {
             if(is_numeric($value)) {
                 return $value;
             } elseif (is_string($value) && static::isJson($value)) {
-                $value = (object) json_decode($value);
+                $value = (object) json_decode($value, true, 512, JSON_BIGINT_AS_STRING);
             } elseif (is_string($value) && is_serialized($value)) {
                 $value = (object) unserialize($value);
             } elseif(!is_string($value)) {
@@ -338,17 +340,16 @@ class Data
      */
     public static function isJson(...$args)
     {
-        if(is_array($args[0]) || is_object($args[0])) {
+        if (!is_string($args[0])) {
             return false;
         }
 
-        $s = trim((string) $args[0]);
-
-        if($s === '' || $s === '""') {
+        try {
+            json_decode($args[0], true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
             return false;
         }
 
-        json_decode(...$args);
-        return (json_last_error() == JSON_ERROR_NONE);
+        return true;
     }
 }
