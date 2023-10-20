@@ -314,8 +314,6 @@ class Data
                 $value = (object) unserialize($value);
             } elseif(!is_string($value)) {
                 $value = (object) $value;
-            } elseif (is_array($value)) {
-                $value = (object) $value;
             } elseif (trim($value) == '""') {
                 $value = null;
             }
