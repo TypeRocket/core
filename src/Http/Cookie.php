@@ -90,6 +90,11 @@ class Cookie
      * @return $this
      */
     public function set( $name, $data, $time = MINUTE_IN_SECONDS, $path = '/' ) {
+
+        if(empty($name)) {
+            throw new \Exception('Cookie name is required to set. You provided an empty string or null.');
+        }
+
         setcookie($name, $data, apply_filters('typerocket_cookie_options', [
             'expires' => $time === null ? 0 : time() + $time,
             'path' => $path,
@@ -130,6 +135,11 @@ class Cookie
      * @return $this
      */
     public function delete( $name, $path = '/' ) {
+
+        if(empty($name)) {
+           throw new \Exception('Cookie name is required to delete. You provided an empty string or null.');
+        }
+
         setcookie($name, "", time() - 36000, $path, null, is_ssl());
 
         return $this;
@@ -144,6 +154,11 @@ class Cookie
      * @return null
      */
     public function get( $name, $default = null ) {
+
+        if(empty($name)) {
+            throw new \Exception('Cookie name is required to get. You provided an empty string or null.');
+        }
+
         $data = $default;
 
         if( !empty($_COOKIE[$name]) ) {
