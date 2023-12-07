@@ -301,7 +301,7 @@ class System
         $ext = apply_filters('typerocket_extensions', $conf['extensions'] );
 
         foreach ($ext as $extClass) {
-            if(class_exists($extClass)) {
+            if(!empty($extClass) && class_exists($extClass)) {
                 (new Resolver())->resolve($extClass);
                 $this->loadedExtensions[] = $extClass;
             }
