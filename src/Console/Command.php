@@ -277,8 +277,11 @@ class Command extends SymfonyCommand
             define('TYPEROCKET_GALAXY_MAKE_NAMESPACE', Helper::appNamespace());
         }
 
-        $space = $append ? "\\" . TYPEROCKET_GALAXY_MAKE_NAMESPACE . "\\" : TYPEROCKET_GALAXY_MAKE_NAMESPACE;
-        return $space . ltrim($append, '\\');
+		if (!is_string($append)) {
+			return TYPEROCKET_GALAXY_MAKE_NAMESPACE;
+		}
+
+		return "\\" . TYPEROCKET_GALAXY_MAKE_NAMESPACE . "\\" . ltrim($append, '\\');
     }
 
 }
