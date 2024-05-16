@@ -198,10 +198,10 @@ class RelationshipTest extends TestCase
     {
         static $i = 123;
         /** @var VariantTestModel $variant */
-        $variant = VariantTestModel::new()->saveAndGet(['sku' => uniqid(), 'barcode' => $i++]);
+        $variant = VariantTestModel::new()->saveAndGet(['sku' => $i, 'barcode' => 'ABC']);
 
         /** @var ProductTestModel $product */
-        $product = ProductTestModel::new()->saveAndGet(['product_number' => $i++, 'title' => 'product ' . $i]);
+        $product = ProductTestModel::new()->saveAndGet(['product_number' => ++$i, 'title' => 'product ' . $i]);
 
         $product->variants()->attach([$variant?->sku]);
 
@@ -209,7 +209,7 @@ class RelationshipTest extends TestCase
         $pv = $product->variants()->get();
 
         $this->assertTrue($pv[0] instanceof VariantTestModel);
-        $this->assertTrue($pv[0]->barcode === (string) $i);
+        $this->assertTrue($pv[0]->barcode === 'ABC');
 
         /** @var VariantTestModel $variant */
         $variant = $variant->load('products');
@@ -217,7 +217,7 @@ class RelationshipTest extends TestCase
 
         $this->assertTrue($productLoaded instanceof ProductTestModel);
         $this->assertTrue(!$productLoaded->sku);
-        $this->assertTrue($productLoaded->product_number === $i);
+        $this->assertTrue($productLoaded->product_number === (string) $i);
         $this->assertTrue($productLoaded->title === 'product ' . $i);
         $this->assertTrue(!$productLoaded->the_relationship_id);
     }
