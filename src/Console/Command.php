@@ -278,7 +278,7 @@ class Command extends SymfonyCommand
         }
 
         $space = $append ? "\\" . TYPEROCKET_GALAXY_MAKE_NAMESPACE . "\\" : TYPEROCKET_GALAXY_MAKE_NAMESPACE;
-        return $space . ltrim($append, '\\');
+        return $space . ltrim((string) $append, '\\');
     }
 
 }
