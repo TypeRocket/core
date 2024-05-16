@@ -15,7 +15,7 @@ class ModelFunctionsTest extends TestCase
         $c = $q->count();
         $sql = $q->getSuspectSQL();
 
-        $this->assertStringContainsString($sql, 'SELECT COUNT(*) FROM (SELECT *FROM `wp_posts`) as tr_count_derived1');
+        $this->assertStringContainsString('SELECT COUNT(*) FROM (SELECT *FROM `wp_posts`) as tr_count_derived', $sql);
         $this->assertIsInt( (int) $c);
     }
 

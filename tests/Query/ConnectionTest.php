@@ -12,6 +12,8 @@ $my_test_connection = new \wpdb(TYPEROCKET_ALT_DATABASE_USER, TYPEROCKET_ALT_DAT
 $my_test_connection->users = 'my_connection_users';
 $my_test_connection->prefix = 'my_connection_';
 
+$GLOBALS['my_test_connection'] = $my_test_connection;
+
 Connection::getFromContainer()->addFromConfig('my-db-test', [
     'driver' => '\TypeRocket\Database\Connectors\CoreDatabaseConnector',
     'username' => TYPEROCKET_ALT_DATABASE_USER,

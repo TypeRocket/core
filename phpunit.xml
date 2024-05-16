@@ -1,46 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         bootstrap="tests/bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnError="false"
-         stopOnFailure="false"
-         verbose="true"
->
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src</directory>
-            <exclude>
-                <directory suffix=".php">./src/Extensions/views</directory>
-            </exclude>
-        </whitelist>
-    </filter>
-
-    <testsuites>
-
-        <testsuite name="All">
-            <directory suffix="Test.php">./tests</directory>
-        </testsuite>
-
-        <testsuite name="Query">
-            <directory suffix="Test.php">./tests/Query</directory>
-        </testsuite>
-
-        <testsuite name="Validate">
-            <directory suffix="Test.php">./tests/Validator</directory>
-        </testsuite>
-
-        <testsuite name="Utility">
-            <directory suffix="Test.php">./tests/Utility</directory>
-        </testsuite>
-
-        <testsuite name="Fields">
-            <directory suffix="Test.php">./tests/Fields</directory>
-        </testsuite>
-
-    </testsuites>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" processIsolation="false" stopOnError="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+  <testsuites>
+    <testsuite name="All">
+      <directory suffix="Test.php">./tests</directory>
+    </testsuite>
+    <testsuite name="Query">
+      <directory suffix="Test.php">./tests/Query</directory>
+    </testsuite>
+    <testsuite name="Validate">
+      <directory suffix="Test.php">./tests/Validator</directory>
+    </testsuite>
+    <testsuite name="Utility">
+      <directory suffix="Test.php">./tests/Utility</directory>
+    </testsuite>
+    <testsuite name="Fields">
+      <directory suffix="Test.php">./tests/Fields</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./src/Extensions/views</directory>
+    </exclude>
+  </source>
 </phpunit>

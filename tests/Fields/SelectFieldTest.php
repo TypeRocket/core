@@ -17,7 +17,7 @@ class SelectFieldTest extends TestCase
         $id = (int) wp_unique_id();
         $id--;
 
-        $this->assertStringContainsString("id=\"tr_field_${id}_tr_post_title\"", $text);
+        $this->assertStringContainsString("id=\"tr_field_{$id}_tr_post_title\"", $text);
         $this->assertStringContainsString('data-test="X"', $text);
     }
 

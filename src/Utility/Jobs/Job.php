@@ -2,6 +2,7 @@
 
 namespace TypeRocket\Utility\Jobs;
 
+use AllowDynamicProperties;
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Jobs\Interfaces\JobCanQueue;
 
@@ -12,6 +13,7 @@ use TypeRocket\Utility\Jobs\Interfaces\JobCanQueue;
  * @property null|\ActionScheduler_Action $action
  * @property null|string $context
  */
+#[AllowDynamicProperties]
 abstract class Job implements JobCanQueue
 {
     const DELAY = 0;

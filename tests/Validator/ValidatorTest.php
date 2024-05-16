@@ -10,6 +10,52 @@ use TypeRocket\Utility\Validators\ValidatorRule;
 use TypeRocket\Utility\Validator;
 use TypeRocket\Utility\Validators\EmailValidator;
 
+function checkValidatorCallbackError($args)
+{
+    /**
+     * @var $option3
+     * @var $option
+     * @var $option2
+     * @var $name
+     * @var $field_name
+     * @var $value
+     * @var $type
+     * @var Validator $validator
+     */
+    extract($args);
+
+    $error = null;
+
+    if( empty($value) ) {
+        return $field_name . ' is bad';
+    }
+
+    return true;
+}
+
+function checkValidatorCallback($args)
+{
+    /**
+     * @var $option3
+     * @var $option
+     * @var $option2
+     * @var $name
+     * @var $field_name
+     * @var $value
+     * @var $type
+     * @var Validator $validator
+     */
+    extract($args);
+
+    $error = null;
+
+    if( empty($value) ) {
+        return $field_name . ' is bad';
+    }
+
+    return true;
+}
+
 class ValidatorTest extends TestCase
 {
     public function testValidatorRuleRequiredFieldsNotStrongComplexFail()
@@ -421,29 +467,6 @@ class ValidatorTest extends TestCase
         $fields['person'][2]['email'] = 'e@example2.1@typerocket.com';
         $fields['person'][3]['email'] = 'example2.1typerocket.com';
 
-        function checkValidatorCallback($args)
-        {
-            /**
-             * @var $option3
-             * @var $option
-             * @var $option2
-             * @var $name
-             * @var $field_name
-             * @var $value
-             * @var $type
-             * @var Validator $validator
-             */
-            extract($args);
-
-            $error = null;
-
-            if( empty($value) ) {
-                return $field_name . ' is bad';
-            }
-
-            return true;
-        }
-
         $validator = new Validator([
             'person.*.email' => 'callback:\Validator\checkValidatorCallback:option'
         ], $fields, null, true);
@@ -456,29 +479,6 @@ class ValidatorTest extends TestCase
         $fields['person'][1]['email'] = '';
         $fields['person'][2]['email'] = '';
         $fields['person'][3]['email'] = '';
-
-        function checkValidatorCallbackError($args)
-        {
-            /**
-             * @var $option3
-             * @var $option
-             * @var $option2
-             * @var $name
-             * @var $field_name
-             * @var $value
-             * @var $type
-             * @var Validator $validator
-             */
-            extract($args);
-
-            $error = null;
-
-            if( empty($value) ) {
-                return $field_name . ' is bad';
-            }
-
-            return true;
-        }
 
         $validator = new Validator([
             'person.*.email' => 'callback:\Validator\checkValidatorCallbackError:option'
