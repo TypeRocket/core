@@ -10,11 +10,11 @@ class HelpersTest extends \PHPUnit\Framework\TestCase
     {
         $value = \TypeRocket\Utility\Helper::appNamespace();
 
-        $this->assertStringContainsString('App', 'App');
+        $this->assertStringContainsString($value, 'App');
 
         $value = \TypeRocket\Utility\Helper::appNamespace('Text');
 
-        $this->assertStringContainsString('App/Test', 'App/Test');
+        $this->assertStringContainsString($value, '\\App\\Text');
     }
 
     public function testPostsFieldGlobalHelper()
