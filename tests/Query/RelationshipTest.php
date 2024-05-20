@@ -222,9 +222,10 @@ class RelationshipTest extends TestCase
         $this->assertTrue(!$productLoaded->the_relationship_id);
     }
 
-    public function testPeoplesRolesTest()
+    public function testPeoplesRoles()
     {
-        global $wpdb;
+        static $runs = 0;
+        $runs++;
 
         $person2 = PeopleTestModel::new()->saveAndGet(['p_number' => 100, 'name' => 'kim']);
         RolesTestModel::new()->saveAndGet(['r_number' => 200, 'name' => 'subscriber']);
@@ -322,8 +323,6 @@ class RelationshipTest extends TestCase
 
     public function testRelationshipExistsScopedNested()
     {
-        global $wpdb;
-
         $persons = PeopleTestModel::new()->has('orders', function(Model $query) {
             $query->has('item', function(Model $query) {
                 $table = $query->getTable();
@@ -337,8 +336,6 @@ class RelationshipTest extends TestCase
 
     public function testRelationshipExistsOrSomethingElse()
     {
-        global $wpdb;
-
         $persons = PeopleTestModel::new()->where('peoples.name', 'kevin')->hasNo('orders', null, 'OR')->get();
 
         $this->assertTrue($persons->count() === 2);
