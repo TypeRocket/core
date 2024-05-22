@@ -59,6 +59,8 @@ class BaseVerify extends Middleware
                         break;
                     }
                 }
+            } else {
+                $excluding = false;
             }
 
             if($excluding) {
