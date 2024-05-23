@@ -17,8 +17,8 @@ class BaseVerify extends Middleware
      *
      * Checks wp_verify_nonce()
      */
-    public function handle() {
-
+    public function handle()
+    {
         $path = $this->request->getPathWithoutRoot();
 
         if( ! $this->excludePath($path) ) {
