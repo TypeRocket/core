@@ -46,27 +46,14 @@ class BaseVerify extends Middleware
     public function excludePath($path)
     {
         $path = trim($path, '/');
-        $except = apply_filters('typerocket_verify_nonce_except', $this->except);
-        foreach ($except as $exclude ) {
-            $exclude = explode( '/', trim($exclude, '/') );
-            $explodedPath = explode('/', $path);
-            $excluding = true;
+        $exceptPaths = apply_filters('typerocket_verify_nonce_except', $this->except);
 
-            if( count($explodedPath) == count($exclude) ) {
-                foreach ($explodedPath as $index => $part) {
-                    if ($exclude[$index] != '*' && $exclude[$index] != $part) {
-                        $excluding = false;
-                        break;
-                    }
-                }
-            } else {
-                $excluding = false;
-            }
+        foreach ($exceptPaths as $excludePath) {
+            $excludePath = str_replace('*', '([^\/]+)', trim($excludePath, '/'));
 
-            if($excluding) {
+            if(preg_match("#^{$excludePath}\/?$#", $path)) {
                 return true;
             }
-
         }
 
         return false;

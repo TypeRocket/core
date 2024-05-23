@@ -18,16 +18,16 @@ class BaseVerifyMiddlewareTest extends TestCase {
 
         $verify->except = [
             'my/path/now',
+            'one/path/now/more',
             'my/*',
         ];
 
-        $e = $verify->excludePath('my/path/now');
-        $e1 = $verify->excludePath('my/path');
-        $e2 = $verify->excludePath('my/path/with');
-
-        $this->assertTrue($e);
-        $this->assertTrue($e1);
-        $this->assertTrue(!$e2);
+        $this->assertTrue($verify->excludePath('my/path/now'));
+        $this->assertTrue(! $verify->excludePath('one/path/now'));
+        $this->assertTrue(! $verify->excludePath('one/path/now'));
+        $this->assertTrue($verify->excludePath('my/path'));
+        $this->assertTrue(! $verify->excludePath('my/path/with'));
+        $this->assertTrue(! $verify->excludePath('pre/my/path/now'));
     }
 
 }
