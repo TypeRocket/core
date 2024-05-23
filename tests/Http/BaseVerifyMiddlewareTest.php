@@ -27,6 +27,7 @@ class BaseVerifyMiddlewareTest extends TestCase {
         $this->assertTrue(! $verify->excludePath('one/path/now'));
         $this->assertTrue($verify->excludePath('my/path'));
         $this->assertTrue(! $verify->excludePath('my/path/with'));
+        $this->assertTrue(! $verify->excludePath('my/path/now/append'));
         $this->assertTrue(! $verify->excludePath('pre/my/path/now'));
     }
 
