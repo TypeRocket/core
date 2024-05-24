@@ -93,7 +93,9 @@ class JobTest extends TestCase
 
         $job = Queue::findScheduledJob('typerocket_job.'.JobTestClass::class);
 
-        $this->assertTrue(1 === Queue::run());
+        $num_jobs_run = Queue::run();
+
+        $this->assertTrue(1 === $num_jobs_run);
         $this->assertTrue($r === $job);
     }
 
@@ -131,9 +133,11 @@ class JobTest extends TestCase
             'status'   => [\ActionScheduler_Store::STATUS_RUNNING]
         ], 'ids');
 
+        $num_jobs_run = Queue::run();
+
         $this->assertTrue($e === null);
         $this->assertTrue($updated === 1);
-        $this->assertTrue(1 === Queue::run());
+        $this->assertTrue(1 === $num_jobs_run);
         $this->assertTrue(in_array($w, $ids) && count($ids) === 1);
     }
 }
