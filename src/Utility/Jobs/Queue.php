@@ -117,8 +117,6 @@ class Queue
     /**
      * @param string $jobClass
      * @return void
-     * @throws \ReflectionException
-     * @throws \Throwable
      */
     public static function registerJob(string $jobClass)
     {
@@ -174,5 +172,81 @@ class Queue
         }
 
         return as_schedule_single_action( $time, $actionName, [$job->payload] );
+    }
+
+    /**
+     * @param string $class class name of job
+     * @return void
+     */
+    public static function cancelJobs(string $class)
+    {
+        \ActionScheduler::store()->cancel_actions_by_hook('typerocket_job.'.$class);
+    }
+
+    /**
+     * @return void
+     */
+    public static function removeJobsFailed(): void
+    {
+        static::removeJobsByStatus(['failed']);
+    }
+
+    /**
+     * @return void
+     */
+    public static function removeJobsCanceled(): void
+    {
+        static::removeJobsByStatus(['canceled']);
+    }
+
+    /**
+     * @return void
+     */
+    public static function removeJobsCompleted(): void
+    {
+        static::removeJobsByStatus(['complete']);
+    }
+
+    /**
+     * @return void
+     */
+    public static function removeJobsPending(): void
+    {
+        static::removeJobsByStatus(['pending']);
+    }
+
+    /**
+     * @return void
+     */
+    public static function removeJobsAll(): void
+    {
+        static::removeJobsByStatus(['pending', 'complete', 'failed', 'canceled']);
+    }
+
+    /**
+     * @param string[] $statuses
+     *
+     * @return void
+     */
+    public static function removeJobsByStatus(array $statuses): void
+    {
+        $actions = ActionScheduler::store()->query_actions([
+            'status' => $statuses,
+            'per_page' => -1,
+        ]);
+
+        foreach ( $actions as $action_id ) {
+            ActionScheduler::store()->delete_action( $action_id );
+        }
+    }
+
+    /**
+     * Run Action Scheduler
+     *
+     * @return int
+     */
+    public static function run() : int
+    {
+        return ActionScheduler::runner()->run();
     }
 }

@@ -8,7 +8,10 @@ use TypeRocket\Utility\Jobs\Interfaces\WithoutOverlapping;
 use TypeRocket\Utility\Jobs\Job;
 use TypeRocket\Utility\Jobs\Queue;
 
-class JobTestClass extends Job implements AllowOneInSchedule, WithoutOverlapping { public function handle() {} }
+class JobTestClass extends Job implements AllowOneInSchedule { public function handle() {} }
+class JobNoOverlapTestClass extends Job implements WithoutOverlapping { public function handle() {
+
+}}
 
 class JobTest extends TestCase
 {
@@ -67,5 +70,70 @@ class JobTest extends TestCase
         }
 
         $this->assertStringContainsString('Job typerocket_job.Utility\JobTestClass is not registered.', $e->getMessage());
+    }
+
+    public function testJobDispatch()
+    {
+        Queue::cancelJobs(JobTestClass::class);
+        Queue::removeJobsAll();
+
+        Queue::registerJob(JobTestClass::class);
+
+        $r = JobTestClass::dispatch([
+            ['name' => 'jim'],
+            ['name' => 'kim'],
+            ['name' => 'kat'],
+        ]);
+
+        try {
+            JobTestClass::dispatch();
+        } catch (\Error $e) {
+            $this->assertStringContainsString('Attempted to add job typerocket_job.Utility\JobTestClass but can only be queued once at any given time.', $e->getMessage());
+        }
+
+        $job = Queue::findScheduledJob('typerocket_job.'.JobTestClass::class);
+
+        $this->assertTrue(1 === Queue::run());
+        $this->assertTrue($r === $job);
+    }
+
+    public function testJobDispatchWithoutOverlapWithoutCalling_runJobFromActionScheduler()
+    {
+        global $wpdb;
+
+        Queue::cancelJobs(JobNoOverlapTestClass::class);
+        Queue::removeJobsAll();
+
+        Queue::registerJob(JobNoOverlapTestClass::class);
+
+        $r = JobNoOverlapTestClass::dispatch([
+            ['name' => 'jim'],
+            ['name' => 'kim'],
+            ['name' => 'kat'],
+        ]);
+
+        $e = null;
+
+        try {
+            $w = JobNoOverlapTestClass::dispatch();
+        } catch (\Error $e) {
+
+        }
+
+        $updated = $wpdb->update(
+            $wpdb->prefix . 'actionscheduler_actions',
+            ['status' => 'in-progress'], // Data to update
+            ['action_id' => $w ] // Where clause
+        );
+
+        $ids = as_get_scheduled_actions([
+            'hook' => 'typerocket_job.'.JobNoOverlapTestClass::class,
+            'status'   => [\ActionScheduler_Store::STATUS_RUNNING]
+        ], 'ids');
+
+        $this->assertTrue($e === null);
+        $this->assertTrue($updated === 1);
+        $this->assertTrue(1 === Queue::run());
+        $this->assertTrue(in_array($w, $ids) && count($ids) === 1);
     }
 }
