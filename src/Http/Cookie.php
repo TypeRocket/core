@@ -3,6 +3,7 @@ namespace TypeRocket\Http;
 
 use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Sanitize;
+use \TypeRocket\Http\ErrorCollection;
 
 class Cookie
 {
@@ -98,7 +99,7 @@ class Cookie
         setcookie($name, $data, apply_filters('typerocket_cookie_options', [
             'expires' => $time === null ? 0 : time() + $time,
             'path' => $path,
-            'domain' => null,
+            'domain' => '',
             'secure' => is_ssl()
         ], $name, $data, $this));
 
@@ -140,7 +141,7 @@ class Cookie
            throw new \Exception('Cookie name is required to delete. You provided an empty string or null.');
         }
 
-        setcookie($name, "", time() - 36000, $path, null, is_ssl());
+        setcookie($name, "", time() - 36000, $path, '', is_ssl());
 
         return $this;
     }
@@ -224,7 +225,7 @@ class Cookie
      */
     function redirectErrors($default = null)
     {
-        $errors = \TypeRocket\Http\ErrorCollection::getFromRuntimeCache();
+        $errors = ErrorCollection::getFromRuntimeCache();
         return !is_null($errors) ? $errors->errors() : $default;
     }
 

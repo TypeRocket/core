@@ -21,17 +21,17 @@ trait MaxlengthTrait
     /**
      * Get the max length for text type fields
      *
-     * @param string $value
+     * @param string|null $value
      * @param string $maxLength
      *
      * @return string|\TypeRocket\Html\Html
      */
-    public function getMaxlength( $value, $maxLength )
+    public function getMaxlength($value, $maxLength)
     {
         $max = '';
 
         if ( $maxLength != null && $maxLength > 0) {
-            $left = ( (int) $maxLength ) - mb_strlen( $value );
+            $left = ( (int) $maxLength ) - mb_strlen( (string) $value );
             $max = Html::p(['class' => 'tr-maxlength'], 'Characters left: ')->nest(Html::span($left));
         }
 
