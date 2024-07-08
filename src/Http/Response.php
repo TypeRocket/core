@@ -25,7 +25,7 @@ use TypeRocket\Utility\Str;
  *
  * @package TypeRocket\Http
  */
-class Response implements JsonSerializable
+class Response implements JsonSerializable, \Stringable
 {
     public const ALIAS = 'response';
 
@@ -1144,9 +1144,9 @@ class Response implements JsonSerializable
     /**
      * @return false|string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toJson();
+        return (string) $this->toJson();
     }
 
     /**

@@ -90,7 +90,7 @@ namespace TypeRocket\Html;
  *
  * @package TypeRocket\Html
  */
-class Html
+class Html implements \Stringable
 {
     /** @var Tag */
     protected $tag;

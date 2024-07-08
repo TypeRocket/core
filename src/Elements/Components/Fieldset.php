@@ -8,7 +8,7 @@ use TypeRocket\Elements\Traits\Conditional;
 use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Html\Html;
 
-class Fieldset
+class Fieldset implements \Stringable
 {
     use CloneFields, Attributes, Conditional, DisplayPermissions;
 
@@ -171,7 +171,7 @@ class Fieldset
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if(!$this->canDisplay()) {return '';}
         $html = "<h3 class=\"tr-fieldset-group-title\">{$this->title}</h3>";

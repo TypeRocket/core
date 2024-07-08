@@ -28,7 +28,7 @@ use TypeRocket\Utility\Inflect;
 use TypeRocket\Utility\Str;
 use wpdb;
 
-class Model implements Formable, JsonSerializable
+class Model implements Formable, JsonSerializable, \Stringable
 {
     use Searchable, FieldValue, ArrayReplaceRecursiveValues;
 
@@ -2865,9 +2865,9 @@ class Model implements Formable, JsonSerializable
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toJson();
+        return (string) $this->toJson();
     }
 
     /**

@@ -6,7 +6,7 @@ use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Html\Element;
 use TypeRocket\Utility\Str;
 
-class Tabs
+class Tabs implements \Stringable
 {
     use DisplayPermissions;
 
@@ -242,11 +242,11 @@ class Tabs
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         ob_start();
         $this->render();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     /**
@@ -534,7 +534,7 @@ class Tabs
                 </div>
             </div>
         </div>
-        <?php
+<?php
     }
 
     /**

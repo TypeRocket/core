@@ -6,7 +6,7 @@ use TypeRocket\Interfaces\Formable;
 use TypeRocket\Models\Traits\FieldValue;
 use TypeRocket\Models\Model;
 
-class Results extends \ArrayObject implements Formable, JsonSerializable, ResultsCollection
+class Results extends \ArrayObject implements Formable, JsonSerializable, ResultsCollection, \Stringable
 {
     use FieldValue;
 
@@ -259,9 +259,9 @@ class Results extends \ArrayObject implements Formable, JsonSerializable, Result
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toJson();
+        return (string) $this->toJson();
     }
 
     /**

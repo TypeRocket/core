@@ -20,7 +20,7 @@ use TypeRocket\Utility\Data;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Elements\Traits\FormConnectorTrait;
 
-abstract class Field
+abstract class Field implements \Stringable
 {
     use FormConnectorTrait, Attributes, MacroTrait, Conditional, Settings, DisplayPermissions;
 
@@ -282,7 +282,7 @@ abstract class Field
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if(!$this->canDisplay()) {
             return '';

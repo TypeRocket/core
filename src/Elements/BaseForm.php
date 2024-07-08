@@ -26,7 +26,7 @@ use TypeRocket\Utility\DataCollection;
 use TypeRocket\Utility\Str;
 use TypeRocket\Utility\Url;
 
-class BaseForm
+class BaseForm implements \Stringable
 {
     use FormConnectorTrait, MacroTrait, Attributes, Fieldable, BaseFields, DisplayPermissions;
 
@@ -829,7 +829,7 @@ class BaseForm
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if(!$this->canDisplay()) {
             return '';

@@ -10,7 +10,7 @@ use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Html\Html;
 
 
-class FieldSection
+class FieldSection implements \Stringable
 {
     use Attributes, CloneFields, Fieldable, Conditional, DisplayPermissions;
 
@@ -56,7 +56,7 @@ class FieldSection
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if(!$this->canDisplay()) {
             return '';

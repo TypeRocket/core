@@ -5,7 +5,7 @@ use TypeRocket\Core\Config;
 use TypeRocket\Http\Request;
 use TypeRocket\Utility\PersistentCache;
 
-class View
+class View implements \Stringable
 {
     protected $data = [];
     protected $title = null;
@@ -323,9 +323,9 @@ class View
     /**
      * @return false|string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toString();
+        return (string) $this->toString();
     }
 
     /**

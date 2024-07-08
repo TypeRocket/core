@@ -3,7 +3,7 @@ namespace TypeRocket\Utility;
 
 use TypeRocket\Http\Request;
 
-class Url
+class Url implements \Stringable
 {
     /**
      * @var Request
@@ -138,7 +138,7 @@ class Url
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $base = $this->root . ($this->path ? '/' . $this->path : '');
         $query = $this->query ? '?' . $this->query : '';

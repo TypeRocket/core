@@ -2,7 +2,7 @@
 
 namespace TypeRocket\Database;
 
-class SqlRaw
+class SqlRaw implements \Stringable
 {
     protected string $sql = '';
 
@@ -21,7 +21,7 @@ class SqlRaw
      *
      * @return string|null
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->sql;
     }

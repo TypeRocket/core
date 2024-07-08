@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Template;
 
-class TemplateEngine
+class TemplateEngine implements \Stringable
 {
     protected $file;
     /** @var string  */
@@ -88,9 +88,9 @@ class TemplateEngine
     /**
      * @return false|string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toString();
+        return (string) $this->toString();
     }
 
     /**

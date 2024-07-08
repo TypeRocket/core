@@ -8,7 +8,7 @@ use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Html\Html;
 
-class FieldColumn
+class FieldColumn implements \Stringable
 {
     use Attributes, CloneFields, Fieldable, DisplayPermissions;
 
@@ -43,7 +43,7 @@ class FieldColumn
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if(!$this->canDisplay()) {
             return '';

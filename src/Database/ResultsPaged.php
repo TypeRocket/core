@@ -5,7 +5,7 @@ use JsonSerializable;
 use TypeRocket\Html\Html;
 use TypeRocket\Http\Request;
 
-class ResultsPaged implements \Iterator, JsonSerializable
+class ResultsPaged implements \Iterator, JsonSerializable, \Stringable
 {
     /** @var Results|array */
     protected $results;
@@ -217,9 +217,9 @@ class ResultsPaged implements \Iterator, JsonSerializable
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toJson();
+        return (string) $this->toJson();
     }
 
     /**

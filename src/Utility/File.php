@@ -1,7 +1,7 @@
 <?php
 namespace TypeRocket\Utility;
 
-class File
+class File implements \Stringable
 {
     public $existing = false;
     public $wrote;
@@ -609,9 +609,9 @@ class File
     /**
      * @return false|string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->file;
+        return (string) $this->file;
     }
 
 }

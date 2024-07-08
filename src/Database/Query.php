@@ -3,7 +3,7 @@ namespace TypeRocket\Database;
 
 use TypeRocket\Utility\Str;
 
-class Query
+class Query implements \Stringable
 {
     public static $numberQueriesRun = 0;
 
@@ -1500,9 +1500,9 @@ class Query
      *
      * @return string|null
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->compileFullQuery();
+        return (string) $this->compileFullQuery();
     }
 
     /**

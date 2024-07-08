@@ -9,7 +9,7 @@ use TypeRocket\Elements\Traits\DisplayPermissions;
 use TypeRocket\Elements\Traits\Fieldable;
 use TypeRocket\Html\Html;
 
-class FieldRow
+class FieldRow implements \Stringable
 {
     use Attributes, CloneFields, Fieldable, Conditional, DisplayPermissions;
 
@@ -55,7 +55,7 @@ class FieldRow
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if(!$this->canDisplay()) {
             return '';

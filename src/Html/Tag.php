@@ -3,7 +3,7 @@ namespace TypeRocket\Html;
 
 use TypeRocket\Elements\Traits\Attributes;
 
-class Tag
+class Tag implements \Stringable
 {
     use Attributes;
 
