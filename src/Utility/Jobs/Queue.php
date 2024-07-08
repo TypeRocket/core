@@ -100,12 +100,7 @@ class Queue
             return false;
         }
 
-        $query_args = array(
-            'hook'     => $hook,
-            'status'   => array( ActionScheduler_Store::STATUS_RUNNING, ActionScheduler_Store::STATUS_PENDING ),
-            'group'    => $group,
-            'orderby'  => 'none',
-        );
+        $query_args = ['hook'     => $hook, 'status'   => [ActionScheduler_Store::STATUS_RUNNING, ActionScheduler_Store::STATUS_PENDING], 'group'    => $group, 'orderby'  => 'none'];
 
         if ( null !== $args ) {
             $query_args['args'] = $args;

@@ -130,7 +130,7 @@ class DateTime
     {
         $doPlural = function($nb,$str){return $nb>1?$str.'s':$str;}; // adds plurals
 
-        $format = array();
+        $format = [];
         if($interval->y !== 0) {
             $format[] = "%y ".$doPlural($interval->y, "year");
         }

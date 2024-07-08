@@ -76,13 +76,13 @@ class PostMessages
             $singular = strtolower($obj->labels->singular_name);
             $plural   = strtolower($obj->labels->name);
 
-            $bulk_messages[$pt] = array(
+            $bulk_messages[$pt] = [
                 'updated'   => _n( "%s {$singular} updated.", "%s {$plural} updated.", $bulk_counts["updated"] ),
                 'locked'    => _n( "%s {$singular} not updated, somebody is editing it.", "%s {$plural} not updated, somebody is editing them.", $bulk_counts["locked"] ),
                 'deleted'   => _n( "%s {$singular} permanently deleted.", "%s {$plural} permanently deleted.", $bulk_counts["deleted"] ),
                 'trashed'   => _n( "%s {$singular} moved to the Trash.", "%s {$plural} moved to the Trash.", $bulk_counts["trashed"] ),
                 'untrashed' => _n( "%s {$singular} restored from the Trash.", "%s {$plural} restored from the Trash.", $bulk_counts["untrashed"] ),
-            );
+            ];
         endif;
 
         return $bulk_messages;

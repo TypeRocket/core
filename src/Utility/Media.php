@@ -35,7 +35,7 @@ class Media
             $mime = is_string($mime) ? sanitize_mime_type( $mime ) : false;
 
 
-            $mime_extensions = array(
+            $mime_extensions = [
                 'text/plain'         => 'txt',
                 'text/csv'           => 'csv',
                 'application/msword' => 'doc',
@@ -44,7 +44,7 @@ class Media
                 'image/gif'          => 'gif',
                 'image/png'          => 'png',
                 'video/mp4'          => 'mp4',
-            );
+            ];
 
             if ( isset( $mime_extensions[$mime] ) ) {
                 $extension = $mime_extensions[$mime];

@@ -460,11 +460,11 @@ class TypeRocketUI
     {
         add_action('current_screen', function() {
             $screen = get_current_screen();
-            $screen->add_help_tab( array(
+            $screen->add_help_tab([
                 'id' => 'typerocket-ui-help',
                 'title' => 'Overrides',
                 'content' => __($this->helpTabAdvanced(), 'typerocket-ui')
-            ));
+            ]);
         });
 
         $icons = Dashicons::new()->iconNames();
