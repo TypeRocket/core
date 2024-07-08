@@ -167,7 +167,7 @@ class Str
      */
     public static function trimStart($subject, $trim = '/')
     {
-        if (substr($subject, 0, strlen($trim)) == $trim) {
+        if (str_starts_with($subject, $trim)) {
             $subject = substr($subject, strlen($trim));
         }
 

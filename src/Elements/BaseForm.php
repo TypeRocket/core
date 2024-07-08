@@ -407,7 +407,7 @@ class BaseForm implements \Stringable
      */
     public function toUrl($url, $method = null, $site = null)
     {
-        if(strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+        if(str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
             $site = $site ?? false;
         }
 
