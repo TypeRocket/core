@@ -631,7 +631,7 @@ class BaseForm implements \Stringable
             }
         }
 
-        $url = $this->formUrl ? $this->formUrl : (new Request)->getUriFull();
+        $url = $this->formUrl ?: (new Request)->getUriFull();
 
         $defaults = [
             'action'      => Url::withQuery($url, $request_params),

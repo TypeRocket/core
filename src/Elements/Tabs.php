@@ -433,7 +433,7 @@ class Tabs implements \Stringable
                                 $icon = $this->getIcon($tab);
                                 $link_id = "tab-link-{$tab->getId()}";
                                 $url = $tab->getUrl();
-                                $panel_id = $url ? $url : "#tab-panel-{$tab->getId()}";
+                                $panel_id = $url ?: "#tab-panel-{$tab->getId()}";
                                 $data_uid = " data-uid=\"{$tab->getId()}\"";
                                 $desc = $tab->getDescription();
                                 $class .= $desc ? ' has-description': '';

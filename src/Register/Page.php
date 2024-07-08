@@ -569,7 +569,7 @@ class Page extends Registrable
                     'meta'   => [
                         'class' => 'custom-page-admin-bar-item',
                     ],
-                    'title'  => $title ? $title : $this->getTitle(),
+                    'title'  => $title ?: $this->getTitle(),
                     'href'   => $link
                 ]);
             }

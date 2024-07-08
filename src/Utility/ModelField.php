@@ -33,7 +33,7 @@ class ModelField
         }
 
         [$modifier, $arg1, $arg2] = array_pad(explode(':', ltrim($args, ':'), 3), 3, null);
-        $name = $arg2 ? $arg2 : $arg1 ;
+        $name = $arg2 ?: $arg1 ;
         $value = $model->getFieldValue($name);
 
         switch($modifier) {

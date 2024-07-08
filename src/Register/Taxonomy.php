@@ -437,7 +437,7 @@ class Taxonomy extends Registrable
      */
     public function setRest( $rest_base = false, $controller = null )
     {
-        $this->args['rest_base'] = $rest_base ? $rest_base : $this->id;
+        $this->args['rest_base'] = $rest_base ?: $this->id;
         $this->args['show_in_rest'] = true;
         $controller ? $this->args['rest_controller_class'] = $controller : null;
 

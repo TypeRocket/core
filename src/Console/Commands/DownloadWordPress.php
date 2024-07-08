@@ -39,7 +39,7 @@ class DownloadWordPress extends Command
         $path = $this->getArgument('path');
         $type = $this->getArgument('type');
         $this->type = $type ?: 'all';
-        $this->path = rtrim( (string) ($path ?  $path : Helper::wordPressRootPath()), '/');
+        $this->path = rtrim( (string) ($path ?: Helper::wordPressRootPath()), '/');
 
         switch($this->type) {
             case 'all' :
