@@ -185,7 +185,7 @@ class BaseForm implements \Stringable
             $this->itemId = $item_id;
         }
         elseif($this->resource && !$model) {
-            $action = $action ?? 'create';
+            $action ??= 'create';
             $model = \TypeRocket\Utility\Helper::modelClass($this->resource);
         }
 
@@ -408,10 +408,10 @@ class BaseForm implements \Stringable
     public function toUrl($url, $method = null, $site = null)
     {
         if(str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
-            $site = $site ?? false;
+            $site ??= false;
         }
 
-        $site = $site ?? true;
+        $site ??= true;
 
         switch($method) {
             case 'create' :
@@ -484,8 +484,8 @@ class BaseForm implements \Stringable
             $params = ['route_' => [$item_id ?? $this->itemId]];
         }
 
-        $action = $action ?? $this->action;
-        $resource = $resource ?? $this->resource;
+        $action ??= $this->action;
+        $resource ??= $this->resource;
 
         switch($action) {
             case 'create' :
@@ -577,7 +577,7 @@ class BaseForm implements \Stringable
      */
     public static function honeypotInputs($name = null)
     {
-        $name = $name ?? 'my_name_' . md5(time());
+        $name ??= 'my_name_' . md5(time());
         $fields = "<input type='text' name='__hny[{$name}]' /><input type='checkbox' name='__hny[send_message]' />";
         return Html::div(['style' => 'display: none', 'class' => 'tr-bot-tasty-treat'], $fields);
     }

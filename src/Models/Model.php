@@ -1987,7 +1987,7 @@ class Model implements Formable, JsonSerializable, \Stringable
      */
     public function saveFields($fields = null)
     {
-        $fields = $fields ?? (new Request)->getFields();
+        $fields ??= (new Request)->getFields();
 
         return $this->save($fields);
     }
@@ -2093,7 +2093,7 @@ class Model implements Formable, JsonSerializable, \Stringable
         }
 
         $rel_table = $relationship->getTable();
-        $id_foreign = $id_foreign ?? $relationship->getIdColumn();
+        $id_foreign ??= $relationship->getIdColumn();
         $id_foreign_where = str_contains($id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
 
         $id = $this->getPropertyValueDirect($id_local);
@@ -2127,7 +2127,7 @@ class Model implements Formable, JsonSerializable, \Stringable
         } elseif(is_null($id_foreign) && is_null($scope)) {
             $id_foreign = $relationship->getIdColumn();
         } else {
-            $id_foreign = $id_foreign ?? $relationship->getIdColumn();
+            $id_foreign ??= $relationship->getIdColumn();
         }
 
         if( ! $id_local && $relationship->resource ) {

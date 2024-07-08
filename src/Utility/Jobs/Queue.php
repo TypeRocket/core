@@ -150,7 +150,7 @@ class Queue
         }
 
         $class = get_class($job);
-        $time = $time ?? (time() + $job::DELAY);
+        $time ??= time() + $job::DELAY;
         $actionName = 'typerocket_job.' . $class;
 
         if(!in_array($class, static::$registered)) {

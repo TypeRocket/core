@@ -225,7 +225,7 @@ class Query implements \Stringable
      */
     public function findAll( $ids = [], $table = null, $num = null )
     {
-        $num = $num ?? func_num_args();
+        $num ??= func_num_args();
 
         if(!empty($ids)) {
             if(!$table) { $table = $this->query['table']; }
@@ -280,7 +280,7 @@ class Query implements \Stringable
             $whereQuery['condition'] = null;
         }
 
-        $num = $num ?? func_num_args();
+        $num ??= func_num_args();
         $whereQuery['column'] = $column;
 
         if( $num < 3 ) {
@@ -353,7 +353,7 @@ class Query implements \Stringable
      */
     public function orWhere($column, $arg1, $arg2 = null, $num = null)
     {
-        $num = $num ?? func_num_args();
+        $num ??= func_num_args();
         return $this->where($column, $arg1, $arg2, 'OR', $num);
     }
 
@@ -896,7 +896,7 @@ class Query implements \Stringable
     public function paginate($number = 25, $page = null, $callback = null)
     {
         $count_clone = clone $this;
-        $page = $page ?? $_GET['paged'] ?? $_GET['page'] ?? 1;
+        $page ??= $_GET['paged'] ?? $_GET['page'] ?? 1;
 
         if(!is_numeric($page)) { $page = 1; }
         $page = (int) $page;

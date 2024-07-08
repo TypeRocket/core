@@ -351,7 +351,7 @@ abstract class Field implements \Stringable
     public function setCast($cast, $soft = true)
     {
         if($soft) {
-            $this->cast = $this->cast ?? $cast;
+            $this->cast ??= $cast;
         } else {
             $this->cast = $cast;
         }

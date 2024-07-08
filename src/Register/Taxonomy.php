@@ -35,7 +35,7 @@ class Taxonomy extends Registrable
     public function __construct( $singular, $plural = null, $settings = null, $id = null)
     {
         $lowerSingular = strtolower( trim($singular) );
-        $id = $id ?? $lowerSingular;
+        $id ??= $lowerSingular;
 
         if(is_array($plural) && is_null($settings)) {
             $settings = $plural;

@@ -21,11 +21,11 @@ class Tag implements \Stringable
     public function __construct( string $tag, $attributes = null, $nest = null)
     {
         if(is_string($attributes) || is_numeric($attributes) || $attributes instanceof Tag || $attributes instanceof Html) {
-            $nest = $nest ?? $attributes;
+            $nest ??= $attributes;
             $attributes = [];
         }
 
-        $attributes = $attributes ?? [];
+        $attributes ??= [];
 
         $this->tag = $tag;
         $this->attrReset( $attributes );

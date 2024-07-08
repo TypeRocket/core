@@ -73,7 +73,7 @@ class Redirect
      */
     public function withOldFields($fields = null, $notFields = [])
     {
-        $fields = $fields ?? (new Request)->getFields();
+        $fields ??= (new Request)->getFields();
 
         if($fields instanceof Fields) {
             $fields = $fields->getArrayCopy();
@@ -198,7 +198,7 @@ class Redirect
     public function toRoute($name, $values = [], $site = true, $routes = null)
     {
         /** @var RouteCollection $routes */
-        $routes = $routes ?? Container::resolve(RouteCollection::class);
+        $routes ??= Container::resolve(RouteCollection::class);
         $located = $routes->getNamedRoute($name);
 
         if($values instanceof Model) {

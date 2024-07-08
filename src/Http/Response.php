@@ -357,8 +357,8 @@ class Response implements JsonSerializable, \Stringable
      */
     public function setDownloadHeaders($file, $name = null, ?array $headers = null, $type = null)
     {
-        $type = $type ?? 'attachment';
-        $name = $name ?? pathinfo($file, PATHINFO_BASENAME);
+        $type ??= 'attachment';
+        $name ??= pathinfo($file, PATHINFO_BASENAME);
         $mime = File::new($file)->mimeType();
         $main = array_merge([
             'Content-Type' => $mime ?: 'application/octet-stream',
@@ -801,7 +801,7 @@ class Response implements JsonSerializable, \Stringable
      */
     public function withRedirectData($data = null)
     {
-        $data = $data ?? $this->data;
+        $data ??= $this->data;
 
         if( !empty( $data ) ) {
             (new Cookie)->setTransient(Redirect::KEY_DATA, $data);
@@ -823,7 +823,7 @@ class Response implements JsonSerializable, \Stringable
         if($merge) {
             $errors = array_merge($this->errors, $errors ?? []);
         } else {
-            $errors = $errors ?? $this->errors;
+            $errors ??= $this->errors;
         }
 
         if( !empty( $errors ) ) {
@@ -843,7 +843,7 @@ class Response implements JsonSerializable, \Stringable
      */
     public function withRedirectMessage($message = null, $type = null)
     {
-        $message = $message ?? $this->message;
+        $message ??= $this->message;
 
         if(!empty($message)) {
             (new Cookie)->setTransient(Redirect::KEY_MESSAGE, [
@@ -865,7 +865,7 @@ class Response implements JsonSerializable, \Stringable
      */
     public function withOldFields($fields = null, $notFields = []) {
 
-        $fields = $fields ?? (new Request)->getFields();
+        $fields ??= (new Request)->getFields();
 
         if($fields instanceof Fields) {
             $fields = $fields->getArrayCopy();
@@ -960,7 +960,7 @@ class Response implements JsonSerializable, \Stringable
      */
     public function exitAny( $code = null )
     {
-        $code = $code ?? $this->getStatus();
+        $code ??= $this->getStatus();
         $request = (new Request);
 
         if( $request->isMarkedAjax() || $request->wants('json') ) {
@@ -977,7 +977,7 @@ class Response implements JsonSerializable, \Stringable
      */
     public function exitJson( $code = null )
     {
-        $code = $code ?? $this->getStatus();
+        $code ??= $this->getStatus();
         $this->setStatus($code);
         wp_send_json( $this );
     }
@@ -989,7 +989,7 @@ class Response implements JsonSerializable, \Stringable
      */
     public function exitMessage( $code = null )
     {
-        $code = $code ?? $this->getStatus();
+        $code ??= $this->getStatus();
         $this->setStatus($code);
         wp_die($this->getMessage(), '', $code);
     }

@@ -145,11 +145,11 @@ class Html implements \Stringable
     protected function form($action, $method = 'GET', $attributes = null, $text = null)
     {
         if(is_string($attributes) || is_numeric($attributes)) {
-            $text = $text ?? $attributes;
+            $text ??= $attributes;
             $attributes = [];
         }
 
-        $attributes = $attributes ?? [];
+        $attributes ??= [];
 
         $attributes = array_merge( ['action' => $action, 'method' => $method], $attributes );
         $this->tag = new Tag( 'form', $attributes, $text );

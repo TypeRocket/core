@@ -46,7 +46,7 @@ class PostType extends Registrable
     public function __construct( $singular, $plural = null, $settings = null, $id = null )
     {
         $singularLower = strtolower( trim($singular) );
-        $id = $id ?? $singularLower;
+        $id ??= $singularLower;
 
         if(is_array($plural) && is_null($settings)) {
             $settings = $plural;

@@ -280,7 +280,7 @@ class Tabs implements \Stringable
          * @var Tab $tab
          */
         foreach ($this->tabs as $i => $tab) {
-            $first = $first ?? $i;
+            $first ??= $i;
             if($tab->getActive()) {
                 return $i;
             }

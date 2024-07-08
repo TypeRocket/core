@@ -131,7 +131,7 @@ class ModelField
 
             try {
                 /** @var Model $model */
-                $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
+                $modelClass ??= \TypeRocket\Models\WPPost::class;
                 $model = new $modelClass;
                 $model->findById($item_id);
             } catch (Exception) {

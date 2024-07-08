@@ -429,8 +429,8 @@ class Validator
             }
         }
 
-        $this->errors[$fullDotPath] = $this->errors[$fullDotPath] ?? $error_message_full;
-        $this->errorFields[$fullDotPath] = $this->errorFields[$fullDotPath] ?? trim((string) $error_message);
+        $this->errors[$fullDotPath] ??= $error_message_full;
+        $this->errorFields[$fullDotPath] ??= trim((string) $error_message);
     }
 
     /**
@@ -506,7 +506,7 @@ class Validator
                     $type = substr((string) $type, 1);
                 }
 
-                $weak = $weak ?? $weak_all;
+                $weak ??= $weak_all;
 
                 if(Str::starts('only_subfields=', $option)) {
                     $only_subfields = explode('/', (string) $option)[0];

@@ -449,11 +449,11 @@ class Matrix extends Field implements ScriptField
          * @var $nested
          */
         extract($other);
-        $model = $model ?? null;
-        $item_id = $item_id ?? null;
-        $nested = $nested ?? false;
+        $model ??= null;
+        $item_id ??= null;
+        $nested ??= false;
         $i = $nested ? 1 : 0;
-        $info = $info ?? null; // This is an open variable for misc data
+        $info ??= null; // This is an open variable for misc data
         $group = $name ?? $group; // This is to help with migration from v4/v1 to v5
         $name = $group;
         $len = count($builder_data);

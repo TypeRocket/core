@@ -99,7 +99,7 @@ class AuthorizerService extends Service
         }
 
         $policies = $this->getPolicies();
-        $policy = $policy ?? ($option instanceof Policy ? $option : null);
+        $policy ??= $option instanceof Policy ? $option : null;
 
         if(!$policy) {
             $class = '\\' . get_class($option);

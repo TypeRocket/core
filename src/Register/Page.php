@@ -54,9 +54,9 @@ class Page extends Registrable
     public function __construct(string $resource, string $action, string $title, array $settings = [], $handler = null)
     {
         [$resource, $handle] = array_pad(explode('@', $resource), 2, null);
-        $handler = $handler ?? $handle;
+        $handler ??= $handle;
 
-        $settings['capability'] = $settings['capability'] ?? $settings['cap'] ?? null;
+        $settings['capability'] ??= $settings['cap'] ?? null;
 
         $this->setTitle($title);
         $this->resource = Sanitize::underscore( $resource );
@@ -760,7 +760,7 @@ class Page extends Registrable
     public static function addResourcePages($singular, $plural = null, array $settings = [], $resource = null, $handler = null)
     {
         [$singular, $handle] = array_pad(explode('@', $singular), 2, null);
-        $handler = $handler ?? $handle;
+        $handler ??= $handle;
 
         if(is_array($plural)) {
             $settings = $plural;

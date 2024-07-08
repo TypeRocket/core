@@ -237,7 +237,7 @@ class View implements \Stringable
      */
     public function render($context = null)
     {
-        $context = $context ?? $this->getContext() ?? 'views';
+        $context ??= $this->getContext() ?? 'views';
 
         $this->load($context);
     }

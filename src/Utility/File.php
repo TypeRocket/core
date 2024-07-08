@@ -150,7 +150,7 @@ class File implements \Stringable
     protected function tryToMakeFileWithDir($destination = null)
     {
         if(!$this->existing) {
-            $destination = $destination ?? $this->file;
+            $destination ??= $this->file;
             $this->tryToMakeDir($destination);
             if($fp = fopen($destination, 'w')) {
                 fclose($fp);

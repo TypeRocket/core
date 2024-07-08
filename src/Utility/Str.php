@@ -397,7 +397,7 @@ class Str
      */
     public static function encoding(?string $encoding = null) : string
     {
-        $encoding = $encoding ?? mb_internal_encoding();
+        $encoding ??= mb_internal_encoding();
         return ! static::quiet($encoding) ? $encoding : static::UTF8;
     }
 
