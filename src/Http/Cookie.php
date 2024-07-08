@@ -141,7 +141,7 @@ class Cookie
            throw new \Exception('Cookie name is required to delete. You provided an empty string or null.');
         }
 
-        setcookie($name, "", time() - 36000, $path, '', is_ssl());
+        setcookie($name, "", ['expires' => time() - 36000, 'path' => $path, 'domain' => '', 'secure' => is_ssl()]);
 
         return $this;
     }
