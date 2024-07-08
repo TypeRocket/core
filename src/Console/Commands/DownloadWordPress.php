@@ -80,13 +80,13 @@ class DownloadWordPress extends Command
         $build = $this->getOption('build');
         if(!empty($build) && in_array($build, [ 'd', 'n', 'dev', 'develop',  'development', 'night', 'nightly'])) {
             $url = 'https://wordpress.org/nightly-builds/wordpress-latest.zip';
-        } elseif(!empty($build) && strpos((string) $build, '.') !== false) {
+        } elseif(!empty($build) && str_contains((string) $build, '.')) {
             $url = 'https://wordpress.org/wordpress-'.$build.'.zip';
         }
 
         $status = get_headers($url, true);
         $code = $status[0] ?? null;
-        if(strpos($code ?? '', '200') !== FALSE) {
+        if(str_contains($code ?? '', '200')) {
             $this->success('Downloading WordPress from ' . $url);
             $file->download($url);
         } else {

@@ -291,7 +291,7 @@ class File implements \Stringable
                     $found = true;
                     $fileContent .= rtrim((string) preg_replace($needle, $replacement, $line)) . PHP_EOL;
                 }
-                elseif ( !$regex && strpos($line, $needle) !== false ) {
+                elseif ( !$regex && str_contains($line, $needle) ) {
                     $found = true;
                     $fileContent .= rtrim(str_replace($needle, $replacement, $line)) . PHP_EOL;
                 }
@@ -570,7 +570,7 @@ class File implements \Stringable
 
             if(is_array($ignore)) {
                 foreach ($ignore as $loc) {
-                    if(strpos($name, (string) $loc, 0) !== false) {
+                    if(str_contains($name, (string) $loc)) {
                         $this->echoVerbose('Ignoring: ' . $file, 2);
 
                         $skip = true;

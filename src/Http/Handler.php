@@ -163,7 +163,7 @@ class Handler
             [$action, $controller] = array_pad(explode('@', $controller), 2, null);
             $maybeController = \TypeRocket\Utility\Helper::controllerClass($controller, false);
 
-            if( strpos((string) $controller, "\\") === false && class_exists($maybeController) ) {
+            if( !str_contains((string) $controller, "\\") && class_exists($maybeController) ) {
                 $controller = $maybeController;
             }
 
