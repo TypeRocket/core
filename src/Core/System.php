@@ -530,7 +530,7 @@ class System
 
         try {
             $core_version = InstalledVersions::getVersion('typerocket/core');
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             $core_version = __('Another plugin is blocking this information.', 'typerocket-core');
         }
 

@@ -108,7 +108,7 @@ class Repeater extends Field implements ScriptField
         }
 
         $controls_html = array_reduce($group_control_list, function($carry, $item) {
-            $el = isset($item[0]) ? $item[0] : 'a';
+            $el = $item[0] ?? 'a';
             unset($item[0]);
             return $carry . Html::el( $el, $item);
         });
