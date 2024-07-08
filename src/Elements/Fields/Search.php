@@ -347,7 +347,7 @@ class Search extends Field implements ScriptField
 
                 $title .= ' (' . esc_html($status) . ' ' . esc_html($pt) . ')';
             }
-        } catch(\Throwable $e) {
+        } catch(\Throwable) {
             $error = true;
             $title = $deleted . ' ' . (is_string($value) ? esc_html($value) : $value['id'] ?? '?');
             $title = "<b class='tr-search-model-error'>{$title}</b>";
@@ -392,7 +392,7 @@ class Search extends Field implements ScriptField
             elseif( $is_id && $value ) {
                 $url = get_permalink($value);
             }
-        } catch(\Throwable $e) {
+        } catch(\Throwable) {
             $error = true;
         }
 

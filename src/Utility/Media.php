@@ -51,7 +51,7 @@ class Media
             } else {
                 try {
                     unlink($tmp);
-                } catch (\Throwable $t) {}
+                } catch (\Throwable) {}
                 return null;
             }
         }
@@ -81,7 +81,7 @@ class Media
         // Cleanup temp file
         try {
             unlink($tmp);
-        } catch (\Throwable $t) {}
+        } catch (\Throwable) {}
 
         // Error uploading
         if ( is_wp_error($attachment_id) ) return null;

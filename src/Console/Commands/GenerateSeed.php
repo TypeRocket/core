@@ -33,7 +33,7 @@ class GenerateSeed extends Command
                 $this->error('Manually Seed config/app.php with: ' . $seed);
             }
 
-        } catch ( \Exception $e ) {
+        } catch ( \Exception ) {
             $this->error('File empty or missing');
         }
     }

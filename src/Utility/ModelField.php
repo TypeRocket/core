@@ -97,7 +97,7 @@ class ModelField
             try {
                 $model = new WPPost();
                 $model->wpPost($item_id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -134,7 +134,7 @@ class ModelField
                 $modelClass = $modelClass ?? \TypeRocket\Models\WPPost::class;
                 $model = new $modelClass;
                 $model->findById($item_id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -174,7 +174,7 @@ class ModelField
                 /** @var WPUser $model */
                 $model = Helper::modelClass('User');
                 $model->wpUser($item_id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -219,7 +219,7 @@ class ModelField
                 /** @var WPComment $model */
                 $model = Helper::modelClass('Comment');
                 $model->wpComment($item_id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -245,7 +245,7 @@ class ModelField
                 /** @var WPTerm $model */
                 $model = $taxonomy ? Helper::modelClass($taxonomy) : new WPTerm;
                 $model->wpTerm($item_id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -271,7 +271,7 @@ class ModelField
                 /** @var Model $model */
                 $model = Helper::modelClass($resource);
                 $model->findById($item_id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return null;
             }
         }

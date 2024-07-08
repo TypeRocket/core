@@ -104,7 +104,7 @@ namespace TypeRocket\Core
 
                 try {
                     $wp_user = wp_get_current_user();
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                     throw new \Exception('AuthUser class is not accessible until `plugins_loaded` action has fired');
                 }
                 $user->wpUser($wp_user);

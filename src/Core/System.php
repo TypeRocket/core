@@ -536,7 +536,7 @@ class System
 
         try {
             $pro_version = InstalledVersions::getVersion('typerocket/professional');
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             $pro_version = __('NA', 'typerocket-core');
         }
 
