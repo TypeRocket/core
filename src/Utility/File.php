@@ -91,8 +91,8 @@ class File
      */
     public function getContainingFolder()
     {
-        $file_name = basename($this->file);
-        return rtrim(substr($this->file, 0, -strlen($file_name)), '/\\');
+        $file_name = basename((string) $this->file);
+        return rtrim(substr((string) $this->file, 0, -strlen($file_name)), '/\\');
     }
 
     /**
@@ -289,7 +289,7 @@ class File
             foreach ($data as $line ) {
                 if($regex && preg_match($needle, $line)) {
                     $found = true;
-                    $fileContent .= rtrim(preg_replace($needle, $replacement, $line)) . PHP_EOL;
+                    $fileContent .= rtrim((string) preg_replace($needle, $replacement, $line)) . PHP_EOL;
                 }
                 elseif ( !$regex && strpos($line, $needle) !== false ) {
                     $found = true;
@@ -448,7 +448,7 @@ class File
             throw new \Exception('Nothing deleted. ' . $path . ' file must be within your project scope or ' . $root);
         }
 
-        $dir = rtrim($path);
+        $dir = rtrim((string) $path);
 
         if( ! $root || $dir == $root || ! $path ) {
             throw new \Error('Nothing deleted. You can not delete your entire WordPress project!');
@@ -570,7 +570,7 @@ class File
 
             if(is_array($ignore)) {
                 foreach ($ignore as $loc) {
-                    if(strpos($name, $loc, 0) !== false) {
+                    if(strpos($name, (string) $loc, 0) !== false) {
                         $this->echoVerbose('Ignoring: ' . $file, 2);
 
                         $skip = true;

@@ -5,7 +5,7 @@ class DateTime
 {
     public static function transformWordPressTimeZoneStringToTimeZone($tz) : \DateTimeZone
     {
-        if(preg_match('/^UTC[+-]/', $tz)) {
+        if(preg_match('/^UTC[+-]/', (string) $tz)) {
             $tz = preg_replace('/UTC\+?/', '', $tz);
         }
 

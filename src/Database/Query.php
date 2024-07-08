@@ -1134,7 +1134,7 @@ class Query
 
         if( array_key_exists('function', $query) ) {
             $key = key($query['function']);
-            $func = strtoupper( $key );
+            $func = strtoupper( (string) $key );
             $column = $this->tickSqlName($this->query['function'][$key]);
             $sql = $func.'('.$column.') ';
         }

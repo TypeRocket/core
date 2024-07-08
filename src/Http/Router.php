@@ -99,7 +99,7 @@ class Router
     {
         $add = [];
         if( $this->route ) {
-            $key = '^' . rtrim($this->route->match['regex'], '/') . '/?$';
+            $key = '^' . rtrim((string) $this->route->match['regex'], '/') . '/?$';
             if( !empty($value[$key]) ) {
                 unset($value[$key]);
             }
@@ -132,7 +132,7 @@ class Router
         if( !$forceRemoveSlash && !$requestEndsInSlash && $wpTrailingslash && $isGet ) {
             $redirect = $requestedPath . '/';
         } elseif( ($forceRemoveSlash || !$wpTrailingslash) && $requestEndsInSlash && $isGet ) {
-            $redirect = rtrim($requestedPath, '/');
+            $redirect = rtrim((string) $requestedPath, '/');
         }
 
         if($redirect) {
@@ -205,7 +205,7 @@ class Router
         $regex = ['#^(?'];
         foreach ($routes as $i => $route) {
             $slash = $route['route']->addTrailingSlash || $route['route']->addTrailingSlash === null ? '\/?$' : '';
-            $regex[] = rtrim($route['regex'], '/') . $slash . '(*MARK:'.$i.')';
+            $regex[] = rtrim((string) $route['regex'], '/') . $slash . '(*MARK:'.$i.')';
         }
         $regex = implode('|', $regex) . ')$#x';
         preg_match($regex, $uri, $m);

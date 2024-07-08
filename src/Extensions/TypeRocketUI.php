@@ -90,18 +90,18 @@ class TypeRocketUI
                 continue;
             }
 
-            $singular = esc_html(trim($tax['singular']) ?: null);
-            $plural = esc_html(trim($tax['plural']) ?: null);
-            $request_tax_id = trim($tax['taxonomy_id']) ?: null;
+            $singular = esc_html(trim((string) $tax['singular']) ?: null);
+            $plural = esc_html(trim((string) $tax['plural']) ?: null);
+            $request_tax_id = trim((string) $tax['taxonomy_id']) ?: null;
 
             if($singular) {
                 $t = \TypeRocket\Register\Taxonomy::add($singular, $plural, null, $request_tax_id);
 
-                if(isset($tax['taxonomy_id']) && trim($tax['taxonomy_id']) ) {
+                if(isset($tax['taxonomy_id']) && trim((string) $tax['taxonomy_id']) ) {
                     $t->setId($tax['taxonomy_id']);
                 }
 
-                if(isset($tax['slug']) && trim($tax['slug'])) {
+                if(isset($tax['slug']) && trim((string) $tax['slug'])) {
                     $t->setSlug($tax['slug']);
                 }
 
@@ -165,8 +165,8 @@ class TypeRocketUI
                 continue;
             }
 
-            $title = esc_html(trim($box['meta_box_title']) ?: null);
-            $id = trim($box['meta_box_id']) ?: null;
+            $title = esc_html(trim((string) $box['meta_box_title']) ?: null);
+            $id = trim((string) $box['meta_box_id']) ?: null;
 
             if($title && $id) {
                 $mb = \TypeRocket\Register\MetaBox::add($title, null, [], $id);
@@ -219,14 +219,14 @@ class TypeRocketUI
                 continue;
             }
 
-            $singular = esc_html(trim($type['singular']) ?: null);
-            $plural = esc_html(trim($type['plural']) ?: null);
-            $request_pt_id = trim($type['post_type_id']);
+            $singular = esc_html(trim((string) $type['singular']) ?: null);
+            $plural = esc_html(trim((string) $type['plural']) ?: null);
+            $request_pt_id = trim((string) $type['post_type_id']);
 
             if($singular && $request_pt_id) {
                 $pt = \TypeRocket\Register\PostType::add($singular, $plural, null, $request_pt_id);
 
-                if(isset($type['slug']) && trim($type['slug'])) {
+                if(isset($type['slug']) && trim((string) $type['slug'])) {
                     $pt->setSlug($type['slug']);
                 }
 
@@ -244,7 +244,7 @@ class TypeRocketUI
                     }
                 }
 
-                if(isset($type['icon']) && trim($type['icon'])) {
+                if(isset($type['icon']) && trim((string) $type['icon'])) {
                     $pt->setIcon(Sanitize::dash($type['icon']));
                 }
 
@@ -252,7 +252,7 @@ class TypeRocketUI
                     $pt->setRootOnly();
                 }
 
-                if(isset($type['revisions']) && trim($type['revisions'])) {
+                if(isset($type['revisions']) && trim((string) $type['revisions'])) {
                     $pt->setRevisions($type['revisions']);
                 }
 
@@ -313,7 +313,7 @@ class TypeRocketUI
                     $pt->hideFrontend();
                 }
 
-                if(isset($type['title_placeholder_text']) && trim($type['title_placeholder_text'])) {
+                if(isset($type['title_placeholder_text']) && trim((string) $type['title_placeholder_text'])) {
                     $pt->setTitlePlaceholder(esc_attr($type['title_placeholder_text']));
                 }
 

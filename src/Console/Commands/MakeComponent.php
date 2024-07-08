@@ -36,7 +36,7 @@ class MakeComponent extends Command
         $key = $this->getArgument('key');
 
         if(!$title) {
-            $title = ucwords($key);
+            $title = ucwords((string) $key);
         }
 
         $key = Sanitize::underscore($key);

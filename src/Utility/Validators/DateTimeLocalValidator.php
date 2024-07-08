@@ -24,7 +24,7 @@ class DateTimeLocalValidator extends ValidatorRule
          */
         extract($this->args);
 
-        if( !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/", trim($value)) ) {
+        if( !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/", trim((string) $value)) ) {
             $this->error = __("must be local date time.",'typerocket-domain');
         }
 

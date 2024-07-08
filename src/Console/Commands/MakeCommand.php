@@ -30,7 +30,7 @@ class MakeCommand extends Command
     protected function exec()
     {
         $command = $this->getClassArgument('class');
-        $name = strtolower( $this->getArgument('name') );
+        $name = strtolower( (string) $this->getArgument('name') );
 
         [$namespace, $class] = Str::splitAt('\\', $command, true);
         $namespace = implode('\\',array_filter([$this->getGalaxyMakeNamespace(), 'Commands', $namespace]));

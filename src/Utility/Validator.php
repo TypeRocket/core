@@ -430,7 +430,7 @@ class Validator
         }
 
         $this->errors[$fullDotPath] = $this->errors[$fullDotPath] ?? $error_message_full;
-        $this->errorFields[$fullDotPath] = $this->errorFields[$fullDotPath] ?? trim($error_message);
+        $this->errorFields[$fullDotPath] = $this->errorFields[$fullDotPath] ?? trim((string) $error_message);
     }
 
     /**
@@ -503,13 +503,13 @@ class Validator
 
                 if($type[0] === '?') {
                     $weak = true;
-                    $type = substr($type, 1);
+                    $type = substr((string) $type, 1);
                 }
 
                 $weak = $weak ?? $weak_all;
 
                 if(Str::starts('only_subfields=', $option)) {
-                    $only_subfields = explode('/', $option)[0];
+                    $only_subfields = explode('/', (string) $option)[0];
                     $subfields = explode(',', substr($only_subfields, 15));
                     $value_checked = Arr::only($value, $subfields);
 
@@ -519,7 +519,7 @@ class Validator
 
                     $value_checked = Arr::isEmptyArray($value_checked) ? null : $value_checked;
 
-                    $option = substr($option, strlen($only_subfields) + 1) ?: null;
+                    $option = substr((string) $option, strlen($only_subfields) + 1) ?: null;
                 }
 
                 if(array_key_exists($type, $this->validatorMap)) {

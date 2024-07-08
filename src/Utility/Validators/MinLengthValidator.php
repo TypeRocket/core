@@ -23,7 +23,7 @@ class MinLengthValidator extends ValidatorRule
 
         $option = (int) $option;
 
-        if( mb_strlen($value) < $option ) {
+        if( mb_strlen((string) $value) < $option ) {
             $this->error = sprintf(__("must be at least %s characters.",'typerocket-domain'), $option);
         }
 

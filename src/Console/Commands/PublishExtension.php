@@ -29,8 +29,8 @@ class PublishExtension extends Command
     protected function exec()
     {
         // $this->confirm('Publishing can be destructive... Continue anyways? (y/n)');
-        $package = trim($this->getArgument('package'), '\\/');
-        $script = ltrim($this->getArgument('submodule', 'publish'), '/.\\');
+        $package = trim((string) $this->getArgument('package'), '\\/');
+        $script = ltrim((string) $this->getArgument('submodule', 'publish'), '/.\\');
 
         if(is_file($path = TYPEROCKET_PATH . '/vendor/'.$package.'/ext/'.$script.'.php')) {
             /** @noinspection PhpIncludeInspection */

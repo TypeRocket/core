@@ -469,7 +469,7 @@ class Matrix extends Field implements ScriptField
             }
 
             $component_id = key($data);
-            $component = strtolower(key($data));
+            $component = strtolower((string) key($data));
             $vals = compact('name', 'item_id', 'model', 'first_item', 'last_item', 'component_id', 'hash', 'info');
             $class = static::getComponentClass($component, $group);
             $class->render($data[$component_id], $vals);

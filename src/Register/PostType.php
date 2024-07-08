@@ -58,7 +58,7 @@ class PostType extends Registrable
         }
 
         if(empty($plural)) {
-            $plural = trim(strtolower(Inflect::pluralize($singular)));
+            $plural = trim(strtolower((string) Inflect::pluralize($singular)));
         }
 
         $labelSingular = $singular;
@@ -194,7 +194,7 @@ class PostType extends Registrable
         $upperSingular = $keep_case ? $singular : Str::uppercaseWords( $singular );
         $lowerSingular = $keep_case ? $singular : mb_strtolower( $singular );
         $upperPlural   = $keep_case ? $plural : Str::uppercaseWords( $plural );
-        $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
+        $lowerPlural   = $keep_case ? $plural : mb_strtolower( (string) $plural );
 
         $context = 'post_type:' . $this->getId();
 
@@ -858,7 +858,7 @@ class PostType extends Registrable
      */
     public function addColumn($field, $sort_by_c = false, $label = null, $callback = null) {
         if( ! $label ) {
-            $name_parts = explode('.', strrev($field), 2);
+            $name_parts = explode('.', strrev((string) $field), 2);
             $label = ucwords(strrev($name_parts[0]));
             $field = Sanitize::underscore( $field, true );
         }

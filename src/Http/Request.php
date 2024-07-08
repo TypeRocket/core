@@ -39,7 +39,7 @@ class Request
         $this->host = $_SERVER['HTTP_HOST'] ?? null;
 
         if( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-            $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            $this->path = parse_url((string) $_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
     }
 
@@ -137,7 +137,7 @@ class Request
     {
         $ajax = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
 
-        if(strtolower($ajax) == 'xmlhttprequest' || $this->isMarkedAjax() ) {
+        if(strtolower((string) $ajax) == 'xmlhttprequest' || $this->isMarkedAjax() ) {
             return true;
         }
 
@@ -226,7 +226,7 @@ class Request
     public function getPathWithoutRoot($root = null)
     {
         $root = $root ?? get_site_url();
-        $site =  trim( (string) parse_url($root, PHP_URL_PATH), '/');
+        $site =  trim( (string) parse_url((string) $root, PHP_URL_PATH), '/');
         return ltrim( Str::trimStart(ltrim((string) $this->path, '/'), $site), '/');
     }
 
@@ -284,7 +284,7 @@ class Request
      */
     public function getPathExploded()
     {
-        return explode('/', trim($this->path, '/') );
+        return explode('/', trim((string) $this->path, '/') );
     }
 
     /**

@@ -258,8 +258,8 @@ class EagerLoader
         $set = [];
 
         $relationId = $query['id_local_column'];
-        if (($pos = strpos($relationId, ".")) !== false) {
-            $relationId = substr($relationId, $pos + 1);
+        if (($pos = strpos((string) $relationId, ".")) !== false) {
+            $relationId = substr((string) $relationId, $pos + 1);
         }
 
         if($result instanceof Results) {

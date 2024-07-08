@@ -317,10 +317,10 @@ class Sanitize
 
             if($keep_dots) {
                 $name = preg_replace( '/[\.]+/', '.', $name );
-                $name = preg_replace("/[^A-Za-z0-9\.\\s\\-\\_?]/",'', strtolower(trim($name)) );
+                $name = preg_replace("/[^A-Za-z0-9\.\\s\\-\\_?]/",'', strtolower(trim((string) $name)) );
             } else {
                 $name = preg_replace( '/[\.]+/', '_', $name );
-                $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
+                $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim((string) $name)) );
             }
 
 
@@ -350,10 +350,10 @@ class Sanitize
 
             if($keep_dots) {
                 $name = preg_replace( '/[\.]+/', '.', $name );
-                $name = preg_replace("/[^A-Za-z0-9\.\\s\\-\\_?]/",'', strtolower(trim($name)) );
+                $name = preg_replace("/[^A-Za-z0-9\.\\s\\-\\_?]/",'', strtolower(trim((string) $name)) );
             } else {
                 $name = preg_replace( '/[\.]+/', '_', $name );
-                $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim($name)) );
+                $name = preg_replace("/[^A-Za-z0-9\\s\\-\\_?]/",'', strtolower(trim((string) $name)) );
             }
 
             $name = preg_replace( '/[_\\s]+/', '-', $name );

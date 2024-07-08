@@ -5,7 +5,6 @@ use TypeRocket\Console\Command;
 use TypeRocket\Utility\File;
 use TypeRocket\Utility\Sanitize;
 use TypeRocket\Utility\Str;
-use function Webmozart\Assert\Tests\StaticAnalysis\upper;
 
 class MakeMigration extends Command
 {
@@ -31,7 +30,7 @@ class MakeMigration extends Command
     protected function exec()
     {
         $name = Sanitize::underscore( $this->getArgument('name') );
-        $type = strtoupper($this->getArgument('type', 'sql'));
+        $type = strtoupper((string) $this->getArgument('type', 'sql'));
         $root = \TypeRocket\Core\Config::get('paths.migrations');
 
         // Make directories if needed

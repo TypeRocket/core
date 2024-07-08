@@ -172,7 +172,7 @@ class Data
         $return = null;
 
         foreach ($dots as $dot) {
-            $traverse = explode('.', $dot);
+            $traverse = explode('.', (string) $dot);
             $search = $data;
 
             foreach ($traverse as $step) {

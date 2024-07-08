@@ -150,7 +150,7 @@ class Str
      */
     public static function snake($input)
     {
-        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', (string) $input, $matches);
         $ret = $matches[0];
         foreach ($ret as &$match) {
             $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
@@ -267,10 +267,10 @@ class Str
     public static function splitAt($pattern, $subject, $last = false)
     {
         if(!$last) {
-            return array_pad(explode($pattern, $subject, 2), 2, null);
+            return array_pad(explode($pattern, (string) $subject, 2), 2, null);
         }
 
-        $parts = explode($pattern, $subject);
+        $parts = explode($pattern, (string) $subject);
         $last = array_pop($parts);
         $first = implode($pattern, $parts);
         return [$first ?: null, $last];

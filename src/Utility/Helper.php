@@ -21,7 +21,7 @@ class Helper
         }
 
         if( defined('TYPEROCKET_ROOT_INSTALL') ) {
-            return TYPEROCKET_PATH . '/' . trim(Config::get('app.root.wordpress', 'wordpress'), '\\/');
+            return TYPEROCKET_PATH . '/' . trim((string) Config::get('app.root.wordpress', 'wordpress'), '\\/');
         }
 
         if( defined('ABSPATH') ) {
@@ -38,7 +38,7 @@ class Helper
             $depth .= '/..';
         }
 
-        $galaxy_root = TYPEROCKET_PATH . '/' . trim(Config::get('app.root.wordpress'), '\\/');
+        $galaxy_root = TYPEROCKET_PATH . '/' . trim((string) Config::get('app.root.wordpress'), '\\/');
 
         if(is_dir($galaxy_root)) {
             return $galaxy_root;

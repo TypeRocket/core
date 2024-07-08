@@ -40,11 +40,11 @@ class MakeModel extends Command
 
         $id = $this->getArgument('id');
 
-        switch ( strtolower($directive) ) {
+        switch ( strtolower((string) $directive) ) {
             case 'base' :
             case 'post' :
             case 'term' :
-                $directive = ucfirst($directive);
+                $directive = ucfirst((string) $directive);
                 break;
             default :
                 $this->error('Type must be: base, post or term');
@@ -54,9 +54,9 @@ class MakeModel extends Command
 
         if( ! $id ) {
             if( $directive == 'Base') {
-                $id = Str::splitAt('\\', strtolower(Inflect::pluralize($name)), true)[1];
+                $id = Str::splitAt('\\', strtolower((string) Inflect::pluralize($name)), true)[1];
             } else {
-                $id = strtolower($name);
+                $id = strtolower((string) $name);
             }
         }
 

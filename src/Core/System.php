@@ -396,14 +396,14 @@ class System
         if ( empty( $_POST['allowed_mime_types'] ) || empty( $file['type'] ) ) {
             return $file;
         }
-        $allowed_mime_types = explode( ',', $_POST['allowed_mime_types'] );
+        $allowed_mime_types = explode( ',', (string) $_POST['allowed_mime_types'] );
         if ( in_array( $file['type'], $allowed_mime_types ) ) {
             return $file;
         }
         // Cater for "group" allowed mime types eg "image", "audio" etc. to match
         // files of type "image/png", "audio/mp3" etc.
-        if ( ( $slash_pos = strpos( $file['type'], '/' ) ) > 0 ) {
-            if ( in_array( substr( $file['type'], 0, $slash_pos ), $allowed_mime_types ) ) {
+        if ( ( $slash_pos = strpos( (string) $file['type'], '/' ) ) > 0 ) {
+            if ( in_array( substr( (string) $file['type'], 0, $slash_pos ), $allowed_mime_types ) ) {
                 return $file;
             }
         }

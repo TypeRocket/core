@@ -23,7 +23,7 @@ class SizeValidator extends ValidatorRule
 
         $option = (int) $option;
 
-        if( mb_strlen($value) !== (int) $option ) {
+        if( mb_strlen((string) $value) !== (int) $option ) {
             $this->error = sprintf(__("must be %s exactly characters.",'typerocket-domain'), $option);
         }
 

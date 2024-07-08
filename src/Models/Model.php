@@ -238,7 +238,7 @@ class Model implements Formable, JsonSerializable
         }
 
         if( ! $this->resource && $type ) {
-            $this->resource = strtolower( Inflect::pluralize($type) );
+            $this->resource = strtolower( (string) Inflect::pluralize($type) );
         }
 
         $query = $this->setupQueryConnectionForModel($wpdb);
@@ -2206,7 +2206,7 @@ class Model implements Formable, JsonSerializable
         }
 
         $rel_table = $relationship->getTable();
-        $id_foreign_where = str_contains($id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
+        $id_foreign_where = str_contains((string) $id_foreign, '.') ? $id_foreign : "{$rel_table}.$id_foreign";
 
         $result = $relationship->findAll()->where( $id_foreign_where, $id );
         $relationship->relatedBy['where_on'] = $relationship->getQuery()->lastWhere();
@@ -2752,7 +2752,7 @@ class Model implements Formable, JsonSerializable
                 }
 
             } else {
-                [$name, $with] = array_pad(explode('.', $withArg, 2), 2, null);
+                [$name, $with] = array_pad(explode('.', (string) $withArg, 2), 2, null);
                 $compiledWithList[$name][] = $with;
             }
 

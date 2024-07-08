@@ -37,7 +37,7 @@ trait Conditional
             $whereQuery['value'] = $arg1;
         }
         else {
-            $whereQuery['operator'] = strtolower($arg1);
+            $whereQuery['operator'] = strtolower((string) $arg1);
             $whereQuery['value'] = $arg2;
         }
 
@@ -68,7 +68,7 @@ trait Conditional
             $value = $arg1;
         }
         else {
-            $op = strtolower($arg1);
+            $op = strtolower((string) $arg1);
             $value = $arg2;
         }
 

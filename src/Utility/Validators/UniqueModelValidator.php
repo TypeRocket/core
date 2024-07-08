@@ -35,7 +35,7 @@ class UniqueModelValidator extends ValidatorRule
 
             $result = $model->first();
         } elseif( $option3 || ( ! $modelClass && $option2 ) ) {
-            [$table, $idColumn] = array_pad(explode('@', $option2, 2), 2, null);
+            [$table, $idColumn] = array_pad(explode('@', (string) $option2, 2), 2, null);
             $query = (new Query)->table($table)->where($option, $value);
 
             if($idColumn && $option3) {

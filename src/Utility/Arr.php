@@ -150,7 +150,7 @@ class Arr
                 $current_ref = &$current_array;
                 $new_ref = &$new_array;
 
-                $seek = explode('.', $dots);
+                $seek = explode('.', (string) $dots);
                 $miss = false;
                 foreach ($seek as $index)
                 {
@@ -262,7 +262,7 @@ class Arr
 
         foreach ($needles as $n) {
 
-            $search = is_array($n) ? $n : explode('.', $n);
+            $search = is_array($n) ? $n : explode('.', (string) $n);
 
             foreach ($search as $index) {
                 if(is_array($array) && array_key_exists($index, $array)) {

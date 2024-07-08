@@ -40,20 +40,20 @@ class MakeController extends Command
 
         if( ! $model ) {
             if(Str::ends('Controller', $name)) {
-                $model = substr($name, 0, -strlen('Controller'));
+                $model = substr((string) $name, 0, -strlen('Controller'));
             } else {
                 $model = $name;
                 $name = $name . 'Controller';
             }
         }
 
-        switch ( strtolower($directive) ) {
+        switch ( strtolower((string) $directive) ) {
             case 'base' :
             case 'post' :
             case 'thin' :
             case 'template' :
             case 'term' :
-                $directive = ucfirst($directive);
+                $directive = ucfirst((string) $directive);
                 break;
             default :
                 $this->error('Type must be: base, thin, template, post or term');

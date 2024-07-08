@@ -39,7 +39,7 @@ class DownloadWordPress extends Command
         $path = $this->getArgument('path');
         $type = $this->getArgument('type');
         $this->type = $type ?: 'all';
-        $this->path = rtrim( $path ?  $path : Helper::wordPressRootPath(), '/');
+        $this->path = rtrim( (string) ($path ?  $path : Helper::wordPressRootPath()), '/');
 
         switch($this->type) {
             case 'all' :
@@ -80,11 +80,11 @@ class DownloadWordPress extends Command
         $build = $this->getOption('build');
         if(!empty($build) && in_array($build, [ 'd', 'n', 'dev', 'develop',  'development', 'night', 'nightly'])) {
             $url = 'https://wordpress.org/nightly-builds/wordpress-latest.zip';
-        } elseif(!empty($build) && strpos($build, '.') !== false) {
+        } elseif(!empty($build) && strpos((string) $build, '.') !== false) {
             $url = 'https://wordpress.org/wordpress-'.$build.'.zip';
         }
 
-        $status = get_headers($url, 1);
+        $status = get_headers($url, true);
         $code = $status[0] ?? null;
         if(strpos($code ?? '', '200') !== FALSE) {
             $this->success('Downloading WordPress from ' . $url);

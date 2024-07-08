@@ -43,7 +43,7 @@ class Command extends SymfonyCommand
      */
     protected function configure()
     {
-        $signature = explode(' ', $this->command[0], 2);
+        $signature = explode(' ', (string) $this->command[0], 2);
         $name = array_shift($signature);
 
         $this->setName($name)
@@ -61,9 +61,9 @@ class Command extends SymfonyCommand
 
                 [$arg, $default] = array_pad(explode('=', $arg, 2), 2, null);
 
-                if(trim($arg, '?') !== $arg) {
+                if(trim((string) $arg, '?') !== $arg) {
                     $mode = static::OPTIONAL;
-                    $arg = trim($arg, '?');
+                    $arg = trim((string) $arg, '?');
                 }
 
                 if($arg[0] == '-') {
@@ -78,9 +78,9 @@ class Command extends SymfonyCommand
                     $is_option = true;
                 }
 
-                if(trim($arg, '*') !== $arg || ($default == '*' && $is_option)) {
+                if(trim((string) $arg, '*') !== $arg || ($default == '*' && $is_option)) {
                     $mode = $mode + static::IS_ARRAY;
-                    $arg = trim($arg, '*');
+                    $arg = trim((string) $arg, '*');
                     $default = null;
                 }
 

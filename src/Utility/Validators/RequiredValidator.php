@@ -39,7 +39,7 @@ class RequiredValidator extends ValidatorRule
         $weak = in_array('weak', $opts) && (is_null($value) || Arr::isEmptyArray($value));
 
         if($strong) {
-            $value = is_array($value) ? Arr::mapDeep('trim', $value) : trim($value);
+            $value = is_array($value) ? Arr::mapDeep('trim', $value) : trim((string) $value);
         }
 
         if($allow_zero) {

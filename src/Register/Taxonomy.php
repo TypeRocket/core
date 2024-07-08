@@ -47,7 +47,7 @@ class Taxonomy extends Registrable
         }
 
         if(empty($plural)) {
-            $plural = trim(strtolower(Inflect::pluralize($singular)));
+            $plural = trim(strtolower((string) Inflect::pluralize($singular)));
         }
 
         $labelSingular = $singular;
@@ -172,7 +172,7 @@ class Taxonomy extends Registrable
         // make lowercase
         $upperPlural   = $keep_case ? $plural : Str::uppercaseWords( $plural );
         $upperSingular = $keep_case ? $singular : Str::uppercaseWords( $singular );
-        $lowerPlural   = $keep_case ? $plural : mb_strtolower( $plural );
+        $lowerPlural   = $keep_case ? $plural : mb_strtolower( (string) $plural );
 
         $context = 'taxonomy:' . $this->getId();
 
