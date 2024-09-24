@@ -181,7 +181,7 @@ class EagerLoader
         if($result instanceof Results) {
             foreach($result as $key => $value) {
                 /** @var Model $value */
-                $local_id = $model->getPropertyValueDirect($query['id_local']);
+                $local_id = $value->getPropertyValueDirect($query['id_local']);
                 $value->setRelationship($name, $set[$local_id] ?? null);
             }
         } else {
