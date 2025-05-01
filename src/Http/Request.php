@@ -386,7 +386,9 @@ class Request
      */
     public function getQueryAsArray()
     {
-        parse_str(parse_url($this->getUriFull(), PHP_URL_QUERY), $request_params);
+        $query_str = parse_url($this->getUriFull(), PHP_URL_QUERY);
+
+        parse_str(is_string($query_str) ? $query_str : "", $request_params);
 
         return $request_params;
     }
