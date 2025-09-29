@@ -8,6 +8,7 @@ const mix = require('laravel-mix');
 | When there are updates to the TypeRocket core assets you must also
 | compile those assets.
 |
+| Node Version: 16.20.2
 */
 
 let pub = 'assets/dist';
