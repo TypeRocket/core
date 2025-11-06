@@ -51,7 +51,7 @@ class BaseVerify extends Middleware
         foreach ($exceptPaths as $excludePath) {
             if(trim((string) $excludePath) === '') { continue; }
 
-            $excludePath = str_replace('*', '([^\/]+)', trim($excludePath, '/'));
+            $excludePath = str_replace('*', '([^\/]+)', trim((string) $excludePath, '/'));
 
             if(preg_match("#^{$excludePath}\/?$#", $path)) {
                 return true;
