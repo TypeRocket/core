@@ -49,7 +49,7 @@ class BaseVerify extends Middleware
         $exceptPaths = apply_filters('typerocket_verify_nonce_except', $this->except);
 
         foreach ($exceptPaths as $excludePath) {
-            if($excludePath === '') { continue; }
+            if(trim((string) $excludePath) === '') { continue; }
 
             $excludePath = str_replace('*', '([^\/]+)', trim($excludePath, '/'));
 
