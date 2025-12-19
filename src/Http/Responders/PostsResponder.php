@@ -47,7 +47,7 @@ class PostsResponder extends Responder
         $middlewareGroup = [ $resource ,'post'];
         $model = null;
 
-        if (! class_exists( $controller ) ) {
+        if (! is_string( $controller ) || ! class_exists( $controller ) ) {
             $controller = WPPostController::class;
         }
 
