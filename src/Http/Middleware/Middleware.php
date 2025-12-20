@@ -18,7 +18,7 @@ abstract class Middleware
     /** @var Handler|null  */
     private $hook = false;
 
-    public function __construct( Request $request, Response $response, $middleware = null, Handler $handler = null )
+    public function __construct( Request $request, Response $response, $middleware = null, ?Handler $handler = null )
     {
     	$this->next = $middleware;
     	$this->request = $request;
