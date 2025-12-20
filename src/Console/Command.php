@@ -41,7 +41,7 @@ class Command extends SymfonyCommand
     /**
      * Configure
      */
-    protected function configure()
+    protected function configure() :void
     {
         $signature = explode(' ', (string) $this->command[0], 2);
         $name = array_shift($signature);

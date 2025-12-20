@@ -110,7 +110,7 @@ class GalaxyConsoleLauncher
         }
 
         foreach ($this->commands as $command ) {
-            $this->console->add( new $command );
+            $this->console->addCommand( new $command );
         }
 
         $this->console->run();
