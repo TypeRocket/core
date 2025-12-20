@@ -15,6 +15,11 @@ class Container
      * @return mixed|null
      */
     public static function resolve($class_name, $forceAliasLookup = false) {
+
+        if($class_name[0] === '\\') {
+            $class_name = substr($class_name, 1);
+        }
+
         if(!$forceAliasLookup && array_key_exists($class_name, self::$list)) {
             $single = self::$list[$class_name]['singleton_instance'];
 
@@ -60,6 +65,10 @@ class Container
      */
     public static function register($class_name, $callback, $singleton = false, $alias = null)
     {
+        if($class_name[0] === '\\') {
+            $class_name = substr($class_name, 1);
+        }
+
         if(!empty(self::$list[$class_name])) {
             return false;
         }
