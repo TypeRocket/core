@@ -79,7 +79,7 @@ jobs:
           ALT_DB_NAME: tr_v51_alt
 
       - name: Verify WordPress database
-        run: php galaxy wp db check
+        run: vendor/typerocket/core/wp-cli.phar db check --allow-root --path=wordpress
         env:
           HTTP_HOST: 127.0.0.1
 
@@ -89,6 +89,9 @@ jobs:
           pwd
           test -f phpunit.xml
           test -x vendor/bin/phpunit
-          vendor/bin/phpunit --configuration phpunit.xml --testdox --display-errors --display-warnings --display-deprecations --fail-on-empty-test-suite
+          find tests -name '*Test.php' -print | sort
+          vendor/bin/phpunit --configuration phpunit.xml --list-test-files
+          vendor/bin/phpunit --configuration phpunit.xml --list-tests
+          vendor/bin/phpunit --configuration phpunit.xml --debug --display-errors --display-warnings --display-deprecations --fail-on-empty-test-suite
         env:
           HTTP_HOST: 127.0.0.1
