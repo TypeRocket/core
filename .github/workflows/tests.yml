@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-24.04
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: wordpress
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --user=root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: json, mbstring, openssl, mysqli, pdo_mysql, redis, memcached
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Setup databases
+        run: |
+          mysql --host=127.0.0.1 --user=root --execute="SET NAMES utf8; CREATE DATABASE IF NOT EXISTS wordpress;"
+          mysql --host=127.0.0.1 --user=root --execute="SET NAMES utf8; CREATE DATABASE IF NOT EXISTS tr_v51_alt;"
+          mysql --host=127.0.0.1 --user=root --database=tr_v51_alt --execute="CREATE TABLE IF NOT EXISTS some_table (id INT, text_field VARCHAR(255));"
+
+      - name: Setup WordPress
+        run: bin/setup-ci.sh
+
+      - name: Run tests
+        run: vendor/bin/phpunit
