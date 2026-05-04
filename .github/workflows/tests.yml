@@ -86,26 +86,19 @@ jobs:
       - name: Discover tests
         working-directory: vendor/typerocket/core
         run: |
-          set -o pipefail
           pwd
           php -v
           test -f phpunit.xml
           test -x vendor/bin/phpunit
-          php vendor/bin/phpunit --version 2>&1 | tee phpunit-version.log
+          php vendor/bin/phpunit --version
           find tests -name '*Test.php' -print | sort
-
-          php vendor/bin/phpunit --configuration phpunit.xml --list-test-files 2>&1 | tee phpunit-list-test-files.log
-          test -s phpunit-list-test-files.log
-
-          php vendor/bin/phpunit --configuration phpunit.xml --list-tests 2>&1 | tee phpunit-list-tests.log
-          test -s phpunit-list-tests.log
+          php vendor/bin/phpunit --configuration phpunit.xml --list-test-files tests
+          php vendor/bin/phpunit --configuration phpunit.xml --list-tests tests
         env:
           HTTP_HOST: 127.0.0.1
 
       - name: Run tests
         working-directory: vendor/typerocket/core
-        run: |
-          set -o pipefail
-          php vendor/bin/phpunit --configuration phpunit.xml --debug --display-errors --display-warnings --display-deprecations --fail-on-empty-test-suite 2>&1 | tee phpunit-debug.log
+        run: php vendor/bin/phpunit --configuration phpunit.xml --debug --display-errors --display-warnings --display-deprecations --fail-on-empty-test-suite tests
         env:
           HTTP_HOST: 127.0.0.1
