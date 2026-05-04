@@ -11,11 +11,18 @@ DB_HOST="${DB_HOST:-127.0.0.1}"
 
 cd "$ROOT_PATH"
 
+if [ ! -f wp-cli.phar ]; then
+    curl -fsSL -o wp-cli.phar https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+fi
+
+chmod +x wp-cli.phar
+
 php galaxy root:install "$DB_NAME" "$DB_USER" "$DB_PASSWORD"
 
-php galaxy config:seed
-
 sed -i "s/define( 'DB_HOST', '.*' );/define( 'DB_HOST', '$DB_HOST' );/" wp-config.php
+grep "DB_HOST" wp-config.php
+
+php galaxy config:seed
 
 if ! grep -q "TYPEROCKET_ALT_DATABASE_DATABASE" wp-config.php; then
     sed -i "/\/\* That's all, stop editing! Happy publishing\. \*\//i\\

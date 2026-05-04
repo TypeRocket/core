@@ -79,7 +79,7 @@ jobs:
           ALT_DB_NAME: tr_v51_alt
 
       - name: Verify WordPress database
-        run: vendor/typerocket/core/wp-cli.phar db check --allow-root --path=wordpress
+        run: ./wp-cli.phar db check --allow-root --path=wordpress
         env:
           HTTP_HOST: 127.0.0.1
 
