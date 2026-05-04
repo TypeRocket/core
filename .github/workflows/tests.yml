@@ -9,6 +9,10 @@ jobs:
     name: PHPUnit
     runs-on: ubuntu-24.04
 
+    defaults:
+      run:
+        working-directory: vendor/typerocket/core
+
     services:
       mysql:
         image: mysql:8.0
@@ -35,6 +39,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: vendor/typerocket/core
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -52,7 +58,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('vendor/typerocket/core/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
