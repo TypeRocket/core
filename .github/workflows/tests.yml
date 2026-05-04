@@ -9,10 +9,6 @@ jobs:
     name: PHPUnit
     runs-on: ubuntu-24.04
 
-    defaults:
-      run:
-        working-directory: vendor/typerocket/core
-
     services:
       mysql:
         image: mysql:8.0
@@ -37,11 +33,6 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: vendor/typerocket/core
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -58,11 +49,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('vendor/typerocket/core/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+      - name: Create TypeRocket root install
+        run: |
+          composer create-project --prefer-dist typerocket/typerocket .
+          rm -rf vendor/typerocket/core
+
+      - name: Checkout core package
+        uses: actions/checkout@v4
+        with:
+          path: vendor/typerocket/core
 
       - name: Setup databases
         run: |
@@ -70,8 +68,9 @@ jobs:
           mysql --host=127.0.0.1 --user=root --execute="SET NAMES utf8; CREATE DATABASE IF NOT EXISTS tr_v51_alt;"
           mysql --host=127.0.0.1 --user=root --database=tr_v51_alt --execute="CREATE TABLE IF NOT EXISTS some_table (id INT, text_field VARCHAR(255));"
 
-      - name: Setup WordPress
-        run: bin/setup-ci.sh
+      - name: Setup TypeRocket test install
+        run: vendor/typerocket/core/bin/setup-github-actions.sh
 
       - name: Run tests
+        working-directory: vendor/typerocket/core
         run: vendor/bin/phpunit
