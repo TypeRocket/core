@@ -18,7 +18,7 @@ abstract class Responder
      * Responder constructor.
      * @param Handler|null $handler
      */
-    public function __construct(Handler $handler = null)
+    public function __construct(?Handler $handler = null)
     {
         $this->handler = $handler ?? new Handler;
     }

@@ -14,9 +14,9 @@ class Stack
      * Stack Constructor
      *
      * @param HttpKernel $kernel
-     * @param array $middleware
+     * @param array|null $middleware
      */
-    public function __construct(HttpKernel $kernel, array $middleware = null)
+    public function __construct(HttpKernel $kernel, ?array $middleware = null)
     {
         $this->kernel = $kernel;
         $this->setMiddleware($middleware);
@@ -45,11 +45,11 @@ class Stack
     /**
      * Set Middleware
      *
-     * @param array $middleware
+     * @param array|null $middleware
      */
-    public function setMiddleware(array $middleware)
+    public function setMiddleware(?array $middleware)
     {
-        $this->middleware = $middleware;
+        $this->middleware = $middleware ?? [];
     }
 
     /**
