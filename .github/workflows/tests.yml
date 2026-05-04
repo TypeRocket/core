@@ -83,7 +83,7 @@ jobs:
         env:
           HTTP_HOST: 127.0.0.1
 
-      - name: Run tests
+      - name: Discover tests
         working-directory: vendor/typerocket/core
         run: |
           pwd
@@ -92,6 +92,12 @@ jobs:
           find tests -name '*Test.php' -print | sort
           vendor/bin/phpunit --configuration phpunit.xml --list-test-files
           vendor/bin/phpunit --configuration phpunit.xml --list-tests
+        env:
+          HTTP_HOST: 127.0.0.1
+
+      - name: Run tests
+        working-directory: vendor/typerocket/core
+        run: |
           vendor/bin/phpunit --configuration phpunit.xml --debug --display-errors --display-warnings --display-deprecations --fail-on-empty-test-suite
         env:
           HTTP_HOST: 127.0.0.1
