@@ -70,6 +70,15 @@ jobs:
 
       - name: Setup TypeRocket test install
         run: vendor/typerocket/core/bin/setup-github-actions.sh
+        env:
+          DB_NAME: wordpress
+          DB_USER: root
+          DB_PASSWORD: ''
+          DB_HOST: 127.0.0.1
+          ALT_DB_NAME: tr_v51_alt
+
+      - name: Verify WordPress database
+        run: php galaxy wp db check
 
       - name: Run tests
         working-directory: vendor/typerocket/core

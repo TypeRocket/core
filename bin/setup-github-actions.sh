@@ -15,6 +15,8 @@ php galaxy root:install "$DB_NAME" "$DB_USER" "$DB_PASSWORD"
 
 php galaxy config:seed
 
+sed -i "s/define( 'DB_HOST', '.*' );/define( 'DB_HOST', '$DB_HOST' );/" wp-config.php
+
 if ! grep -q "TYPEROCKET_ALT_DATABASE_DATABASE" wp-config.php; then
     sed -i "/\/\* That's all, stop editing! Happy publishing\. \*\//i\\
 define( 'TYPEROCKET_ALT_DATABASE_USER', '$DB_USER' );\\
